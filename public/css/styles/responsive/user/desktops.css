@@ -1,0 +1,52 @@
+@media all and (min-width: 992px) and (max-width: 1199.98px) {
+    /* ===================================== Layout Styles ===================================== */
+    .container {
+        max-width: 980px;
+    }
+
+    /* ------------============== Footer ==============------------ */
+    .footer .footer-top ul.footer-list li.footer-item:first-child .footer-logo > a {
+        width: 60%;
+    }
+
+    /* ------------============== End Footer ==============------------ */
+
+    /* ===================================== End Layout Styles ===================================== */
+
+    /* ------------============== Home ==============------------ */
+    .home-product-main .left-side .new-products > .new-products-content > .new-product-item > .new-product {
+        flex-wrap: wrap !important;
+        text-align: center;
+    }
+
+    .home-product-main .left-side .new-products > .new-products-content > .new-product-item :is(.new-product, .new-product .new-product-info .price-info > .new-price-discount) {
+        justify-content: center;
+    }
+
+    .home-product-main .home-right-side .home-services .box-content .main-services .service {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--ten-pixels);
+        text-align: center;
+    }
+
+    /* ------------============== End Home ==============------------ */
+
+    /* ------------============== Products ==============------------ */
+    .products-main .left-side {
+        width: 33.33333333%;
+    }
+
+    .products-main .right-side {
+        width: 66.66666667%;
+    }
+
+    /* ------------============== End Products ==============------------ */
+
+    /* ------------============== Checkout ==============------------ */
+    .checkout-main .left-side .shipping-payment {
+        padding-inline: var(--forty-eight-pixels) !important;
+    }
+
+    /* ------------============== End Checkout ==============------------ */
+}

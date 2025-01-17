@@ -1,0 +1,125 @@
+@media all and (max-width: 991.98px) {
+    /* ===================================== Layout Styles ===================================== */
+
+    /* ------------============== Top Bar ==============------------ */
+    .top-bar .top-bar-content .top-date {
+        justify-content: end;
+    }
+
+    /* ------------============== End Top Bar ==============------------ */
+
+    /* ------------============== Footer ==============------------ */
+    .footer .footer-top ul.footer-list li.footer-item {
+        width: calc(100% - var(--thirty-pixels)) !important;
+        margin-top: var(--fifteen-pixels);
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item:first-child {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item:first-child :is(.footer-logo, .footer-social-links) {
+        justify-content: center;
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item:nth-child(2) {
+        margin-top: var(--twenty-pixels);
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item h2 {
+        display: none;
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item .footer-menu-list-header {
+        padding-bottom: var(--fifteen-pixels);
+        border-bottom: var(--one-pixel) solid #444444;
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item .footer-menu-list-header .footer-menu-item-rotate-icon {
+        font-size: var(--twelve-pixels);
+    }
+
+    .footer .footer-top ul.footer-list li.footer-item .footer-menu-list-header .footer-menu-item-rotate-icon.rotate-180 {
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    /* ------------============== End Footer ==============------------ */
+
+    /* ===================================== End Layout Styles ===================================== */
+
+    /* ------------============== Home & Products ==============------------ */
+    .home-product-main .left-side {
+        order: 6;
+    }
+
+    .home-product-main .left-side .banner {
+        display: none;
+    }
+
+    .home-product-main .right-side :is(.home-products, .home-services, .home-partners, .related-products) .box-title > h2 {
+        font-size: var(--sixteen-pixels) !important;
+    }
+
+    .home-product-main .product-right-side .product-imgs-info .product-info {
+        padding-top: var(--twenty-four-pixels) !important;
+    }
+
+    .products-main .main-sides .products-filter-nav-menu {
+        display: block !important;
+    }
+
+    .products-main .main-sides .products-filter-nav-menu .nav-menu-toggler {
+        width: fit-content;
+    }
+
+    .products-main .main-sides .products-filter-nav-menu .nav-menu {
+        right: calc(((var(--forty-eight-pixels) * 5) + var(--sixty-pixels)) * -1);
+        left: unset;
+    }
+
+    .products-main .main-sides .products-filter-nav-menu .nav-menu.active {
+        right: 0;
+    }
+
+    .products-main .main-sides .products-filter-nav-menu .nav-menu .nav-menu-content .nav-menu-header .nav-menu-close {
+        left: var(--twelve-pixels);
+        right: unset;
+    }
+
+    /* ------------============== End Home & Products ==============------------ */
+
+    /* ------------============== Login & Register ==============------------ */
+    .log-reg-main .main-sides {
+        max-width: unset;
+    }
+
+    /* ------------============== End Login & Register ==============------------ */
+
+    /* ------------============== Profile ==============------------ */
+    .profile-main .bottom-side .profile-order-history-table > .table {
+        font-size: var(--twelve-pixels);
+        line-height: 1.5;
+    }
+
+    /* ------------============== Profile ==============------------ */
+
+    /* ------------============== Cart ==============------------ */
+    .cart-main .main-sides {
+        gap: var(--thirty-pixels);
+    }
+
+    .cart-main .main-sides :is(.cart, .summary) {
+        width: 100% !important;
+    }
+
+    /* ------------============== End Cart ==============------------ */
+
+    /* ------------============== Checkout ==============------------ */
+    .checkout-main .left-side .shipping-payment {
+        padding-inline: var(--sixty-four-pixels);
+    }
+
+    /* ------------============== End Checkout ==============------------ */
+}

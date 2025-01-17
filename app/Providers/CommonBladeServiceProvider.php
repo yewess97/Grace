@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
+
+class CommonBladeServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    final public function boot(): void
+    {
+        /**
+         * Get the user full name.
+         *
+         * @return string
+         */
+        Blade::directive('userFullName', static fn() => "<?php echo auth()->user()->{FULL_NAME} ?>");
+
+        /**
+         * Format the product price.
+         *
+         * @param string $price
+         * @return string
+         */
+        Blade::directive('price', static fn(string $price) => "<?php echo 'EGP '.number_format($price, 2, '.', ','); ?>");
+
+        /**
+         * Modal Close Button.
+         *
+         * @param string $price
+         * @return string
+         */
+        Blade::directive('modalCloseBtn', static fn() =>
+            "<?php echo \"<button type='button' role='button' title='Close' class='btn-close' data-mdb-dismiss='modal' aria-label='Close'></button>\" ?>"
+        );
+
+        /**
+         * Menu Close Button.
+         *
+         * @param string $price
+         * @return string
+         */
+        Blade::directive('menuCloseBtn', static function (string $ariaControls) {
+            $additional_classes = str_contains($ariaControls, ADMIN)
+                ? "col-1 ms-3"
+                : "position-absolute top-50";
+
+            return "<?php echo \"<i role='button' title='Close menu' class='fa-solid fa-xmark nav-menu-close $additional_classes fs-7 text-center rounded-circle' aria-label='Close menu' aria-controls=\".$ariaControls.\"></i>\" ?>";
+        });
+
+        /**
+         * Submit Button.
+         *
+         * @param string $btnName
+         * @return string
+         */
+        Blade::directive('submitButton', static function (string $btnName) {
+            $title = array_from($btnName)[0];
+
+            if (str_contains($title, strtoupper(CART_MODEL))) {
+                return "<?php echo \"<div class='add-cart'><div class='form-group'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn add-cart-btn d-flex justify-content-center align-items-center gap-2 rounded-1'><i class='ti ti-shopping-cart'></i><span>\".capitalizeAll($title).\"</span></button></div></div>\" ?>";
+            }
+
+            return "<?php echo \"<div class='modal-footer p-2'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn'>\".capitalizeAll($title).\"</button></div>\" ?>";
+        });
+
+        /**
+         * Make the back button.
+         *
+         * @param string $title
+         * @return string
+         */
+        Blade::directive('backTo', static function (string $backArgs) {
+            [$title, $route] = array_from($backArgs);
+
+            return "<?php echo \"<div class='back-btn'><a href=\".route($route).\" type='button' role='link' title='Back to \".ucfirst($title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst($title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\" ?>";
+        });
+
+        /**
+         * Search Form.
+         *
+         * @param string $searchArgs
+         * @return string
+         */
+        Blade::directive('search', static function (string $searchArgs) {
+            $table      = array_from($searchArgs)[0];
+            $filtration = in_array(constant($table), [SEARCH_ADDRESSES, SEARCH_ORDERS, SEARCH_REVIEWS], true)
+                ? array_from($searchArgs)[1]
+                : null;
+
+            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\" col-sm-12' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll($table).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
+        });
+
+        /**
+         * Collection Buttons.
+         *
+         * @param string $buttonsArgs
+         * @return string
+         */
+        Blade::directive('collectionButtons', static function (string $buttonsArgs) {
+            [$table_name] = array_from($buttonsArgs);
+
+            return "<?php echo \"<article class='col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-3'><div class='d-flex flex-wrap justify-content-center align-items-center gap-3'><button type='button' role='button' title='\".capitalizeAll(DELETE.'_'.$table_name).\"' id='delete_\".$table_name.\"_btn' class='btn delete-btn' data-route=\".route(DELETE.'_'.$table_name).\">Delete all selected</button><button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='btn add-btn' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'>\".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button></div></article>\" ?>";
+        });
+
+        /**
+         * Table Headers.
+         *
+         * @param string $headers
+         * @return string
+         */
+        Blade::directive('tableHeaders', static function (string $headers) {
+            $headers_arr = array_from($headers);
+            $table_headers = implode('', array_map(static fn(string $header) => "<th scope='col'>$header</th>", $headers_arr));
+            $table_headers = "<th scope='col'>#</th> $table_headers";
+
+            if (in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)) {
+                return "<?php echo \"$table_headers\" ?>";
+            }
+
+            return "<?php echo \"<th scope='col' class='position-relative'><input type='checkbox' role='checkbox' id='check_all'><span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span></th> $table_headers <th scope='col'>Action</th>\" ?>";
+        });
+
+        /**
+         * Check Row.
+         *
+         * @param string $id
+         * @return string
+         */
+        Blade::directive('checkRow',  static fn(string $id) =>
+            "<?php echo \"<td class='position-relative'><input type='checkbox' role='checkbox' id='check_row_$id' class='check-row' value='$id'><span role='checkbox' class='custom-check-row custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_row_$id'></span></td>\" ?>"
+        );
+
+        /**
+         * Iteration Loop for Table Rows and Columns.
+         *
+         * @return string
+         */
+        Blade::directive('loopIteration', static fn(string $collectionFirstItem) =>
+            "<?php echo '<td><p>'.$collectionFirstItem+\$key.'</p></td>' ?>"
+        );
+
+        /**
+         * No Results Found.
+         *
+         * @param string $emptyArgs
+         * @return string
+         */
+        Blade::directive('noResults', static function (string $emptyArgs) {
+            [$table_name, $colspan] = array_from($emptyArgs);
+
+            in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)
+                ? ++$colspan
+                : $colspan += 3;
+
+            return "<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>No \".ucwords($table_name).\" Found</td></tr>\" ?>";
+        });
+
+        /**
+         * Pagination Links.
+         *
+         * @param string $paginationArgs
+         * @return string
+         */
+        Blade::directive('pagination', static function (string $paginationArgs) {
+            [$collection, $route] = array_from($paginationArgs);
+
+            return "<?php echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route)]) ?>";
+        });
+    }
+}

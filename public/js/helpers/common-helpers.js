@@ -1,0 +1,1014 @@
+'use strict';
+
+import { IGrace } from "./IGrace.js";
+import { User } from "./user-helpers.js";
+
+
+const Common = {
+
+    /*================================== Concerned With UI/UX ==================================*/
+    /**
+     * Set up the sweet alert swal buttons.
+     *
+     * @return {object}
+     * @see https://sweetalert2.github.io/#configuration
+     */
+    swalWithButtons: Swal.mixin({
+        customClass: {
+            confirmButton: 'btn me-2',
+            cancelButton: 'btn ms-2',
+        },
+        buttonsStyling: false,
+    }),
+
+
+    /**
+     * Get the last directory from the url.
+     *
+     * @return {string}
+     */
+    urlLastDirectory: () => {
+        const directories = location.pathname.split("/");
+
+        return directories[directories.length - 1];
+    },
+
+
+    /**
+     * Configure the rows checking settings.
+     *
+     * @param target
+     * @return {void}
+     */
+    checkRowsConfig: (target) => {
+        const
+            check_all = $('#check_all'),
+            check_row = $('.check-row');
+
+        // Check/Uncheck the (check_all) checkbox and checkboxes in the table
+        if (target.is('#custom_check_all')) {
+            const is_checked_all = check_all.is(':checked');
+
+            if (check_all.is(':indeterminate')) {
+                check_all.prop('indeterminate', false);
+            }
+
+            check_all.prop('checked', !is_checked_all);
+            check_row.prop('checked', !is_checked_all);
+        }
+
+        // Check/Uncheck the target checkbox in the table and (check_all) checkbox
+        if (target.hasClass('custom-check-row')) {
+            target.prev().prop('checked', !target.prev().is(':checked'));
+
+            const checked_count = check_row.filter(':checked').length;
+            check_all.prop({
+                'indeterminate': checked_count > 0 && checked_count < check_row.length,
+                'checked': checked_count === check_row.length
+            });
+        }
+    },
+
+
+    /**
+     * Configure the form multi select settings.
+     *
+     * @param actionCollection
+     * @param relation
+     * @return {void}
+     */
+    formMultiSelectConfig: (actionCollection, relation) => {
+        const element = $(`#${actionCollection}_${relation}`);
+
+        relation = relation.split('_');
+        relation = relation.length > 1
+            ? relation[1]
+            : relation[0];
+
+        element.filterMultiSelect({
+            placeholderText: `Select ${IGrace.CAPITALIZE(relation)}`,
+            filterText: 'Search...',
+            selectAllText: 'Select All',
+            selectionLimit: 0,
+            caseSensitive: false,
+            allowEnablingAndDisabling: false,
+        });
+
+        element.removeClass('dropdown');
+
+        $('.filter.dropdown-item > input').attr('name', `search_${relation}`);
+    },
+
+
+    /**
+     * Show or hide the number of selected items when selecting multiple items.
+     *
+     * @param target
+     * @return {void}
+     */
+    showHideMultiSelectedItems: (target) => {
+        if (target.hasClass('selected-items')) {
+            const
+                num_selected_items_element = target.prevAll(':eq(1)'),
+                selected_items_length = target.children().length,
+                multiselect_items = target.parent().next().find('.items'),
+                multiselect_max_num_items = multiselect_items.children().length - 1,
+                multi_select = target.parents('.filter-multi-select'),
+                multiselect_label = multi_select.prev(),
+                multiselect_hidden_input = multi_select.next(),
+                select_all = multiselect_items.find('.custom-control:first-child'),
+                select_all_label = select_all.find('.custom-control-label'),
+                select_all_checkbox = select_all.find('.custom-checkbox'),
+                is_hidden = selected_items_length > 3,
+                related_collection = (collection) => multiselect_label.html().includes(IGrace.CAPITALIZE(IGrace.PLURALIZE(collection))),
+                multiselect_related_collection_label = related_collection(IGrace.CATEGORY) || related_collection(IGrace.SUBCATEGORY),
+                top_value = multiselect_related_collection_label
+                    ? (selected_items_length > 0 && selected_items_length <= 3 ? '7%' : '18%')
+                    : '18%';
+
+            multiselect_label.css('top', top_value);
+
+            target.attr('hidden', is_hidden);
+
+            num_selected_items_element.attr('hidden', !is_hidden)
+                .removeClass('mr-2')
+                .addClass('me-2');
+
+            select_all_label.html(selected_items_length === multiselect_max_num_items ? 'Unselect All' : 'Select All');
+
+            if (selected_items_length === 1) {
+                select_all_checkbox.val(`${multiselect_hidden_input.val()},`);
+                multiselect_hidden_input.val(`${multiselect_hidden_input.val()},`);
+            }
+
+            num_selected_items_element.html(`${selected_items_length}/${multiselect_max_num_items} Selected items`);
+        }
+    },
+
+
+    /**
+     * Show the data of the multi select input.
+     *
+     * @param args
+     * @return {void}
+     */
+    showMultiSelectData: (args) => {
+        const { userType, collection, collectionName, relatedCollection } = args;
+
+        const
+            action_collection = userType === IGrace.ADMIN
+                ? IGrace.UPDATE_COLLECTION(collectionName)
+                : IGrace.ADD_COLLECTION(IGrace.CART),
+            relational_collection = userType === IGrace.ADMIN
+                ? IGrace.PLURALIZE(relatedCollection)
+                : relatedCollection,
+            related_collection_words = relational_collection.split('_'),
+            relation = `${related_collection_words.length > 1 ? related_collection_words[1] : related_collection_words[0]}`,
+            select_element_class = userType === IGrace.ADMIN
+                ? IGrace.CLASS(`${collectionName}-${relational_collection}`)
+                : IGrace.CLASS(relational_collection),
+            select_element_id = `${action_collection}_${relational_collection}`,
+            select_element_name = `${select_element_id}[]`,
+            action_collection_related_collection = $(`.${IGrace.CLASS(select_element_id)}`),
+            multi_related_collection = action_collection_related_collection.data(relational_collection),
+            filter_multi_select_element = action_collection_related_collection.find('.filter-multi-select'),
+            related_collection_hidden_input = action_collection_related_collection.find(`input[name="${select_element_name}"]:hidden`);
+
+        filter_multi_select_element.remove();
+        related_collection_hidden_input.val('');
+
+        let related_collection_select_element = $('<select>', {
+            name: select_element_name,
+            id: select_element_id,
+            class: `${select_element_class} d-none`,
+            multiple: true,
+            'aria-required': true,
+        });
+
+        if (userType === IGrace.ADMIN) {
+            $.each((multi_related_collection), (key, value) => {
+                const option_text = relational_collection.includes(IGrace.SIZE)
+                    ? key
+                    : value[IGrace.NAME];
+
+                const option_value = relational_collection.includes(IGrace.SIZE)
+                    ? value
+                    : value[IGrace.ID];
+
+                related_collection_select_element.append($('<option>', {
+                    text: option_text,
+                    value: option_value,
+                }));
+            });
+        }
+        else {
+            $.each((collection[IGrace.PLURALIZE(relation)]), (_, product_size) =>
+                $.each((Object.entries(product_size).filter(([key, _]) => key === IGrace.SIZE)), (_, value) =>
+                    $.each((Object.entries(multi_related_collection).filter(([_, size_value]) => +size_value === +value[1])), (_, [size, size_value]) =>
+                        related_collection_select_element.append($('<option>', {
+                            text: size,
+                            value: size_value,
+                        }))
+                    )
+                )
+            );
+        }
+
+        related_collection_select_element.insertBefore(related_collection_hidden_input);
+
+        const related_collection_element = $(`.${select_element_class}`);
+
+        if (userType === IGrace.ADMIN) {
+            $.each((collection[relation]), (_, related_collection) => related_collection_element.find('option')
+                .filter((_, rel_collection) => +rel_collection.value === (relational_collection.includes(IGrace.SIZE) ? +related_collection[IGrace.SIZE] : +related_collection[IGrace.ID]))
+                .attr('selected', true));
+        }
+
+        Common.formMultiSelectConfig(action_collection, relational_collection);
+        Common.formSelectConfig();
+
+        related_collection_element.remove();
+
+        const all_multi_related_collection = filter_multi_select_element.end().find('.items input[type="checkbox"]');
+
+        let multi_selected_related_collection_values = [];
+
+        $.each((all_multi_related_collection), (_, related_collection) => {
+            if ($(related_collection).is(':checked')) {
+                multi_selected_related_collection_values.push($(related_collection).val());
+            }
+        });
+
+        multi_selected_related_collection_values = multi_selected_related_collection_values.filter((related_collection_value) => related_collection_value !== '').join(',');
+
+        all_multi_related_collection.first().val(multi_selected_related_collection_values);
+        related_collection_hidden_input.val(multi_selected_related_collection_values);
+    },
+
+
+    /**
+     * Handle the select-all checkbox for multiple items with hidden input.
+     *
+     * @param args
+     * @return {any|*[]}
+     */
+    handleSelectAllMultiItemsWithHiddenInput: (args) => {
+        let { target, actionCollection, multiSelectedValuesList, relation } = args;
+
+        if (target.is(`input[name="${actionCollection}_${relation}[]"]`)) {
+            const
+                is_checked              = target.is(':checked'),
+                is_select_all           = target.next().html().includes('All'),
+                all_items               = target.parents('.items').find('input[type="checkbox"]'),
+                select_all_checkbox     = all_items.first(),
+                related_collection_hidden_input = target.parents('.filter-multi-select').next();
+
+            if (is_checked) {
+                if (is_select_all) {
+                    multiSelectedValuesList.length = 0;
+                    select_all_checkbox.val('');
+                    related_collection_hidden_input.val('');
+
+                    $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
+
+                    select_all_checkbox.next().html('Unselect All');
+                }
+                else {
+                    multiSelectedValuesList.push(target.val());
+                }
+            }
+            else {
+                is_select_all
+                    ? multiSelectedValuesList.length = 0
+                    : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+
+                select_all_checkbox.next().html('Select All');
+            }
+
+            multiSelectedValuesList = multiSelectedValuesList.filter((value) => value !== '').join(',');
+
+            select_all_checkbox.val(multiSelectedValuesList);
+            related_collection_hidden_input.val(multiSelectedValuesList);
+        }
+    },
+
+
+    /**
+     * Configure the form select settings.
+     *
+     * @return {void}
+     */
+    formSelectConfig: () => {
+        $('.viewbar').removeClass('dropdown-toggle').addClass('form-select');
+
+        const form_select = $('.form-select');
+
+        $.each((form_select), (_, select_element) => {
+            // Add some styles on the label of the select element
+            const label_style = {
+                'top': '18%',
+                'font-size': 'var(--twelve-pixels)',
+            };
+            $(select_element).hasClass('viewbar')
+                ? $(select_element).parent().prev().css(label_style)
+                : $(select_element).prev().css(label_style);
+
+            // Add some styles on the select element
+            $(select_element).css('padding-block', 'var(--twenty-four-pixels) 0.357rem');
+        });
+    },
+
+
+    /**
+     * Add some classes, styles, and attributes on each image.
+     *
+     * @return {void}
+     */
+    imageConfig: () => $.each(($('img')), (_, image) =>
+        $(image).addClass('img-fluid h-100')
+            .css('mix-blend-mode', 'multiply')
+            .attr('loading', 'lazy')
+    ),
+
+
+    /**
+     * Count the characters in a textarea.
+     *
+     * @param textArea
+     * @return {void}
+     */
+    charsCounter: (textArea) => {
+        $(document).on(IGrace.KEYUP, `.${textArea}`, function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                text_value = target.val();
+
+            let
+                counter_element,
+                counter = target.attr('maxlength') - text_value.length;
+
+            textArea.includes(IGrace.REVIEW)
+                ? counter_element = target.parents().eq(1).next().next().find('> .chars-counter')
+                : counter_element = target.parent().next().addClass('mt-3 mb-2');
+
+            counter_element.text(`${counter} characters remaining`);
+
+            if ($.isEmptyObject(text_value)) {
+                counter_element.empty();
+                counter_element.removeClass('mt-3 mb-2');
+            }
+        });
+    },
+
+
+    /**
+     * Get the countries from the (restcountries.com) API.
+     *
+     * @return {void}
+     */
+    getCountries: () => {
+        const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
+
+        if (country_elements.length) {
+            $.getJSON('https://restcountries.com/v3.1/all', (countries) => {
+                let countries_names = countries.map((country) => country.name.common);
+
+                countries_names.sort((opt1, opt2) => opt1.localeCompare(opt2));
+
+                const countries_options = countries_names.map((countryName) =>
+                    `<option value="${countryName}">${countryName}</option>`
+                ).join("");
+
+                $.each((country_elements), (_, countryElement) =>
+                    $(countryElement).append(countries_options)
+                );
+            })
+                .fail(() => console.error("Failed to fetch countries!"));
+        }
+    },
+
+
+    /**
+     * Set up the pagination.
+     *
+     * @return {void}
+     */
+    paginate: () => {
+        $(document).on(IGrace.CLICK, '.pagination .page-link', function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                route  = target.data('route'),
+                page   = target.attr('href').split('page=')[1];
+
+            let url = `${route}?page=${page}`;
+
+            if (route.includes(IGrace.FILTER)) {
+                return User.ajaxFilterProductsRequest({
+                    route: route,
+                    page: page,
+                });
+            }
+
+            if (route.includes(IGrace.CHECKOUT)) {
+                return User.ajaxCheckoutUserAddressesRequest(page);
+            }
+
+            if (route.includes(IGrace.PLURALIZE(IGrace.ORDER))) {
+                url = `${location.href}&page=${page}`;
+            }
+
+            $.ajax({
+                url: url,
+                method: IGrace.GET,
+                success: (data) => {
+                    $('.pagination-container').html(data);
+                    Common.imageConfig();
+                },
+                error: () => Common.somethingWentWrongError(),
+            });
+        });
+    },
+
+
+    /**
+     * Scroll to the top of the page.
+     *
+     * @return {void}
+     */
+    scrollToTop: () => {
+        const scroll_to_top = '.scroll-to-top';
+
+        scroll(() => $(window).scrollTop() > 150 ? $(scroll_to_top).fadeIn('slow') : $(scroll_to_top).fadeOut('slow'));
+
+        $(document).on(IGrace.CLICK, scroll_to_top, function (e) {
+            e.preventDefault();
+
+            $('html, body').animate({ scrollTop: 0 }, 500);
+        });
+    },
+
+
+    /*================================== Concerned With AJAX Requests ==================================*/
+
+    /**
+     * Set up ajax request with csrf token and other settings.
+     *
+     * @return {void}
+     */
+    ajaxSetup: () => {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            },
+            async: false,
+            cache: false,
+            processData: false,
+            contentType: false,
+        });
+    },
+
+
+    /**
+     * Custom filter the form data.
+     *
+     * @param target
+     * @return {FormData}
+     */
+    filteredFormData: (target) => {
+        return [...new FormData($(target)[0])]
+            .reduce((formData, [attribute, value]) => {
+                const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
+
+                if (!value.toString().includes(',') || is_file_input) {
+                    formData.append(attribute, value);
+                }
+                return formData;
+            }, new FormData());
+    },
+
+
+    /**
+     * Handle the error status from the server.
+     *
+     * @param error
+     * @return {string}
+     */
+    errorStatus: (error) => error.status,
+
+
+    /**
+     * Handle the response message or errors from the server.
+     *
+     * @param error
+     * @param isMessage
+     * @return {string}
+     */
+    responseJsonError: (error, isMessage = false) =>
+        isMessage
+            ? error.responseJSON.message
+            : error.responseJSON.errors,
+
+
+    /**
+     * Display the error messages in the given element
+     * for the given errors object (returned from the server).
+     *
+     * @param element
+     * @param errors
+     * @param status
+     * @return {void}
+     */
+    errorMessage: (element, errors, status = null) => {
+        const
+            error_element = `.${element}-${IGrace.ERROR}`,
+            login_btn = $(`.${IGrace.LOGIN}-btn`),
+            show_error_class = `show-${IGrace.ERROR}`,
+            margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT) ? 'mt-2 mb-1' : 'mt-3',
+            hide_error_element = (error_element) => $(error_element).empty().parent().removeClass(`${show_error_class} ${margin}`);
+
+        hide_error_element(error_element);
+
+        $.each((errors), (attr, msg) => {
+            attr = attr.replace(/\.0$/, ''); // Remove trailing '.0' if there is
+            const attr_err = $(`#${attr}_${IGrace.ERROR}`);
+            $(attr_err).parent().addClass(`${show_error_class} ${!status ? margin : ''}`);
+
+            if (status === 429) {
+                let
+                    seconds = msg,
+                    error_message = `Too many ${IGrace.LOGIN} attempts. Please try again in <span id="count_down">${seconds}</span> seconds`;
+
+                login_btn.attr('disabled', 'disabled');
+
+                attr_err.html(`<li>${error_message}</li>`);
+
+                const login_attempts_interval = setInterval(() => {
+                    if (seconds > 0) {
+                        $('#count_down').text(seconds);
+                        seconds--;
+                    }
+                    else {
+                        clearInterval(login_attempts_interval);
+                        hide_error_element(attr_err);
+                        login_btn.removeAttr('disabled');
+                    }
+                }, 1000);
+
+                return;
+            }
+
+            $.each((msg), (_, errMsg) => attr_err.append(`<li role="listitem">${errMsg}</li>`));
+        });
+    },
+
+
+    /**
+     * Error response for search & filter.
+     *
+     * @param args
+     * @return {void}
+     */
+    searchFilterErrorResponse: (args) => {
+        const { role, imageSrc } = args;
+
+        const search_filter_container = role === IGrace.ADMIN
+            ? $('.search-table')
+            : $('.pagination-container');
+
+        search_filter_container.html(
+            `<div class="d-flex justify-content-center mt-5">
+                <img src=${imageSrc} alt="No Results Found" class="img-fluid h-100" style="width:300px">
+            </div>`
+        );
+    },
+
+
+    /**
+     * Display the confirmation message before deletion.
+     *
+     * @param message
+     * @return {object}
+     */
+    confirmMessage: (message) => {
+        return Common.swalWithButtons.fire({
+            html: `Are you sure you want to ${message}`,
+            icon: IGrace.WARNING,
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: `Yes, ${IGrace.DELETE}!`,
+            cancelButtonText: 'No, cancel!',
+        });
+    },
+
+
+    /**
+     * Display the success message.
+     *
+     * @param status
+     * @param message
+     * @param extra
+     * @return {void}
+     */
+    successMessage: (status, message, extra = null) => {
+        const properties = {
+            title: `${IGrace.CAPITALIZE(status)}!`,
+            html: message,
+            icon: IGrace.SUCCESS,
+            showConfirmButton: true,
+        };
+
+        if (extra) {
+            if (extra.includes(IGrace.FORGOT_PASSWORD())) {
+                return Common.swalWithButtons.fire({
+                    ...properties,
+                    confirmButtonText: 'Ok, Thanks',
+                });
+            }
+
+            if (extra.includes(IGrace.RESET_PASSWORD())) {
+                return Common.swalWithButtons.fire(properties)
+                    .then((ok) => {
+                        if (ok.isConfirmed) {
+                            location.href = `/${IGrace.LOGIN}`;
+                        }
+                    });
+            }
+
+            if (extra.includes(IGrace.CAPITALIZE(IGrace.ORDER))) {
+                return Common.swalWithButtons.fire({
+                    ...properties,
+                    confirmButtonText: 'Thanks',
+                })
+                    .then((ok) => {
+                        if (ok.isConfirmed) {
+                            location.href = `/${IGrace.PLURALIZE(IGrace.PRODUCT)}`;
+                        }
+                    });
+            }
+
+            if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
+                return setTimeout(() => User.reloadReviewsTab(extra), 1800);
+            }
+        }
+
+        Swal.fire({
+            ...properties,
+            html: `${message} successfully!`,
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+
+        setTimeout(() => location.reload(), 1800);
+    },
+
+
+    /**
+     * Display the cancelation message when canceled.
+     *
+     * @param message
+     * @return {void}
+     */
+    cancelMessage: (message) => {
+        Swal.fire({
+            title: 'Canceled',
+            html: `${message} <i class="far fa-smile"></i>`,
+            icon: IGrace.ERROR,
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true,
+        });
+    },
+
+
+    /**
+     * Display the error message in a sweet alert.
+     *
+     * @param error
+     * @return {void}
+     */
+    swalResponseJsonErrorMessage: (error) => {
+        Common.somethingWentWrongError(Common.responseJsonError(error, true));
+    },
+
+
+    /**
+     * Display that something went wrong with the ajax request
+     * if there's an error but the validation error
+     * if confirmed, reload the page.
+     *
+     * @return {void}
+     */
+    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") => {
+        Common.swalWithButtons.fire({
+            title: 'Sorry!',
+            html: message,
+            icon: IGrace.ERROR,
+            showConfirmButton: true,
+            confirmButtonText: "Refresh",
+        })
+            .then((refresh) => {
+                if (refresh.isConfirmed) {
+                    location.reload();
+                }
+            });
+    },
+
+
+    /**
+     * Remove the errors when the edit modal is closed/hidden
+     * to avoid showing the errors when the modal is opened again
+     * after closing it without submitting the form.
+     *
+     * @param role
+     * @return {void}
+     */
+    removeErrorsWhenEditModelHides: (role) => {
+        $(document).on('hidden.bs.modal', `.${role}-${IGrace.EDIT}-modal`, function (e) {
+            e.preventDefault();
+
+            $(this).find(IGrace.ERROR_ELEMENT(IGrace.UPDATE)).empty();
+        });
+    },
+
+
+    /* ---------------------------------- EDIT REQUEST ---------------------------------- */
+
+    /**
+     * Edit Address Ajax Request.
+     *
+     * @return {void}
+     */
+    ajaxEditAddressRequest: () => {
+        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.ADDRESS, true), function (e) {
+            e.preventDefault();
+
+            const
+                target  = $(this),
+                route   = target.data('route'),
+                country = $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.COUNTRY}`);
+
+            $.get(route)
+                .done((data) => {
+                    const address = data[IGrace.ADDRESS];
+
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.ADDRESS))}`).val(address[IGrace.ID]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.ADDRESS1()}`).val(address[IGrace.ADDRESS1()]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.ADDRESS2()}`).val(address[IGrace.ADDRESS2()]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.CITY}`).val(address[IGrace.CITY]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.STATE}`).val(address[IGrace.STATE]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.POSTAL_CODE}`).val(address[IGrace.POSTAL_CODE]);
+                    country.find('option').removeAttr('selected');
+                    country.find('option')
+                        .filter((_, address_country) => address_country.value === address[IGrace.COUNTRY])
+                        .attr('selected', true);
+
+                    $(IGrace.EDIT_COLLECTION(IGrace.ADDRESS)).modal('show');
+                })
+                .fail(Common.somethingWentWrongError);
+        });
+    },
+
+
+    /**
+     * Edit review ajax request
+     *
+     * @return {void}
+     */
+    ajaxEditReviewRequest: () => {
+        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.REVIEW, true), function (e) {
+            e.preventDefault();
+
+            const route = $(this).attr('href');
+
+            $.get(route)
+                .done((data) => {
+                    const
+                        review = data[IGrace.REVIEW],
+                        update_review_rating_container = $(`#${IGrace.RATING}_container`);
+
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.REVIEW))}`).val(review[IGrace.ID]);
+
+                    update_review_rating_container.empty();
+                    for (let i = 5; i >= 1; i--) {
+                        const
+                            rating_input = $(`<input type="radio" name="update_review_rating" id="update_review_rating${i}" value="${i}" ${i >= review[IGrace.RATING] ? 'checked' : ''}>`),
+                            rating_label = $(`<label for="update_review_rating${i}" class="position-relative fs-4">☆</label>`);
+
+                        update_review_rating_container.append(rating_input, rating_label);
+                    }
+
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.REVIEW)}_${IGrace.TITLE}`).val(review[IGrace.TITLE]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.REVIEW)}_${IGrace.BODY_TEXT}`).html(review[IGrace.BODY_TEXT]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.REVIEW)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(review[IGrace.COLLECTION_ID(IGrace.PRODUCT)]);
+
+                    $(IGrace.EDIT_COLLECTION(IGrace.REVIEW)).modal('show');
+                })
+                .fail(Common.somethingWentWrongError);
+        });
+    },
+
+
+    /* ---------------------------------- DELETE REQUEST ---------------------------------- */
+
+    /**
+     * Ajax request to delete a single or multiple items.
+     *
+     * @param options
+     * @returns {{method: string, success: *, url: string}}
+     */
+    ajaxDeleteItems: (options) => {
+        const { deleteRoute, multiple, forceDeleteRequest, selectedIds, successMessage } = options;
+
+        return {
+            url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
+            method: IGrace.DELETE.toUpperCase(),
+            success: () => {
+                $('.check-row').prop('checked', false);
+                $('#check_all').prop({'checked': false, 'indeterminate': false});
+                Common.successMessage(IGrace.DELETED(), successMessage);
+            },
+        };
+    },
+
+
+    /**
+     * Show a force delete confirmation message before deletion.
+     *
+     * @param options
+     * @return {void}
+     */
+    forceDeleteConfirmation: (options) => {
+        const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
+
+        const del_args_options = {
+            deleteRoute: deleteRoute,
+            multiple: multiple,
+            selectedIds: selectedIds,
+        };
+
+        const force_delete_requests = [1, 2];
+
+        Common.swalWithButtons.fire({
+            title: 'Oops!',
+            html: `${Common.responseJsonError(error, true)} <br><br> Are you sure you want to delete ${multiple ? 'the selected items' : 'this item'}?`,
+            icon: IGrace.WARNING,
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: `Yes, ${IGrace.DELETE} ${multiple ? 'them' : 'it'}!`,
+            cancelButtonText: 'No, cancel!',
+        })
+            .then((willDelete) => {
+                if (willDelete.isConfirmed) {
+                    let force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1 ? force_delete_requests.pop() : force_delete_requests.shift();
+                    $.ajax({
+                        ...Common.ajaxDeleteItems({
+                            ...del_args_options,
+                            successMessage: successMessage,
+                            forceDeleteRequest: force_delete_request,
+                        }),
+                        error: (err) => Common.handleDeleteErrors({
+                            error: err,
+                            ...del_args_options,
+                            cancelMessage: cancelMessage,
+                            forceDeleteRequests: force_delete_requests,
+                        }),
+                    });
+                }
+                else if (willDelete.dismiss === Swal.DismissReason.cancel) {
+                    Common.cancelMessage(cancelMessage);
+                }
+            });
+    },
+
+
+    /**
+     * Handle the errors when deleting.
+     *
+     * @param options
+     * @return {void}
+     */
+    handleDeleteErrors: (options) => {
+        const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
+
+        Common.errorStatus(error) === 404
+            ? Common.forceDeleteConfirmation({
+                error: error,
+                deleteRoute: deleteRoute,
+                forceDeleteRequests: forceDeleteRequests,
+                multiple: multiple,
+                selectedIds: selectedIds,
+                successMessage: successMessage,
+                cancelMessage: cancelMessage,
+            })
+            : Common.somethingWentWrongError();
+    },
+
+
+    /**
+     * Delete Ajax Request.
+     *
+     * @param collection
+     * @return {void}
+     */
+    ajaxDeleteRequest: (collection) => {
+        $(document).on(IGrace.CLICK, IGrace.DELETE_COLLECTION_BUTTON(collection), function (e) {
+            e.preventDefault();
+
+            const
+                target              = $(this),
+                del_route           = target.data('route'),
+                del_name            = target.data(IGrace.NAME),
+                del_success_message = `*${del_name}* ${collection} has been ${IGrace.DELETED()}`,
+                del_cancel_message  = `${collection === IGrace.ADDRESS ? `The ${collection} of the ${IGrace.USER} (${del_name})` : `Your ${collection}`} is safe`;
+
+            const del_options = {
+                deleteRoute: del_route,
+                collection: collection,
+                successMessage: del_success_message,
+            };
+
+            Common.confirmMessage(`${IGrace.DELETE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${del_name})?` : `${collection} (${del_name})? <br><br> Rest items related to it will be ${IGrace.DELETED()}.`}`)
+                .then((willDelete) => {
+                    if (willDelete.isConfirmed) {
+                        $.ajax({
+                            ...Common.ajaxDeleteItems(del_options),
+                            error: (err) => Common.handleDeleteErrors({
+                                error: err,
+                                ...del_options,
+                                cancelMessage: del_cancel_message,
+                            }),
+                        });
+                    }
+                    else if (willDelete.dismiss === Swal.DismissReason.cancel) {
+                        Common.cancelMessage(del_cancel_message);
+                    }
+                });
+        });
+    },
+
+
+    /**
+     * Delete multiple items Ajax Request.
+     *
+     * @param collection
+     * @return {void}
+     */
+    ajaxDeleteMultipleRequest: (collection) => {
+        $(document).on(IGrace.CLICK, IGrace.DELETE_COLLECTION_BUTTON(collection, true), function (e) {
+            e.preventDefault();
+
+            const
+                del_all_route = $(this).data('route'),
+                selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
+                is_multiple_selection = selected_rows.length > 1,
+                del_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.DELETED()}`,
+                del_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
+
+            const del_multiple_options = {
+                deleteRoute: del_all_route,
+                collection: collection,
+                multiple: true,
+                selectedIds: selected_rows,
+                successMessage: del_success_message,
+            };
+
+            if ($.isEmptyObject(selected_rows)) {
+                return Swal.fire({
+                    title: 'Oops!',
+                    text: `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${IGrace.DELETE}`,
+                    icon: IGrace.WARNING,
+                    showConfirmButton: true,
+                });
+            }
+
+            Common.confirmMessage(`${IGrace.DELETE} selected ${is_multiple_selection ? collection : IGrace.SINGULARIZE(collection)}? <br><br> Rest items related to it will be ${IGrace.DELETED()}.`)
+                .then((willDelete) => {
+                    if (willDelete.isConfirmed) {
+                        $.ajax({
+                            ...Common.ajaxDeleteItems(del_multiple_options),
+                            error: (err) => Common.handleDeleteErrors({
+                                error: err,
+                                ...del_multiple_options,
+                                cancelMessage: del_multi_cancel_message,
+                            }),
+                        });
+                    }
+                    else if (willDelete.dismiss === Swal.DismissReason.cancel) {
+                        Common.cancelMessage(del_multi_cancel_message);
+                    }
+                });
+        });
+    },
+}
+
+
+
+/**
+ * Export IGrace & Common Objects.
+ */
+export { IGrace, Common };

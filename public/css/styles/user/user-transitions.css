@@ -1,0 +1,21 @@
+#preloader .preloader-container .preloader-cart .cart-track,
+.home-product-main .left-side ul.categories-menu :is(li.category-item, li.category-item > .menu-item::after),
+.home-product-main .home-right-side .home-partners .partners-carousel .partner .partner-img,
+.home-product-main .product-right-side .product-imgs-info .product-images .product-thumb-images-carousel .product-thumb-image > img,
+.products-content .product-item .product-form .product-img-actions .discount-percent,
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info .cart-product-info > a,
+.about-us-main :is(.our-mission, .our-vision) img {
+    -webkit-transition: var(--trans-300);
+    -moz-transition: var(--trans-300);
+    -ms-transition: var(--trans-300);
+    -o-transition: var(--trans-300);
+    transition: var(--trans-300);
+}
+
+.checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .card {
+    -webkit-transition: var(--trans-500);
+    -moz-transition: var(--trans-500);
+    -ms-transition: var(--trans-500);
+    -o-transition: var(--trans-500);
+    transition: var(--trans-500);
+}

@@ -1,0 +1,221 @@
+@media all and (max-width: 1199.98px) {
+    /* ===================================== Layout Styles ===================================== */
+    .row-cols-md-4 > * {
+        flex: 0 0 33.33%;
+        max-width: 33.33%;
+    }
+
+    /* ------------============== Top Bar ==============------------ */
+    .top-bar .top-bar-content {
+        font-size: var(--twelve-pixels);
+    }
+
+    /* ------------============== End Top Bar ==============------------ */
+
+    /* ------------============== Header ==============------------ */
+    .header .header-nav-menu,
+    .nav-menu-overlay {
+        display: block !important;
+    }
+
+    .header :is(.header-search, .header-user :where(.header-user-account .header-user-account-content, .header-user-cart .header-user-cart-content) .header-user-title) {
+        display: none;
+    }
+
+    .header :is(.header-nav-menu .header-nav-menu-toggler, .header-user :where(.header-user-account, .header-user-cart)) {
+        width: fit-content;
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list .nav-menu-list-header {
+        gap: var(--ten-pixels);
+        color: var(--black-color);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list .nav-menu-list-header > .nav-menu-list-icon {
+        font-size: var(--seventeen-pixels);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list :is(.nav-menu-list-header, ul.nav-menu-list-content li.nav-menu-list-item).active {
+        color: var(--main-color);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list ul.nav-menu-list-content li.nav-menu-list-item {
+        padding: var(--ten-pixels) var(--fifteen-pixels);
+        color: #333333;
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list ul.nav-menu-list-content li.nav-menu-list-item > .nav-submenu-list-header .nav-submenu-item-rotate-icon {
+        font-size: var(--ten-pixels);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list ul.nav-menu-list-content li.nav-menu-list-item.active > .nav-submenu-list-header .nav-submenu-item-rotate-icon.rotate-180 {
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list ul.nav-menu-list-content li.nav-menu-list-item > .nav-submenu-list-content .nav-submenu-list-item {
+        margin-block: var(--eight-pixels);
+        -webkit-box-shadow: var(--dropdown-box-shadow);
+        -moz-box-shadow: var(--dropdown-box-shadow);
+        -o-box-shadow: var(--dropdown-box-shadow);
+        box-shadow: var(--dropdown-box-shadow);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list ul.nav-menu-list-content li.nav-menu-list-item > ul.nav-submenu-list-content .dropdown-item .dropdown-item-title {
+        margin-bottom: var(--twelve-pixels);
+        padding-block: var(--seven-pixels);
+        color: var(--body-text-color);
+        border-bottom: var(--border);
+    }
+
+    .header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list :is(.nav-menu-list-header, ul.nav-menu-list-content, li.nav-menu-list-item:not(:first-child)) {
+        border-top: var(--border);
+    }
+
+    .header .header-user :is(.header-user-account .header-user-account-content .user-icon, .header-user-cart .header-user-cart-content .cart-icon) {
+        font-size: var(--eighteen-pixels);
+    }
+
+    .header .header-user .header-user-account .account-menu.dropdown-menu {
+        inset: calc(var(--twenty-pixels) + 100%) 0 auto auto !important;
+    }
+
+    /* ------------============== End Header ==============------------ */
+
+    /* ------------============== Nav Menu ==============------------ */
+    .nav-menu {
+        left: calc(((var(--forty-eight-pixels) * 5) + var(--sixty-pixels)) * -1);
+        width: calc((var(--forty-eight-pixels) * 5) + var(--sixty-pixels));
+        z-index: 999;
+        -webkit-box-shadow: var(--box-shadow);
+        -moz-box-shadow: var(--box-shadow);
+        -o-box-shadow: var(--box-shadow);
+        box-shadow: var(--box-shadow);
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-menu .nav-menu-content .nav-menu-header {
+        padding: var(--twenty-pixels) var(--fifteen-pixels);
+        background-color: var(--main-color);
+    }
+
+    .nav-menu .nav-menu-content .nav-menu-header .nav-menu-close {
+        right: var(--twelve-pixels);
+        padding: var(--two-pixels) var(--four-pixels);
+        z-index: 99;
+        background-color: var(--second-color);
+        color: var(--main-color);
+        border: var(--one-pixel) solid var(--second-color);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .nav-menu-overlay {
+        z-index: 20;
+        background-color: #0009;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .nav-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* ------------============== End Nav Menu ==============------------ */
+
+    /* ------------============== Navbar ==============------------ */
+    .navbar .nav-search {
+        display: block;
+        padding-block: var(--ten-pixels);
+    }
+
+    .navbar .nav-search .search-form #search_products_btn {
+        font-size: var(--eighteen-pixels);
+    }
+
+    .navbar .nav-list {
+        display: none;
+    }
+
+    /* ------------============== End Navbar ==============------------ */
+
+    /* ------------============== Footer ==============------------ */
+    .footer .footer-top ul.footer-list {
+        margin: 0;
+    }
+
+    /* ------------============== End Footer ==============------------ */
+
+    /* ===================================== End Layout Styles ===================================== */
+
+    /* ------------============== Home & Products ==============------------ */
+    .home-product-main .left-side ul.categories-menu {
+        display: none;
+    }
+
+    .products-content .product-item .product-form .product-img-actions .product-action {
+        bottom: 0;
+    }
+
+    .products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+        width: var(--thirty-pixels);
+        height: var(--thirty-pixels);
+        font-size: var(--fourteen-pixels) !important;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .home-product-main .home-right-side .home-services .box-content .main-services {
+        flex-wrap: nowrap;
+    }
+
+    /* ------------============== End Home & Products ==============------------ */
+
+    /* ------------============== Cart ==============------------ */
+    .cart-main .main-sides .cart.col-9 {
+        flex: 0 0 auto;
+        width: 66.66666667%;
+    }
+
+    .cart-main .main-sides .summary.col-3 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
+    }
+
+    .cart-main .cart .update-cart-form ul.cart-products li.cart-product {
+        gap: var(--thirty-pixels);
+    }
+
+    .cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info {
+        width: 100%;
+    }
+
+    .cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-quantity-remove {
+        width: 30%;
+    }
+
+    /* ------------============== End Cart ==============------------ */
+
+    /* ------------============== Checkout ==============------------ */
+    .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .shipping-address-card {
+        width: 100% !important;
+    }
+
+    /* ------------============== End Checkout ==============------------ */
+
+    /* ------------============== Common between (Checkout) and (Order Details) Pages ==============------------ */
+    .right-side .total-order-products {
+        padding-inline: var(--twenty-five-pixels);
+    }
+
+    .right-side .total-order-products ul.order-products {
+        padding: var(--fifteen-pixels) !important;
+    }
+
+    /* ------------============== End Common between (Checkout) and (Order Details) Pages ==============------------ */
+
+}

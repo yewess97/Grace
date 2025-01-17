@@ -1,0 +1,137 @@
+/* ===================================== Products Styles ===================================== */
+
+/* =================================== Main Body =================================== */
+.products-main .filter-products-errors .grace-form-error > ul.form-error li {
+    margin: 0;
+}
+
+.products-main .main-sides {
+    row-gap: var(--thirty-pixels);
+}
+
+.products-main .main-sides :is(.grace-form-error, .grace-form-error > ul.form-error > *) {
+    margin: 0 !important;
+}
+
+/* -------------================ Left Side ================------------- */
+.products-main .left-side .box-filter {
+    margin-bottom: var(--thirty-pixels);
+    padding: var(--fifteen-pixels);
+}
+
+.products-main .left-side .box-filter .filter-title {
+    padding: var(--ten-pixels) var(--fifteen-pixels);
+    background-color: var(--light-gray-color);
+}
+
+.products-main .left-side .box-filter .clear-filter:hover {
+    text-decoration: underline;
+    color: var(--main-color);
+}
+
+.products-main .left-side .box-filter ul.filter-content {
+    padding-inline: var(--fifteen-pixels);
+}
+
+.products-main .left-side .box-filter ul.filter-content li.filter-item {
+    padding-block: var(--ten-pixels);
+}
+
+.products-main .left-side .box-filter ul.filter-content li.filter-item:not(:last-child) {
+    border-bottom: var(--border);
+}
+
+.products-main .left-side .box-filter ul.filter-content li.filter-item > .filter-check {
+    padding-left: var(--twenty-five-pixels);
+    color: var(--black-color);
+    cursor: pointer;
+}
+
+.products-main .left-side .box-filter ul.filter-content li.filter-item > .filter-check > input[type="checkbox"]:checked ~ .filter-name {
+    font-weight: 500;
+    color: var(--main-color);
+}
+
+.products-main .left-side .box-filter div.filter-content {
+    padding: var(--twenty-pixels) 0 var(--fourteen-pixels);
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .price-input span {
+    color: var(--black-color);
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .price-input label {
+    margin-left: var(--twelve-pixels);
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .price-input label > input[type="number"] {
+    height: var(--forty-pixels);
+    border-color: #b4b4b4 !important;
+    border-radius: var(--five-pixels);
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .price-input label input[type="number"]::-webkit-outer-spin-button,
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .price-input label input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-price-content .separator {
+    width: calc(var(--sixty-four-pixels) + var(--forty-eight-pixels) + var(--thirteen-pixels));
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-range-content .price-range > label > input[type="range"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-range-content .price-range > label > input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: var(--five-pixels);
+    background-color: var(--second-color);
+    cursor: pointer;
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-range-content .price-range > label > input[type="range"]::-webkit-slider-thumb {
+    position: relative;
+    width: var(--eighteen-pixels);
+    height: var(--eighteen-pixels);
+    margin-top: calc(var(--seven-pixels) * -1);
+    z-index: 2;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--main-color);
+    -webkit-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    -o-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-appearance: none;
+}
+
+.products-main .left-side .box-filter  div.filter-content .filter-range-content .price-range > label > input[type="range"]::-moz-range-thumb {
+    position: relative;
+    width: var(--eighteen-pixels);
+    height: var(--eighteen-pixels);
+    margin-top: calc(var(--seven-pixels) * -1);
+    z-index: 2;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--main-color);
+    -webkit-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    -o-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-appearance: none;
+}
+
+
+/* -------------================ Right Side ================------------- */
+.products-main .right-side .box-content {
+    margin-top: var(--thirty-pixels);
+}

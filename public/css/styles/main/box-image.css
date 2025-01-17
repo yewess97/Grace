@@ -1,0 +1,56 @@
+/* --------- Boxes --------- */
+.box-content {
+    padding: var(--fifteen-pixels);
+    background-color: var(--white-color);
+    -webkit-box-shadow: 0 0 var(--ten-pixels) #00000008;
+    -moz-box-shadow: 0 0 var(--ten-pixels) #00000008;
+    -o-box-shadow: 0 0 var(--ten-pixels) #00000008;
+    box-shadow: 0 0 var(--ten-pixels) #00000008;
+}
+
+.box-content .box-title {
+    padding-bottom: var(--fifteen-pixels);
+}
+
+.box-content .box-title > h2 > span {
+    padding-bottom: var(--four-pixels);
+}
+
+.box-content .box-title > h2 > span::after {
+    content: "";
+    position: absolute;
+    inset: auto auto 0 0;
+    height: 0.13rem;
+    background-color: var(--main-color);
+}
+
+/* --------- Images Hover Effect --------- */
+.img-hover-effect::before,
+.img-hover-effect::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.img-hover-effect::before {
+    border: calc(var(--sixty-four-pixels) + var(--six-pixels)) solid rgba(255, 255, 255, 0);
+}
+
+.img-hover-effect:hover::before {
+    border: 0 solid rgba(255, 255, 255, 0.7);
+}
+
+.img-hover-effect::after {
+    border: var(--thirty-pixels) solid var(--white-color);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+
+.img-hover-effect:hover::after {
+    opacity: 0;
+    -ms-transform: scale(0.8);
+    transform: scale(0.8);
+}

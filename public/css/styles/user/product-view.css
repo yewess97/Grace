@@ -1,0 +1,145 @@
+/* ======================================== Product item ======================================== */
+.products-content {
+    row-gap: var(--thirty-pixels);
+}
+
+.products-content .product-item {
+    padding-inline: var(--fifteen-pixels);
+}
+
+.products-content .product-item .product-form .product-img-actions {
+    background-color: var(--light-gray-color);
+}
+
+.products-content .product-item .product-form .product-img-actions .discount-percent {
+    top: var(--ten-pixels);
+    padding: var(--five-pixels) var(--ten-pixels);
+    font-size: var(--twelve-pixels);
+    background-color: var(--second-color);
+    color: var(--black-color);
+    -ms-transform: translateX(calc(var(--sixty-four-pixels) + var(--sixteen-pixels)));
+    transform: translateX(calc(var(--sixty-four-pixels) + var(--sixteen-pixels)));
+}
+
+.products-content .product-item:hover .product-form .product-img-actions .discount-percent {
+    -ms-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.products-content .product-item .product-form .product-img-actions .product-action {
+    bottom: var(--sixteen-pixels);
+}
+
+.products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+    width: var(--forty-pixels);
+    height: var(--forty-pixels);
+    margin-right: var(--ten-pixels);
+    background-color: var(--black-color);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn:hover, .quick-view-btn:hover) {
+    background-color: var(--main-color);
+}
+
+.products-content .product-item:hover .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+    opacity: 1;
+    visibility: visible;
+    -ms-transform: translateY(calc(var(--ten-pixels) * -1));
+    transform: translateY(calc(var(--ten-pixels) * -1));
+}
+
+.products-content .product-item .product-form .product-info {
+    padding-top: var(--ten-pixels);
+}
+
+.products-content .product-item .product-form .product-info > .product-info-name {
+    margin-top: var(--five-pixels);
+    line-height: 1.6;
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+
+/* ======================================== Product Quick View Modal ======================================== */
+.product-quick-view-modal .modal-body {
+    justify-content: center;
+    gap: var(--twenty-four-pixels);
+}
+
+.product-quick-view-modal .modal-body .product-quick-view-img {
+    width: calc(var(--thirty-two-pixels) * 10);
+    background-color: var(--light-gray-color);
+}
+
+.product-quick-view-modal .modal-body .product-quick-view-info .product-availability span:last-child {
+    margin-left: var(--twelve-pixels);
+    color: var(--main-color);
+}
+
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+
+/* ======================================== Common ======================================== */
+.product-info-btns .add-cart-btn {
+    border: var(--main-border);
+    background-color: var(--main-color);
+    color: var(--white-color);
+    -webkit-box-shadow: var(--box-shadow);
+    -moz-box-shadow: var(--box-shadow);
+    -o-box-shadow: var(--box-shadow);
+    box-shadow: var(--box-shadow);
+}
+
+.product-info-price {
+    margin-top: var(--ten-pixels);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.product-info-price .new-price {
+    white-space: nowrap;
+    color: var(--black-color);
+}
+
+.product-info-price .old-price {
+    margin-left: var(--five-pixels);
+    color: var(--mute-color);
+    white-space: nowrap;
+}
+
+.product-info-status span:last-child {
+    color: var(--main-color);
+}
+
+.quantity-btn,
+.cart-quantity-btn {
+    width: var(--thirty-pixels);
+    height: var(--thirty-pixels);
+    font-size: var(--twenty-two-pixels);
+    line-height: 0;
+    background-color: var(--white-color);
+    color: var(--black-color) !important;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.quantity-btn:hover,
+.cart-quantity-btn:hover {
+    color: var(--white-color) !important;
+}
+
+.quantity-input {
+    width: var(--fifty-pixels);
+    height: var(--thirty-pixels);
+    border: 0;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}

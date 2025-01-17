@@ -1,0 +1,42 @@
+#add_review_form,
+.review-form .review-body .rate input {
+    display: none;
+}
+
+.review-form#add_review_form .review-body .rate {
+    gap: var(--five-pixels);
+}
+
+.review-form#update_review_form .review-body .rate {
+    gap: var(--three-pixels);
+}
+
+.review-form .review-body .rate label {
+    color: var(--main-color);
+    cursor: pointer;
+}
+
+.review-form .review-body .rate label::before {
+    content: "\2605";
+    position: absolute;
+    color: var(--second-color);
+    opacity: 0;
+}
+
+.review-form .review-body .rate label:hover::before,
+.review-form .review-body .rate label:hover ~ label::before,
+.review-form .review-body .rate input[type="radio"]:checked ~ label::before {
+    opacity: 1;
+}
+
+.review-form .review-body .form-outline label.textarea-label {
+    top: 5% !important;
+}
+
+.star-fill {
+    color: var(--second-color) !important;
+}
+
+.star-empty {
+    color: var(--main-color) !important;
+}

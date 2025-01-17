@@ -1,0 +1,43 @@
+/* --------- Heights --------- */
+.h-0 {
+    height: 0 !important;
+}
+
+.h-fit-content {
+    height: fit-content !important;
+}
+
+/* --------- Paddings --------- */
+.py-6 {
+    padding-block: var(--sixty-pixels) !important;
+}
+
+/* --------- Font Sizes & Weights --------- */
+.fs-7 {
+    font-size: var(--thirteen-pixels) !important;
+}
+
+.fs-8 {
+    font-size: var(--eighteen-pixels) !important;
+}
+
+.fs-9 {
+    font-size: var(--thirty-pixels) !important;
+}
+
+.fs-10 {
+    font-size: var(--twenty-pixels) !important;
+}
+
+.fw-500 {
+    font-weight: 500 !important;
+}
+
+.fw-600 {
+    font-weight: 600 !important;
+}
+
+/* --------- Cursors --------- */
+.cursor-pointer {
+    cursor: pointer !important;
+}

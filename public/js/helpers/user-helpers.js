@@ -1,0 +1,510 @@
+'use strict';
+
+import { IGrace, Common } from "./common-helpers.js";
+
+
+const User = {
+
+    // Configure the carousel slider
+    carouselSlider: (item, display, nav, dots, autoplay) => {
+        $(item).owlCarousel({
+            items: display,
+            rewind: true,
+            margin: 10,
+            nav: nav,
+            navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+            dots: dots,
+            autoplay: autoplay,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+        });
+
+        $('.owl-nav button').attr('type', 'button');
+        $('.owl-nav .owl-prev').attr('title', 'Go to Previous');
+        $('.owl-nav .owl-next').attr('title', 'Go to Next');
+
+        $('.owl-dot').attr({
+            type: 'button',
+            title: 'Go to Slider'
+        });
+    },
+
+
+    // Handle the chosen filter products multiple items with hidden input
+    handleFilterProductsMultiItemsWithHiddenInput: (args) => {
+        let { target, multiSelectedValuesList, relation } = args;
+
+        if (target.is(`input[name="${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_${relation}[]"]`)) {
+            const filter_collection_hidden_input = target.parents('.filter-content').next();
+
+            target.is(':checked')
+                ? multiSelectedValuesList.push(target.val())
+                : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+
+            multiSelectedValuesList = multiSelectedValuesList.filter((value) => value !== '').join(',');
+
+            filter_collection_hidden_input.val(multiSelectedValuesList);
+        }
+    },
+
+
+    // Handle the inputs & range of the price filter
+    handlePriceFilter: (input, range) =>
+        input.on(IGrace.INPUT, function () {
+            let
+                min_value = parseFloat(input.eq(0).val()),
+                max_value = parseFloat(input.eq(1).val());
+
+            if (min_value > max_value) {
+                [min_value, max_value] = [max_value, min_value];
+            }
+
+            range.eq(0).val(min_value);
+            range.eq(1).val(max_value);
+        }),
+
+
+    // Reload reviews tab
+    reloadReviewsTab: (reviewsRoute) => {
+        $.ajax({
+            url: reviewsRoute,
+            type: IGrace.GET,
+            dataType: 'html',
+            success: (data) => $(`.tab-pane.${IGrace.PLURALIZE(IGrace.REVIEW)}`).html(data),
+            error: (err) => console.error('Error loading content:', err),
+        });
+
+        const
+            review_form = $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`),
+            widths = {
+                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-title`]: '141.6px',
+                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-body-text`]: '82.4px',
+            };
+
+        $.each((widths), (key, width) =>
+            review_form.find(`${key} .not-form-notch`)
+                .removeClass('not-form-notch d-none')
+                .addClass('form-notch')
+                .html(`
+                    <div class="form-notch-leading" style="width: 9px;"></div>
+                    <div class="form-notch-middle" style="width: ${width};"></div>
+                    <div class="form-notch-trailing"></div>
+                `)
+        );
+    },
+
+
+    // Display the login confirmation message when the user not logged in
+    confirmLoginMessage: () => {
+        Common.swalWithButtons.fire({
+            html: `<p style="font-size: var(--eighteen-pixels)">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti-face-smile"></i></p>`,
+            icon: IGrace.WARNING,
+            showConfirmButton: true,
+            confirmButtonText: `Go to ${IGrace.LOGIN} page`,
+        })
+            .then((login) => {
+                if (login.isConfirmed) {
+                    location.href = `/${IGrace.LOGIN}`;
+                }
+            });
+    },
+
+
+
+    /* ---------------------------------- AUTH REQUEST ---------------------------------- */
+    ajaxAuthRequest: (authAction) => {
+        $(document).on(IGrace.SUBMIT, `#${authAction}_form`, function (e) {
+            e.preventDefault();
+
+            const
+                target    = $(this),
+                route     = target.attr('action'),
+                form_data = new FormData(this);
+
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: form_data,
+                success: (data) => {
+                    if (data.status === `auth_${IGrace.SUCCESS}`) {
+                        return location.href = data['redirect_to'];
+                    }
+
+                    if (data.status === `sent_${IGrace.EMAIL}`) {
+                        const success_message = `<p>Check your email to reset your password</p><p class="mt-3" style="font-size: var(--fifteen-pixels)">You will find the email in your inbox, otherwise, check your spam or junk folder</p>`;
+
+                        return Common.successMessage(IGrace.SUCCESS, success_message, IGrace.FORGOT_PASSWORD());
+                    }
+
+                    if (data.status === `${IGrace.RESET_PASSWORD()}_${IGrace.SUCCESS}`) {
+                        const success_message = `Your ${IGrace.PASSWORD} has been changed successfully`;
+
+                        return Common.successMessage(IGrace.SUCCESS, success_message, IGrace.RESET_PASSWORD());
+                    }
+                },
+                error: (err) => {
+                    if (Common.errorStatus(err) === 404) {
+                        return Common.swalResponseJsonErrorMessage(err);
+                    }
+
+                    if (Common.errorStatus(err) === 422) {
+                        return Common.errorMessage(authAction, Common.responseJsonError(err));
+                    }
+
+                    if (Common.errorStatus(err) === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
+                        return Common.errorMessage(authAction, Common.responseJsonError(err), Common.errorStatus(err));
+                    }
+
+                    if (Common.errorStatus(err) === `failed_send_${IGrace.EMAIL}`) {
+                        return Common.errorMessage(authAction, Common.responseJsonError(err));
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
+        });
+    },
+
+
+    /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
+    ajaxCreateOrUpdateRequest: (form) => {
+        $(document).on(IGrace.SUBMIT, `#${form}_form`, function (e) {
+            e.preventDefault();
+
+            const
+                target        = $(this),
+                route         = target.attr('action'),
+                action        = form.split('_')[0],
+                collection    = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
+                form_data     = Common.filteredFormData(this),
+
+                form_reset = (target, action) => {
+                    target[0].reset();
+                    $(IGrace.ERROR_ELEMENT(action)).empty();
+                };
+
+            let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
+
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: form_data,
+                success: (data) => {
+                    if (data.status === `auth_${IGrace.SUCCESS}`) {
+                        return location.href = data['redirect_to'];
+                    }
+
+                    if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
+                        success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
+
+                        return Common.successMessage(IGrace.SUCCESS, success_message, IGrace.CAPITALIZE(IGrace.ORDER));
+                    }
+
+                    $(IGrace.MODAL(IGrace.USER)).modal('hide');
+                    form_reset(target, action);
+
+                    if (collection === IGrace.CAPITALIZE(IGrace.REVIEW)) {
+                        const reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW));
+
+                        return Common.successMessage(IGrace.SUCCESS, success_message, reviews_route);
+                    }
+
+                    Common.successMessage(IGrace.SUCCESS, success_message);
+                },
+                error: (err) => {
+                    if (Common.errorStatus(err) === 401) {
+                        return User.confirmLoginMessage();
+                    }
+
+                    if ($.inArray(Common.errorStatus(err), [400, 403]) !== -1) {
+                        return Common.swalWithButtons.fire({
+                            title: 'Sorry!',
+                            html: Common.responseJsonError(err, true),
+                            icon: IGrace.WARNING,
+                            showConfirmButton: true,
+                        });
+                    }
+
+                    if (Common.errorStatus(err) === 404) {
+                        return Common.swalResponseJsonErrorMessage(err);
+                    }
+
+                    if (Common.errorStatus(err) === 422) {
+                        if (!Common.responseJsonError(err)[`${IGrace.REVIEW}_exists`]) {
+                            return Common.errorMessage(action, Common.responseJsonError(err));
+                        }
+
+                        $(`#${IGrace.REVIEW}_exists`)
+                            .removeClass('d-none')
+                            .addClass('d-flex')
+                            .find(`#${IGrace.REVIEW}_exists_message`)
+                            .html(Common.responseJsonError(err, true));
+
+                        $(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"][type="hidden"]`).val('');
+
+                        return form_reset(target, action);
+                    }
+
+                    if (Common.errorStatus(err) === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
+                        return Common.errorMessage(action, Common.responseJsonError(err), Common.errorStatus(err));
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
+        });
+    },
+
+
+    /* ---------------------------------- DELETE REQUEST ---------------------------------- */
+    ajaxDeleteRequest: (collection) => {
+        $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.DELETE_COLLECTION(collection))}-form`, function (e) {
+            e.preventDefault();
+
+            const
+                target        = $(this),
+                route         = target.attr('action'),
+                reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
+                form_data     = new FormData(target[0]);
+
+            Common.confirmMessage(`${IGrace.DELETE} ${collection === IGrace.CART ? `or decrease the ${IGrace.QUANTITY} of the ${IGrace.PRODUCT} from your ${IGrace.CART}` : `this ${collection}`}?`)
+                .then((deleteConfirmation) => {
+                    if (deleteConfirmation.isConfirmed) {
+                        $.ajax({
+                            url: route,
+                            method: IGrace.DELETE.toUpperCase(),
+                            data: form_data,
+                            success: (data) => {
+                                const success_message = collection === IGrace.CART
+                                    ? (data.status === 'decremented'
+                                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
+                                        : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`)
+                                    : `Your selected ${collection} has been ${IGrace.DELETED()}`;
+
+                                Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
+                            },
+                            error: () => Common.somethingWentWrongError(),
+                        });
+                    }
+                    else if (deleteConfirmation.dismiss === Swal.DismissReason.cancel) {
+                        Common.cancelMessage(`Your ${collection} is safe`);
+                    }
+                });
+        });
+    },
+
+
+    /* ---------------------------------- GET PRODUCT DATA REQUEST ---------------------------------- */
+    ajaxGetProductDataRequest: () => {
+        $(document).on(IGrace.CLICK, '.quick-view-btn', function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
+                route = target.data('route'),
+                main_image = target.data(IGrace.MAIN_IMAGE()),
+                product_old_price = $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`);
+
+            $.get(`${route}?quick_view=true`)
+                .done((data) => {
+                    const product = data[IGrace.PRODUCT];
+
+                    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
+                    $(`.${IGrace.PRODUCT}-quick-view-img > img`).attr({
+                        src: main_image,
+                        alt: product[IGrace.NAME],
+                    });
+                    $(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('').append(product[IGrace.NAME]);
+                    $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('').append(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
+                    product[`${IGrace.OLD_PRICE}`] === 0 && product[`${IGrace.OLD_PRICE}`] === product[`${IGrace.NEW_PRICE}`]
+                        ? product_old_price.html('')
+                        : product_old_price.html('').append(`EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`);
+                    $(`.${IGrace.PRODUCT}-info-${IGrace.STATUS} span:last-child`).html('').append(product[IGrace.STATUS] === 1 ? 'In Stock' : 'Out of Stock');
+                    $(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('').append(product[`${IGrace.SHORT_DESCRIPTION}`]);
+                    Common.showMultiSelectData({
+                        userType: IGrace.USER,
+                        collection: product,
+                        collectionName: IGrace.PRODUCT,
+                        relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
+                    });
+                    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
+                    $(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+
+                    $(`#${IGrace.PRODUCT}_quick_view_modal`).modal('show');
+                })
+                .fail(Common.somethingWentWrongError);
+        });
+    },
+
+
+    /* ---------------------------------- FILTER PRODUCTS REQUEST ---------------------------------- */
+    ajaxFilterProductsRequest: (args) => {
+        const { route, action, formData, noResultsImageSrc, page = 1 } = args;
+
+        const form_data = new FormData($(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_form`)[0]);
+
+        $.ajax({
+            url: `${route}?page=${page}`,
+            method: IGrace.POST,
+            data: formData ?? form_data,
+            success: (data) => {
+                $(IGrace.ERROR_ELEMENT(action)).empty();
+
+                $('.pagination-container').html(data);
+                Common.imageConfig();
+                User.ajaxGetProductDataRequest();
+            },
+            error: (err) => {
+                if (Common.responseJsonError(err, true) === 'no-results') {
+                    return Common.searchFilterErrorResponse({
+                        role: IGrace.USER,
+                        imageSrc: noResultsImageSrc,
+                    });
+                }
+
+                if (Common.errorStatus(err) === 422) {
+                    $(IGrace.ERROR_ELEMENT(action)).removeClass('text-danger')
+                        .addClass('alert fade show alert-danger fw-500')
+                        .attr('data-mdb-color', 'danger');
+
+                    return Common.errorMessage(action, Common.responseJsonError(err));
+                }
+
+                Common.somethingWentWrongError();
+            },
+        });
+    },
+
+
+    /* ---------------------------------- CREATE OR UPDATE CART REQUEST ---------------------------------- */
+    ajaxCreateOrUpdateCartRequest: (action) => {
+        $(document).on(IGrace.SUBMIT, `.${action}-${IGrace.CART}-form`, function (e) {
+            e.preventDefault();
+
+            const
+                target    = $(this),
+                route     = target.attr('action'),
+                form_data = Common.filteredFormData(this);
+
+            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((key, cart_product) => {
+                const
+                    cart_product_value_of = (value) => +$(cart_product).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
+                    product_id = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
+                    product_size = cart_product_value_of(IGrace.PRODUCT_SIZE()),
+                    product_quantity = cart_product_value_of(IGrace.PRODUCT_QUANTITY());
+
+                if ((product_id !== 0 && !isNaN(product_id)) && (!isNaN(product_size)) && (product_quantity !== 0 && !isNaN(product_quantity))) {
+                    return {
+                        id: product_id,
+                        size: product_size,
+                        quantity: product_quantity,
+                    }
+                }
+            }).get();
+
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: action === IGrace.ADD
+                    ? form_data
+                    : JSON.stringify({
+                        update_cart_product_id: products.map((product) => product[IGrace.ID]),
+                        update_cart_product_size: products.map((product) => product[IGrace.SIZE]),
+                        update_cart_product_quantity: products.map((product) => product[IGrace.QUANTITY]),
+                    }),
+                contentType: action === IGrace.ADD
+                    ? false
+                    : 'application/json',
+                success: () => {
+                    const success_message = action === IGrace.ADD
+                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`
+                        : `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
+
+                    Common.successMessage(IGrace.SUCCESS, success_message);
+                },
+                error: (err) => {
+                    if (Common.errorStatus(err) === 401) {
+                        return User.confirmLoginMessage();
+                    }
+
+                    if (Common.errorStatus(err) === 404) {
+                        return Common.swalResponseJsonErrorMessage(err);
+                    }
+
+                    if (Common.errorStatus(err) === 422) {
+                        return Common.errorMessage(IGrace.CLASS(action), Common.responseJsonError(err));
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
+        });
+    },
+
+
+    /* ---------------------------------- DELETE ALL USER'S CARTS REQUEST ---------------------------------- */
+    ajaxDeleteAllCartsRequest: () => {
+        $(document).on(IGrace.CLICK, `#clear_${IGrace.CART}`, function (e) {
+            e.preventDefault();
+
+            const route = $(this).attr('href');
+
+            Common.confirmMessage(`clear your ${IGrace.CART} from all ${IGrace.PLURALIZE(IGrace.PRODUCT)}?`)
+                .then((deleteAllCarts) => {
+                    if (deleteAllCarts.isConfirmed) {
+                        $.ajax({
+                            url: route,
+                            method: IGrace.DELETE.toUpperCase(),
+                            success: () => Common.successMessage(IGrace.SUCCESS, `Your ${IGrace.CAPITALIZE(IGrace.CART)} has been cleared`),
+                            error: () => Common.somethingWentWrongError(),
+                        });
+                    }
+                    else if (deleteAllCarts.dismiss === Swal.DismissReason.cancel) {
+                        Common.cancelMessage(`Your ${IGrace.CART} is safe`);
+                    }
+                });
+        });
+    },
+
+
+    /* ---------------------------------- CHECKOUT USER ADDRESSES REQUEST ---------------------------------- */
+    ajaxCheckoutUserAddressesRequest: (page = 1) => {
+        if (Common.urlLastDirectory().includes(IGrace.CHECKOUT)) {
+            $.ajax({
+                url: `${IGrace.CHECKOUT}?page=${page}`,
+                method: IGrace.GET,
+                success: (data) => {
+                    $('.pagination-container').html(data);
+
+                    const radio_inputs = $('input[type=radio]');
+                    const selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+
+                    if (selected_value) {
+                        radio_inputs.filter(`[value="${selected_value}"]`)
+                            .prop('checked', true)
+                            .closest('.card')
+                            .addClass('border-danger');
+                    }
+
+                    radio_inputs.on(IGrace.CHANGE, function () {
+                        sessionStorage.setItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`, $(this).val());
+
+                        $.each(radio_inputs, (_, radioInput) =>
+                            $(radioInput).is(':checked')
+                                ? $(radioInput).closest('.card').addClass('border-danger')
+                                : $(radioInput).closest('.card').removeClass('border-danger')
+                        );
+                    });
+                },
+                error: () => Common.somethingWentWrongError(),
+            });
+        }
+    },
+}
+
+
+
+/**
+ * Export IGrace & Common & User Objects.
+ */
+export { IGrace, Common, User };

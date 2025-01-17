@@ -1,0 +1,1145 @@
+<?php
+
+use App\Http\Requests\AuthRequest;
+use App\Http\Requests\UserRequest;
+use App\Models\Cart;
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductSize;
+use App\Models\Subcategory;
+use App\Models\ThumbImage;
+use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Route as Routing;
+use Illuminate\Routing\RouteRegistrar;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
+use Illuminate\Validation\Validator as ValidatorClass;
+use Illuminate\Validation\ValidationException;
+use Random\RandomException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+
+
+if (!function_exists('canonicalUrl')) {
+    /**
+     * Get the canonical url.
+     *
+     * @return string
+     */
+    function canonicalUrl(): string
+    {
+        if (str($current_url = url()->current())->startsWith('https://www.')) {
+            return str_replace('https://www.', 'https://', $current_url);
+        }
+
+        return str_replace('https://', 'https://www.', $current_url);
+    }
+}
+
+
+if (!function_exists('basicRoute')) {
+    /**
+     * The basic routes.
+     *
+     * @param string $url
+     * @param string $routeName
+     * @param string|null $callbackName
+     * @return Routing
+     */
+    function basicRoute(string $url, string $routeName, string $callbackName = null): Routing
+    {
+        return Route::get("/$url", $callbackName ?? $url)->name($routeName);
+    }
+}
+
+
+if (!function_exists('whereInRoute')) {
+    /**
+     * Routes that have whereIn() constraint.
+     *
+     * @param string $url
+     * @param string $column
+     * @param array $values
+     * @param string $routeName
+     * @return Routing
+     */
+    function whereInRoute(string $url, string $column, array $values, string $routeName): Routing
+    {
+        return Route::get("/$url", $url)->whereIn($column, $values)->name($routeName);
+    }
+}
+
+
+if (!function_exists('guestControllerRoutes')) {
+    /**
+     * Generate auth routes for a specific controller.
+     *
+     * @param string $controller
+     * @param string $url
+     * @return RouteRegistrar
+     */
+    function guestControllerRoutes(string $controller, string $url): RouteRegistrar
+    {
+        $url_kebab     = kebabAll($url);
+        $post_callback = capitalizeAllFromSecondWord($url);
+
+        return Route::controller($controller)->group(function () use ($url, $url_kebab, $post_callback) {
+            Route::get('/'.$url_kebab, 'index')->name($url);
+            Route::post('/'.$url_kebab, $post_callback)->name($url.'_'.USER_MODEL);
+        });
+    }
+}
+
+
+if (!function_exists('generalControllerRoutes')) {
+    /**
+     * Generate CRUD routes for a specific controller.
+     *
+     * @param string $controller
+     * @param string $modelName
+     * @param string|null $urlParam
+     * @return RouteRegistrar
+     */
+    function generalControllerRoutes(string $controller, string $modelName, string $urlParam = null): RouteRegistrar
+    {
+        $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
+        $edit_model = EDIT.'_'.$modelName;
+        $update_model = UPDATE.'_'.$modelName;
+        $delete_model = DELETE.'_'.$modelName;
+
+        return Route::controller($controller)->group(function () use ($modelName, $create_or_update_model, $edit_model, $update_model, $delete_model, $urlParam) {
+            if ($modelName !== REVIEW_MODEL && !isAdminRoute()) {
+                $url = $modelName === CART_MODEL
+                    ? $modelName
+                    : pluralize($modelName);
+
+                Route::get('/'.kebabAll($modelName).(isset($urlParam) ? "/{{$urlParam}}" : ''), 'index')->name($url);
+            }
+
+            Route::match(['post', 'put'], '/'.kebabAll($create_or_update_model).'/{operation}', STORE_OR_UPDATE)->name($create_or_update_model);
+
+            if (in_array($modelName, [ORDER_MODEL, ADDRESS_MODEL], true)) {
+                Route::put('/'.kebabAll($update_model), UPDATE)->name($update_model);
+            }
+
+            if ($modelName !== CART_MODEL) {
+                Route::get('/'.kebabAll($edit_model).'/{'.$modelName.'}', EDIT)->name($edit_model);
+            }
+
+            Route::delete('/'.kebabAll($delete_model).'/{'.$modelName.'}', DESTROY)->name($delete_model);
+
+            Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model));
+        });
+    }
+}
+
+
+if (!function_exists('searchRoute')) {
+    /**
+     * Generate search routes.
+     *
+     * @param string $searchableTable
+     * @param bool $isMatch
+     * @param string|null $urlParam
+     * @return Routing
+     */
+    function searchRoute(string $searchableTable, bool $isMatch = false, string $urlParam = null): Routing
+    {
+        $search_uri = '/'.kebabAll($searchableTable).(isset($urlParam) ? '/'.$urlParam : '');
+
+        if ($isMatch) {
+            return Route::match(['get', 'post'], $search_uri, capitalizeAllFromSecondWord($searchableTable))->name($searchableTable);
+        }
+
+        return Route::get($search_uri, capitalizeAllFromSecondWord($searchableTable))->name($searchableTable);
+    }
+}
+
+
+if (!function_exists('is'.ucfirst(ADMIN).'Route')) {
+    /**
+     * Check if the route is related to the admin.
+     *
+     * @param bool $returnRole
+     * @return string|bool
+     */
+    function isAdminRoute(bool $returnRole = false): string|bool
+    {
+        $is_admin = str_contains(url()->current(), ADMIN);
+
+        if ($returnRole) {
+            return $is_admin
+                ? ADMIN
+                : USER_MODEL;
+        }
+
+        return $is_admin;
+    }
+}
+
+
+if (!function_exists('adminCurrentUrl')) {
+    /**
+     * Get the admin current url.
+     *
+     * @param $url
+     * @param $action
+     * @return array|string
+     */
+    function adminCurrentUrl($url, $action): array|string
+    {
+        return str(url()->current())->whenContains(ADMIN."/$url", function () use ($action) {
+            return is_array($action)
+                ? implode(' ', $action)
+                : $action;
+        });
+    }
+}
+
+
+if (!function_exists(ADMIN.'Layout')) {
+    /**
+     * Get the admin layout name.
+     *
+     * @param string $layoutName
+     * @return string
+     */
+    function adminLayout(string $layoutName): string
+    {
+        return ADMIN.'.layouts.'.ADMIN."-$layoutName";
+    }
+}
+
+
+if (!function_exists(USER_MODEL.'Layout')) {
+    /**
+     * Get the user layout name.
+     *
+     * @param string $layoutName
+     * @return string
+     */
+    function userLayout(string $layoutName): string
+    {
+        return USER_MODEL.'.layouts.'.$layoutName;
+    }
+}
+
+
+if (!function_exists('viewLayout'.ucfirst(TITLE))) {
+    /**
+     * Get the view layout & title.
+     *
+     * @param string $role
+     * @return array
+     */
+    function viewLayoutTitle(string $role): array
+    {
+        $title = [
+            TITLE => str(request()?->route()?->getName())
+                ->headline()
+                ->after(ucfirst($role === ADMIN ? ADMIN : ''))
+                ->value()
+        ];
+
+        $layout = $role === ADMIN
+            ? adminLayout('main')
+            : userLayout('main');
+
+        return [$layout => $title];
+    }
+}
+
+
+if (!function_exists('commonCollections')) {
+    /**
+     * Get the common collections to be used in the frontend side.
+     *
+     * @return array
+     */
+    function commonCollections(): array
+    {
+        $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
+        $categories    = Category::all([...$categories_subcategories_common, BANNER_IMAGE]);
+        $subcategories = Subcategory::all($categories_subcategories_common);
+        $new_products  = Product::query()->latest()->take(4)->get(PRODUCT_ITEM_ATTRIBUTES);
+
+        if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
+            $categories    = $categories->load(PRODUCTS_TABLE);
+            $subcategories = $subcategories->load(PRODUCTS_TABLE);
+        }
+
+        $navbar_dropdowns = [
+            [
+                'title'      => CATEGORIES_TABLE,
+                'collection' => $categories,
+                'route_name' => CATEGORY_MODEL,
+            ],
+            [
+                'title'      => 'collections',
+                'collection' => $subcategories,
+                'route_name' => SUBCATEGORY_MODEL,
+            ],
+        ];
+
+        $navbar_items = [
+            [
+                'route_name' => PAYMENT,
+            ],
+            [
+                'route_name' => ABOUT_US,
+            ],
+            [
+                'route_name' => CONTACT_US,
+            ],
+        ];
+
+        $navbar_offers = [
+            'Every day up to 45% off',
+            'End of hot summer sale',
+            'Get 50% off on four orders',
+        ];
+
+        $footer_menus = [
+            'information' => [
+                ucfirst(pluralize(PRICE)).' Drop',
+                capitalizeAll(NEW_PRODUCTS),
+                'Best Sales',
+                'Sitemap',
+                'Store',
+            ],
+            'our company' => [
+                'Delivery',
+                'Legal Notice',
+                capitalizeAll(ABOUT_US),
+                'Secure Payment',
+                capitalizeAll(CONTACT_US),
+            ],
+            'your account' => [
+                'Personal Info',
+                ucfirst(ORDERS_TABLE),
+                'Credit Slips',
+                ucfirst(ADDRESSES_TABLE),
+                ucfirst(CART_MODEL),
+            ],
+        ];
+
+        $navbar_dropdowns = object_from_array($navbar_dropdowns);
+        $navbar_items     = object_from_array($navbar_items);
+        $footer_menus     = object_from_array($footer_menus);
+
+        return compact(CATEGORIES_TABLE, SUBCATEGORIES_TABLE, NEW_PRODUCTS, 'navbar_dropdowns', 'navbar_items', 'navbar_offers', 'footer_menus');
+    }
+}
+
+
+if (!function_exists('commonAsideMenus')) {
+    /**
+     * Get the common menus to be used in the frontend side.
+     *
+     * @return array
+     */
+    function commonAsideMenus(): array
+    {
+        $accessories_menu_item = [
+            'Top Accessories' => [
+                'Sports T-Shirts',
+                'Track pants',
+                'Cargos',
+                'Top wear',
+                'Track pants',
+            ],
+        ];
+
+        $sunglasses_menu_item = [
+            'Sunglasses' => [
+                'Shirts',
+                'Boxers',
+                'Vests',
+                'Belts',
+                'Accessories',
+            ],
+        ];
+
+        $top_wear = [
+            ...$accessories_menu_item,
+            ...$sunglasses_menu_item,
+            'Top Wear' => [
+                'Shirts',
+                'Kurtas',
+                'T-Shirts',
+                'Belts',
+                'Jewellery',
+            ],
+        ];
+
+        $bottom_wear = [
+            'Bottom Accessories' => [
+                'Vests',
+                'Sunglasses',
+                'Bottom wear',
+                'Jeans',
+                'Cargos',
+            ],
+            ...$sunglasses_menu_item,
+            ...$accessories_menu_item,
+            'Bottom Wear' => [
+                'Sports T-Shirts',
+                'Jewellery',
+                'Track pants',
+                'Cargos',
+                'Boxer',
+            ],
+        ];
+
+        $customers_reviews = [
+            [
+                NAME          => 'Yousif Ayman',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores beatae consectetur deleniti dicta doloremque dolorum ea excepturi, facere fuga harum iure iusto magnam minima molestiae optio quas quisquam sapiente, sequi?',
+            ],
+            [
+                NAME          => 'Ayman ahmed',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
+            ],
+            [
+                NAME          => 'ahmed mohamed',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
+            ],
+        ];
+
+        $top_wear          = object_from_array($top_wear);
+        $bottom_wear       = object_from_array($bottom_wear);
+        $customers_reviews = object_from_array($customers_reviews);
+
+        return compact('top_wear', 'bottom_wear', 'customers_reviews');
+    }
+}
+
+
+if (!function_exists(CART_MODEL.'Config')) {
+    /**
+     * Configure the cart.
+     *
+     * @param array|null $vars
+     * @return array|string
+     * @throws Throwable
+     */
+    function cartConfig(array $vars = null): array|string
+    {
+        $user_cart_items = Cart::query()
+            ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
+            $product->select(PRODUCT_ITEM_ATTRIBUTES))
+            ->where(USER_ID, auth()->id())->get();
+
+        if ($user_cart_items->isEmpty()) {
+            Session::flash(EMPTY_CART);
+        }
+
+        $total_cost = $user_cart_items
+            ->map(static fn(Cart $cart_item) => $cart_item->{PRODUCT_MODEL}->{STATUS} === 1 ? ($cart_item->{PRODUCT_QUANTITY}) * ($cart_item->{PRODUCT_MODEL}->{NEW_PRICE}) : 0)
+            ->sum();
+
+        $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST);
+
+        if (is_null($vars)) {
+            return $compact_vars;
+        }
+
+        return [...$compact_vars, ...$vars];
+    }
+}
+
+
+if (!function_exists(PRODUCT_MODEL.ucfirst(SIZES))) {
+    /**
+     * Get the sizes of a product.
+     *
+     * @param Model|stdClass $product
+     * @param bool $areValues
+     * @return array
+     */
+    function productSizes(Model|stdClass $product, bool $areValues = false): array
+    {
+        $product_sizes = array_intersect(PRODUCT_SIZE_ENUM, $product->{SIZES}->pluck(SIZE)->toArray());
+
+        return $areValues
+            ? $product_sizes
+            : array_keys($product_sizes);
+    }
+}
+
+
+if (!function_exists(ADDRESS_MODEL.ucfirst(COUNTRY))) {
+    /**
+     * Get the user's address country(ies).
+     *
+     * @param HasMany $address
+     * @return HasMany
+     */
+    function addressCountry(HasMany $address): HasMany
+    {
+        return $address->select(COUNTRY, USER_ID)
+            ->distinct(COUNTRY)
+            ->groupBy(COUNTRY, USER_ID);
+    }
+}
+
+
+if (!function_exists(ORDER_MODEL.ucfirst(STATUS))) {
+    /**
+     * Get the status of an order with its badge.
+     *
+     * @param Model|stdClass $order
+     * @param string|null $type
+     * @return string
+     */
+    function orderStatus(Model|stdClass $order, string $type = null): string
+    {
+        $order_status       = (int) $order->{STATUS};
+        $order_status_name  = array_search($order_status, ORDER_STATUS_ENUM,       true);
+        $order_status_badge = array_search($order_status, ORDER_STATUS_BADGE_ENUM, true);
+        $order_status_icon  = array_search($order_status, ORDER_STATUS_ICON_ENUM,  true);
+
+        if ($type === 'badge') {
+            return $order_status_badge;
+        }
+
+        if ($type === 'icon') {
+            return $order_status_icon;
+        }
+
+        return $order_status_name;
+    }
+}
+
+
+if (!function_exists(pluralize('date'))) {
+    /**
+     * Get the creation and updated dates of a model.
+     *
+     * @param Model|stdClass $model
+     * @param int $dateIndex
+     * @param bool $isTime
+     * @return string
+     */
+    function dates(Model|stdClass $model, int $dateIndex, bool $isTime = false): string
+    {
+        $model_date = $model->{DATES[$dateIndex]}->format('d-m-Y');
+        $model_time = $model->{DATES[$dateIndex]}->setTimezone('Africa/Cairo')->format('h : i A');
+
+        return $model_date.($isTime ? '<br> { '.$model_time.' }' : '');
+    }
+}
+
+
+if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
+    /**
+     * Get the specified order's details.
+     *
+     * @param Order $order
+     * @return array
+     */
+    function getOrderDetails(Order $order): array
+    {
+        $order_number_title = ucfirst(ORDER_MODEL).' Number #'.$order->{TRACKING_NUM};
+
+        $order_details = [
+            "Creation Date" => "<span class='fw-500'>".dates($order, 0)."</span>",
+            "Number of Items" => "<span class='fw-500'>".$order->{NUM_ITEMS}." Items</span>",
+            ucfirst(STATUS) => "<span class='badge badge-".orderStatus($order, 'badge')." rounded-pill d-inline p-2'>".orderStatus($order)."</span>",
+        ];
+
+        $order_product_size = static fn(OrderItem $orderItem) => key(array_intersect(PRODUCT_SIZE_ENUM, (array) $orderItem->{PRODUCT_SIZE}));
+
+        return compact(ORDER_MODEL, ORDER_NUMBER_TITLE, ORDER_DETAILS, ORDER_PRODUCT_SIZE);
+    }
+}
+
+
+if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
+    /**
+     * Set the variables of the products' page.
+     *
+     * @param LengthAwarePaginator $products
+     * @param string|null $productsPaginationRoute
+     * @return array|string
+     * @throws Throwable
+     */
+    function productsPageVars(LengthAwarePaginator $products, string $productsPaginationRoute = null): array|string
+    {
+        $products_list_title = str(Route::currentRouteName())
+            ->whenContains([SEARCH_PRODUCTS, FILTER_PRODUCTS],
+                static fn() => ucwords(PRODUCTS_TABLE),
+                static fn() => ucwords(basename(str_replace('-', ' & ', url()->current()))));
+
+        $sizes = collect(PRODUCT_SIZE_ENUM)
+            ->map(fn(int $value, string $size) => (object)[
+                SIZE                    => $size,
+                SIZE.'_value'           => $value,
+                PRODUCTS_TABLE.'_count' => ProductSize::query()->where(SIZE, $value)->count(),
+            ])->values();
+
+        $prices_range = (object)[
+            MIN_PRICE => Product::query()->min(NEW_PRICE),
+            MAX_PRICE => Product::query()->max(NEW_PRICE),
+        ];
+
+        $filter_products_error = static fn(string $attributeName) => formError(FILTER, PRODUCTS_TABLE, $attributeName);
+
+        return [
+            PRODUCTS_TABLE            => $products,
+            PRODUCTS_LIST_TITLE       => $products_list_title,
+            PRODUCT_SIZES_TABLE       => $sizes,
+            PRODUCTS_PRICES           => $prices_range,
+            FILTER_PRODUCTS_ERROR     => $filter_products_error,
+            PRODUCTS_PAGINATION_ROUTE => $productsPaginationRoute,
+        ];
+    }
+}
+
+
+if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
+    /**
+     * Display the view for the products' resource,
+     * when searching or filtering.
+     *
+     * @param LengthAwarePaginator $products
+     * @return Application|Factory|View|string
+     * @throws Throwable
+     */
+    function viewProducts(LengthAwarePaginator $products): Application|Factory|View|string
+    {
+        $products_pagination_route = match (Route::currentRouteName()) {
+            SEARCH_PRODUCTS => SEARCH_PRODUCTS,
+            FILTER_PRODUCTS => FILTER_PRODUCTS,
+            default         => PRODUCTS_LIST,
+        };
+
+        noResultsException($products);
+
+        if (request()?->ajax()) {
+            return isAdminRoute()
+                ? view(ADMIN_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE))->render()
+                : view(USER_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE, PRODUCTS_PAGINATION_ROUTE))->render();
+        }
+
+        return showView(USER_PRODUCTS_VIEW, productsPageVars($products, $products_pagination_route));
+    }
+}
+
+
+if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
+    /**
+     * Display the view for the products' resource.
+     *
+     * @param string $table
+     * @param string|null $slug
+     * @return Application|Factory|View|string
+     * @throws Throwable
+     */
+    function userProductsView(string $table, string $slug = null): Application|Factory|View|string
+    {
+        $products = $table === PRODUCTS_TABLE
+            ? Product::fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
+            : Product::query()->whereHas($table, static fn(Builder $query) => $query->where(SLUG, $slug))
+                ->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
+
+        return viewProducts($products);
+    }
+}
+
+
+if (!function_exists(REVIEW_MODEL.'Data')) {
+    /**
+     * Get the average rate or adding/updating error of a review.
+     *
+     * @param mixed $data
+     * @param string|null $operation
+     * @return int|string|null
+     */
+    function reviewData(mixed $data, string $operation = null): int|string|null
+    {
+        if ($data instanceof Model) {
+            return isset($data->{REVIEWS_TABLE})
+                ? $data->{REVIEWS_TABLE}->avg(RATING)
+                : '0';
+        }
+
+        return isset($operation)
+            ? formError($operation, REVIEW_MODEL, $data)
+            : '';
+    }
+}
+
+
+if (!function_exists('get'.ucfirst(REVIEWS_TABLE))) {
+    /**
+     * Get the reviews of a specified product.
+     *
+     * @param Model|stdClass $product
+     * @return array
+     */
+    function getReviews(Model|stdClass $product): array
+    {
+        $average_rate        = reviewData($product);
+        $add_review_error    = static fn(string $attributeName) => reviewData($attributeName, ADD);
+        $update_review_error = static fn(string $attributeName) => reviewData($attributeName, UPDATE);
+
+        return compact(PRODUCT_MODEL, AVERAGE_RATE, ADD_REVIEW_ERROR, UPDATE_REVIEW_ERROR);
+    }
+}
+
+
+if (!function_exists('showView')) {
+    /**
+     * Display the view for a specified resource.
+     *
+     * @param string $viewName
+     * @param array|null $vars
+     * @return Application|Factory|View
+     * @throws Throwable
+     */
+    function showView(string $viewName, array $vars = null): Application|Factory|View
+    {
+        $common_collections = commonCollections();
+        $aside_menus        = commonAsideMenus();
+        $view_data          = compact(COMMON_COLLECTIONS, 'aside_menus');
+
+        $cart_config_vars = $view_data + ($vars ?? []);
+
+        $view_vars = isAdminRoute()
+            ? $vars
+            : cartConfig($cart_config_vars);
+
+        return view($viewName, $view_vars);
+    }
+}
+
+
+if (!function_exists('validateAttributes')) {
+    /**
+     * Validate attributes of the request.
+     *
+     * @param object $formRequest
+     * @param mixed|null $extraValidationCheck
+     * @return ValidatorContract|ValidatorClass
+     * @throws ValidationException
+     */
+    function validateAttributes(object $formRequest, mixed $extraValidationCheck = null): ValidatorContract|ValidatorClass
+    {
+        $validator = Validator::make($formRequest->data(), $formRequest->rules($extraValidationCheck ?? null), $formRequest->messages());
+
+        return $validator->fails()
+            ? throw new ValidationException($validator, responseValidationError($validator))
+            : $validator;
+    }
+}
+
+
+if (!function_exists('formError')) {
+    /**
+     * Show the form error message.
+     *
+     * @param string $action
+     * @param string $modelOrTable
+     * @param string $attribute
+     * @return string
+     */
+    function formError(string $action, string $modelOrTable, string $attribute): string
+    {
+        echo "<div class='grace-form-error'><ul role='list' id='{$action}_{$modelOrTable}_{$attribute}_error' class='form-error $action-error fs-7 text-danger'></ul></div>";
+
+        return '';
+    }
+}
+
+
+if (!function_exists('noResultsException')) {
+    /**
+     * Show (no results) image.
+     *
+     * @param LengthAwarePaginator $model
+     * @return void
+     * @throws NotFoundHttpException
+     */
+    function noResultsException(LengthAwarePaginator $model): void
+    {
+        if ($model->isEmpty()) {
+            request()?->ajax()
+                ? throw new NotFoundHttpException('no-results')
+                : Session::flash('no_results');
+        }
+
+    }
+}
+
+
+if (!function_exists('storeImageWithoutBackground')) {
+    /**
+     * Remove an image background using (remove.bg) API
+     *
+     * @param mixed $image
+     * @param string $image_path
+     * @return string
+     * @throws RandomException|ServiceUnavailableHttpException
+     */
+    function storeImageWithoutBackground(mixed $image, string $image_path): string
+    {
+        $response = Http::withHeaders([
+            'X-Api-Key' => 'TGtoLSB6D6d98KEse4PRYkBE',
+        ])
+            ->attach('image_file', file_get_contents($image->getRealPath()), $image->getClientOriginalName())
+            ->post('https://api.remove.bg/v1.0/removebg', ['size' => 'auto']);
+
+        if ($response->successful()) {
+            $removed_image_bg = $response->body();
+
+            $image_name = time().random_int(10, 100).'.png';  // PNG is the default format returned by remove.bg
+
+            Storage::put($image_path.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
+
+            return $image_name;
+        }
+
+        throw new ServiceUnavailableHttpException(null, 'The remove.bg service is currently unavailable. Please try again later.');
+    }
+}
+
+
+if (!function_exists(STORE_OR_UPDATE.'Image')) {
+    /**
+     * Store or Update the main image.
+     *
+     * @param Model $model
+     * @param string|null $modelId
+     * @param string|null $imageType
+     * @param mixed|null $image
+     * @return string
+     * @throws NotFoundHttpException|RandomException
+     */
+    function storeOrUpdateImage(Model $model, string $modelId = null, string $imageType = null, mixed $image = null): string
+    {
+        $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
+        $image_path = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
+
+        if (is_null($image) && isset($exist_image_name)) {
+            return $exist_image_name;
+        }
+
+        if (isset($exist_image_name)) {
+            Storage::exists($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
+                ? Storage::delete($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
+                : throw new NotFoundHttpException('The targeted image is not found in the storage disk.');
+        }
+
+        return storeImageWithoutBackground($image, $image_path);
+    }
+}
+
+
+if (!function_exists('imageSource')) {
+    /**
+     * Get the image source.
+     *
+     * @param Model|stdClass|string $modelOrImageName
+     * @param string $imageType
+     * @param bool $forDelete
+     * @return string
+     */
+    function imageSource(Model|stdClass|string $modelOrImageName, string $imageType = null, bool $forDelete = false): string
+    {
+        $image_path = "images/";
+
+        if (is_string($modelOrImageName)) {
+            return asset(Storage::url("$image_path/$modelOrImageName"));
+        }
+
+        $image_name = $modelOrImageName->{$imageType};
+
+        if (str($imageType)->contains(PRODUCT_MODEL)) {
+            $imageType = str_replace(PRODUCT_MODEL.'_', '', $imageType);
+            $image_name = $modelOrImageName->{PRODUCT_MODEL."_$imageType"};
+        }
+
+        $image_path .= str($imageType)->exactly(THUMB_IMAGE) || $modelOrImageName->getTable() === ORDER_ITEMS_TABLE
+            ? PRODUCTS_TABLE
+            : $modelOrImageName->getTable();
+
+        $image_path .= DIRECTORY_SEPARATOR.pluralize($imageType).DIRECTORY_SEPARATOR.$image_name;
+
+        if ($forDelete) {
+            return "public".DIRECTORY_SEPARATOR.$image_path;
+        }
+
+        return asset(Storage::url($image_path));
+    }
+}
+
+
+if (!function_exists(CREATE.'Or'.ucfirst(UPDATE).'MultipleCollections')) {
+    /**
+     * Create or Update multiple collections related to a specified record of a model.
+     *
+     * @param Model $newOrExistingCollection
+     * @param string $relation
+     * @param mixed $relatedCollectionValues
+     * @return array
+     */
+    function createOrUpdateMultipleCollections(Model $newOrExistingCollection, string $relation, mixed $relatedCollectionValues): array
+    {
+        $related_collection_values = array_filter($relatedCollectionValues);
+
+        return $newOrExistingCollection->{$relation}()->sync($related_collection_values);
+    }
+}
+
+
+if (!function_exists('getData')) {
+    /**
+     * Get the data of a specified record of a model.
+     *
+     * @param Model $model
+     * @param array $desiredData
+     * @return object
+     */
+    function getData(Model $model, array $desiredData): object
+    {
+        return $model::query()->findOrFail($model->{ID}, [ID, ...$desiredData]);
+    }
+}
+
+
+if (!function_exists(DELETE)) {
+    /**
+     * Delete a specified record or all/some records of a model.
+     *
+     * @param Model $model
+     * @param bool $isMultiple
+     * @param bool $deleteImages
+     * @return bool
+     * @throws NotFoundHttpException
+     */
+    function delete(Model $model, bool $isMultiple = false, bool $deleteImages = false): bool
+    {
+        $selected_ids = $isMultiple
+            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
+            : [];
+
+        if ($deleteImages) {
+            deleteImages($model, $isMultiple, $selected_ids);
+        }
+
+        $destroy = static fn(mixed $id) => $model::destroy($id);
+
+        return $isMultiple
+            ? $destroy($selected_ids)
+            : $destroy($model->{ID});
+    }
+}
+
+
+if (!function_exists(DELETE.'Images')) {
+    /**
+     * Delete the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model $model
+     * @param bool $isMultiple
+     * @param array $selectedIds
+     * @return bool
+     * @throws NotFoundHttpException
+     */
+    function deleteImages(Model $model, bool $isMultiple = false, array $selectedIds = []): bool
+    {
+        $images_data_list       = [];
+        $images                 = [];
+        $all_other_images_found = true;
+        $table_name             = $model->getTable();
+        $force_delete           = request()?->input('force_'.DELETE);
+        $db_images_count        = 'db_images_count';
+        $storage_images_count   = 'storage_images_count';
+        $image_type             = 'image_type';
+        $model_item_name        = 'model_item_name';
+        $deletable_images       = 'deletable_images';
+
+        $exception_message = static fn(array $imageData) => "One or more $imageData[$image_type] in the $table_name named as (".implode(', ', array_unique($imageData[$model_item_name])).") not found in the storage disk.";
+
+        $ids_to_delete = $isMultiple && count($selectedIds)
+            ? $selectedIds
+            : [$model->{ID}];
+
+        $images_data = static fn(string $imageType) => $isMultiple && count($selectedIds)
+            ? getImagesToDelete($model, $table_name, $imageType, true, $selectedIds)
+            : getImagesToDelete($model, $table_name, $imageType);
+
+        $images_length = $model::query()->whereIn(ID, $ids_to_delete);
+
+        if (str($table_name)->exactly(CATEGORIES_TABLE)) {
+            $category_banner_image_length = $images_length->pluck(BANNER_IMAGE)->count();
+
+            if ($category_banner_image_length > 0) {
+                $images_data_list = $images_data(BANNER_IMAGE);
+            }
+        }
+
+        if (str($table_name)->exactly(PRODUCTS_TABLE)) {
+            $product_thumb_images_length = $images_length->withCount(THUMB_IMAGES)
+                ->pluck(THUMB_IMAGES_TABLE.'_count')
+                ->first();
+
+            if ($product_thumb_images_length > 0) {
+                $images_data_list = $images_data(THUMB_IMAGE);
+            }
+        }
+
+        if (!empty($images_data_list)) {
+            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) {
+                throw new NotFoundHttpException($exception_message($images_data_list));
+            }
+
+            $images = [...$images_data_list[$deletable_images]];
+
+            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && $force_delete) {
+                $all_other_images_found = false;
+            }
+        }
+
+        if (is_array($images)) {
+            $images_data_list = $images_data(MAIN_IMAGE);
+
+            if ($images_data_list[$db_images_count] === $images_data_list[$storage_images_count]) {
+                $all_other_images_found = true;
+            }
+
+            if (($all_other_images_found && $images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) || (!$all_other_images_found && +$force_delete !== 2)) {
+                throw new NotFoundHttpException($exception_message($images_data_list));
+            }
+
+            $images = [...$images, ...$images_data_list[$deletable_images]];
+        }
+
+        $images_to_delete = array_filter($images, static fn($element) => !is_array($element));
+
+        return Storage::delete($images_to_delete);
+    }
+}
+
+
+if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
+    /**
+     * Get the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param string $tableName
+     * @param string $imageType
+     * @param bool $isMultiple
+     * @param array $selectedIds
+     * @return array
+     */
+    function getImagesToDelete(Model|stdClass $model, string $tableName, string $imageType, bool $isMultiple = false, array $selectedIds = []): array
+    {
+        if ($isMultiple && count($selectedIds)) {
+            $images = str($imageType)->exactly(THUMB_IMAGE)
+                ? $model::query()->findOrFail($selectedIds, [ID, NAME])?->pluck(THUMB_IMAGES)->flatten()
+                : $model::query()->findOrFail($selectedIds, [NAME, $imageType]);
+        }
+        else {
+            $images = str($imageType)->exactly(THUMB_IMAGE)
+                ? $model->{THUMB_IMAGES}
+                : collect([$model]);
+        }
+
+        $deletable_images = $images->filter(fn($collection) => Storage::exists(imageSource($collection, $imageType, true)))
+            ->map(fn(Model $collection) => imageSource($collection, $imageType, true))
+            ->toArray();
+
+        $deletable_images[] = $images->pluck($imageType)->toArray();
+
+        $db_images_count = count(end($deletable_images));
+        $storage_images_count = count(array_filter($deletable_images, static fn($element) => !is_array($element)));
+
+        $image_type = capitalizeAll($imageType);
+
+        $model_item_name = $images->when(str($imageType)->exactly(THUMB_IMAGE), static function (Collection $collection) use (&$model_name) {
+            return $collection->filter(fn(ThumbImage $thumb_image) => !Storage::exists(imageSource($thumb_image, THUMB_IMAGE, true)))
+                ->pluck(singularize($tableName))
+                ->pluck(NAME)
+                ->toArray();
+        }, static function (Collection $collection) use (&$imageType) {
+            return $collection->filter(fn($collection) => !Storage::exists(imageSource($collection, $imageType, true)))
+                ->pluck(NAME)
+                ->toArray();
+        });
+
+        return compact('deletable_images', 'db_images_count', 'storage_images_count', 'image_type', 'model_item_name');
+    }
+}
+
+
+if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
+    /**
+     * Store or Update a user.
+     *
+     * @param string $operation
+     * @return User
+     * @throws ValidationException
+     */
+    function storeOrUpdateUser(string $operation): User
+    {
+        $user_attributes = USER_ATTRIBUTES;
+
+        if ($operation === REGISTER) {
+            array_pop($user_attributes);
+
+            $user_request = new AuthRequest($operation, USER_MODEL, $user_attributes);
+
+            validateAttributes($user_request);
+        }
+
+        if ($operation !== REGISTER) {
+            $user_request = new UserRequest($operation, USER_MODEL, $user_attributes);
+
+            $user_id = request()?->input(UPDATE_USER_ID);
+
+            validateAttributes($user_request, $user_id);
+        }
+
+        [$first_name, $last_name, $email, $password] = $user_attributes;
+
+        [$first_name_value, $last_name_value, $email_value, $password_value] = $user_request->dataValues();
+
+        $attributes = [
+            $first_name => $first_name_value,
+            $last_name  => $last_name_value,
+            $email      => $email_value,
+            $password   => bcrypt($password_value),
+        ];
+
+        if ($operation !== REGISTER) {
+            $role_value = Arr::last($user_request->dataValues());
+
+            $attributes = [...$attributes, ROLE => $role_value];
+
+            return User::query()->updateOrCreate(
+                [ID => $user_id], $attributes
+            );
+        }
+
+        return User::query()->create($attributes);
+    }
+}

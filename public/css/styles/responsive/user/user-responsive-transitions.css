@@ -1,0 +1,10 @@
+.header .header-nav-menu .nav-menu .nav-menu-content .nav-menu-main .nav-menu-list :is(ul.nav-menu-list-content, ul.nav-menu-list-content li.nav-menu-list-item > .nav-submenu-list-header .nav-submenu-item-rotate-icon, ul.nav-submenu-list-content),
+.nav-menu,
+.nav-menu-overlay,
+.footer .footer-top ul.footer-list li.footer-item :is(ul.footer-menu, .footer-menu-list-header .footer-menu-item-rotate-icon) {
+    -webkit-transition: var(--trans-300);
+    -moz-transition: var(--trans-300);
+    -ms-transition: var(--trans-300);
+    -o-transition: var(--trans-300);
+    transition: var(--trans-300);
+}

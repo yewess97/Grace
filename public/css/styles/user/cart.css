@@ -1,0 +1,76 @@
+/* -----------------================== Empty Cart ==================----------------- */
+.cart-main .empty-cart .empty-cart-title {
+    word-spacing: var(--five-pixels);
+}
+
+.cart-main .empty-cart .empty-cart-title span:nth-child(even) {
+    color: var(--main-color);
+}
+
+
+/*********************************************************************/
+
+
+/* -----------------================== Left Side ==================----------------- */
+.cart-main .cart .update-cart-form {
+    padding-inline: var(--twenty-pixels);
+}
+
+.cart-main .cart .update-cart-form :is(.cart-title, ul.cart-products li.cart-product, .cart-buttons) {
+    padding-block: var(--fifteen-pixels);
+}
+
+.cart-main .cart .update-cart-form .cart-title .cart-count {
+    border-bottom: var(--one-pixel) solid var(--black-color);
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info {
+    gap: var(--fifteen-pixels);
+    width: 60%;
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info .cart-product-img {
+    background-color: var(--light-gray-color);
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info .cart-product-info > a {
+    color: var(--black-color);
+}
+
+.cart-main .cart .update-cart-form :is(ul.cart-products li.cart-product :is(.cart-product-img-info .cart-product-info > a:hover, .cart-product-quantity-remove .cart-product-remove), .cart-buttons > input, .cart-buttons a) {
+    color: var(--main-color) !important;
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-quantity-remove {
+    gap: var(--fifteen-pixels);
+    width: 20%;
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-quantity-remove .cart-product-remove {
+    z-index: 2;
+}
+
+.cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-total-price {
+    width: 20%;
+}
+
+
+/*********************************************************************/
+
+
+/* -----------------================== Right Side ==================----------------- */
+.cart-main .summary .summary-content {
+    top: var(--sixty-pixels);
+}
+
+.cart-main .summary .summary-title {
+    padding-block: var(--ten-pixels);
+}
+
+.cart-main .summary :is(.summary-body, .summary-total) {
+    padding-block: var(--fifteen-pixels);
+}
+
+.cart-main .summary .summary-body {
+    gap: var(--ten-pixels);
+}

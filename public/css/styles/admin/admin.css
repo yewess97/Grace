@@ -1,0 +1,226 @@
+/* ======================================== Dashboard ======================================== */
+
+/* -----------------================== Left Side ==================----------------- */
+.dashboard-main .left-side {
+    padding-right: var(--fifteen-pixels);
+}
+
+.dashboard-main .left-side .dashboard-filter-by-date input#admin_select_date {
+    padding: var(--eight-pixels) var(--fifteen-pixels);
+    cursor: pointer;
+}
+
+.dashboard-main .left-side ul.orders-metrics {
+    padding-block: var(--twenty-five-pixels) var(--twenty-pixels);
+}
+
+.dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-info .metrics-icon {
+    width: fit-content;
+    padding: var(--ten-pixels);
+    font-size: var(--twenty-four-pixels);
+    color: var(--white-color);
+}
+
+.dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-info .metrics-icon.total-sales-icon {
+    background-color: #7380ec;
+}
+
+.dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-info .metrics-icon.total-expenses-icon {
+    background-color: #ff7782;
+}
+
+.dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-info .metrics-icon.total-income-icon {
+    background-color: #41f1b6;
+}
+
+.dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-statistic {
+    font-size: var(--fifteen-pixels);
+}
+
+.dashboard-main .left-side :is(.users-countries-analytics, .recent-customers-orders) {
+    padding-top: var(--thirty-five-pixels);
+}
+
+.dashboard-main .left-side .users-countries-analytics .users-countries-geo-map {
+    padding-block: var(--twenty-pixels);
+}
+
+.dashboard-main .left-side .recent-customers-orders .customers-orders-table {
+    padding-top: var(--twenty-pixels);
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+/* -----------------================== Right Side ==================----------------- */
+.dashboard-main .right-side {
+    padding-left: var(--fifteen-pixels);
+}
+
+.dashboard-main .right-side :is(.subcategories-products-analytics, .orders-analytics, .reviews-analytics) {
+    padding-top: var(--thirty-five-pixels);
+}
+
+.dashboard-main .right-side :is(.subcategories-products-analytics .subcategories_products_analytics_chart, .orders-analytics ul.orders-analytics-nums) {
+    padding-block: var(--twenty-pixels);
+}
+
+.dashboard-main .right-side .reviews-analytics ul.reviews-analytics-nums {
+    padding-top: var(--twenty-pixels);
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon {
+    width: fit-content;
+    padding: var(--eight-pixels);
+    font-size: var(--twenty-four-pixels);
+    color: var(--white-color);
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon.processing-icon {
+    background-color: #ffbb55;
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon.shipped-icon {
+    background-color: #73d0ec;
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon.delivered-icon {
+    background-color: #7380ec;
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon.completed-icon {
+    background-color: #41f1b6;
+}
+
+.dashboard-main .right-side .orders-analytics ul.orders-analytics-nums .analytic-card .order-analytic-icon-name .order-analytic-icon.cancelled-icon {
+    background-color: #ff7782;
+}
+
+/*********************************************************************/
+
+
+/* ======================================== Analytic & Metric Cards & Charts ======================================== */
+.dashboard-main :is(.analytic-card, .metric-card) {
+    padding: var(--twenty-pixels);
+    color: var(--black-color);
+}
+
+.dashboard-main :is(.analytic-card, .metric-card):hover {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -o-box-shadow: none;
+    box-shadow: none;
+    -ms-transform: translateY(var(--five-pixels));
+    transform: translateY(var(--five-pixels));
+}
+
+.dashboard-main :is(#geo_map_chart, #pie_chart, .analytic-card, .metric-card) {
+    border-radius: var(--twenty-five-pixels);
+    background-color: var(--white-color);
+    -webkit-box-shadow: var(--admin-box-shadow);
+    -moz-box-shadow: var(--admin-box-shadow);
+    -o-box-shadow: var(--admin-box-shadow);
+    box-shadow: var(--admin-box-shadow);
+}
+
+.dashboard-main :is(#geo_map_chart, #pie_chart) {
+    padding-block: var(--twenty-pixels);
+}
+
+/*********************************************************************/
+
+
+/* ======================================== Orders ======================================== */
+.orders-main .orders .order-tracking-num:hover {
+    background-color: rgba(254, 255, 87, 0.19);
+    -webkit-box-shadow: 0 0 var(--ten-pixels) rgba(229, 255, 77, 0.53);
+    -moz-box-shadow: 0 0 var(--ten-pixels) rgba(229, 255, 77, 0.53);
+    -o-box-shadow: 0 0 var(--ten-pixels) rgba(229, 255, 77, 0.53);
+    box-shadow: 0 0 var(--ten-pixels) rgba(229, 255, 77, 0.53);
+}
+
+/*********************************************************************/
+
+
+/* ======================================== Tables ======================================== */
+.admin-table .table .main-image {
+    width: calc(var(--sixty-four-pixels) + var(--thirty-six-pixels));
+    height: calc(var(--sixty-four-pixels) + var(--thirty-six-pixels));
+}
+
+.admin-table .table .admin-carousel button {
+    width: var(--thirty-pixels);
+    height: var(--thirty-pixels);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    background-color: var(--white-color);
+    color: var(--black-color);
+    opacity: 1;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.admin-table .table .admin-carousel button:hover {
+    border: 1px solid var(--main-color);
+    background-color: var(--main-color);
+    color: var(--white-color);
+}
+
+.admin-table .table .admin-carousel .carousel-control-prev {
+    left: -50%;
+}
+
+.admin-table .table .admin-carousel .carousel-control-next {
+    right: -50%;
+}
+
+.admin-table .table .cell-menu {
+    max-height: 85px;
+    padding-inline: var(--fifteen-pixels);
+}
+
+.admin-table .table .cell-menu li {
+    padding-block: var(--ten-pixels);
+}
+
+.admin-table .table .cell-menu li:not(:last-child) {
+    border-bottom: var(--border);
+}
+
+.admin-table .table .user-activity {
+    width: calc(var(--sixty-four-pixels) + var(--thirty-six-pixels));
+}
+
+.admin-table .table .review-rating {
+    width: 10rem;
+}
+
+/*********************************************************************/
+
+
+/* -----------------================== Search & Filters ==================----------------- */
+input[type="search"] {
+    padding-block: var(--eight-pixels);
+    font-size: var(--fourteen-pixels);
+}
+
+input[type=search]::-webkit-search-cancel-button {
+    display: none;
+}
+
+#clear_filter {
+    font-size: var(--fifteen-pixels);
+    color: var(--main-color);
+}
+
+.clear-search-btn {
+    right: var(--twelve-pixels);
+    padding: var(--two-pixels) var(--four-pixels);
+    background-color: var(--gray-color);
+    color: var(--light-gray-color);
+    border: var(--one-pixel) solid var(--gray-color);
+    opacity: 0;
+    visibility: hidden;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

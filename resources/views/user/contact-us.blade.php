@@ -1,0 +1,156 @@
+@extends(key(viewLayoutTitle(USER_MODEL)), current(viewLayoutTitle(USER_MODEL)))
+
+@section('content')
+
+    {{-- Contact Us Main --}}
+    <main role="main" class="contact-us-main py-6">
+        <div class="container">
+            <div class="row">
+                {{-- Contact Us --}}
+                <div class="col">
+                    <div class="box-content d-grid place-items-center gap-4 py-4 rounded-5">
+                        {{-- Contact Us Title --}}
+                        <article class="box-title">
+                            <h2 class="fs-9 fw-600 text-center">{{capitalizeAll(CONTACT_US)}}</h2>
+                            <p class="mt-2 text-center">
+                                We are here to help and answer any question you might have. Also
+                                you can contact us by phone or email. <br> We look forward to hearing from you.
+                            </p>
+                        </article>
+                        {{-- Contact Us Content --}}
+                        <article class="contact-us-content row row-cols-1 row-cols-lg-2 align-items-baseline rounded-3">
+                            <!----======= Left Side =======---->
+                            <div class="col">
+                                <form method="post" role="form" id="contact_us_form" class="row grace-form contact-us-form ">
+                                    @csrf
+                                    {{-- Form Header --}}
+                                    <article class="grace-form-header contact-us-content-header mb-4">
+                                        <h5 class="fw-600">Drop us a message</h5>
+                                    </article>
+                                    {{-- Form Body --}}
+                                    <article class="grace-form-body row col-12">
+                                        {{-- Name --}}
+                                        <div class="contact-name">
+                                            <div class="form-outline col-12">
+                                                <input type="text" name="name" id="name" class="form-control fs-7 rounded-2" min="2" max="50" aria-required="true">
+                                                <label for="name" class="form-label">
+                                                    <sup class="me-1">*</sup>Your {{ucfirst(NAME)}}
+                                                </label>
+                                            </div>
+                                            <div class="grace-form-error">
+                                                <ul role="list" class="form-error text-danger" id="name_error"></ul>
+                                            </div>
+                                        </div>
+                                        {{-- Email --}}
+                                        <div class="contact-email">
+                                            <div class="form-outline col-12">
+                                                <input type="email" name="email" id="email" class="form-control fs-7 rounded-2" aria-required="true">
+                                                <label for="email" class="form-label">
+                                                    <sup class="me-1">*</sup>Your {{ucfirst(EMAIL)}}
+                                                </label>
+                                            </div>
+                                            <div class="grace-form-error">
+                                                <ul class="form-error text-danger" id="email_error"></ul>
+                                            </div>
+                                        </div>
+                                        {{-- Message --}}
+                                        <div class="contact-message">
+                                            <div class="form-outline col-12">
+                                                <textarea name="message" id="message" class="form-control fs-7" rows="4" minlength="2" aria-required="true"></textarea>
+                                                <label for="message" class="form-label textarea-label">
+                                                    <sup class="me-1">*</sup>Message
+                                                </label>
+                                            </div>
+                                            <div class="grace-form-error">
+                                                <ul class="form-error text-danger" id="message_error"></ul>
+                                            </div>
+                                        </div>
+                                        {{-- Send Button --}}
+                                        <div class="form-group col-12">
+                                            <button type="submit" role="button" title="Send" class="btn col-12 col-md-auto d-flex justify-content-center align-items-center overflow-hidden">
+                                                <span class="svg-wrapper-1 d-block">
+                                                    <span class="svg-wrapper d-block">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                                            <path fill="none" d="M0 0h24v24H0z"></path>
+                                                            <path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </span>
+                                                <span class="ms-1 send">Send</span>
+                                            </button>
+                                        </div>
+                                    </article>
+                                </form>
+                            </div>
+
+                            <!----======= Right Side =======---->
+                            <div class="col d-grid gap-4 pt-5 pt-lg-0 ps-lg-5">
+                                {{-- Contact Us Info Header --}}
+                                <article class="contact-us-content-header">
+                                    <h5 class="fs-8 fw-600">Get in Touch</h5>
+                                    <p class="mt-2">Feel free to contact us by phone or email, or visit our office.</p>
+                                </article>
+                                {{-- Contact Us Info Content --}}
+                                <article class="contact-us-info-content d-grid gap-3">
+                                    {{-- Addresses --}}
+                                    <article class="info d-flex align-items-center gap-3">
+                                        {{-- Icon --}}
+                                        <div role="img" class="info-icon" aria-label="{{ucfirst(ADDRESS_MODEL)}} Icon">
+                                            <i class="fa-solid fa-street-view fs-5"></i>
+                                        </div>
+                                        {{-- Details --}}
+                                        <div class="info-details">
+                                            <h6 class="fw-600">{{ucfirst(ADDRESS_MODEL)}}</h6>
+                                            <p class="mt-1">Al-Mohandiseen 71511 Street, Asyut, Egypt</p>
+                                        </div>
+                                    </article>
+                                    {{-- Phone --}}
+                                    <article class="info d-flex align-items-center gap-3">
+                                        {{-- Icon --}}
+                                        <div role="img" class="info-icon" aria-label="Phone Icon">
+                                            <i class="fa-solid fa-phone-alt fs-5"></i>
+                                        </div>
+                                        {{-- Details --}}
+                                        <div class="info-details">
+                                            <h6 class="fw-600">Phone</h6>
+                                            <p class="mt-1">+20 101 183 6243</p>
+                                        </div>
+                                    </article>
+                                    {{-- Email --}}
+                                    <article class="info d-flex align-items-center gap-3">
+                                        {{-- Icon --}}
+                                        <div role="img" class="info-icon" aria-label="{{ucfirst(EMAIL)}} Icon">
+                                            <i class="fa-solid fa-envelope fs-5"></i>
+                                        </div>
+                                        {{-- Details --}}
+                                        <div class="info-details">
+                                            <h6 class="fw-600">{{ucfirst(EMAIL)}}</h6>
+                                            <p class="mt-1">yewess97@gmail.com</p>
+                                        </div>
+                                    </article>
+                                </article>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+@endsection
+
+
+
+@section('user-js-links')
+    <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+@endsection
+
+@section('user-js')
+    <script type="application/javascript">
+        (function(){
+            emailjs.init("Tw1jJXLceJmoL24nI");
+        })();
+    </script>
+
+    <script type="application/javascript" src="{{asset('js/contact-us.js')}}"></script>
+@endsection

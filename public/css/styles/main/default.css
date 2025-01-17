@@ -1,0 +1,253 @@
+/* ===================================== Default Styles ===================================== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    text-shadow: rgba(0, 0, 0, 0.01) 0 0 var(--one-pixel);
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100dvh;
+    font: 400 var(--fourteen-pixels)/1 'Poppins', system-ui, sans-serif;
+    background: var(--white-color);
+    color: var(--body-text-color);
+}
+
+main {
+    background-color: var(--light-gray-color);
+}
+
+ul,
+ol,
+p {
+    list-style: none;
+    margin-bottom: 0;
+}
+
+p {
+    line-height: var(--twenty-five-pixels);
+}
+
+a,
+a:hover,
+:is(a, button):focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+a,
+a:hover,
+select,
+button {
+    cursor: pointer;
+}
+
+:is(a, button, input, select):focus {
+    outline: 0;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -o-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+a[type="button"] {
+    display: grid;
+    place-items: center;
+}
+
+input,
+select {
+    padding: var(--ten-pixels) var(--fifteen-pixels);
+    border: var(--border);
+    font-weight: 400;
+    color: #333333 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--black-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul {
+    margin: 0;
+    padding: 0;
+    font-size: var(--fourteen-pixels);
+    font-weight: 400;
+    line-height: normal;
+}
+
+::selection {
+    background-color: var(--second-color);
+    color: var(--black-color);
+}
+
+::-moz-selection {
+    background-color: var(--second-color);
+    color: var(--black-color);
+}
+
+::-webkit-scrollbar {
+    width: var(--nine-pixels);
+    height: var(--nine-pixels);
+}
+
+::-webkit-scrollbar-track {
+    border-radius: var(--twenty-five-pixels);
+    -webkit-box-shadow: inset 0 0 var(--five-pixels) #aba9a9;
+    -moz-box-shadow: inset 0 0 var(--five-pixels) #aba9a9;
+    -o-box-shadow: inset 0 0 var(--five-pixels) #aba9a9;
+    box-shadow: inset 0 0 var(--five-pixels) #aba9a9;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: var(--twenty-five-pixels);
+    background-color: var(--main-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--second-color);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: #ecb936;
+}
+
+.product-not-available-overlay {
+    inset: 0;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.placeholder {
+    background-color: transparent !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+/* --------- Preloader --------- */
+#preloader {
+    inset: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+#preloader .preloader-container .preloader-cart :is(.cart-lines, .cart-lines .cart-top, .cart-lines .cart-wheel1, .cart-lines .cart-wheel2, .cart-lines :where(.cart-wheel1, .cart-wheel2) .cart-wheel-stroke) {
+    animation: cart-lines 2000ms ease-in-out infinite;
+}
+
+#preloader .preloader-container .preloader-cart .cart-lines {
+    stroke: var(--main-color);
+}
+
+#preloader .preloader-container .preloader-cart .cart-lines .cart-top {
+    animation-name: cart-top;
+}
+
+#preloader .preloader-container .preloader-cart .cart-lines .cart-wheel1 {
+    animation-name: cart-wheel1;
+    -ms-transform: rotate(-0.25turn);
+    transform: rotate(-0.25turn);
+    -webkit-transform-origin: 2.688rem 6.938rem;
+    transform-origin: 2.688rem 6.938rem;
+}
+
+#preloader .preloader-container .preloader-cart .cart-lines .cart-wheel2 {
+    animation-name: cart-wheel2;
+    -ms-transform: rotate(0.25turn);
+    transform: rotate(0.25turn);
+    -webkit-transform-origin: 6.375rem 6.938rem;
+    transform-origin: 6.375rem 6.938rem;
+}
+
+#preloader .preloader-container .preloader-cart .cart-lines :is(.cart-wheel1, .cart-wheel2) .cart-wheel-stroke {
+    animation-name: cart-wheel-stroke;
+}
+
+/* --------- Menu Badge --------- */
+.category-title .badge {
+    width: var(--thirty-pixels);
+    height: var(--fifteen-pixels);
+    margin-left: var(--five-pixels);
+    font-size: var(--ten-pixels);
+    font-weight: 400;
+    background-color: var(--red-color);
+}
+
+.category-title .badge::before {
+    content: "";
+    position: absolute;
+    inset: auto auto 50% calc(var(--nine-pixels) * -1);
+    width: var(--ten-pixels);
+    height: var(--ten-pixels);
+    background-color: var(--red-color);
+    clip-path: polygon(100% 0, 100% 56%, 100% 100%, 44% 68%, 21% 54%, 47% 38%);
+    -ms-transform: translateY(50%);
+    transform: translateY(50%);
+}
+
+/* --------- Dropdown Menu --------- */
+ul.dropdown-content {
+    padding-inline: 0;
+    overflow: hidden;
+    z-index: 9;
+    -webkit-box-shadow: var(--dropdown-box-shadow);
+    -moz-box-shadow: var(--dropdown-box-shadow);
+    -o-box-shadow: var(--dropdown-box-shadow);
+    box-shadow: var(--dropdown-box-shadow);
+    -ms-transform: translateY(var(--fifteen-pixels));
+    transform: translateY(var(--fifteen-pixels));
+}
+
+ul.dropdown-content li.dropdown-item {
+    color: inherit;
+    background-color: transparent;
+}
+
+/* --------- Offers --------- */
+.nav-offer .offer-sale p {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    white-space: nowrap;
+}
+
+/* --------- Common Opacity & Visibility --------- */
+ul.dropdown-content,
+.nav-offer .offer-sale p {
+    opacity: 0;
+    visibility: hidden;
+}
+
+:is(li.nav-item, li.category-item):hover ul.dropdown-content,
+.nav-offer .offer-sale p.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --------- Modal Fade Animation --------- */
+@media (prefers-reduced-motion: reduce) {
+    .fade {
+        -webkit-transition: opacity 150ms linear;
+        -moz-transition: opacity 150ms linear;
+        -ms-transition: opacity 150ms linear;
+        -o-transition: opacity 150ms linear;
+        transition: opacity 150ms linear;
+    }
+}

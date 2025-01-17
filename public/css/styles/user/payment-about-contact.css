@@ -1,0 +1,121 @@
+/* -----------------================== Payment ==================----------------- */
+.payment-main .box-content .payment-content ul.payment-questions-list {
+    counter-reset: question;
+}
+
+.payment-main .box-content .payment-content ul.payment-questions-list li {
+    position: relative;
+    margin-bottom: var(--thirty-pixels);
+}
+
+.payment-main .box-content .payment-content ul.payment-questions-list li::before {
+    counter-increment: question;
+    content: "Q." counter(question);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--forty-pixels);
+    height:var(--forty-pixels);
+    font-weight: 600;
+    background-color: var(--white-color);
+    -webkit-box-shadow: 0 0 var(--twelve-pixels) #0000001a;
+    -moz-box-shadow: 0 0 var(--twelve-pixels) #0000001a;
+    -o-box-shadow: 0 0 var(--twelve-pixels) #0000001a;
+    box-shadow: 0 0 var(--twelve-pixels) #0000001a;
+}
+
+.payment-main .box-content .payment-content ul.payment-questions-list li .payment-question {
+    padding: var(--ten-pixels) var(--fifteen-pixels);
+    background-color: var(--main-color);
+}
+
+.payment-main .box-content .payment-content ul.payment-questions-list li p {
+    margin-top: var(--fifteen-pixels);
+    line-height: var(--twenty-five-pixels);
+}
+
+
+/*********************************************************************/
+
+
+/* -----------------================== About Us ==================----------------- */
+.about-us-main .row:first-child {
+    row-gap: var(--sixty-pixels);
+}
+
+.about-us-main .box-content .box-title {
+    max-width: 60%;
+}
+
+.about-us-main .about-us-content {
+    background-color: var(--light-gray-color);
+}
+
+.about-us-main .about-us-content .about-our-company {
+    padding-inline: var(--thirty-pixels);
+}
+
+.about-us-main .about-us-content .about-our-company .comp-services {
+    list-style: disc;
+}
+
+.about-us-main :is(.our-mission, .our-vision):hover img {
+    -ms-transform: translateY(calc(var(--five-pixels) * -1));
+    transform: translateY(calc(var(--five-pixels) * -1));
+}
+
+.about-us-main .about-new::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--black-color);
+    opacity: 0.7;
+}
+
+.about-us-main .about-new-content {
+    padding-block: 5rem;
+    z-index: 1;
+}
+
+
+/*********************************************************************/
+
+
+/* -----------------================== Contact Us ==================----------------- */
+.contact-us-main .contact-us-content .contact-us-form .btn :is(svg, .send) {
+    -webkit-transition: var(--trans-300);
+    -moz-transition: var(--trans-300);
+    -o-transition: var(--trans-300);
+    transition: var(--trans-300);
+}
+
+.contact-us-main .contact-us-content .contact-us-form .btn svg {
+    display: block;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+}
+
+.contact-us-main .contact-us-content .contact-us-form .btn:hover .svg-wrapper {
+    animation: fly-send 600ms ease-in-out infinite alternate;
+}
+
+.contact-us-main .contact-us-content .contact-us-form .btn:hover svg {
+    -ms-transform: translateX(var(--eighteen-pixels)) rotate(45deg) scale(1.1);
+    transform: translateX(var(--eighteen-pixels)) rotate(45deg) scale(1.1);
+}
+
+.contact-us-main .contact-us-content .contact-us-form .btn:hover .send {
+    -ms-transform: translateX(calc(var(--sixty-four-pixels) + var(--sixteen-pixels)));
+    transform: translateX(calc(var(--sixty-four-pixels) + var(--sixteen-pixels)));
+}
+
+.contact-us-main .contact-us-content .contact-us-form .btn:active {
+    -ms-transform: scale(0.95);
+    transform: scale(0.95);
+}
+
+.contact-us-main .contact-us-content .contact-us-info-content .info .info-details > h6 {
+    color: var(--body-text-color);
+}

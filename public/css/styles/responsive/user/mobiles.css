@@ -1,0 +1,83 @@
+@media all and (max-width: 767.98px) {
+    /* ===================================== Layout Styles ===================================== */
+    .container {
+        max-width: 570px;
+    }
+
+    .row-cols-md-4 > * {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    table:not(.address-table) tbody tr td {
+        padding-inline: 0 !important;
+    }
+
+    /* ------------============== Footer ==============------------ */
+    .footer .footer-top ul.footer-list li.footer-item:first-child .footer-logo > a {
+        width: 25%;
+    }
+
+    /* ------------============== End Footer ==============------------ */
+
+    /* ===================================== End Layout Styles ===================================== */
+
+    /* ------------============== Home & Products ==============------------ */
+    .owl-nav {
+        position: unset !important;
+        margin-top: var(--twenty-pixels) !important;
+    }
+
+    .home-product-main .home-right-side .home-banners .box-content {
+        row-gap: var(--twenty-pixels);
+    }
+
+    .home-product-main .home-right-side .home-partners .partners-carousel .partner .partner-img {
+        width: 100%;
+    }
+
+    .products-main .products-filter-nav-menu .nav-menu .left-side .box-filter ul.filter-content li.filter-item .count {
+        font-size: var(--thirteen-pixels);
+    }
+
+    .product-info-price .new-price {
+        font-size: var(--fourteen-pixels) !important;
+    }
+
+    /* ------------============== End Home & Products ==============------------ */
+
+    /* ------------============== Login & Register ==============------------ */
+    .log-reg-main .main-sides {
+        display: grid;
+        gap: var(--thirty-pixels);
+    }
+
+    /* ------------============== End Login & Register ==============------------ */
+
+    /* ------------============== Profile ==============------------ */
+    .profile-main .top-side ul.profile-account-details :is(li.my-account, li.account-details) {
+        width: 100% !important;
+    }
+
+    .profile-main .top-side ul.profile-account-details li.account-details {
+        margin-top: var(--twenty-pixels);
+        padding-top: var(--fifteen-pixels);
+        border-top: var(--border);
+    }
+
+    /* ------------============== End Profile ==============------------ */
+
+    /* ------------============== User Addresses ==============------------ */
+    .addresses-main .addresses .addresses-add-delete-multiple-buttons {
+        gap: var(--twenty-three-pixels);
+    }
+
+    /* ------------============== End User Addresses ==============------------ */
+
+    /* ------------============== About Us & Contact Us ==============------------ */
+    :is(.about-us-main, .contact-us-main) .box-content .box-title {
+        max-width: 80%;
+    }
+
+    /* ------------============== End About Us & Contact Us ==============------------ */
+}

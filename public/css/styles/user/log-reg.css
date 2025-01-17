@@ -1,0 +1,45 @@
+/* ======================================== Main Body ======================================== */
+.log-reg-main .main-sides {
+    gap: var(--thirty-pixels);
+    max-width: 70%;
+}
+
+/*********************************************************************/
+
+
+/* -----------------================== Right Side ==================----------------- */
+.log-reg-main :is(.log-reg-right, .log-reg-right .log-reg-title) {
+    gap: var(--thirty-pixels);
+}
+
+.log-reg-main .log-reg-right .log-reg-title a {
+    padding: var(--twelve-pixels) var(--thirty-pixels);
+    border: var(--two-pixels) solid var(--main-color);
+    background-color: transparent;
+    color: var(--main-color);
+}
+
+.log-reg-main .log-reg-right .log-reg-title a::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 0;
+    height: 100%;
+    background-color: rgba(211, 33, 90, 0.1);
+    -webkit-transition: width 700ms ease-in-out;
+    -moz-transition: width 700ms ease-in-out;
+    -o-transition: width 700ms ease-in-out;
+    transition: width 700ms ease-in-out;
+}
+
+.log-reg-main .log-reg-right .log-reg-title a:hover::before {
+    width: 100%;
+}
+
+.log-reg-main .log-reg-right .log-reg-terms-privacy p:nth-child(2) {
+    margin-top: var(--five-pixels);
+}
+
+.log-reg-main .log-reg-right .log-reg-terms-privacy a {
+    color: var(--main-color);
+}
