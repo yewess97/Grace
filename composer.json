@@ -9,7 +9,7 @@
         "guzzlehttp/guzzle": "^7.9.2",
         "hammerstone/fast-paginate": "^0.1.12",
         "hedii/artisan-log-cleaner": "^5.0.0",
-        "laravel/framework": "^9.52.18",
+        "laravel/framework": "^9.52.19",
         "laravel/tinker": "^2.10.0"
     },
     "require-dev": {

@@ -4,6 +4,7 @@
     to {
         opacity: 0;
     }
+
     8%,
     92% {
         opacity: 1;
@@ -14,9 +15,11 @@
     from {
         stroke-dashoffset: -338;
     }
+
     50% {
         stroke-dashoffset: 0;
     }
+
     to {
         stroke-dashoffset: 338;
     }
@@ -27,6 +30,7 @@
         -ms-transform: rotate(-0.25turn);
         transform: rotate(-0.25turn);
     }
+
     to {
         -ms-transform: rotate(2.75turn);
         transform: rotate(2.75turn);
@@ -38,6 +42,7 @@
         -ms-transform: rotate(0.25turn);
         transform: rotate(0.25turn);
     }
+
     to {
         -ms-transform: rotate(3.25turn);
         transform: rotate(3.25turn);
@@ -49,6 +54,7 @@
     to {
         stroke-dashoffset: 81.68;
     }
+
     50% {
         stroke-dashoffset: 40.84;
     }
@@ -64,5 +70,20 @@
     to {
         -ms-transform: translateY(calc(var(--two-pixels) * -1));
         transform: translateY(calc(var(--two-pixels) * -1));
+    }
+}
+
+/* --------- Error Code --------- */
+@keyframes swing {
+    from {
+        transform: rotate(25deg);
+    }
+
+    50% {
+        transform: rotate(-25deg);
+    }
+
+    to {
+        transform: rotate(25deg);
     }
 }

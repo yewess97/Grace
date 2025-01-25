@@ -6,9 +6,7 @@
     <main role="main" class="home-product-main">
         <div class="container">
             <div class="main-sides row col-12">
-                @if (session()->has('authError'))
-                    @sessionerror('authError')
-                @elseif (session()->has('checkoutError'))
+                @if (session()->has('checkoutError'))
                     @sessionerror('checkoutError')
                 @endif
                 <!----======= Left Side =======---->

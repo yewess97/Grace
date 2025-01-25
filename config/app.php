@@ -10,6 +10,7 @@ use App\Providers\EventServiceProvider;
 use App\Providers\HelperServiceProvider;
 use App\Providers\RouteServiceProvider;
 use App\Providers\UserBladeServiceProvider;
+use App\Providers\ViewServiceProvider as GraceViewServiceProvider;
 use Hedii\ArtisanLogCleaner\ArtisanLogCleanerServiceProvider;
 use Illuminate\Auth\AuthServiceProvider as LaravelAuthServiceProvider;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
@@ -229,6 +230,7 @@ return [
         HelperServiceProvider::class,
         RouteServiceProvider::class,
         UserBladeServiceProvider::class,
+        GraceViewServiceProvider::class,
     ],
 
     /*

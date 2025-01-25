@@ -20,10 +20,14 @@ class Admin
      */
     final public function handle(Request $request, Closure $next): JsonResponse|Response|RedirectResponse
     {
-        if (auth()->check() && auth()->user()->isAdmin) {
-            return $next($request);
+        if (auth()->check()) {
+            if (auth()->user()->isAdmin) {
+                return $next($request);
+            }
+
+            return abort(HttpResponse::HTTP_FORBIDDEN);
         }
 
-        return to_route('home')->with('authError', 'You are not authorized to access this page.')->setStatusCode(HttpResponse::HTTP_UNAUTHORIZED);
+        return abort(HttpResponse::HTTP_UNAUTHORIZED);
     }
 }

@@ -80,4 +80,19 @@
     }
 
     /* ------------============== End About Us & Contact Us ==============------------ */
+
+    /* ------------============== Error Page ==============------------ */
+    .error-main .left-side {
+        padding-block: var(--sixteen-pixels);
+    }
+
+    .error-main .left-side .error-code {
+        margin-block: var(--eight-pixels);
+    }
+
+    .error-main .left-side .error-desc {
+        font-size: var(--twenty-two-pixels);
+    }
+
+    /* ------------============== End Error Page ==============------------ */
 }

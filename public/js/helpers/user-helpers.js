@@ -496,7 +496,7 @@ const User = {
                         );
                     });
                 },
-                error: () => Common.somethingWentWrongError(),
+                // error: () => Common.somethingWentWrongError(),
             });
         }
     },

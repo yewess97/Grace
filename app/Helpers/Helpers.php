@@ -717,11 +717,7 @@ if (!function_exists('showView')) {
      */
     function showView(string $viewName, array $vars = null): Application|Factory|View
     {
-        $common_collections = commonCollections();
-        $aside_menus        = commonAsideMenus();
-        $view_data          = compact(COMMON_COLLECTIONS, 'aside_menus');
-
-        $cart_config_vars = $view_data + ($vars ?? []);
+        $cart_config_vars = $vars ?? [];
 
         $view_vars = isAdminRoute()
             ? $vars
