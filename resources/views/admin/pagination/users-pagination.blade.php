@@ -7,7 +7,7 @@
         </thead>
         <tbody class="text-center">
         @forelse ($users as $key => $user)
-            <tr style="{{$user->isadmin ? 'background-color:#ffffe0': ''}}">
+            <tr style="{{$user->isAdmin ? 'background-color:#ffffe0': ''}}">
                 @checkRow($user->id)
                 @loopIteration($users->firstItem())
                 <td>

@@ -399,20 +399,21 @@ const Admin = {
             const
                 target     = $(this),
                 route      = target.attr('action'),
+                main_page  = target.data('main'),
                 action     = form.split('_')[0],
                 collection = IGrace.CAPITALIZE(form.split('_')[1]),
                 form_data  = Common.filteredFormData(this);
 
             $.ajax({
                 url: route,
-                method: IGrace.POST,
+                method: form.includes(IGrace.ADD) ? IGrace.POST : IGrace.PUT,
                 data: form_data,
                 success: () => {
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
                     target[0].reset();
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                    Common.successMessage(IGrace.SUCCESS, `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`);
+                    Common.successMessage(IGrace.SUCCESS, `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
                 error: (err) => {
                     if (Common.errorStatus(err) === 404) {
@@ -436,7 +437,7 @@ const Admin = {
      * Edit Category Ajax Request.
      */
     ajaxEditCategoryRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.CATEGORY, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.CATEGORY), function (e) {
             e.preventDefault();
 
             const
@@ -462,7 +463,7 @@ const Admin = {
                         imageSrc: banner_image,
                     });
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.CATEGORY)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.CATEGORY, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
 
@@ -474,7 +475,7 @@ const Admin = {
      * Edit Subcategory Ajax Request.
      */
     ajaxEditSubcategoryRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.SUBCATEGORY, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.SUBCATEGORY), function (e) {
             e.preventDefault();
 
             const
@@ -500,7 +501,7 @@ const Admin = {
                         relatedCollection: IGrace.RELATED_CATEGORY(),
                     });
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.SUBCATEGORY)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.SUBCATEGORY, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
 
@@ -512,7 +513,7 @@ const Admin = {
      * Edit Product Ajax Request.
      */
     ajaxEditProductRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.PRODUCT, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.PRODUCT), function (e) {
             e.preventDefault();
 
             const
@@ -565,7 +566,7 @@ const Admin = {
                         .filter((_, product_status) => +product_status.value === +product[IGrace.STATUS])
                         .attr('selected', true);
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.PRODUCT)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.PRODUCT, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
 
@@ -577,7 +578,7 @@ const Admin = {
      * Edit User Ajax Request.
      */
     ajaxEditUserRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.USER, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.USER), function (e) {
             e.preventDefault();
 
             const
@@ -598,7 +599,7 @@ const Admin = {
                         .filter((_, user_role) => +user_role.value === +user[IGrace.ROLE])
                         .attr('selected', true);
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.USER)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.USER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
         });
@@ -608,7 +609,7 @@ const Admin = {
      * Edit Order Ajax Request.
      */
     ajaxEditOrderRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.ORDER, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER), function (e) {
             e.preventDefault();
 
             const
@@ -626,7 +627,7 @@ const Admin = {
                         .filter((_, order_status) => +order_status.value === +order[IGrace.STATUS])
                         .attr('selected', true);
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.ORDER)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
         });

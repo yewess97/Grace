@@ -7,11 +7,11 @@ use App\Traits\Relations\BelongsToMany\SubcategoriesRelation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use HasFactory, SubcategoriesRelation, ProductsRelation;
+    use HasFactory, SoftDeletes, SubcategoriesRelation, ProductsRelation;
 
     /**
      * The table associated with the model.
@@ -42,47 +42,5 @@ class Category extends Model
     final protected function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE, BANNER_IMAGE]));
-    }
-
-//    /**
-//     * Get the data of the related subcategories of the category.
-//     *
-//     * @return array
-//     */
-//    protected function getRelatedSubcategoriesAttribute(): array
-//    {
-//        return $this->{SUBCATEGORIES_TABLE}()->pluck(NAME, ID)->toArray();
-//    }
-//
-//    /**
-//     * Get the data of the related products of the category.
-//     *
-//     * @return array
-//     */
-//    protected function getRelatedProductsAttribute(): array
-//    {
-//        return $this->{PRODUCTS_TABLE}()->toArray();
-//    }
-
-    /**
-     * Delete all or Detach the related subcategories of the category.
-     *
-     * @return void
-     */
-    final public static function deleteRelatedSubcategories(): void
-    {
-        parent::boot();
-
-        static::deleting(static function (self $category) {
-            $category->{SUBCATEGORIES_TABLE}()->each(function (Subcategory $subcategory) use ($category) {
-                if ($subcategory->{CATEGORIES_TABLE}()->count() === 1) {
-                    Storage::delete(imageSource($subcategory, MAIN_IMAGE, true));
-
-                    $subcategory->delete();
-                }
-
-                $category->{SUBCATEGORIES_TABLE}()->detach($subcategory->{ID});
-            });
-        });
     }
 }

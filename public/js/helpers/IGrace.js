@@ -10,32 +10,26 @@ const IGrace = {
      */
     GET  : 'GET',
     POST : 'POST',
+    PUT  : 'PUT',
 
     /**
      * Actions.
      */
-    ADD    : 'add',
-    EDIT   : 'edit',
-    UPDATE : 'update',
-    DELETE : 'delete',
-    SEARCH : 'search',
-    FILTER : 'filter',
+    ADD     : 'add',
+    EDIT    : 'edit',
+    UPDATE  : 'update',
+    REMOVE  : 'remove',
+    DELETE  : 'delete',
+    RESTORE : 'restore',
+    SEARCH  : 'search',
+    FILTER  : 'filter',
 
     /**
      * Take an action with a collection.
      */
-    ADD_COLLECTION    : (collection) => `${IGrace.ADD}_${collection}`,
-    UPDATE_COLLECTION : (collection) => `${IGrace.UPDATE}_${collection}`,
-    DELETE_COLLECTION : (collection) => `${IGrace.DELETE}_${collection}`,
-
-    EDIT_COLLECTION: (collection, isBtn = false) =>
-        isBtn
-            ? `.${IGrace.EDIT}-${collection}-btn`
-            : `#${IGrace.EDIT}_${collection}_modal`,
-    DELETE_COLLECTION_BUTTON: (collection, isId = false)  =>
-        isId
-            ? `#${IGrace.DELETE}_${collection}_btn`
-            : `.${IGrace.DELETE}-${collection}-btn`,
+    ADD_COLLECTION     : (collection) => `${IGrace.ADD}_${collection}`,
+    UPDATE_COLLECTION  : (collection) => `${IGrace.UPDATE}_${collection}`,
+    DELETE_COLLECTION  : (collection) => `${IGrace.DELETE}_${collection}`,
 
     /*################################### End Actions ###################################*/
 
@@ -64,9 +58,11 @@ const IGrace = {
     /**
      * Action message.
      */
-    ADDED   : () => `${IGrace.ADD}ed`,
-    UPDATED : () => `${IGrace.UPDATE}d`,
-    DELETED : () => `${IGrace.DELETE}d`,
+    ADDED    : () => `${IGrace.ADD}ed`,
+    UPDATED  : () => `${IGrace.UPDATE}d`,
+    REMOVED  : () => `${IGrace.REMOVE}d`,
+    DELETED  : () => `${IGrace.DELETE}d`,
+    RESTORED : () => `${IGrace.RESTORE}d`,
 
     /*################################### End Statuses ###################################*/
 
@@ -200,6 +196,7 @@ const IGrace = {
 
         for (let singular_rule in singular_rules) {
             const rule = singular_rules[singular_rule];
+
             if (rule.regex.test(word)) {
                 return word.replace(rule.regex, rule.replacement);
             }
@@ -233,6 +230,7 @@ const IGrace = {
 
         for (let plural_rule in plural_rules) {
             const rule = plural_rules[plural_rule];
+
             if (rule.regex.test(word)) {
                 return word.replace(rule.regex, rule.replacement);
             }
@@ -242,9 +240,25 @@ const IGrace = {
     },
 
     /**
+     * Convert an element to be an id.
+     */
+    IDENTIFY: (element) => element.replace(/-/g, '_'),
+
+    /**
      * Convert an element to be a class.
      */
     CLASS: (element) => element.replace(/_/g, '-'),
+
+    /**
+     * Delete or Restore an/many element(s).
+     */
+    COLLECTION_ACTION: (action, collection, isId = false) => {
+        const collection_action = `${action}-${collection}`;
+
+        return isId
+            ? `#${IGrace.IDENTIFY(collection_action)}_${action.includes(IGrace.EDIT) ? 'modal' : 'btn'}`
+            : `.${collection_action}-btn`;
+    },
 
     /*################################### End Other Features ###################################*/
 }

@@ -31,6 +31,12 @@ Common.ajaxDeleteRequest(IGrace.CATEGORY);
 // Delete Selected Categories
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.CATEGORY));
 
+// Restore Category
+Common.ajaxRestoreRequest(IGrace.CATEGORY);
+
+// Restore Selected Categories
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.CATEGORY));
+
 /* ---------------------------------- END CATEGORIES ---------------------------------- */
 
 

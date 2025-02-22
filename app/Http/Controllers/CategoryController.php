@@ -91,4 +91,30 @@ class CategoryController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified category.
+     *
+     * @param Category $category
+     * @return Response
+     */
+    final public function restore(Category $category): Response
+    {
+        $this->categoryService->restoreCategory($category);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected categories.
+     *
+     * @param Category $category
+     * @return Response
+     */
+    final public function restoreMultiple(Category $category): Response
+    {
+        $this->categoryService->restoreMultipleCategories($category);
+
+        return responseSuccess();
+    }
 }

@@ -27,33 +27,6 @@ class UserRequest extends FormRequest
 
 
 
-/**
-// Example 2: Modify Missing Model Behavior with Custom Exception
-// Manage user and throw a custom exception if user not found
-Route::resource('users', UserController::class)
-->missing(function (Request $request) {
-throw new NotFoundHttpException('User not found.');
-});
- */
-
-/**
-// Display a user and return a JSON response with error message if not found
-Route::get('/users/{user}', [UserController::class, 'show'])
-->name('users.show')
-->missing (function (Request $request) {
-return response()->json(['error' 'User not found. '], 484);
-});
- */
-
-
-// ابقى اعمل فولدر اسمه errors واعمل فيه فايلات للـ 404 عشان الـ not found والـ 503 عشان الـ server error أو الـ maintenance mode
-
-
-
-
-
-
-
     /**
      * Get the validation rules that apply to the request.
      *

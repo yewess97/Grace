@@ -13,7 +13,7 @@
                         @search(SEARCH_CATEGORIES)
 
                         {{-- Categories (Delete all selected) & (Add) Buttons --}}
-                        @collectionButtons(CATEGORIES_TABLE)
+                        @collectionButtons(CATEGORIES_TABLE, ADMIN_CATEGORIES_ROUTE)
                     </article>
 
                     {{-- Categories Table --}}

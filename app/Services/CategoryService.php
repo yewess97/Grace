@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Models\Subcategory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -58,7 +60,7 @@ class CategoryService
 
     /**
      * Delete a specified category
-     * and its images from the database and storage.
+     * and its images from the database & storage.
      *
      * @param Category $category
      * @return bool
@@ -66,23 +68,78 @@ class CategoryService
      */
     final public function deleteCategory(Category $category): bool
     {
-        $category->deleteRelatedSubcategories();
+        $this->deleteRelatedSubcategories($category);
 
         return delete($category, false, true);
     }
 
     /**
      * Delete the selected categories
-     * and their images from the database and storage.
+     * and their images from the database & storage.
+     *
+     * @param Category $categories
+     * @return Category|bool
+     */
+    final public function deleteMultipleCategories(Category $categories): Category|bool
+    {
+        $this->deleteRelatedSubcategories($categories);
+
+        return delete($categories, true, true);
+    }
+
+    /**
+     * Restore a specified category.
+     *
+     * @param Category $category
+     * @return bool
+     */
+    final public function restoreCategory(Category $category): bool
+    {
+        return restore($category);
+    }
+
+    /**
+     * Restore the selected categories.
      *
      * @param Category $categories
      * @return bool
-     * @throws NotFoundHttpException
      */
-    final public function deleteMultipleCategories(Category $categories): bool
+    final public function restoreMultipleCategories(Category $categories): bool
     {
-        $categories->deleteRelatedSubcategories();
+        return restore($categories, true);
+    }
 
-        return delete($categories, true, true);
+    /**
+     * Delete all or Detach the related subcategories of category(ies).
+     *
+     * @param Category $category
+     * @return void
+     */
+    private function deleteRelatedSubcategories(Category $category): void
+    {
+        $selected_ids = request()?->input('selected_'.pluralize(ID));
+
+        $categories_ids = $selected_ids
+            ? array_map('intval', array_from($selected_ids))
+            : [$category->{ID}];
+
+        // Get all related subcategories once
+        // Used lazy() to improve memory efficiency when handling large datasets
+        $related_subcategories = Subcategory::whereHas(CATEGORIES_TABLE, static function ($query) use ($categories_ids) {
+            $query->whereIn(ID, $categories_ids)->onlyTrashed();
+        })->with(CATEGORIES_TABLE)->lazy();
+
+        $related_subcategories->each(function (Subcategory $related_subcategory) use ($categories_ids) {
+            // Reduced database queries by using pluck(ID)
+            $related_categories_ids = $related_subcategory->{CATEGORIES_TABLE}()->withTrashed()->pluck(ID);
+
+            // Used diff() to efficiently check if the subcategory should be deleted or the category should be detached
+            if ($related_categories_ids->diff($categories_ids)->isNotEmpty()) {
+                return $related_subcategory->{CATEGORIES_TABLE}()->detach($categories_ids);
+            }
+
+            Storage::delete(imageSource($related_subcategory, MAIN_IMAGE, true));
+            return $related_subcategory->forceDelete();
+        });
     }
 }

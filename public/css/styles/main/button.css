@@ -26,6 +26,14 @@
     transform: translateY(var(--five-pixels));
 }
 
+.main-btn {
+    background-color: #2a95d5;
+}
+
+.main-btn:hover {
+    background-color: #37b9de;
+}
+
 .add-btn {
     background-color: #4d5fee;
 }
@@ -34,11 +42,11 @@
     background-color: #2c41ec;
 }
 
-.edit-btn {
+.restore-btn {
     background-color: #0cc989;
 }
 
-.edit-btn:hover {
+.restore-btn:hover {
     background-color: #0bad75;
 }
 
@@ -48,6 +56,14 @@
 
 .delete-btn:hover {
     background-color: #e02f3c;
+}
+
+.trashed-btn {
+    background-color: #dd7743;
+}
+
+.trashed-btn:hover {
+    background-color: #cc581c;
 }
 
 .view-btn {

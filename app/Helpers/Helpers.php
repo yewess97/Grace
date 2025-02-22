@@ -117,11 +117,12 @@ if (!function_exists('generalControllerRoutes')) {
     function generalControllerRoutes(string $controller, string $modelName, string $urlParam = null): RouteRegistrar
     {
         $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
-        $edit_model = EDIT.'_'.$modelName;
-        $update_model = UPDATE.'_'.$modelName;
-        $delete_model = DELETE.'_'.$modelName;
+        $edit_model             = EDIT.'_'.$modelName;
+        $update_model           = UPDATE.'_'.$modelName;
+        $delete_model           = DELETE.'_'.$modelName;
+        $restore_model          = RESTORE.'_'.$modelName;
 
-        return Route::controller($controller)->group(function () use ($modelName, $create_or_update_model, $edit_model, $update_model, $delete_model, $urlParam) {
+        return Route::controller($controller)->group(function () use ($modelName, $create_or_update_model, $edit_model, $update_model, $delete_model, $restore_model, $urlParam) {
             if ($modelName !== REVIEW_MODEL && !isAdminRoute()) {
                 $url = $modelName === CART_MODEL
                     ? $modelName
@@ -140,9 +141,13 @@ if (!function_exists('generalControllerRoutes')) {
                 Route::get('/'.kebabAll($edit_model).'/{'.$modelName.'}', EDIT)->name($edit_model);
             }
 
-            Route::delete('/'.kebabAll($delete_model).'/{'.$modelName.'}', DESTROY)->name($delete_model);
+            Route::delete('/'.kebabAll($delete_model).'/{'.$modelName.'}', DESTROY)->name($delete_model)->withTrashed();
 
-            Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model));
+            Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model))->withTrashed();
+
+            Route::put('/'.kebabAll($restore_model).'/{'.$modelName.'}', RESTORE)->name($restore_model)->withTrashed();
+
+            Route::put('/'.kebabAll(pluralize($restore_model)), RESTORE_MULTIPLE)->name(pluralize($restore_model))->withTrashed();
         });
     }
 }
@@ -711,13 +716,13 @@ if (!function_exists('showView')) {
      * Display the view for a specified resource.
      *
      * @param string $viewName
-     * @param array|null $vars
+     * @param array $vars
      * @return Application|Factory|View
      * @throws Throwable
      */
-    function showView(string $viewName, array $vars = null): Application|Factory|View
+    function showView(string $viewName, array $vars = []): Application|Factory|View
     {
-        $cart_config_vars = $vars ?? [];
+        $cart_config_vars = $vars;
 
         $view_vars = isAdminRoute()
             ? $vars
@@ -803,17 +808,17 @@ if (!function_exists('storeImageWithoutBackground')) {
             ->attach('image_file', file_get_contents($image->getRealPath()), $image->getClientOriginalName())
             ->post('https://api.remove.bg/v1.0/removebg', ['size' => 'auto']);
 
-        if ($response->successful()) {
-            $removed_image_bg = $response->body();
-
-            $image_name = time().random_int(10, 100).'.png';  // PNG is the default format returned by remove.bg
-
-            Storage::put($image_path.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
-
-            return $image_name;
+        if (!$response->successful()) {
+            throw new ServiceUnavailableHttpException(null, 'The remove.bg service is currently unavailable. Please try again later!');
         }
 
-        throw new ServiceUnavailableHttpException(null, 'The remove.bg service is currently unavailable. Please try again later.');
+        $removed_image_bg = $response->body();
+
+        $image_name = time().random_int(10, 100).'.png';  // PNG is the default format returned by remove.bg
+
+        Storage::put($image_path.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
+
+        return $image_name;
     }
 }
 
@@ -822,14 +827,14 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
     /**
      * Store or Update the main image.
      *
-     * @param Model $model
+     * @param Model|stdClass $model
      * @param string|null $modelId
      * @param string|null $imageType
      * @param mixed|null $image
      * @return string
-     * @throws NotFoundHttpException|RandomException
+     * @throws RandomException
      */
-    function storeOrUpdateImage(Model $model, string $modelId = null, string $imageType = null, mixed $image = null): string
+    function storeOrUpdateImage(Model|stdClass $model, string $modelId = null, string $imageType = null, mixed $image = null): string
     {
         $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
         $image_path = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
@@ -841,8 +846,12 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
         if (isset($exist_image_name)) {
             Storage::exists($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
                 ? Storage::delete($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
-                : throw new NotFoundHttpException('The targeted image is not found in the storage disk.');
+                : throw new NotFoundHttpException('The targeted image is not found in the storage disk');
         }
+
+//        $image_name = time().random_int(10, 100).'.png';
+//        $image->storeAs($image_path, $image_name);
+//        return $image_name;
 
         return storeImageWithoutBackground($image, $image_path);
     }
@@ -854,7 +863,7 @@ if (!function_exists('imageSource')) {
      * Get the image source.
      *
      * @param Model|stdClass|string $modelOrImageName
-     * @param string $imageType
+     * @param string|null $imageType
      * @param bool $forDelete
      * @return string
      */
@@ -902,187 +911,6 @@ if (!function_exists(CREATE.'Or'.ucfirst(UPDATE).'MultipleCollections')) {
         $related_collection_values = array_filter($relatedCollectionValues);
 
         return $newOrExistingCollection->{$relation}()->sync($related_collection_values);
-    }
-}
-
-
-if (!function_exists('getData')) {
-    /**
-     * Get the data of a specified record of a model.
-     *
-     * @param Model $model
-     * @param array $desiredData
-     * @return object
-     */
-    function getData(Model $model, array $desiredData): object
-    {
-        return $model::query()->findOrFail($model->{ID}, [ID, ...$desiredData]);
-    }
-}
-
-
-if (!function_exists(DELETE)) {
-    /**
-     * Delete a specified record or all/some records of a model.
-     *
-     * @param Model $model
-     * @param bool $isMultiple
-     * @param bool $deleteImages
-     * @return bool
-     * @throws NotFoundHttpException
-     */
-    function delete(Model $model, bool $isMultiple = false, bool $deleteImages = false): bool
-    {
-        $selected_ids = $isMultiple
-            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
-            : [];
-
-        if ($deleteImages) {
-            deleteImages($model, $isMultiple, $selected_ids);
-        }
-
-        $destroy = static fn(mixed $id) => $model::destroy($id);
-
-        return $isMultiple
-            ? $destroy($selected_ids)
-            : $destroy($model->{ID});
-    }
-}
-
-
-if (!function_exists(DELETE.'Images')) {
-    /**
-     * Delete the image(s) of a specified record or all/some records of a model.
-     *
-     * @param Model $model
-     * @param bool $isMultiple
-     * @param array $selectedIds
-     * @return bool
-     * @throws NotFoundHttpException
-     */
-    function deleteImages(Model $model, bool $isMultiple = false, array $selectedIds = []): bool
-    {
-        $images_data_list       = [];
-        $images                 = [];
-        $all_other_images_found = true;
-        $table_name             = $model->getTable();
-        $force_delete           = request()?->input('force_'.DELETE);
-        $db_images_count        = 'db_images_count';
-        $storage_images_count   = 'storage_images_count';
-        $image_type             = 'image_type';
-        $model_item_name        = 'model_item_name';
-        $deletable_images       = 'deletable_images';
-
-        $exception_message = static fn(array $imageData) => "One or more $imageData[$image_type] in the $table_name named as (".implode(', ', array_unique($imageData[$model_item_name])).") not found in the storage disk.";
-
-        $ids_to_delete = $isMultiple && count($selectedIds)
-            ? $selectedIds
-            : [$model->{ID}];
-
-        $images_data = static fn(string $imageType) => $isMultiple && count($selectedIds)
-            ? getImagesToDelete($model, $table_name, $imageType, true, $selectedIds)
-            : getImagesToDelete($model, $table_name, $imageType);
-
-        $images_length = $model::query()->whereIn(ID, $ids_to_delete);
-
-        if (str($table_name)->exactly(CATEGORIES_TABLE)) {
-            $category_banner_image_length = $images_length->pluck(BANNER_IMAGE)->count();
-
-            if ($category_banner_image_length > 0) {
-                $images_data_list = $images_data(BANNER_IMAGE);
-            }
-        }
-
-        if (str($table_name)->exactly(PRODUCTS_TABLE)) {
-            $product_thumb_images_length = $images_length->withCount(THUMB_IMAGES)
-                ->pluck(THUMB_IMAGES_TABLE.'_count')
-                ->first();
-
-            if ($product_thumb_images_length > 0) {
-                $images_data_list = $images_data(THUMB_IMAGE);
-            }
-        }
-
-        if (!empty($images_data_list)) {
-            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) {
-                throw new NotFoundHttpException($exception_message($images_data_list));
-            }
-
-            $images = [...$images_data_list[$deletable_images]];
-
-            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && $force_delete) {
-                $all_other_images_found = false;
-            }
-        }
-
-        if (is_array($images)) {
-            $images_data_list = $images_data(MAIN_IMAGE);
-
-            if ($images_data_list[$db_images_count] === $images_data_list[$storage_images_count]) {
-                $all_other_images_found = true;
-            }
-
-            if (($all_other_images_found && $images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) || (!$all_other_images_found && +$force_delete !== 2)) {
-                throw new NotFoundHttpException($exception_message($images_data_list));
-            }
-
-            $images = [...$images, ...$images_data_list[$deletable_images]];
-        }
-
-        $images_to_delete = array_filter($images, static fn($element) => !is_array($element));
-
-        return Storage::delete($images_to_delete);
-    }
-}
-
-
-if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
-    /**
-     * Get the image(s) of a specified record or all/some records of a model.
-     *
-     * @param Model|stdClass $model
-     * @param string $tableName
-     * @param string $imageType
-     * @param bool $isMultiple
-     * @param array $selectedIds
-     * @return array
-     */
-    function getImagesToDelete(Model|stdClass $model, string $tableName, string $imageType, bool $isMultiple = false, array $selectedIds = []): array
-    {
-        if ($isMultiple && count($selectedIds)) {
-            $images = str($imageType)->exactly(THUMB_IMAGE)
-                ? $model::query()->findOrFail($selectedIds, [ID, NAME])?->pluck(THUMB_IMAGES)->flatten()
-                : $model::query()->findOrFail($selectedIds, [NAME, $imageType]);
-        }
-        else {
-            $images = str($imageType)->exactly(THUMB_IMAGE)
-                ? $model->{THUMB_IMAGES}
-                : collect([$model]);
-        }
-
-        $deletable_images = $images->filter(fn($collection) => Storage::exists(imageSource($collection, $imageType, true)))
-            ->map(fn(Model $collection) => imageSource($collection, $imageType, true))
-            ->toArray();
-
-        $deletable_images[] = $images->pluck($imageType)->toArray();
-
-        $db_images_count = count(end($deletable_images));
-        $storage_images_count = count(array_filter($deletable_images, static fn($element) => !is_array($element)));
-
-        $image_type = capitalizeAll($imageType);
-
-        $model_item_name = $images->when(str($imageType)->exactly(THUMB_IMAGE), static function (Collection $collection) use (&$model_name) {
-            return $collection->filter(fn(ThumbImage $thumb_image) => !Storage::exists(imageSource($thumb_image, THUMB_IMAGE, true)))
-                ->pluck(singularize($tableName))
-                ->pluck(NAME)
-                ->toArray();
-        }, static function (Collection $collection) use (&$imageType) {
-            return $collection->filter(fn($collection) => !Storage::exists(imageSource($collection, $imageType, true)))
-                ->pluck(NAME)
-                ->toArray();
-        });
-
-        return compact('deletable_images', 'db_images_count', 'storage_images_count', 'image_type', 'model_item_name');
     }
 }
 
@@ -1137,5 +965,206 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
         }
 
         return User::query()->create($attributes);
+    }
+}
+
+
+if (!function_exists('getData')) {
+    /**
+     * Get the data of a specified record of a model.
+     *
+     * @param Model|stdClass $model
+     * @param array $desiredData
+     * @return object
+     */
+    function getData(Model|stdClass $model, array $desiredData): object
+    {
+        return $model::query()->findOrFail($model->{ID}, [ID, ...$desiredData]);
+    }
+}
+
+
+if (!function_exists(DELETE)) {
+    /**
+     * Delete a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param bool $isMultiple
+     * @param bool $deleteImages
+     * @return bool
+     */
+    function delete(Model|stdClass $model, bool $isMultiple = false, bool $deleteImages = false): bool
+    {
+        $selected_ids = $isMultiple
+            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
+            : [];
+
+        $destroy = static function (mixed $ids) use ($model, $isMultiple, $deleteImages, $selected_ids) {
+            if (!$model::query()->whereIn(ID, $ids)->get()->every(fn($collection) => $collection->trashed())) {
+                return $model::destroy($ids);
+            }
+
+            if ($deleteImages) {
+                deleteImages($model, $isMultiple, $selected_ids);
+            }
+
+            return $isMultiple
+                ? $model::query()->whereIn(ID, $ids)->forceDelete()
+                : $model->forceDelete();
+        };
+
+        return $isMultiple
+            ? $destroy($selected_ids)
+            : $destroy([$model->{ID}]);
+    }
+}
+
+
+if (!function_exists(DELETE.'Images')) {
+    /**
+     * Delete the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param bool $isMultiple
+     * @param array $selectedIds
+     * @return bool
+     */
+    function deleteImages(Model|stdClass $model, bool $isMultiple = false, array $selectedIds = []): bool
+    {
+        $images_data_list       = [];
+        $images                 = [];
+        $all_other_images_found = true;
+        $table_name             = $model->getTable();
+        $force_delete           = request()?->input('force_'.DELETE);
+        $db_images_count        = 'db_images_count';
+        $storage_images_count   = 'storage_images_count';
+        $image_type             = 'image_type';
+        $model_item_name        = 'model_item_name';
+        $deletable_images       = 'deletable_images';
+
+        $exception_message = static fn(array $imageData) => "One or more $imageData[$image_type] in the $table_name named as (".implode(', ', array_unique($imageData[$model_item_name])).") not found in the storage disk!";
+
+        $ids_to_delete = $isMultiple && count($selectedIds)
+            ? $selectedIds
+            : [$model->{ID}];
+
+        $images_data = static fn(string $imageType) => $isMultiple && count($selectedIds)
+            ? getImagesToDelete($model, $table_name, $imageType, true, $selectedIds)
+            : getImagesToDelete($model, $table_name, $imageType);
+
+        $images_to_delete = $model::query()->whereIn(ID, $ids_to_delete)->onlyTrashed();
+
+        if (str($table_name)->exactly(CATEGORIES_TABLE)
+            && $images_to_delete->pluck(BANNER_IMAGE)->count()) {
+            $images_data_list = $images_data(BANNER_IMAGE);
+        }
+
+        if (str($table_name)->exactly(PRODUCTS_TABLE)
+            && $images_to_delete->withCount(THUMB_IMAGES)->pluck(THUMB_IMAGES_TABLE.'_count')->first() > 0) {
+                $images_data_list = $images_data(THUMB_IMAGE);
+        }
+
+        if (!empty($images_data_list)) {
+            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) {
+                throw new NotFoundHttpException($exception_message($images_data_list));
+            }
+
+            $images = [...$images_data_list[$deletable_images]];
+
+            if ($images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && $force_delete) {
+                $all_other_images_found = false;
+            }
+        }
+
+        if (is_array($images)) {
+            $images_data_list = $images_data(MAIN_IMAGE);
+
+            if ($images_data_list[$db_images_count] === $images_data_list[$storage_images_count]) {
+                $all_other_images_found = true;
+            }
+
+            if (($all_other_images_found && $images_data_list[$db_images_count] !== $images_data_list[$storage_images_count] && !$force_delete) || (!$all_other_images_found && +$force_delete !== 2)) {
+                throw new NotFoundHttpException($exception_message($images_data_list));
+            }
+
+            $images = [...$images, ...$images_data_list[$deletable_images]];
+        }
+
+        $images_to_delete = array_filter($images, static fn($element) => !is_array($element));
+
+        return Storage::delete($images_to_delete);
+    }
+}
+
+
+if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
+    /**
+     * Get the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param string $tableName
+     * @param string $imageType
+     * @param bool $isMultiple
+     * @param array $selectedIds
+     * @return array
+     */
+    function getImagesToDelete(Model|stdClass $model, string $tableName, string $imageType, bool $isMultiple = false, array $selectedIds = []): array
+    {
+        $images_to_delete = static fn(array $attributes) => $model::query()->onlyTrashed()->findOrFail($selectedIds, $attributes);
+
+        $images = ($isMultiple && count($selectedIds))
+            ? $images_to_delete([NAME, $imageType])
+            : collect([$model]);
+
+        if (str($imageType)->exactly(THUMB_IMAGE)) {
+            $images = ($isMultiple && count($selectedIds))
+                ? $images_to_delete([ID, NAME])?->pluck(THUMB_IMAGES)->flatten()
+                : $model->{THUMB_IMAGES};
+        }
+
+        $deletable_images = $images->filter(fn($collection) => Storage::exists(imageSource($collection, $imageType, true)))
+            ->map(fn(Model $collection) => imageSource($collection, $imageType, true))
+            ->toArray();
+
+        $deletable_images[] = $images->pluck($imageType)->toArray();
+
+        $db_images_count = count(end($deletable_images));
+        $storage_images_count = count(array_filter($deletable_images, static fn($element) => !is_array($element)));
+
+        $image_type = capitalizeAll($imageType);
+
+        $model_item_name = $images->when(str($imageType)->exactly(THUMB_IMAGE), static function (Collection $collection) use (&$tableName) {
+            return $collection->filter(fn(ThumbImage $thumb_image) => !Storage::exists(imageSource($thumb_image, THUMB_IMAGE, true)))
+                ->pluck(singularize($tableName))
+                ->pluck(NAME)
+                ->toArray();
+        }, static function (Collection $collection) use (&$imageType) {
+            return $collection->filter(fn($collection) => !Storage::exists(imageSource($collection, $imageType, true)))
+                ->pluck(NAME)
+                ->toArray();
+        });
+
+        return compact('deletable_images', 'db_images_count', 'storage_images_count', 'image_type', 'model_item_name');
+    }
+}
+
+
+if (!function_exists(RESTORE)) {
+    /**
+     * Restore a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param bool $isMultiple
+     * @return bool
+     */
+    function restore(Model|stdClass $model, bool $isMultiple = false): bool
+    {
+        $selected_ids = $isMultiple
+            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
+            : [];
+
+        return $isMultiple
+            ? $model::query()->whereIn(ID, $selected_ids)->restore()
+            : $model->restore();
     }
 }

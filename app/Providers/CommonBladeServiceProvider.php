@@ -104,9 +104,28 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('collectionButtons', static function (string $buttonsArgs) {
-            [$table_name] = array_from($buttonsArgs);
+            [$table_name, $route] = array_from($buttonsArgs);
 
-            return "<?php echo \"<article class='col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-3'><div class='d-flex flex-wrap justify-content-center align-items-center gap-3'><button type='button' role='button' title='\".capitalizeAll(DELETE.'_'.$table_name).\"' id='delete_\".$table_name.\"_btn' class='btn delete-btn' data-route=\".route(DELETE.'_'.$table_name).\">Delete all selected</button><button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='btn add-btn' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'>\".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button></div></article>\" ?>";
+            $collections_trashed = "<?php
+                    \$button_class = 'btn d-flex justify-content-center align-items-center gap-2';
+
+                    \$button_text = \$restore_all_selected_button = \$trashed_main_button = '';
+
+                    if (request()?->input(STATUS) === TRASHED) {
+                        \$button_text = DELETE;
+
+                        \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
+
+                        \$trashed_main_button = \"<a href=\".route($route).\" type='button' role='button' title='\".capitalizeAll('Main_'.$table_name).\"' class='main-btn \$button_class' aria-label='\".capitalizeAll('Main_'.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.$table_name).\"</a>\";
+                    }
+                    else {
+                        \$button_text = REMOVE;
+
+                        \$trashed_main_button = \"<a href=\".route($route, [STATUS => TRASHED]).\" type='button' role='button' title='\".capitalizeAll(TRASHED.'_'.$table_name).\"' class='trashed-btn \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.$table_name).\"'><i class='fa-solid fa-trash'></i> \".capitalizeAll(TRASHED.'_'.$table_name).\"</a>\";
+                    }
+            ?>";
+
+            return $collections_trashed."<?php echo \"<article class='col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-3'><div class='d-flex flex-wrap justify-content-center align-items-center gap-3'><button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='fa-solid fa-trash-can'></i> \".ucfirst(\$button_text).\" all selected</button>\$restore_all_selected_button<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button></div></article>\$trashed_main_button\"?>";
         });
 
         /**
@@ -159,7 +178,9 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? ++$colspan
                 : $colspan += 3;
 
-            return "<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>No \".ucwords($table_name).\" Found</td></tr>\" ?>";
+            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS))).' '.capitalizeAll($table_name).' Found' ?>";
+
+            return $message_label."<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>\$message</td></tr>\" ?>";
         });
 
         /**

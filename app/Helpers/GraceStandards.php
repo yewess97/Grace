@@ -10,11 +10,14 @@ define("CREATE",           'create');
 define("EDIT",             'edit');
 define("UPDATE",           'update');
 define("SAVE_CHANGES",     'save changes');
+define("REMOVE",           'remove');
 define("DELETE",           'delete');
 define("DESTROY",          'destroy');
+define("RESTORE",          'restore');
 define("FILTER",           'filter');
 define("STORE_OR_UPDATE",  'storeOr'.ucfirst(UPDATE));
 define("DESTROY_MULTIPLE", DESTROY.'Multiple');
+define("RESTORE_MULTIPLE", RESTORE.'Multiple');
 
 #################################### End Actions ####################################
 
@@ -119,7 +122,7 @@ define("TOKEN", 'token');
 /**
  * Dates attributes.
  */
-define("DATES", [CREATE.'d_at', UPDATE.'d_at']);
+define("DATES", [CREATE.'d_at', UPDATE.'d_at', DELETE.'d_at']);
 
 #################################### End Database Attributes ####################################
 
@@ -210,6 +213,7 @@ define("SERVICES",             'services');
 define("PAYMENT",              'payment');
 define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
+define("TRASHED",              'trashed');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
 
@@ -282,13 +286,13 @@ define("REVIEW_RATING",     REVIEW_MODEL.'_'.RATING);
 /**
  * Foreign Keys.
  */
-define("CATEGORY_ID",    modelId(CATEGORY_MODEL));
-define("SUBCATEGORY_ID", modelId(SUBCATEGORY_MODEL));
-define("PRODUCT_ID",     modelId(PRODUCT_MODEL));
-define("ORDER_ID",       modelId(ORDER_MODEL));
-define("USER_ID",        modelId(USER_MODEL));
-define("ADDRESS_ID",     modelId(ADDRESS_MODEL));
-define("REVIEW_ID",      modelId(REVIEW_MODEL));
+define("CATEGORY_ID",    collectionId(CATEGORY_MODEL));
+define("SUBCATEGORY_ID", collectionId(SUBCATEGORY_MODEL));
+define("PRODUCT_ID",     collectionId(PRODUCT_MODEL));
+define("ORDER_ID",       collectionId(ORDER_MODEL));
+define("USER_ID",        collectionId(USER_MODEL));
+define("ADDRESS_ID",     collectionId(ADDRESS_MODEL));
+define("REVIEW_ID",      collectionId(REVIEW_MODEL));
 
 #################################### End Foreign Keys ####################################
 
@@ -297,13 +301,13 @@ define("REVIEW_ID",      modelId(REVIEW_MODEL));
 /**
  * The Foreign Keys For Update.
  */
-define("UPDATE_CATEGORY_ID",    modelId(CATEGORY_MODEL,    true));
-define("UPDATE_SUBCATEGORY_ID", modelId(SUBCATEGORY_MODEL, true));
-define("UPDATE_PRODUCT_ID",     modelId(PRODUCT_MODEL,     true));
-define("UPDATE_ORDER_ID",       modelId(ORDER_MODEL,       true));
-define("UPDATE_USER_ID",        modelId(USER_MODEL,        true));
-define("UPDATE_ADDRESS_ID",     modelId(ADDRESS_MODEL,     true));
-define("UPDATE_REVIEW_ID",      modelId(REVIEW_MODEL,      true));
+define("UPDATE_CATEGORY_ID",    collectionId(CATEGORY_MODEL,    true));
+define("UPDATE_SUBCATEGORY_ID", collectionId(SUBCATEGORY_MODEL, true));
+define("UPDATE_PRODUCT_ID",     collectionId(PRODUCT_MODEL,     true));
+define("UPDATE_ORDER_ID",       collectionId(ORDER_MODEL,       true));
+define("UPDATE_USER_ID",        collectionId(USER_MODEL,        true));
+define("UPDATE_ADDRESS_ID",     collectionId(ADDRESS_MODEL,     true));
+define("UPDATE_REVIEW_ID",      collectionId(REVIEW_MODEL,      true));
 
 #################################### End The Foreign Keys For Update ####################################
 
@@ -550,24 +554,24 @@ define("REVIEW_FILLABLE_ATTRIBUTES", [
 
 #################################### Titles ####################################
 /**
- * Add Model Title.
+ * Add Collection Title.
  */
-define("ADD_CATEGORY_TITLE",    addEditDelete(ADD, CATEGORY_MODEL,    true));
-define("ADD_SUBCATEGORY_TITLE", addEditDelete(ADD, SUBCATEGORY_MODEL, true));
-define("ADD_PRODUCT_TITLE",     addEditDelete(ADD, PRODUCT_MODEL,     true));
-define("ADD_USER_TITLE",        addEditDelete(ADD, USER_MODEL,        true));
-define("ADD_ADDRESS_TITLE",     addEditDelete(ADD, ADDRESS_MODEL,     true));
+define("ADD_CATEGORY_TITLE",    collectionAction(ADD, CATEGORY_MODEL,    true));
+define("ADD_SUBCATEGORY_TITLE", collectionAction(ADD, SUBCATEGORY_MODEL, true));
+define("ADD_PRODUCT_TITLE",     collectionAction(ADD, PRODUCT_MODEL,     true));
+define("ADD_USER_TITLE",        collectionAction(ADD, USER_MODEL,        true));
+define("ADD_ADDRESS_TITLE",     collectionAction(ADD, ADDRESS_MODEL,     true));
 
 /**
- * Edit Model Title.
+ * Edit Collection Title.
  */
-define("EDIT_CATEGORY_TITLE",    addEditDelete(EDIT, CATEGORY_MODEL,    true));
-define("EDIT_SUBCATEGORY_TITLE", addEditDelete(EDIT, SUBCATEGORY_MODEL, true));
-define("EDIT_PRODUCT_TITLE",     addEditDelete(EDIT, PRODUCT_MODEL,     true));
-define("EDIT_ORDER_TITLE",       addEditDelete(EDIT, ORDER_MODEL,       true));
-define("EDIT_USER_TITLE",        addEditDelete(EDIT, USER_MODEL,        true));
-define("EDIT_ADDRESS_TITLE",     addEditDelete(EDIT, ADDRESS_MODEL,     true));
-define("EDIT_REVIEW_TITLE",      addEditDelete(EDIT, REVIEW_MODEL,      true));
+define("EDIT_CATEGORY_TITLE",    collectionAction(EDIT, CATEGORY_MODEL,    true));
+define("EDIT_SUBCATEGORY_TITLE", collectionAction(EDIT, SUBCATEGORY_MODEL, true));
+define("EDIT_PRODUCT_TITLE",     collectionAction(EDIT, PRODUCT_MODEL,     true));
+define("EDIT_ORDER_TITLE",       collectionAction(EDIT, ORDER_MODEL,       true));
+define("EDIT_USER_TITLE",        collectionAction(EDIT, USER_MODEL,        true));
+define("EDIT_ADDRESS_TITLE",     collectionAction(EDIT, ADDRESS_MODEL,     true));
+define("EDIT_REVIEW_TITLE",      collectionAction(EDIT, REVIEW_MODEL,      true));
 
 /**
  * Other Titles.
@@ -581,93 +585,125 @@ define("ORDER_NUMBER_TITLE",   ORDER_MODEL.'_number_'.TITLE);
 #################################### End Titles ####################################
 
 
-#################################### Create Or Update Model ####################################
+#################################### Create Or Update Collection ####################################
 /**
- * Create Or Update Model.
+ * Create Or Update Collection.
  */
-define("CREATE_UPDATE_CATEGORY",    createUpdate(CATEGORY_MODEL));
-define("CREATE_UPDATE_SUBCATEGORY", createUpdate(SUBCATEGORY_MODEL));
-define("CREATE_UPDATE_PRODUCT",     createUpdate(PRODUCT_MODEL));
-define("CREATE_UPDATE_CART",        createUpdate(CART_MODEL));
-define("CREATE_UPDATE_ORDER",       createUpdate(ORDER_MODEL));
-define("CREATE_UPDATE_USER",        createUpdate(USER_MODEL));
-define("CREATE_UPDATE_ADDRESS",     createUpdate(ADDRESS_MODEL));
-define("CREATE_UPDATE_REVIEW",      createUpdate(REVIEW_MODEL));
+define("CREATE_UPDATE_CATEGORY",    createOrUpdate(CATEGORY_MODEL));
+define("CREATE_UPDATE_SUBCATEGORY", createOrUpdate(SUBCATEGORY_MODEL));
+define("CREATE_UPDATE_PRODUCT",     createOrUpdate(PRODUCT_MODEL));
+define("CREATE_UPDATE_CART",        createOrUpdate(CART_MODEL));
+define("CREATE_UPDATE_ORDER",       createOrUpdate(ORDER_MODEL));
+define("CREATE_UPDATE_USER",        createOrUpdate(USER_MODEL));
+define("CREATE_UPDATE_ADDRESS",     createOrUpdate(ADDRESS_MODEL));
+define("CREATE_UPDATE_REVIEW",      createOrUpdate(REVIEW_MODEL));
 
-#################################### End Create Or Update Model ####################################
+#################################### End Create Or Update Collection ####################################
 
 
-#################################### Edit Model ####################################
+#################################### Edit Collection ####################################
 /**
- * Edit Model.
+ * Edit Collection.
  */
-define("EDIT_CATEGORY",    addEditDelete(EDIT, CATEGORY_MODEL));
-define("EDIT_SUBCATEGORY", addEditDelete(EDIT, SUBCATEGORY_MODEL));
-define("EDIT_PRODUCT",     addEditDelete(EDIT, PRODUCT_MODEL));
-define("EDIT_ORDER",       addEditDelete(EDIT, ORDER_MODEL));
-define("EDIT_USER",        addEditDelete(EDIT, USER_MODEL));
-define("EDIT_ADDRESS",     addEditDelete(EDIT, ADDRESS_MODEL));
-define("EDIT_REVIEW",      addEditDelete(EDIT, REVIEW_MODEL));
+define("EDIT_CATEGORY",    collectionAction(EDIT, CATEGORY_MODEL));
+define("EDIT_SUBCATEGORY", collectionAction(EDIT, SUBCATEGORY_MODEL));
+define("EDIT_PRODUCT",     collectionAction(EDIT, PRODUCT_MODEL));
+define("EDIT_ORDER",       collectionAction(EDIT, ORDER_MODEL));
+define("EDIT_USER",        collectionAction(EDIT, USER_MODEL));
+define("EDIT_ADDRESS",     collectionAction(EDIT, ADDRESS_MODEL));
+define("EDIT_REVIEW",      collectionAction(EDIT, REVIEW_MODEL));
 
-#################################### End Edit Model ####################################
+#################################### End Edit Collection ####################################
 
 
-#################################### Delete Model ####################################
+#################################### Remove Collection ####################################
 /**
- * Delete Model.
+ * Remove Collection.
  */
-define("DELETE_CATEGORY",    addEditDelete(DELETE, CATEGORY_MODEL));
-define("DELETE_SUBCATEGORY", addEditDelete(DELETE, SUBCATEGORY_MODEL));
-define("DELETE_PRODUCT",     addEditDelete(DELETE, PRODUCT_MODEL));
-define("DELETE_CART",        addEditDelete(DELETE, CART_MODEL));
-define("DELETE_ORDER",       addEditDelete(DELETE, ORDER_MODEL));
-define("DELETE_USER",        addEditDelete(DELETE, USER_MODEL));
-define("DELETE_ADDRESS",     addEditDelete(DELETE, ADDRESS_MODEL));
-define("DELETE_REVIEW",      addEditDelete(DELETE, REVIEW_MODEL));
+define("REMOVE_CATEGORY",    collectionAction(REMOVE, CATEGORY_MODEL));
+define("REMOVE_SUBCATEGORY", collectionAction(REMOVE, SUBCATEGORY_MODEL));
+define("REMOVE_PRODUCT",     collectionAction(REMOVE, PRODUCT_MODEL));
+define("REMOVE_CART",        collectionAction(REMOVE, CART_MODEL));
+define("REMOVE_ORDER",       collectionAction(REMOVE, ORDER_MODEL));
+define("REMOVE_USER",        collectionAction(REMOVE, USER_MODEL));
+define("REMOVE_ADDRESS",     collectionAction(REMOVE, ADDRESS_MODEL));
+define("REMOVE_REVIEW",      collectionAction(REMOVE, REVIEW_MODEL));
 
-#################################### End Delete Model ####################################
+#################################### End Remove Collection ####################################
+
+
+#################################### Delete Collection ####################################
+/**
+ * Delete Collection.
+ */
+define("DELETE_CATEGORY",    collectionAction(DELETE, CATEGORY_MODEL));
+define("DELETE_SUBCATEGORY", collectionAction(DELETE, SUBCATEGORY_MODEL));
+define("DELETE_PRODUCT",     collectionAction(DELETE, PRODUCT_MODEL));
+define("DELETE_CART",        collectionAction(DELETE, CART_MODEL));
+define("DELETE_ORDER",       collectionAction(DELETE, ORDER_MODEL));
+define("DELETE_USER",        collectionAction(DELETE, USER_MODEL));
+define("DELETE_ADDRESS",     collectionAction(DELETE, ADDRESS_MODEL));
+define("DELETE_REVIEW",      collectionAction(DELETE, REVIEW_MODEL));
+
+#################################### End Delete Collection ####################################
+
+
+#################################### Restore Collection ####################################
+/**
+ * Restore Collection.
+ */
+define("RESTORE_CATEGORY",    collectionAction(RESTORE, CATEGORY_MODEL));
+define("RESTORE_SUBCATEGORY", collectionAction(RESTORE, SUBCATEGORY_MODEL));
+define("RESTORE_PRODUCT",     collectionAction(RESTORE, PRODUCT_MODEL));
+define("RESTORE_CART",        collectionAction(RESTORE, CART_MODEL));
+define("RESTORE_ORDER",       collectionAction(RESTORE, ORDER_MODEL));
+define("RESTORE_USER",        collectionAction(RESTORE, USER_MODEL));
+define("RESTORE_ADDRESS",     collectionAction(RESTORE, ADDRESS_MODEL));
+define("RESTORE_REVIEW",      collectionAction(RESTORE, REVIEW_MODEL));
+
+#################################### End Restore Collection ####################################
 
 
 #################################### Errors ####################################
 /**
  * Auth Error.
  */
-define("REGISTER_USER_ERROR",        actionModelError(REGISTER,        USER_MODEL));
-define("LOGIN_USER_ERROR",           actionModelError(LOGIN,           USER_MODEL));
-define("FORGOT_PASSWORD_USER_ERROR", actionModelError(FORGOT_PASSWORD, USER_MODEL));
-define("RESET_PASSWORD_USER_ERROR",  actionModelError(RESET_PASSWORD,  USER_MODEL));
+define("REGISTER_USER_ERROR",        collectionActionError(REGISTER,        USER_MODEL));
+define("LOGIN_USER_ERROR",           collectionActionError(LOGIN,           USER_MODEL));
+define("FORGOT_PASSWORD_USER_ERROR", collectionActionError(FORGOT_PASSWORD, USER_MODEL));
+define("RESET_PASSWORD_USER_ERROR",  collectionActionError(RESET_PASSWORD,  USER_MODEL));
 
 /**
- * Add Model Error.
+ * Add Collection Error.
  */
-define("ADD_CATEGORY_ERROR",     actionModelError(ADD, CATEGORY_MODEL));
-define("ADD_SUBCATEGORY_ERROR",  actionModelError(ADD, SUBCATEGORY_MODEL));
-define("ADD_PRODUCT_ERROR",      actionModelError(ADD, PRODUCT_MODEL));
-define("ADD_CART_PRODUCT_ERROR", actionModelError(ADD, CART_MODEL.'_'.PRODUCT_MODEL));
-define("ADD_ORDER_ERROR",        actionModelError(ADD, ORDER_MODEL));
-define("ADD_USER_ERROR",         actionModelError(ADD, USER_MODEL));
-define("ADD_ADDRESS_ERROR",      actionModelError(ADD, ADDRESS_MODEL));
-define("ADD_REVIEW_ERROR",       actionModelError(ADD, REVIEW_MODEL));
+define("ADD_CATEGORY_ERROR",     collectionActionError(ADD, CATEGORY_MODEL));
+define("ADD_SUBCATEGORY_ERROR",  collectionActionError(ADD, SUBCATEGORY_MODEL));
+define("ADD_PRODUCT_ERROR",      collectionActionError(ADD, PRODUCT_MODEL));
+define("ADD_CART_PRODUCT_ERROR", collectionActionError(ADD, CART_MODEL.'_'.PRODUCT_MODEL));
+define("ADD_ORDER_ERROR",        collectionActionError(ADD, ORDER_MODEL));
+define("ADD_USER_ERROR",         collectionActionError(ADD, USER_MODEL));
+define("ADD_ADDRESS_ERROR",      collectionActionError(ADD, ADDRESS_MODEL));
+define("ADD_REVIEW_ERROR",       collectionActionError(ADD, REVIEW_MODEL));
 
 /**
- * Update Model Error.
+ * Update Collection Error.
  */
-define("UPDATE_CATEGORY_ERROR",    actionModelError(UPDATE, CATEGORY_MODEL));
-define("UPDATE_SUBCATEGORY_ERROR", actionModelError(UPDATE, SUBCATEGORY_MODEL));
-define("UPDATE_PRODUCT_ERROR",     actionModelError(UPDATE, PRODUCT_MODEL));
-define("UPDATE_USER_ERROR",        actionModelError(UPDATE, USER_MODEL));
-define("UPDATE_ADDRESS_ERROR",     actionModelError(UPDATE, ADDRESS_MODEL));
-define("UPDATE_ORDER_ERROR",       actionModelError(UPDATE, ORDER_MODEL));
-define("UPDATE_REVIEW_ERROR",      actionModelError(UPDATE, REVIEW_MODEL));
+define("UPDATE_CATEGORY_ERROR",    collectionActionError(UPDATE, CATEGORY_MODEL));
+define("UPDATE_SUBCATEGORY_ERROR", collectionActionError(UPDATE, SUBCATEGORY_MODEL));
+define("UPDATE_PRODUCT_ERROR",     collectionActionError(UPDATE, PRODUCT_MODEL));
+define("UPDATE_USER_ERROR",        collectionActionError(UPDATE, USER_MODEL));
+define("UPDATE_ADDRESS_ERROR",     collectionActionError(UPDATE, ADDRESS_MODEL));
+define("UPDATE_ORDER_ERROR",       collectionActionError(UPDATE, ORDER_MODEL));
+define("UPDATE_REVIEW_ERROR",      collectionActionError(UPDATE, REVIEW_MODEL));
 
 /**
- * Filter Model Error.
+ * Filter Collection Error.
  */
-define("FILTER_DASHBOARD_ERROR", actionModelError(FILTER, DASHBOARD));
-define("FILTER_PRODUCTS_ERROR",  actionModelError(FILTER, PRODUCTS_TABLE));
-define("FILTER_USERS_ERROR",     actionModelError(FILTER, USERS_TABLE));
-define("FILTER_ORDERS_ERROR",    actionModelError(FILTER, ORDERS_TABLE));
-define("FILTER_REVIEWS_ERROR",   actionModelError(FILTER, REVIEWS_TABLE));
+define("FILTER_DASHBOARD_ERROR", collectionActionError(FILTER, DASHBOARD));
+define("FILTER_PRODUCTS_ERROR",  collectionActionError(FILTER, PRODUCTS_TABLE));
+define("FILTER_USERS_ERROR",     collectionActionError(FILTER, USERS_TABLE));
+define("FILTER_ORDERS_ERROR",    collectionActionError(FILTER, ORDERS_TABLE));
+define("FILTER_REVIEWS_ERROR",   collectionActionError(FILTER, REVIEWS_TABLE));
 
 #################################### End Errors ####################################
 
@@ -707,7 +743,7 @@ define("USER_CONTACT_US_VIEW",      userView(kebabAll(CONTACT_US)));
 #################################### End Views ####################################
 
 
-#################################### Routes ####################################
+#################################### Admin Routes ####################################
 /**
  * Admin routes.
  */
@@ -721,7 +757,7 @@ define("ADMIN_USERS_ROUTE",          adminRoute(USERS_TABLE));
 define("ADMIN_USER_ADDRESSES_ROUTE", adminRoute(USER_ADDRESSES));
 define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
 
-#################################### End Routes ####################################
+#################################### End Admin Routes ####################################
 
 
 #################################### Components ####################################
@@ -910,63 +946,62 @@ define("REVIEW_RATING_ENUM", [
 
 #################################### IGrace Helper Functions ####################################
 /**
- * A specified model id
- * or Update a specified model id.
+ * Get or Update a specified collection id.
  *
- * @param string $modelName
+ * @param string $collectionName
  * @param bool $isUpdate
  * @return string
  */
-function modelId(string $modelName, bool $isUpdate = false): string
+function collectionId(string $collectionName, bool $isUpdate = false): string
 {
-    $model_id = "{$modelName}_".ID;
+    $collection_id = "{$collectionName}_".ID;
 
     return $isUpdate
-        ? UPDATE."_$model_id"
-        : $model_id;
+        ? UPDATE."_$collection_id"
+        : $collection_id;
 }
 
 
 /**
- * Add or Edit or Delete a specified model.
+ * Add or Edit or Delete a specified collection.
  *
  * @param string $action
- * @param string $modelName
+ * @param string $collectionName
  * @param bool $isTitle
  * @return string
  */
-function addEditDelete(string $action, string $modelName, bool $isTitle = false): string
+function collectionAction(string $action, string $collectionName, bool $isTitle = false): string
 {
-    $action_model = "{$action}_$modelName";
+    $collection_action = "{$action}_$collectionName";
 
     return $isTitle
-        ? capitalizeAll($action_model)
-        : $action_model;
+        ? capitalizeAll($collection_action)
+        : $collection_action;
 }
 
 
 /**
- * Action error for a specified model.
+ * Action error for a specified collection.
  *
  * @param string $action
- * @param string $modelName
+ * @param string $collectionName
  * @return string
  */
-function actionModelError(string $action, string $modelName): string
+function collectionActionError(string $action, string $collectionName): string
 {
-    return "{$action}_{$modelName}_error";
+    return "{$action}_{$collectionName}_error";
 }
 
 
 /**
- * Create or Update a specified model.
+ * Create or Update a specified collection.
  *
- * @param string $modelName
+ * @param string $collectionName
  * @return string
  */
-function createUpdate(string $modelName): string
+function createOrUpdate(string $collectionName): string
 {
-    return CREATE.'_'.UPDATE."_$modelName";
+    return CREATE.'_'.UPDATE."_$collectionName";
 }
 
 
@@ -1058,15 +1093,15 @@ function partial(string $partialName): string
  * Modal.
  *
  * @param string $action
- * @param string $model
+ * @param string $collection
  * @param bool $isUser
  * @return string
  */
-function modal(string $action, string $model, bool $isUser = false): string
+function modal(string $action, string $collection, bool $isUser = false): string
 {
     return $isUser
-        ? USER_MODEL.".modals.$action-$model"
-        : ADMIN.".modals.".pluralize($model).".$action-$model";
+        ? USER_MODEL.".modals.$action-$collection"
+        : ADMIN.".modals.".pluralize($collection).".$action-$collection";
 }
 
 
@@ -1083,7 +1118,7 @@ function email(string $emailName): string
 
 
 /**
- * Search/filter a specified table.
+ * Search or Filter a specified table.
  *
  * @param string $table
  * @param bool $isFilter

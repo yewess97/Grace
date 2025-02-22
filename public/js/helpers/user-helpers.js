@@ -187,7 +187,7 @@ const User = {
 
             $.ajax({
                 url: route,
-                method: IGrace.POST,
+                method: action === IGrace.ADD ? IGrace.POST : IGrace.PUT,
                 data: form_data,
                 success: (data) => {
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
@@ -496,7 +496,7 @@ const User = {
                         );
                     });
                 },
-                // error: () => Common.somethingWentWrongError(),
+                error: () => Common.somethingWentWrongError(),
             });
         }
     },

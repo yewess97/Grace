@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string(MAIN_IMAGE);
             $table->string(BANNER_IMAGE);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

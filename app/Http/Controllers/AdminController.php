@@ -21,6 +21,7 @@ use Throwable;
 class AdminController extends Controller
 {
     private array $id_name;
+    private string $status;
 
     /**
      * Admin Dashboard Constructor.
@@ -30,6 +31,7 @@ class AdminController extends Controller
     final public function __construct(private readonly DashboardService $dashboardService)
     {
         $this->id_name = [ID, NAME];
+        $this->status = request()?->input(STATUS);
     }
     /**
      * Dashboard.
@@ -49,7 +51,8 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View
     {
-        $categories = Category::fastPaginate(16);
+        $categories = Category::when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->fastPaginate(16);
 
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
         $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
@@ -133,26 +136,24 @@ class AdminController extends Controller
      */
     final public function orders(): RedirectResponse|Application|Factory|View|string
     {
-        $status = request()?->input(STATUS);
-
         $last_valid_status = session('last_valid_status');
 
-        if (!$status || !in_array((int) $status, array_values(ORDER_STATUS_ENUM), true)) {
+        if (!$this->status || !in_array((int) $this->status, array_values(ORDER_STATUS_ENUM), true)) {
             // Use the last valid status if available, otherwise, get the latest order status
             $redirect_status = $last_valid_status ?? Order::query()->latest()->first()?->{STATUS};
 
             return to_route(ADMIN_ORDERS_ROUTE, [STATUS => $redirect_status]);
         }
 
-        session()->push('last_valid_status', $status);
+        session()->push('last_valid_status', $this->status);
 
         $orders = Order::query()->latest()
-            ->whereStatus($status)
+            ->whereStatus($this->status)
             ->fastPaginate(16);
 
         $statuses     = ORDER_STATUS_ENUM;
-        $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
-        $order_status = current(array_intersect($statuses, (array) $status));
+        $orders_title = key(array_intersect($statuses, (array) $this->status)).' '.ucfirst(ORDERS_TABLE);
+        $order_status = current(array_intersect($statuses, (array) $this->status));
 
         $update_order_error  = static fn(string $attributeName) => formError(UPDATE, ORDER_MODEL,  $attributeName);
         $filter_orders_error = static fn(string $attributeName) => formError(FILTER, ORDERS_TABLE, $attributeName);
@@ -206,7 +207,7 @@ class AdminController extends Controller
     private function relatedCategories(): array
     {
         return [
-            CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select($this->id_name),
+            CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select($this->id_name)->withTrashed(),
         ];
     }
 }

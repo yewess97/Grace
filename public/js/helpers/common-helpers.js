@@ -599,7 +599,7 @@ const Common = {
             icon: IGrace.WARNING,
             showConfirmButton: true,
             showCancelButton: true,
-            confirmButtonText: `Yes, ${IGrace.DELETE}!`,
+            confirmButtonText: `Yes, ${message.includes(IGrace.REMOVE) ? IGrace.REMOVE : IGrace.DELETE}!`,
             cancelButtonText: 'No, cancel!',
         });
     },
@@ -663,7 +663,15 @@ const Common = {
             timerProgressBar: true,
         });
 
-        setTimeout(() => location.reload(), 1800);
+        setTimeout(() => {
+            if (!(extra && extra.includes(IGrace.ADMIN))) {
+                return location.reload();
+            }
+
+            return $(location).attr('href') === extra
+                ? location.reload()
+                : location.href = extra;
+        }, 1800);
     },
 
 
@@ -744,7 +752,7 @@ const Common = {
      * @return {void}
      */
     ajaxEditAddressRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.ADDRESS, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ADDRESS), function (e) {
             e.preventDefault();
 
             const
@@ -767,7 +775,7 @@ const Common = {
                         .filter((_, address_country) => address_country.value === address[IGrace.COUNTRY])
                         .attr('selected', true);
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.ADDRESS)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ADDRESS, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
         });
@@ -780,7 +788,7 @@ const Common = {
      * @return {void}
      */
     ajaxEditReviewRequest: () => {
-        $(document).on(IGrace.CLICK, IGrace.EDIT_COLLECTION(IGrace.REVIEW, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.REVIEW), function (e) {
             e.preventDefault();
 
             const route = $(this).attr('href');
@@ -806,7 +814,7 @@ const Common = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.REVIEW)}_${IGrace.BODY_TEXT}`).html(review[IGrace.BODY_TEXT]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.REVIEW)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(review[IGrace.COLLECTION_ID(IGrace.PRODUCT)]);
 
-                    $(IGrace.EDIT_COLLECTION(IGrace.REVIEW)).modal('show');
+                    $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.REVIEW, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
         });
@@ -822,7 +830,7 @@ const Common = {
      * @returns {{method: string, success: *, url: string}}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, multiple, forceDeleteRequest, selectedIds, successMessage } = options;
+        const { deleteRoute, multiple, forceDeleteRequest, selectedIds, successMessage, collectionTrashed } = options;
 
         return {
             url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
@@ -830,7 +838,7 @@ const Common = {
             success: () => {
                 $('.check-row').prop('checked', false);
                 $('#check_all').prop({'checked': false, 'indeterminate': false});
-                Common.successMessage(IGrace.DELETED(), successMessage);
+                Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
             },
         };
     },
@@ -916,36 +924,41 @@ const Common = {
      * @return {void}
      */
     ajaxDeleteRequest: (collection) => {
-        $(document).on(IGrace.CLICK, IGrace.DELETE_COLLECTION_BUTTON(collection), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.DELETE, collection), function (e) {
             e.preventDefault();
 
             const
-                target              = $(this),
-                del_route           = target.data('route'),
-                del_name            = target.data(IGrace.NAME),
-                del_success_message = `*${del_name}* ${collection} has been ${IGrace.DELETED()}`,
-                del_cancel_message  = `${collection === IGrace.ADDRESS ? `The ${collection} of the ${IGrace.USER} (${del_name})` : `Your ${collection}`} is safe`;
+                target             = $(this),
+                delete_route       = target.data('route'),
+                collection_name    = target.data(IGrace.NAME),
+                collection_trashed = new URLSearchParams(window.location.search).get(IGrace.STATUS) === 'trashed',
+                delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
+                delete_cancel_message  = `${
+                    collection === IGrace.ADDRESS
+                        ? `The ${collection} of the ${IGrace.USER} (${collection_name})`
+                        : `Your ${collection}`
+                } is safe`;
 
-            const del_options = {
-                deleteRoute: del_route,
-                collection: collection,
-                successMessage: del_success_message,
+            const delete_options = {
+                deleteRoute:       delete_route,
+                collectionTrashed: collection_trashed,
+                successMessage:    delete_success_message,
             };
 
-            Common.confirmMessage(`${IGrace.DELETE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${del_name})?` : `${collection} (${del_name})? <br><br> Rest items related to it will be ${IGrace.DELETED()}.`}`)
+            Common.confirmMessage(`${collection_trashed ? IGrace.DELETE : IGrace.REMOVE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${collection_name})?` : `${collection} (${collection_name})?`} ${collection_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
                 .then((willDelete) => {
                     if (willDelete.isConfirmed) {
                         $.ajax({
-                            ...Common.ajaxDeleteItems(del_options),
+                            ...Common.ajaxDeleteItems(delete_options),
                             error: (err) => Common.handleDeleteErrors({
                                 error: err,
-                                ...del_options,
-                                cancelMessage: del_cancel_message,
+                                ...delete_options,
+                                cancelMessage: delete_cancel_message,
                             }),
                         });
                     }
                     else if (willDelete.dismiss === Swal.DismissReason.cancel) {
-                        Common.cancelMessage(del_cancel_message);
+                        Common.cancelMessage(delete_cancel_message);
                     }
                 });
         });
@@ -959,49 +972,114 @@ const Common = {
      * @return {void}
      */
     ajaxDeleteMultipleRequest: (collection) => {
-        $(document).on(IGrace.CLICK, IGrace.DELETE_COLLECTION_BUTTON(collection, true), function (e) {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.DELETE, collection, true), function (e) {
             e.preventDefault();
 
             const
-                del_all_route = $(this).data('route'),
+                delete_all_route = $(this).data('route'),
+                collections_trashed = new URLSearchParams(window.location.search).get(IGrace.STATUS) === 'trashed',
                 selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
-                del_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.DELETED()}`,
-                del_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
+                delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
+                delete_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
 
-            const del_multiple_options = {
-                deleteRoute: del_all_route,
-                collection: collection,
-                multiple: true,
-                selectedIds: selected_rows,
-                successMessage: del_success_message,
+            const delete_multiple_options = {
+                deleteRoute:       delete_all_route,
+                collectionTrashed: collections_trashed,
+                multiple:          true,
+                selectedIds:       selected_rows,
+                successMessage:    delete_multi_success_message,
             };
 
             if ($.isEmptyObject(selected_rows)) {
                 return Swal.fire({
                     title: 'Oops!',
-                    text: `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${IGrace.DELETE}`,
+                    text: `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${collections_trashed ? IGrace.DELETE : IGrace.REMOVE}`,
                     icon: IGrace.WARNING,
                     showConfirmButton: true,
                 });
             }
 
-            Common.confirmMessage(`${IGrace.DELETE} selected ${is_multiple_selection ? collection : IGrace.SINGULARIZE(collection)}? <br><br> Rest items related to it will be ${IGrace.DELETED()}.`)
+            Common.confirmMessage(`${collections_trashed ? IGrace.DELETE : IGrace.REMOVE} selected ${is_multiple_selection ? collection : IGrace.SINGULARIZE(collection)}? ${collections_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
                 .then((willDelete) => {
                     if (willDelete.isConfirmed) {
                         $.ajax({
-                            ...Common.ajaxDeleteItems(del_multiple_options),
+                            ...Common.ajaxDeleteItems(delete_multiple_options),
                             error: (err) => Common.handleDeleteErrors({
                                 error: err,
-                                ...del_multiple_options,
-                                cancelMessage: del_multi_cancel_message,
+                                ...delete_multiple_options,
+                                cancelMessage: delete_multi_cancel_message,
                             }),
                         });
                     }
                     else if (willDelete.dismiss === Swal.DismissReason.cancel) {
-                        Common.cancelMessage(del_multi_cancel_message);
+                        Common.cancelMessage(delete_multi_cancel_message);
                     }
                 });
+        });
+    },
+
+
+    /**
+     * Restore Ajax Request.
+     *
+     * @param collection
+     * @return {void}
+     */
+    ajaxRestoreRequest: (collection) => {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.RESTORE, collection), function (e) {
+            e.preventDefault();
+
+            const
+                target                  = $(this),
+                restore_route           = target.data('route'),
+                collection_name         = target.data(IGrace.NAME),
+                restore_success_message = `*${collection_name}* ${collection} has been ${IGrace.RESTORED()}`;
+
+            $.ajax({
+                url: restore_route,
+                method: IGrace.PUT,
+                success: () => Common.successMessage(IGrace.RESTORED(), restore_success_message),
+                error: () => Common.somethingWentWrongError,
+            });
+        });
+    },
+
+    /**
+     * Restore multiple items Ajax Request.
+     *
+     * @param collection
+     * @return {void}
+     */
+    ajaxRestoreMultipleRequest: (collection) => {
+        $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.RESTORE, collection, true), function (e) {
+            e.preventDefault();
+
+            const
+                restore_all_route = $(this).data('route'),
+                selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
+                is_multiple_selection = selected_rows.length > 1,
+                restore_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
+
+            if ($.isEmptyObject(selected_rows)) {
+                return Swal.fire({
+                    title: 'Oops!',
+                    text: `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${IGrace.RESTORE}`,
+                    icon: IGrace.WARNING,
+                    showConfirmButton: true,
+                });
+            }
+
+            $.ajax({
+                url: `${restore_all_route}?selected_ids=${selected_rows}`,
+                method: IGrace.PUT,
+                success: () => {
+                    $('.check-row').prop('checked', false);
+                    $('#check_all').prop({'checked': false, 'indeterminate': false});
+                    Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);
+                },
+                error: () => Common.somethingWentWrongError,
+            });
         });
     },
 }

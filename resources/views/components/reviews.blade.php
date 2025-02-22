@@ -108,7 +108,7 @@
                     <form action="{{route(DELETE_REVIEW, $review->id)}}" method="post" role="form" class="delete-review-form h-fit-content" data-reviews="{{route(REVIEWS_TABLE, $product->id)}}">
                         @csrf
                         @method(strtoupper(DELETE))
-                        <button type="submit" role="button" title="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}" data-tooltip="tooltip" data-mdb-placement="top" class="border-0 text-danger" aria-label="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}">
+                        <button type="submit" role="button" title="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}" data-tooltip="tooltip" data-mdb-placement="top" class="text-danger border-0" aria-label="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </form>
