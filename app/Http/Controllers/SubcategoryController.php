@@ -93,4 +93,30 @@ class SubcategoryController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified subcategory.
+     *
+     * @param Subcategory $subcategory
+     * @return Response
+     */
+    final public function restore(Subcategory $subcategory): Response
+    {
+        $this->subcategoryService->restoreSubcategory($subcategory);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected subcategories.
+     *
+     * @param Subcategory $subcategory
+     * @return Response
+     */
+    final public function restoreMultiple(Subcategory $subcategory): Response
+    {
+        $this->subcategoryService->restoreMultipleSubcategories($subcategory);
+
+        return responseSuccess();
+    }
 }

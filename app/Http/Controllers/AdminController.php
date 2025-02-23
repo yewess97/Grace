@@ -21,7 +21,7 @@ use Throwable;
 class AdminController extends Controller
 {
     private array $id_name;
-    private string $status;
+    private string|null $status;
 
     /**
      * Admin Dashboard Constructor.
@@ -67,11 +67,13 @@ class AdminController extends Controller
      */
     final public function subcategories(): Application|Factory|View
     {
-        $subcategories = Subcategory::with($this->relatedCategories())->fastPaginate(16);
+        $subcategories = Subcategory::with($this->relatedCategories())
+            ->when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->fastPaginate(16);
 
         $categories = Category::all($this->id_name);
 
-        $add_subcategory_error    = static fn(string $attributeName) => formError(ADD, SUBCATEGORY_MODEL, $attributeName);
+        $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
         $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
 
         return view(ADMIN_SUBCATEGORIES_VIEW, compact(SUBCATEGORIES_TABLE, CATEGORIES_TABLE, ADD_SUBCATEGORY_ERROR, UPDATE_SUBCATEGORY_ERROR));
@@ -89,7 +91,7 @@ class AdminController extends Controller
         $products = Product::query()->latest()
             ->with([
                 ...$this->relatedCategories(),
-                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes),
+                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes)->withTrashed(),
                 THUMB_IMAGES        => static fn(HasMany $thumbImage)  => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                 SIZES               => static fn(HasMany $size)        => $size->select(SIZE, PRODUCT_ID),
             ])

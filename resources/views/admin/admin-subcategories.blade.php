@@ -12,8 +12,8 @@
                         {{-- Subcategories Search --}}
                         @search(SEARCH_SUBCATEGORIES)
 
-                        {{-- Subcategories (Delete all selected) & (Add) Buttons --}}
-                        @collectionButtons(SUBCATEGORIES_TABLE)
+                        {{-- Subcategories Main Buttons --}}
+                        @collectionButtons(SUBCATEGORIES_TABLE, ADMIN_SUBCATEGORIES_ROUTE)
                     </div>
 
                     {{-- Subcategories Table --}}

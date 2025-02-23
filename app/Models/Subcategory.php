@@ -7,12 +7,11 @@ use App\Traits\Relations\BelongsToMany\ProductsRelation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subcategory extends Model
 {
-    use HasFactory, CategoriesRelation, ProductsRelation;
+    use HasFactory, SoftDeletes, CategoriesRelation, ProductsRelation;
 
     /**
      * The table associated with the model.
@@ -63,26 +62,26 @@ class Subcategory extends Model
 //        return $this->{PRODUCTS_TABLE}()->toArray();
 //    }
 
-    /**
-     * Delete or Detach all the related products of the subcategory.
-     *
-     * @return void
-     */
-    final public static function deleteRelatedProducts(): void
-    {
-        parent::boot();
-
-        static::deleting(static function (self $subcategory) {
-            $subcategory->{PRODUCTS_TABLE}()->each(function (Product $product) use ($subcategory) {
-               if ($product->{SUBCATEGORIES_TABLE}()->count() === 1) {
-                   Storage::delete(imageSource($product, MAIN_IMAGE, true));
-                   $product->{THUMB_IMAGES}->each(static fn(Collection $collection) => Storage::delete(imageSource($collection, THUMB_IMAGE, true)));
-
-                   $product->delete();
-               }
-
-               $subcategory->{PRODUCTS_TABLE}()->detach($product->{ID});
-            });
-        });
-    }
+//    /**
+//     * Delete or Detach all the related products of the subcategory.
+//     *
+//     * @return void
+//     */
+//    final public static function deleteRelatedProducts(): void
+//    {
+//        parent::boot();
+//
+//        static::deleting(static function (self $subcategory) {
+//            $subcategory->{PRODUCTS_TABLE}()->each(function (Product $product) use ($subcategory) {
+//               if ($product->{SUBCATEGORIES_TABLE}()->count() === 1) {
+//                   Storage::delete(imageSource($product, MAIN_IMAGE, true));
+//                   $product->{THUMB_IMAGES}->each(static fn(Collection $collection) => Storage::delete(imageSource($collection, THUMB_IMAGE, true)));
+//
+//                   $product->delete();
+//               }
+//
+//               $subcategory->{PRODUCTS_TABLE}()->detach($product->{ID});
+//            });
+//        });
+//    }
 }

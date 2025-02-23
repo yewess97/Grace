@@ -864,16 +864,18 @@ if (!function_exists('imageSource')) {
      *
      * @param Model|stdClass|string $modelOrImageName
      * @param string|null $imageType
-     * @param bool $forDelete
+     * @param bool $forDeletePath
      * @return string
      */
-    function imageSource(Model|stdClass|string $modelOrImageName, string $imageType = null, bool $forDelete = false): string
+    function imageSource(Model|stdClass|string $modelOrImageName, string $imageType = null, bool $forDeletePath = false): string
     {
         $image_path = "images/";
 
         if (is_string($modelOrImageName)) {
             return asset(Storage::url("$image_path/$modelOrImageName"));
         }
+
+//        dd($modelOrImageName);
 
         $image_name = $modelOrImageName->{$imageType};
 
@@ -888,7 +890,7 @@ if (!function_exists('imageSource')) {
 
         $image_path .= DIRECTORY_SEPARATOR.pluralize($imageType).DIRECTORY_SEPARATOR.$image_name;
 
-        if ($forDelete) {
+        if ($forDeletePath) {
             return "public".DIRECTORY_SEPARATOR.$image_path;
         }
 

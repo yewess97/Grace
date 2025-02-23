@@ -60,6 +60,12 @@ Common.ajaxDeleteRequest(IGrace.SUBCATEGORY);
 // Delete Selected Subcategories
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.SUBCATEGORY));
 
+// Restore Subcategory
+Common.ajaxRestoreRequest(IGrace.SUBCATEGORY);
+
+// Restore Selected Subcategories
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.SUBCATEGORY));
+
 /* ---------------------------------- END SUBCATEGORIES ---------------------------------- */
 
 

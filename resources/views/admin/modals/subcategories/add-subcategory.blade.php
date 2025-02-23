@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </div>
             <div class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_SUBCATEGORY, ADD)}}" method="post" role="form" id="add_subcategory_form" class="grace-form" enctype="multipart/form-data">
+                <form action="{{route(CREATE_UPDATE_SUBCATEGORY, ADD)}}" method="post" role="form" id="add_subcategory_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE)}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
                         {{-- Subcategory Name --}}

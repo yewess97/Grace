@@ -12,7 +12,7 @@
                         {{-- Categories Search --}}
                         @search(SEARCH_CATEGORIES)
 
-                        {{-- Categories (Delete all selected) & (Add) Buttons --}}
+                        {{-- Categories Main Buttons --}}
                         @collectionButtons(CATEGORIES_TABLE, ADMIN_CATEGORIES_ROUTE)
                     </article>
 

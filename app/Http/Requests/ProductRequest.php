@@ -104,7 +104,7 @@ class ProductRequest extends FormRequest
         return [
             $this->dataKeyOf($attribute) => [
                 "required", "regex:/^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.<>\/]*$/", "min:$min", "max:$max",
-                $this->operation === UPDATE && isset($id) ? $unique_product->ignore($id) : $unique_product
+                ($this->operation === UPDATE && isset($id)) ? $unique_product->ignore($id) : $unique_product
             ],
         ];
     }

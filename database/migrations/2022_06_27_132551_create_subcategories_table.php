@@ -20,6 +20,7 @@ return new class extends Migration
             $table->nameSlug();
             $table->string(MAIN_IMAGE);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

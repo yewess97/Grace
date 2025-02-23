@@ -139,6 +139,7 @@ class CategoryService
             }
 
             Storage::delete(imageSource($related_subcategory, MAIN_IMAGE, true));
+
             return $related_subcategory->forceDelete();
         });
     }
