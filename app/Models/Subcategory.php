@@ -41,47 +41,4 @@ class Subcategory extends Model
     {
         return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE])?->load(CATEGORIES_TABLE));
     }
-
-//    /**
-//     * Get the data of the related categories of the subcategory.
-//     *
-//     * @return array
-//     */
-//    protected function getRelatedCategoriesAttribute(): array
-//    {
-//        return $this->{CATEGORIES_TABLE}()->pluck(NAME, ID)->toArray();
-//    }
-//
-//    /**
-//     * Get the data of the related products of the subcategory.
-//     *
-//     * @return array
-//     */
-//    protected function getRelatedProductsAttribute(): array
-//    {
-//        return $this->{PRODUCTS_TABLE}()->toArray();
-//    }
-
-//    /**
-//     * Delete or Detach all the related products of the subcategory.
-//     *
-//     * @return void
-//     */
-//    final public static function deleteRelatedProducts(): void
-//    {
-//        parent::boot();
-//
-//        static::deleting(static function (self $subcategory) {
-//            $subcategory->{PRODUCTS_TABLE}()->each(function (Product $product) use ($subcategory) {
-//               if ($product->{SUBCATEGORIES_TABLE}()->count() === 1) {
-//                   Storage::delete(imageSource($product, MAIN_IMAGE, true));
-//                   $product->{THUMB_IMAGES}->each(static fn(Collection $collection) => Storage::delete(imageSource($collection, THUMB_IMAGE, true)));
-//
-//                   $product->delete();
-//               }
-//
-//               $subcategory->{PRODUCTS_TABLE}()->detach($product->{ID});
-//            });
-//        });
-//    }
 }

@@ -83,13 +83,13 @@ class SubcategoryController extends Controller
      * Delete the selected subcategories
      * and their main images from the database and storage.
      *
-     * @param Subcategory $subcategory
+     * @param Subcategory $subcategories
      * @return Response
      * @throws NotFoundHttpException
      */
-    final public function destroyMultiple(Subcategory $subcategory): Response
+    final public function destroyMultiple(Subcategory $subcategories): Response
     {
-        $this->subcategoryService->deleteMultipleSubcategories($subcategory);
+        $this->subcategoryService->deleteMultipleSubcategories($subcategories);
 
         return responseSuccess();
     }
@@ -110,12 +110,12 @@ class SubcategoryController extends Controller
     /**
      * Restore the selected subcategories.
      *
-     * @param Subcategory $subcategory
+     * @param Subcategory $subcategories
      * @return Response
      */
-    final public function restoreMultiple(Subcategory $subcategory): Response
+    final public function restoreMultiple(Subcategory $subcategories): Response
     {
-        $this->subcategoryService->restoreMultipleSubcategories($subcategory);
+        $this->subcategoryService->restoreMultipleSubcategories($subcategories);
 
         return responseSuccess();
     }

@@ -39,8 +39,8 @@
                             </div>
                         </article>
 
-                        {{-- Users (Delete all selected) & (Add) Buttons --}}
-                        @collectionButtons(USERS_TABLE)
+                        {{-- Users Main Buttons --}}
+                        @collectionButtons(USERS_TABLE, ADMIN_USERS_ROUTE)
                     </div>
 
                     {{-- Users Table --}}

@@ -3,11 +3,8 @@
 namespace App\Services;
 
 use App\Http\Requests\SubcategoryRequest;
-use App\Models\Product;
 use App\Models\Subcategory;
-use App\Models\ThumbImage;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -72,8 +69,6 @@ class SubcategoryService
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        $this->deleteRelatedProducts($subcategory);
-
         return delete($subcategory, false, true);
     }
 
@@ -87,8 +82,6 @@ class SubcategoryService
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        $this->deleteRelatedProducts($subcategories);
-
         return delete($subcategories, true, true);
     }
 
@@ -112,41 +105,5 @@ class SubcategoryService
     final public function restoreMultipleSubcategories(Subcategory $subcategories): bool
     {
         return restore($subcategories, true);
-    }
-
-    /**
-     * Delete all or Detach the related products of subcategory(ies).
-     *
-     * @param Subcategory $subcategory
-     * @return void
-     */
-    final public function deleteRelatedProducts(Subcategory $subcategory): void
-    {
-        $selected_ids = request()?->input('selected_'.pluralize(ID));
-
-        $subcategories_ids = $selected_ids
-            ? array_map('intval', array_from($selected_ids))
-            : [$subcategory->{ID}];
-
-        // Get all related products once
-        // Used lazy() to improve memory efficiency when handling large datasets
-        $related_products = Product::whereHas(SUBCATEGORIES_TABLE, static function ($query) use ($subcategories_ids) {
-            $query->whereIn(ID, $subcategories_ids)->onlyTrashed();
-        })->with(SUBCATEGORIES_TABLE)->lazy();
-
-        $related_products->each(function (Product $related_product) use ($subcategories_ids) {
-            // Reduced database queries by using pluck(ID)
-            $related_subcategories_ids = $related_product->{SUBCATEGORIES_TABLE}()->withTrashed()->pluck(ID);
-
-            // Used diff() to efficiently check if the product should be deleted or the subcategory should be detached
-            if ($related_subcategories_ids->diff($subcategories_ids)->isNotEmpty()) {
-                return $related_product->{SUBCATEGORIES_TABLE}()->detach($subcategories_ids);
-            }
-
-            Storage::delete(imageSource($related_product, MAIN_IMAGE, true));
-            $related_product->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
-
-            return $related_product->forceDelete();
-        });
     }
 }

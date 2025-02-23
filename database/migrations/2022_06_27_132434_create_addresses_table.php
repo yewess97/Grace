@@ -25,6 +25,7 @@ return new class extends Migration
             $table->unsignedInteger(POSTAL_CODE);
             $table->foreignIdOf(User::class);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

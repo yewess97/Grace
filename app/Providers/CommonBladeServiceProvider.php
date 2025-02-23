@@ -107,7 +107,7 @@ class CommonBladeServiceProvider extends ServiceProvider
             [$table_name, $route] = array_from($buttonsArgs);
 
             $collections_trashed = "<?php
-                    \$button_class = 'btn d-flex justify-content-center align-items-center gap-2';
+                    \$button_class = 'btn d-flex justify-content-center align-items-center gap-2 '.($table_name === USERS_TABLE ? 'mt-3' : '');
 
                     \$button_text = \$restore_all_selected_button = \$trashed_main_button = '';
 
@@ -116,12 +116,12 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                         \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
 
-                        \$trashed_main_button = \"<a href=\".route($route).\" type='button' role='button' title='\".capitalizeAll('Main_'.$table_name).\"' class='main-btn \$button_class' aria-label='\".capitalizeAll('Main_'.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.$table_name).\"</a>\";
+                        \$trashed_main_button = \"<a href=\".route($route, [ID => request()?->query(ID)]).\" type='button' role='link' title='\".capitalizeAll('Main_'.$table_name).\"' class='main-btn \$button_class' aria-label='\".capitalizeAll('Main_'.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.$table_name).\"</a>\";
                     }
                     else {
                         \$button_text = REMOVE;
 
-                        \$trashed_main_button = \"<a href=\".route($route, [STATUS => TRASHED]).\" type='button' role='button' title='\".capitalizeAll(TRASHED.'_'.$table_name).\"' class='trashed-btn \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.$table_name).\"'><i class='fa-solid fa-trash'></i> \".capitalizeAll(TRASHED.'_'.$table_name).\"</a>\";
+                        \$trashed_main_button = \"<a href=\".route($route, [...request()?->query(), STATUS => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.$table_name).\"' class='trashed-btn \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.$table_name).\"'><i class='fa-solid fa-trash'></i> \".capitalizeAll(TRASHED.'_'.$table_name).\"</a>\";
                     }
             ?>";
 

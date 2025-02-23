@@ -34,17 +34,25 @@
                                 View {{ucfirst(ADDRESSES_TABLE)}}
                             </a>
                         @endif
-                        <button type="button" role="button" title="{{EDIT_USER_TITLE}}" class="btn edit-btn edit-user-btn" data-mdb-toggle="modal" data-mdb-target="#edit_user_modal" data-route="{{route(EDIT_USER, $user->id)}}">
-                            {{ucfirst(EDIT)}}
-                        </button>
-                        <button type="button" role="button" title="{{capitalizeAll(DELETE_USER)}}" class="btn delete-btn delete-user-btn" data-route="{{route(DELETE_USER, $user->id)}}" data-name="{{ $user->{FULL_NAME} }}">
-                            {{ucfirst(DELETE)}}
+
+                        @if($user->trashed())
+                            <button type="button" role="button" title="{{capitalizeAll(RESTORE_USER)}}" class="restore-user-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_USER, $user->id)}}" data-name="{{ $user->{FULL_NAME} }}">
+                                <i class="fa-solid fa-arrow-rotate-left"></i>
+                            </button>
+                        @else
+                            <button type="button" role="button" title="{{EDIT_USER_TITLE}}" class="edit-user-btn h-fit-content fs-5 text-success bg-transparent border-0" data-mdb-toggle="modal" data-mdb-target="#edit_user_modal" data-route="{{route(EDIT_USER, $user->id)}}">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        @endif
+
+                        <button type="button" role="button" title="{{capitalizeAll($user->trashed() ? DELETE_USER : REMOVE_USER)}}" class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_USER, $user->id)}}" data-name="{{ $user->{FULL_NAME} }}">
+                            <i class="{{$user->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
                         </button>
                     </div>
                 </td>
             </tr>
         @empty
-            @noResults(USERS_TABLE, 3)
+            @noResults(USERS_TABLE, 5)
         @endforelse
         </tbody>
     </table>

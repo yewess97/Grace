@@ -84,4 +84,30 @@ class UserController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified user.
+     *
+     * @param User $user
+     * @return Response
+     */
+    final public function restore(User $user): Response
+    {
+        $this->userService->restoreUser($user);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected users.
+     *
+     * @param User $users
+     * @return Response
+     */
+    final public function restoreMultiple(User $users): Response
+    {
+        $this->userService->restoreMultipleUsers($users);
+
+        return responseSuccess();
+    }
 }

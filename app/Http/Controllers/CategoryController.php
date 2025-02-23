@@ -81,13 +81,12 @@ class CategoryController extends Controller
      * Delete the selected categories
      * and their images from the database and storage.
      *
-     * @param Category $category
+     * @param Category $categories
      * @return Response
-     * @throws NotFoundHttpException
      */
-    final public function destroyMultiple(Category $category): Response
+    final public function destroyMultiple(Category $categories): Response
     {
-        $this->categoryService->deleteMultipleCategories($category);
+        $this->categoryService->deleteMultipleCategories($categories);
 
         return responseSuccess();
     }
@@ -108,12 +107,12 @@ class CategoryController extends Controller
     /**
      * Restore the selected categories.
      *
-     * @param Category $category
+     * @param Category $categories
      * @return Response
      */
-    final public function restoreMultiple(Category $category): Response
+    final public function restoreMultiple(Category $categories): Response
     {
-        $this->categoryService->restoreMultipleCategories($category);
+        $this->categoryService->restoreMultipleCategories($categories);
 
         return responseSuccess();
     }

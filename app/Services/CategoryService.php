@@ -4,11 +4,15 @@ namespace App\Services;
 
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Subcategory;
+use App\Models\ThumbImage;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
+use stdClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryService
@@ -68,7 +72,8 @@ class CategoryService
      */
     final public function deleteCategory(Category $category): bool
     {
-        $this->deleteRelatedSubcategories($category);
+        $this->deleteRelatedCollectionItems($category, (new Subcategory()));
+        $this->deleteRelatedCollectionItems($category, (new Product()));
 
         return delete($category, false, true);
     }
@@ -82,7 +87,8 @@ class CategoryService
      */
     final public function deleteMultipleCategories(Category $categories): Category|bool
     {
-        $this->deleteRelatedSubcategories($categories);
+        $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
+        $this->deleteRelatedCollectionItems($categories, (new Product()));
 
         return delete($categories, true, true);
     }
@@ -110,12 +116,13 @@ class CategoryService
     }
 
     /**
-     * Delete all or Detach the related subcategories of category(ies).
+     * Delete all or Detach the related collection items of category(ies).
      *
      * @param Category $category
+     * @param Model|stdClass $model
      * @return void
      */
-    private function deleteRelatedSubcategories(Category $category): void
+    private function deleteRelatedCollectionItems(Category $category, Model|stdClass $model): void
     {
         $selected_ids = request()?->input('selected_'.pluralize(ID));
 
@@ -123,24 +130,28 @@ class CategoryService
             ? array_map('intval', array_from($selected_ids))
             : [$category->{ID}];
 
-        // Get all related subcategories once
+        // Get all related collection items once
         // Used lazy() to improve memory efficiency when handling large datasets
-        $related_subcategories = Subcategory::whereHas(CATEGORIES_TABLE, static function ($query) use ($categories_ids) {
+        $related_collection_items = $model::query()->whereHas(CATEGORIES_TABLE, static function ($query) use ($categories_ids) {
             $query->whereIn(ID, $categories_ids)->onlyTrashed();
         })->with(CATEGORIES_TABLE)->lazy();
 
-        $related_subcategories->each(function (Subcategory $related_subcategory) use ($categories_ids) {
+        $related_collection_items->each(function (Model|stdClass $related_collection_item) use ($categories_ids, $model) {
             // Reduced database queries by using pluck(ID)
-            $related_categories_ids = $related_subcategory->{CATEGORIES_TABLE}()->withTrashed()->pluck(ID);
+            $related_categories_ids = $related_collection_item->{CATEGORIES_TABLE}()->withTrashed()->pluck(ID);
 
             // Used diff() to efficiently check if the subcategory should be deleted or the category should be detached
             if ($related_categories_ids->diff($categories_ids)->isNotEmpty()) {
-                return $related_subcategory->{CATEGORIES_TABLE}()->detach($categories_ids);
+                return $related_collection_item->{CATEGORIES_TABLE}()->detach($categories_ids);
             }
 
-            Storage::delete(imageSource($related_subcategory, MAIN_IMAGE, true));
+            Storage::delete(imageSource($related_collection_item, MAIN_IMAGE, true));
 
-            return $related_subcategory->forceDelete();
+            if ($model instanceof Product) {
+                $related_collection_item->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
+            }
+
+            return $related_collection_item->forceDelete();
         });
     }
 }

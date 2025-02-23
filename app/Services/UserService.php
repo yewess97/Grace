@@ -75,5 +75,27 @@ class UserService
     {
         return delete($users, true);
     }
+
+    /**
+     * Restore a specified user.
+     *
+     * @param User $user
+     * @return bool
+     */
+    final public function restoreUser(User $user): bool
+    {
+        return restore($user);
+    }
+
+    /**
+     * Restore the selected users.
+     *
+     * @param User $users
+     * @return bool
+     */
+    final public function restoreMultipleUsers(User $users): bool
+    {
+        return restore($users, true);
+    }
 }
 

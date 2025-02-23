@@ -7,10 +7,11 @@ use App\Traits\Relations\HasMany\HasOrders;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
-    use HasFactory, UserRelation, HasOrders;
+    use HasFactory, SoftDeletes, UserRelation, HasOrders;
 
     /**
      * The table associated with the model.

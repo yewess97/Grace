@@ -93,13 +93,39 @@ class ProductController extends Controller
      * Delete the selected products
      * and their images from the database and storage.
      *
-     * @param Product $product
+     * @param Product $products
      * @return Response
      * @throws NotFoundHttpException
      */
-    final public function destroyMultiple(Product $product): Response
+    final public function destroyMultiple(Product $products): Response
     {
-        $this->productService->deleteMultipleProducts($product);
+        $this->productService->deleteMultipleProducts($products);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore a specified product.
+     *
+     * @param Product $product
+     * @return Response
+     */
+    final public function restore(Product $product): Response
+    {
+        $this->productService->restoreProduct($product);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected products.
+     *
+     * @param Product $products
+     * @return Response
+     */
+    final public function restoreMultiple(Product $products): Response
+    {
+        $this->productService->restoreMultipleProducts($products);
 
         return responseSuccess();
     }

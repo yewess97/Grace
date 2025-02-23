@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Product extends Model
 {
-    use HasFactory, HasCarts, CategoriesRelation, SubcategoriesRelation;
+    use HasFactory, SoftDeletes, HasCarts, CategoriesRelation, SubcategoriesRelation;
 
     /**
      * The table associated with the model.
@@ -82,7 +83,7 @@ class Product extends Model
 
         $products = self::query()->select(PRODUCT_ITEM_ATTRIBUTES);
 
-        $filter_related_collection = static function (string $collection, array $collectionValues, bool $isSize = false) use ($products): void {
+        $filter_related_collection = static function (string $collection, array $collectionValues, bool $isSize = false) use ($products) {
             if (!empty($collectionValues)) {
                 $products->whereHas($collection, function ($product) use ($collectionValues, $isSize) {
                     $product->whereIn($isSize ? SIZE : ID, $collectionValues);

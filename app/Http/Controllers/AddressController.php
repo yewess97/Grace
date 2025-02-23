@@ -83,4 +83,30 @@ class AddressController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified address.
+     *
+     * @param Address $address
+     * @return Response
+     */
+    final public function restore(Address $address): Response
+    {
+        $this->addressService->restoreAddress($address);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected addresses.
+     *
+     * @param Address $addresses
+     * @return Response
+     */
+    final public function restoreMultiple(Address $addresses): Response
+    {
+        $this->addressService->restoreMultipleAddresses($addresses);
+
+        return responseSuccess();
+    }
 }

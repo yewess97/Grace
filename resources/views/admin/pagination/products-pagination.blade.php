@@ -7,7 +7,7 @@
         </thead>
         <tbody class="text-center">
         @forelse($products as $key => $product)
-            <tr>
+            <tr style="{{$product->{SUBCATEGORIES_TABLE}->isEmpty() ? 'background-color:#ffffe0': ''}}">
                 @checkRow($product->id)
                 @loopIteration($products->firstItem())
                 <td>
@@ -48,7 +48,7 @@
                             </button>
                         </div>
                     @else
-                        <p><i>No Thumbnail images</i></p>
+                        <p><i>No Thumbnail Images</i></p>
                     @endif
                 </td>
                 <td>
@@ -75,28 +75,38 @@
                     </ul>
                 </td>
                 <td>
-                    <ul class="cell-menu overflow-auto">
-                        @foreach($product->{SUBCATEGORIES_TABLE} as $subcategory)
-                            <li>{{ $subcategory->{NAME} }}</li>
-                        @endforeach
-                    </ul>
+                    @if($product->{SUBCATEGORIES_TABLE}->isNotEmpty())
+                        <ul class="cell-menu overflow-auto">
+                            @foreach($product->{SUBCATEGORIES_TABLE} as $subcategory)
+                                <li>{{ $subcategory->{NAME} }}</li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p><i>No {{ucfirst(SUBCATEGORIES_TABLE)}}</i></p>
+                    @endif
                 </td>
                 <td>
                     <p>{{$product->{STATUS} === 1 ? 'Available' : 'Not Available'}}</p>
                 </td>
                 <td>
                     <div class="d-flex justify-content-center align-items-center gap-3">
-                        <button type="button" role="button" title="{{EDIT_PRODUCT_TITLE}}" class="btn edit-btn edit-product-btn" data-mdb-toggle="modal" data-mdb-target="#edit_product_modal" data-route="{{route(EDIT_PRODUCT, $product->id)}}" data-main_image="{{imageSource($product, MAIN_IMAGE)}}" data-thumb_images="@foreach($product->{THUMB_IMAGES} as $thumb_image){{imageSource($thumb_image, THUMB_IMAGE)}} @endforeach">
-                            {{ucfirst(EDIT)}}
-                        </button>
-                        <button type="button" role="button" title="{{capitalizeAll(DELETE_PRODUCT)}}" class="btn delete-btn delete-product-btn" data-route="{{route(DELETE_PRODUCT, $product->id)}}" data-name="{{ $product->{NAME} }}">
-                            {{ucfirst(DELETE)}}
+                        @if($product->trashed())
+                            <button type="button" role="button" title="{{capitalizeAll(RESTORE_PRODUCT)}}" class="restore-product-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_PRODUCT, $product->id)}}" data-name="{{ $product->{NAME} }}">
+                                <i class="fa-solid fa-arrow-rotate-left"></i>
+                            </button>
+                        @else
+                            <button type="button" role="button" title="{{EDIT_PRODUCT_TITLE}}" class="edit-product-btn h-fit-content fs-5 text-success bg-transparent border-0" data-mdb-toggle="modal" data-mdb-target="#edit_product_modal" data-route="{{route(EDIT_PRODUCT, $product->id)}}" data-main_image="{{imageSource($product, MAIN_IMAGE)}}" data-thumb_images="@foreach($product->{THUMB_IMAGES} as $thumb_image){{imageSource($thumb_image, THUMB_IMAGE)}} @endforeach">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                        @endif
+                        <button type="button" role="button" title="{{capitalizeAll($product->trashed() ? DELETE_PRODUCT : REMOVE_PRODUCT)}}" class="delete-product-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_PRODUCT, $product->id)}}" data-name="{{ $product->{NAME} }}">
+                            <i class="{{$product->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
                         </button>
                     </div>
                 </td>
             </tr>
         @empty
-            @noResults(PRODUCTS_TABLE, 11)
+            @noResults(PRODUCTS_TABLE, 12)
         @endforelse
         </tbody>
     </table>

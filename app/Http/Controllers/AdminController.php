@@ -88,13 +88,17 @@ class AdminController extends Controller
     {
         $id_name_attributes = $this->id_name;
 
-        $products = Product::query()->latest()
+        $products = Product::query()
+            ->withCount(SUBCATEGORIES_TABLE)
+            ->orderBy(SUBCATEGORIES_TABLE.'_count')
+            ->latest()
             ->with([
                 ...$this->relatedCategories(),
                 SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes)->withTrashed(),
-                THUMB_IMAGES        => static fn(HasMany $thumbImage)  => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                SIZES               => static fn(HasMany $size)        => $size->select(SIZE, PRODUCT_ID),
+                THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
             ])
+            ->when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $categories    = Category::all($id_name_attributes);
@@ -115,7 +119,8 @@ class AdminController extends Controller
      */
     final public function users(): RedirectResponse|Application|Factory|View|string
     {
-        $users = User::query()->fastPaginate(16);
+        $users = User::when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->fastPaginate(16);
 
         $roles = USER_ROLE_ENUM;
 

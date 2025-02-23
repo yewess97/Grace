@@ -12,8 +12,8 @@
                         {{-- Products Search --}}
                         @search(SEARCH_PRODUCTS)
 
-                        {{-- Products (Delete all selected) & (Add) Buttons --}}
-                        @collectionButtons(PRODUCTS_TABLE)
+                        {{-- Products Main Buttons --}}
+                        @collectionButtons(PRODUCTS_TABLE, ADMIN_PRODUCTS_ROUTE)
                     </div>
 
                     {{-- Products Table --}}

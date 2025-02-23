@@ -71,6 +71,8 @@ class AddressService {
      */
     final public function getUserAddressesData(): Application|Factory|View|RedirectResponse
     {
+        $status = request()?->input(STATUS);
+
         try {
             $user_id = auth()->check() && !auth()->user()->isAdmin
                 ? auth()->id()
@@ -80,7 +82,10 @@ class AddressService {
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $user_addresses       = Address::query()->where(USER_ID, $user_id)->fastPaginate(16, [ID, ...ADDRESS_FILLABLE_ATTRIBUTES]);
+        $user_addresses = Address::query()->where(USER_ID, $user_id)
+            ->when($status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->fastPaginate(16);
+
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);
 
@@ -110,5 +115,27 @@ class AddressService {
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
         return delete($addresses, true);
+    }
+
+    /**
+     * Restore a specified address.
+     *
+     * @param Address $address
+     * @return bool
+     */
+    final public function restoreAddress(Address $address): bool
+    {
+        return restore($address);
+    }
+
+    /**
+     * Restore the selected addresses.
+     *
+     * @param Address $addresses
+     * @return bool
+     */
+    final public function restoreMultipleAddresses(Address $addresses): bool
+    {
+        return restore($addresses, true);
     }
 }

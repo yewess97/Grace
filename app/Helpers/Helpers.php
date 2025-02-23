@@ -849,11 +849,11 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
                 : throw new NotFoundHttpException('The targeted image is not found in the storage disk');
         }
 
-//        $image_name = time().random_int(10, 100).'.png';
-//        $image->storeAs($image_path, $image_name);
-//        return $image_name;
+        $image_name = time().random_int(10, 100).'.png';
+        $image->storeAs($image_path, $image_name);
+        return $image_name;
 
-        return storeImageWithoutBackground($image, $image_path);
+//        return storeImageWithoutBackground($image, $image_path);
     }
 }
 
@@ -1112,16 +1112,17 @@ if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
      */
     function getImagesToDelete(Model|stdClass $model, string $tableName, string $imageType, bool $isMultiple = false, array $selectedIds = []): array
     {
-        $images_to_delete = static fn(array $attributes) => $model::query()->onlyTrashed()->findOrFail($selectedIds, $attributes);
+        $images_to_delete = static fn(array $attributes) => $model::query()->onlyTrashed()->findOrFail($selectedIds, [NAME, ...$attributes]);
 
-        $images = ($isMultiple && count($selectedIds))
-            ? $images_to_delete([NAME, $imageType])
-            : collect([$model]);
-
-        if (str($imageType)->exactly(THUMB_IMAGE)) {
-            $images = ($isMultiple && count($selectedIds))
-                ? $images_to_delete([ID, NAME])?->pluck(THUMB_IMAGES)->flatten()
-                : $model->{THUMB_IMAGES};
+        if ($isMultiple && count($selectedIds)) {
+            $images = str($imageType)->exactly(THUMB_IMAGE)
+                ? $images_to_delete([ID])?->pluck(THUMB_IMAGES)->flatten()
+                : $images_to_delete([$imageType]);
+        }
+        else {
+            $images = str($imageType)->exactly(THUMB_IMAGE)
+                ? $model->{THUMB_IMAGES}
+                : collect([$model]);
         }
 
         $deletable_images = $images->filter(fn($collection) => Storage::exists(imageSource($collection, $imageType, true)))

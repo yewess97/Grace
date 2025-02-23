@@ -89,6 +89,12 @@ Common.ajaxDeleteRequest(IGrace.PRODUCT);
 // Delete Selected Products
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.PRODUCT));
 
+// Restore Product
+Common.ajaxRestoreRequest(IGrace.PRODUCT);
+
+// Restore Selected Products
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.PRODUCT));
+
 /* ---------------------------------- END PRODUCTS ---------------------------------- */
 
 
@@ -108,6 +114,12 @@ Common.ajaxDeleteRequest(IGrace.USER);
 
 // Delete Selected Users
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.USER));
+
+// Restore User
+Common.ajaxRestoreRequest(IGrace.USER);
+
+// Restore Selected Users
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.USER));
 
 /* ---------------------------------- END USERS ---------------------------------- */
 
@@ -129,6 +141,12 @@ Common.ajaxDeleteRequest(IGrace.ADDRESS);
 // Delete Selected Addresses
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
 
+// Restore Address
+Common.ajaxRestoreRequest(IGrace.ADDRESS);
+
+// Restore Selected Addresses
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
+
 /* ---------------------------------- END ADDRESSES ---------------------------------- */
 
 
@@ -146,6 +164,12 @@ Common.ajaxDeleteRequest(IGrace.ORDER);
 // Delete Selected Orders
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.ORDER));
 
+// Restore Order
+Common.ajaxRestoreRequest(IGrace.ORDER);
+
+// Restore Selected Orders
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.ORDER));
+
 /* ---------------------------------- END ORDERS ---------------------------------- */
 
 
@@ -162,6 +186,12 @@ Common.ajaxDeleteRequest(IGrace.REVIEW);
 
 // Delete Selected Reviews
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.REVIEW));
+
+// Restore Review
+Common.ajaxRestoreRequest(IGrace.REVIEW);
+
+// Restore Selected Reviews
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.REVIEW));
 
 /* ---------------------------------- END REVIEWS ---------------------------------- */
 

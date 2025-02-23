@@ -26,6 +26,7 @@ return new class extends Migration
             $table->unsignedInteger(QUANTITY)->default(1);
             $table->boolean(STATUS)->default(1); // 0 --> Not Available, 1 --> Available
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

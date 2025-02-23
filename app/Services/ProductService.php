@@ -101,9 +101,9 @@ class ProductService
             $thumb_images = request()?->file($thumb_image_input_name);
             $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($new_product_id) {
                 $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
-                $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
-//                $thumb_image_name = time().random_int(10, 100).'.png';
-//                $thumb_image->storeAs($thumb_image_path, $thumb_image_name);
+//                $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
+                $thumb_image_name = time().random_int(10, 100).'.png';
+                $thumb_image->storeAs($thumb_image_path, $thumb_image_name);
 
                 return [
                     THUMB_IMAGE => $thumb_image_name,
@@ -172,5 +172,27 @@ class ProductService
     final public function deleteMultipleProducts(Product $products): bool
     {
         return delete($products, true, true);
+    }
+
+    /**
+     * Restore a specified product.
+     *
+     * @param Product $product
+     * @return bool
+     */
+    final public function restoreProduct(Product $product): bool
+    {
+        return restore($product);
+    }
+
+    /**
+     * Restore the selected products.
+     *
+     * @param Product $products
+     * @return bool
+     */
+    final public function restoreMultipleProducts(Product $products): bool
+    {
+        return restore($products, true);
     }
 }

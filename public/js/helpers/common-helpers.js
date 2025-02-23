@@ -1034,7 +1034,7 @@ const Common = {
                 target                  = $(this),
                 restore_route           = target.data('route'),
                 collection_name         = target.data(IGrace.NAME),
-                restore_success_message = `*${collection_name}* ${collection} has been ${IGrace.RESTORED()}`;
+                restore_success_message = `${collection === IGrace.ADDRESS ? `The ${collection} of the ${IGrace.USER} (${collection_name})` : `*${collection_name}* ${collection}`} has been ${IGrace.RESTORED()}`;
 
             $.ajax({
                 url: restore_route,
