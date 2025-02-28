@@ -156,6 +156,7 @@ class AdminController extends Controller
 
         $orders = Order::query()->latest()
             ->whereStatus($this->status)
+            ->when(request()?->input('condition') === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $statuses     = ORDER_STATUS_ENUM;

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->nullableForeignIdOf(User::class);
             $table->nullableForeignIdOf(Address::class);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

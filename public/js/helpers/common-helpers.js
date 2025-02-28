@@ -977,7 +977,8 @@ const Common = {
 
             const
                 delete_all_route = $(this).data('route'),
-                collections_trashed = new URLSearchParams(window.location.search).get(IGrace.STATUS) === 'trashed',
+                get_query_param = (key) => new URLSearchParams(location.search).get(key),
+                collections_trashed = ['trashed'].includes(get_query_param(IGrace.STATUS) || get_query_param('condition')),
                 selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,

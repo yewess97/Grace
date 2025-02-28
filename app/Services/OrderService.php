@@ -146,6 +146,28 @@ class OrderService {
     }
 
     /**
+     * Restore a specified order.
+     *
+     * @param Order $order
+     * @return bool
+     */
+    final public function restoreOrder(Order $order): bool
+    {
+        return restore($order);
+    }
+
+    /**
+     * Restore the selected orders.
+     *
+     * @param Order $orders
+     * @return bool
+     */
+    final public function restoreMultipleOrders(Order $orders): bool
+    {
+        return restore($orders, true);
+    }
+
+    /**
      * Create an order item for specified cart items.
      *
      * @param Collection $cartItems

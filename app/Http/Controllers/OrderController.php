@@ -100,4 +100,30 @@ class OrderController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified order.
+     *
+     * @param Order $order
+     * @return Response
+     */
+    final public function restore(Order $order): Response
+    {
+        $this->orderService->restoreOrder($order);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected orders.
+     *
+     * @param Order $orders
+     * @return Response
+     */
+    final public function restoreMultiple(Order $orders): Response
+    {
+        $this->orderService->restoreMultipleOrders($orders);
+
+        return responseSuccess();
+    }
 }

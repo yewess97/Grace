@@ -50,12 +50,8 @@
                             </form>
                         </article>
 
-                        {{-- Orders (Delete all selected) Button --}}
-                        <article class="delete-all-selected-button col-12 col-lg-2 col-md-3 d-flex justify-content-lg-end justify-content-md-end justify-content-sm-center">
-                            <button type="button" role="button" title="{{capitalizeAll(pluralize(DELETE_ORDER))}}" id="delete_orders_btn" class="btn delete-btn" data-route="{{route(pluralize(DELETE_ORDER))}}">
-                                Delete all selected
-                            </button>
-                        </article>
+                        {{-- Orders Main Buttons --}}
+                        @collectionButtons(ORDERS_TABLE, ADMIN_ORDERS_ROUTE)
                     </div>
 
                     {{-- Orders Table --}}
