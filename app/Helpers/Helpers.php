@@ -875,8 +875,6 @@ if (!function_exists('imageSource')) {
             return asset(Storage::url("$image_path/$modelOrImageName"));
         }
 
-//        dd($modelOrImageName);
-
         $image_name = $modelOrImageName->{$imageType};
 
         if (str($imageType)->contains(PRODUCT_MODEL)) {

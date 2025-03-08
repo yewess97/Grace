@@ -35,6 +35,15 @@ const Common = {
 
 
     /**
+     * Get the query parameter from the url.
+     *
+     * @param key
+     * @returns {string}
+     */
+    getQueryParam: (key) => new URLSearchParams(location.search).get(key),
+
+
+    /**
      * Configure the rows checking settings.
      *
      * @param target
@@ -342,7 +351,7 @@ const Common = {
             e.preventDefault();
 
             const
-                target = $(this),
+                target     = $(this),
                 text_value = target.val();
 
             let
@@ -486,6 +495,7 @@ const Common = {
                 if (!value.toString().includes(',') || is_file_input) {
                     formData.append(attribute, value);
                 }
+
                 return formData;
             }, new FormData());
     },
@@ -791,7 +801,7 @@ const Common = {
         $(document).on(IGrace.CLICK, IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.REVIEW), function (e) {
             e.preventDefault();
 
-            const route = $(this).attr('href');
+            const route = $(this).data('route');
 
             $.get(route)
                 .done((data) => {
@@ -931,7 +941,7 @@ const Common = {
                 target             = $(this),
                 delete_route       = target.data('route'),
                 collection_name    = target.data(IGrace.NAME),
-                collection_trashed = new URLSearchParams(window.location.search).get(IGrace.STATUS) === 'trashed',
+                collection_trashed = ['trashed'].includes(Common.getQueryParam(IGrace.STATUS)),
                 delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_cancel_message  = `${
                     collection === IGrace.ADDRESS
@@ -977,8 +987,7 @@ const Common = {
 
             const
                 delete_all_route = $(this).data('route'),
-                get_query_param = (key) => new URLSearchParams(location.search).get(key),
-                collections_trashed = ['trashed'].includes(get_query_param(IGrace.STATUS) || get_query_param('condition')),
+                collections_trashed = $.inArray('trashed', [Common.getQueryParam(IGrace.STATUS), Common.getQueryParam('condition')]),
                 selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,

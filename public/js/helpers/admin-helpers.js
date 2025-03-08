@@ -404,9 +404,14 @@ const Admin = {
                 collection = IGrace.CAPITALIZE(form.split('_')[1]),
                 form_data  = Common.filteredFormData(this);
 
+            if (action === IGrace.UPDATE) {
+                // FormData() accepts only POST method
+                form_data.append('_method', IGrace.PUT);
+            }
+
             $.ajax({
                 url: route,
-                method: form.includes(IGrace.ADD) ? IGrace.POST : IGrace.PUT,
+                method: IGrace.POST,
                 data: form_data,
                 success: () => {
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
@@ -521,7 +526,7 @@ const Admin = {
                 route        = target.data('route'),
                 main_image   = target.data(IGrace.MAIN_IMAGE()),
                 thumb_images = target.data(IGrace.PLURALIZE(IGrace.THUMB_IMAGE())).split(' ').filter((thumb_image) => thumb_image !== ''),
-                status       = $(`${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.STATUS}`);
+                status       = $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.STATUS}`);
 
             $.get(route)
                 .done((data) => {
@@ -584,7 +589,7 @@ const Admin = {
             const
                 target = $(this),
                 route  = target.data('route'),
-                role   = $(` ${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.ROLE}`);
+                role   = $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.ROLE}`);
 
             $.get(route)
                 .done((data) => {
@@ -615,7 +620,7 @@ const Admin = {
             const
                 target = $(this),
                 route  = target.data('route'),
-                status = $(` ${IGrace.UPDATE_COLLECTION(IGrace.ORDER)}_${IGrace.STATUS}`);
+                status = $(`#${IGrace.UPDATE_COLLECTION(IGrace.ORDER)}_${IGrace.STATUS}`);
 
             $.get(route)
                 .done((data) => {

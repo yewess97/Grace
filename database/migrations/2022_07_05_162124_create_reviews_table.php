@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreignIdOf(Product::class);
             $table->foreignIdOf(User::class);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

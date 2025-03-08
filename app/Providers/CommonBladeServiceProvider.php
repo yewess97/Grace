@@ -94,7 +94,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? array_from($searchArgs)[1]
                 : null;
 
-            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\" col-sm-12' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll($table).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
+            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll($table).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
         });
 
         /**
@@ -111,6 +111,9 @@ class CommonBladeServiceProvider extends ServiceProvider
                     \$button_class = 'btn d-flex justify-content-center align-items-center gap-2';
                     \$trash_icon_class = 'fa-solid fa-trash';
                     \$status = request()?->input(STATUS);
+                    \$get_status_title = static function (\$haystack) use (\$status) {
+                        return ucfirst(array_search((int) \$status, \$haystack, true)).'_';
+                    };
 
                     \$button_text = \$restore_all_selected_button = \$add_button = \$status_title = \$trashed_main_button = '';
 
@@ -118,17 +121,21 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                     if (Route::currentRouteName() === ADMIN_ORDERS_ROUTE) {
                         \$main_buttons_class = 'col-md-12 mt-3';
-                        \$status_title = ucfirst(array_search((int) \$status, ORDER_STATUS_ENUM, true)).'_';
+                        \$status_title = \$get_status_title(ORDER_STATUS_ENUM);
                     }
 
-                    \$trashed_main_button = \"<a href=\".route($route, [...request()?->query(), (Route::currentRouteName() === ADMIN_ORDERS_ROUTE ? 'condition' : STATUS) => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
+                    if (Route::currentRouteName() === ADMIN_REVIEWS_ROUTE) {
+                        \$status_title = \$get_status_title(REVIEW_RATING_ENUM);
+                    }
 
-                    if (in_array(TRASHED, request()?->only([STATUS, 'condition']))) {
+                    \$trashed_main_button = \"<a href=\".route($route, [...request()?->input(), CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
+
+                    if (request()?->input(CONDITION)) {
                         \$button_text = DELETE;
 
                         \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$status_title.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
 
-                        \$trashed_main_button = \"<a href=\".route($route, [ID => request()?->query(ID), STATUS => \$status]).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$status_title.$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$status_title.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$status_title.$table_name).\"</a>\";
+                        \$trashed_main_button = \"<a href=\".route($route, [...request()?->except(CONDITION)]).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$status_title.$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$status_title.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$status_title.$table_name).\"</a>\";
                     }
 
                     \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$status_title.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
@@ -198,7 +205,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? ++$colspan
                 : $colspan += 3;
 
-            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS))).' '.capitalizeAll($table_name).' Found' ?>";
+            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? request()?->input(CONDITION) ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
 
             return $message_label."<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>\$message</td></tr>\" ?>";
         });

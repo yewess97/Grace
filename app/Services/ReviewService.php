@@ -53,30 +53,30 @@ class ReviewService
 
         [$rating_value, $title_value, $body_text_value, $product_id_value] = $review_request->dataValues();
 
-        $product = Product::query()->whereId($product_id_value)
+        $available_product = Product::query()->whereId($product_id_value)
             ->whereStatus(1)
             ->first([ID, NAME]);
 
-        if (!$product) {
+        if (!$available_product) {
             throw new ModelNotFoundException('This '.PRODUCT_MODEL.' is currently out of stock!');
         }
 
         $order_purchased = Order::query()->where(USER_ID, auth()->id())
-            ->whereHas(ORDER_ITEMS, function ($orderItem) use ($product) {
-                $orderItem->where(PRODUCT_NAME, $product->{NAME});
+            ->whereHas(ORDER_ITEMS, function ($orderItem) use ($available_product) {
+                $orderItem->where(PRODUCT_NAME, $available_product->{NAME});
             });
 
         if ($order_purchased->get()->isEmpty()) {
-            throw new BadRequestException('To be able to review this '.PRODUCT_MODEL.', <br> You must first purchase it!');
+            throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
         }
 
         $order_completed = $order_purchased->whereStatus(4)->get();
 
         if ($order_completed->isEmpty()) {
-            throw new BadRequestException('To be able to review this '.PRODUCT_MODEL.', <br> Your order should be completed!');
+            throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
 
-        $review = Review::query()->whereHas(PRODUCT_MODEL, static fn($query) => $query->whereId($product_id_value)->whereStatus(1))
+        $review = Review::query()->whereHas(PRODUCT_MODEL, static fn($product) => $product->whereId($product_id_value)->whereStatus(1))
             ->where(USER_ID, auth()->id())
             ->where(ID, '<>', $review_id)
             ->exists();
@@ -131,4 +131,25 @@ class ReviewService
         return delete($reviews, true);
     }
 
+    /**
+     * Restore a specified review.
+     *
+     * @param Review $review
+     * @return bool
+     */
+    final public function restoreReview(Review $review): bool
+    {
+        return restore($review);
+    }
+
+    /**
+     * Restore the selected reviews.
+     *
+     * @param Review $reviews
+     * @return bool
+     */
+    final public function restoreMultipleReviews(Review $reviews): bool
+    {
+        return restore($reviews, true);
+    }
 }

@@ -21,7 +21,7 @@ use Throwable;
 class AdminController extends Controller
 {
     private array $id_name;
-    private string|null $status;
+    private string|null $condition;
 
     /**
      * Admin Dashboard Constructor.
@@ -30,8 +30,8 @@ class AdminController extends Controller
      */
     final public function __construct(private readonly DashboardService $dashboardService)
     {
-        $this->id_name = [ID, NAME];
-        $this->status = request()?->input(STATUS);
+        $this->id_name   = [ID, NAME];
+        $this->condition = request()?->input(CONDITION);
     }
     /**
      * Dashboard.
@@ -51,7 +51,7 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View
     {
-        $categories = Category::when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+        $categories = Category::when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
@@ -68,7 +68,7 @@ class AdminController extends Controller
     final public function subcategories(): Application|Factory|View
     {
         $subcategories = Subcategory::with($this->relatedCategories())
-            ->when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $categories = Category::all($this->id_name);
@@ -98,7 +98,7 @@ class AdminController extends Controller
                 THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                 SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
             ])
-            ->when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $categories    = Category::all($id_name_attributes);
@@ -119,7 +119,7 @@ class AdminController extends Controller
      */
     final public function users(): RedirectResponse|Application|Factory|View|string
     {
-        $users = User::when($this->status === TRASHED, static fn($query) => $query->onlyTrashed())
+        $users = User::when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $roles = USER_ROLE_ENUM;
@@ -143,25 +143,27 @@ class AdminController extends Controller
      */
     final public function orders(): RedirectResponse|Application|Factory|View|string
     {
+        $status = request()?->input(STATUS);
+
         $last_valid_status = session('last_valid_status');
 
-        if (!$this->status || !in_array((int) $this->status, array_values(ORDER_STATUS_ENUM), true)) {
+        if (!$status || !in_array((int) $status, array_values(ORDER_STATUS_ENUM), true)) {
             // Use the last valid status if available, otherwise, get the latest order status
             $redirect_status = $last_valid_status ?? Order::query()->latest()->first()?->{STATUS};
 
             return to_route(ADMIN_ORDERS_ROUTE, [STATUS => $redirect_status]);
         }
 
-        session()->push('last_valid_status', $this->status);
+        session()->push('last_valid_status', $status);
 
         $orders = Order::query()->latest()
-            ->whereStatus($this->status)
-            ->when(request()?->input('condition') === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->whereStatus($status)
+            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $statuses     = ORDER_STATUS_ENUM;
-        $orders_title = key(array_intersect($statuses, (array) $this->status)).' '.ucfirst(ORDERS_TABLE);
-        $order_status = current(array_intersect($statuses, (array) $this->status));
+        $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
+        $order_status = current(array_intersect($statuses, (array) $status));
 
         $update_order_error  = static fn(string $attributeName) => formError(UPDATE, ORDER_MODEL,  $attributeName);
         $filter_orders_error = static fn(string $attributeName) => formError(FILTER, ORDERS_TABLE, $attributeName);
@@ -194,10 +196,11 @@ class AdminController extends Controller
         session()->push('last_valid_rating', $rating);
 
         $reviews = Review::with([
-                PRODUCT_MODEL => fn(BelongsTo $product) => $product->select($this->id_name),
-                USER_MODEL    => static fn(BelongsTo $user)    => $user->select(USER_SELECTED_ATTRIBUTES),
+                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
+                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
             ])
             ->where(RATING, $rating)
+            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));

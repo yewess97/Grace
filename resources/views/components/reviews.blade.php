@@ -101,7 +101,7 @@
             @if (auth()->check() && auth()->id() === $review->{USER_ID})
                 <article class="user-edit-delete-review-btns d-flex gap-3">
                     {{-- User Review Edit Button --}}
-                    <button type="button" role="button" title="{{ucfirst(EDIT)}} my {{REVIEW_MODEL}}" class="edit-review-btn h-fit-content text-success bg-transparent border-0" data-tooltip="tooltip" data-mdb-placement="top" data-mdb-toggle="modal" data-mdb-target="#edit_review_modal" aria-label="{{ucfirst(EDIT)}} my {{REVIEW_MODEL}}">
+                    <button type="button" role="button" title="{{ucfirst(EDIT)}} my {{REVIEW_MODEL}}" class="edit-review-btn h-fit-content text-success bg-transparent border-0" data-tooltip="tooltip" data-mdb-placement="top" data-mdb-toggle="modal" data-mdb-target="#edit_review_modal" data-route="{{route(EDIT_REVIEW, $review->id)}}" aria-label="{{ucfirst(EDIT)}} my {{REVIEW_MODEL}}">
                         <i class="fa-regular fa-pen-to-square"></i>
                     </button>
                     {{-- User Review Delete Button --}}

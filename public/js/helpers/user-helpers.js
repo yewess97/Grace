@@ -183,11 +183,16 @@ const User = {
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                 };
 
+            if (action === IGrace.UPDATE) {
+                // FormData() accepts only POST method
+                form_data.append('_method', IGrace.PUT);
+            }
+
             let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
 
             $.ajax({
                 url: route,
-                method: action === IGrace.ADD ? IGrace.POST : IGrace.PUT,
+                method: IGrace.POST,
                 data: form_data,
                 success: (data) => {
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
@@ -300,9 +305,9 @@ const User = {
             e.preventDefault();
 
             const
-                target = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
-                route = target.data('route'),
-                main_image = target.data(IGrace.MAIN_IMAGE()),
+                target            = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
+                route             = target.data('route'),
+                main_image        = target.data(IGrace.MAIN_IMAGE()),
                 product_old_price = $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`);
 
             $.get(`${route}?quick_view=true`)
@@ -386,17 +391,23 @@ const User = {
                 route     = target.attr('action'),
                 form_data = Common.filteredFormData(this);
 
+            if (action === IGrace.UPDATE) {
+                // FormData() accepts only POST method
+                form_data.append('_method', IGrace.PUT);
+            }
+
             const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((key, cart_product) => {
                 const
                     cart_product_value_of = (value) => +$(cart_product).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
-                    product_id = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
-                    product_size = cart_product_value_of(IGrace.PRODUCT_SIZE()),
+
+                    product_id       = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
+                    product_size     = cart_product_value_of(IGrace.PRODUCT_SIZE()),
                     product_quantity = cart_product_value_of(IGrace.PRODUCT_QUANTITY());
 
                 if ((product_id !== 0 && !isNaN(product_id)) && (!isNaN(product_size)) && (product_quantity !== 0 && !isNaN(product_quantity))) {
                     return {
-                        id: product_id,
-                        size: product_size,
+                        id:       product_id,
+                        size:     product_size,
                         quantity: product_quantity,
                     }
                 }
@@ -408,8 +419,8 @@ const User = {
                 data: action === IGrace.ADD
                     ? form_data
                     : JSON.stringify({
-                        update_cart_product_id: products.map((product) => product[IGrace.ID]),
-                        update_cart_product_size: products.map((product) => product[IGrace.SIZE]),
+                        update_cart_product_id:       products.map((product) => product[IGrace.ID]),
+                        update_cart_product_size:     products.map((product) => product[IGrace.SIZE]),
                         update_cart_product_quantity: products.map((product) => product[IGrace.QUANTITY]),
                     }),
                 contentType: action === IGrace.ADD
@@ -476,8 +487,10 @@ const User = {
                 success: (data) => {
                     $('.pagination-container').html(data);
 
-                    const radio_inputs = $('input[type=radio]');
-                    const selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+                    const
+                        radio_inputs   = $('input[type=radio]'),
+                        selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+
 
                     if (selected_value) {
                         radio_inputs.filter(`[value="${selected_value}"]`)

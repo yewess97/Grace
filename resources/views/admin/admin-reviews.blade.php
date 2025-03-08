@@ -8,16 +8,12 @@
             <div class="row">
                 <section class="reviews row col-12 gap-4">
                     {{-- Reviews Search & Delete all selected Button --}}
-                    <div class="row col-12 align-items-center gap-3">
+                    <div class="row col-12 justify-content-between align-items-center gap-3">
                         {{-- Reviews Search --}}
                         @search(SEARCH_REVIEWS, $review_rating)
 
-                        {{-- Reviews (Delete all selected) Button --}}
-                        <div class="delete-all-selected-button col-12 col-md-5 d-flex justify-content-lg-end justify-content-md-end justify-content-sm-center align-items-center">
-                            <button type="button" role="button" title="{{capitalizeAll(pluralize(DELETE_REVIEW))}}" id="delete_reviews_btn" class="btn delete-btn" data-route="{{route(pluralize(DELETE_REVIEW))}}">
-                                Delete all selected
-                            </button>
-                        </div>
+                        {{-- Reviews Main Buttons --}}
+                        @collectionButtons(REVIEWS_TABLE, ADMIN_REVIEWS_ROUTE)
                     </div>
 
                     {{-- Reviews Table --}}

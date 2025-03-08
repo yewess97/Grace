@@ -117,9 +117,9 @@ $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODU
         no_results_img_src = target.data('no_results');
 
     User.ajaxFilterProductsRequest({
-        route: route,
-        action: action,
-        formData: form_data,
+        route:             route,
+        action:            action,
+        formData:          form_data,
         noResultsImageSrc: no_results_img_src,
     });
 });

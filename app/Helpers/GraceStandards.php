@@ -48,6 +48,7 @@ define("NAME",       'name');
 define("SLUG",       'slug');
 define("MAIN_IMAGE", 'main_image');
 define("STATUS",     'status');
+define("CONDITION",  'condition');
 define("PASSWORD",   'password');
 define("PRICE",      'price');
 

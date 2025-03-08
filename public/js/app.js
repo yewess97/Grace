@@ -258,7 +258,7 @@ $(document).ready(() => {
     });
 
 
-    Common.charsCounter(`${IGrace.REVIEW}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.BODY_TEXT))}`);
+    Common.charsCounter(`${IGrace.REVIEW}-${IGrace.CLASS(IGrace.BODY_TEXT)}`);
 
 
     const observer = new MutationObserver((mutations) => {

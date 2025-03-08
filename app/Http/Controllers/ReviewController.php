@@ -84,4 +84,30 @@ class ReviewController extends Controller
 
         return responseSuccess();
     }
+
+    /**
+     * Restore a specified review.
+     *
+     * @param Review $review
+     * @return Response
+     */
+    final public function restore(Review $review): Response
+    {
+        $this->reviewService->restoreReview($review);
+
+        return responseSuccess();
+    }
+
+    /**
+     * Restore the selected reviews.
+     *
+     * @param Review $reviews
+     * @return Response
+     */
+    final public function restoreMultiple(Review $reviews): Response
+    {
+        $this->reviewService->restoreMultipleReviews($reviews);
+
+        return responseSuccess();
+    }
 }

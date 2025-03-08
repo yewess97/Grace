@@ -373,31 +373,6 @@ trait FormRequestHelper
         ];
     }
 
-//    /**
-//     * Selection validation rules & messages.
-//     *
-//     * @param string|null $tableName
-//     * @param string $attribute
-//     * @param string|null $capAttribute
-//     * @param bool $messages
-//     * @return array<string, string>
-//     */
-//    protected function selectionValidation(string|null $tableName, string $attribute, string $capAttribute = null, bool $messages = false): array
-//    {
-//        if ($messages) {
-//            return [
-//                ...$this->isRequiredMsg($this->dataKeyOf($attribute), $capAttribute),
-//                "{$this->dataKeyOf($attribute)}.integer" => "$capAttribute id must be an integer",
-//                "{$this->dataKeyOf($attribute)}.not_in" => "$capAttribute id must be greater than :not_in",
-//                "{$this->dataKeyOf($attribute)}.exists" => "Chosen ".strtolower($capAttribute)." does not exist",
-//            ];
-//        }
-//
-//        return [
-//            $this->dataKeyOf($attribute) => ["required", "integer", "not_in:0", "exists:$tableName,".ID],
-//        ];
-//    }
-
     /**
      * Multiple selection validation rules & messages.
      *
@@ -468,4 +443,30 @@ trait FormRequestHelper
             $this->dataKeyOf($attribute) => ['required', 'in:0,1'],
         ];
     }
+
+
+    //    /**
+//     * Selection validation rules & messages.
+//     *
+//     * @param string|null $tableName
+//     * @param string $attribute
+//     * @param string|null $capAttribute
+//     * @param bool $messages
+//     * @return array<string, string>
+//     */
+//    protected function selectionValidation(string|null $tableName, string $attribute, string $capAttribute = null, bool $messages = false): array
+//    {
+//        if ($messages) {
+//            return [
+//                ...$this->isRequiredMsg($this->dataKeyOf($attribute), $capAttribute),
+//                "{$this->dataKeyOf($attribute)}.integer" => "$capAttribute id must be an integer",
+//                "{$this->dataKeyOf($attribute)}.not_in" => "$capAttribute id must be greater than :not_in",
+//                "{$this->dataKeyOf($attribute)}.exists" => "Chosen ".strtolower($capAttribute)." does not exist",
+//            ];
+//        }
+//
+//        return [
+//            $this->dataKeyOf($attribute) => ["required", "integer", "not_in:0", "exists:$tableName,".ID],
+//        ];
+//    }
 }
