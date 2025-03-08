@@ -39,7 +39,7 @@ let
 // Load the preloader
 $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
 
-// restore the closed menu when page load
+// Restore the closed menu when page load
 $.each(Admin.loadClosedMenu(), (_, navMenu) => {
     $(`.${navMenu}`).addClass('close');
 

@@ -51,7 +51,7 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View
     {
-        $categories = Category::when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+        $categories = Category::when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
@@ -68,7 +68,7 @@ class AdminController extends Controller
     final public function subcategories(): Application|Factory|View
     {
         $subcategories = Subcategory::with($this->relatedCategories())
-            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $categories = Category::all($this->id_name);
@@ -98,7 +98,7 @@ class AdminController extends Controller
                 THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                 SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
             ])
-            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $categories    = Category::all($id_name_attributes);
@@ -119,7 +119,7 @@ class AdminController extends Controller
      */
     final public function users(): RedirectResponse|Application|Factory|View|string
     {
-        $users = User::when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+        $users = User::when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $roles = USER_ROLE_ENUM;
@@ -158,7 +158,7 @@ class AdminController extends Controller
 
         $orders = Order::query()->latest()
             ->whereStatus($status)
-            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $statuses     = ORDER_STATUS_ENUM;
@@ -200,7 +200,7 @@ class AdminController extends Controller
                 USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
             ])
             ->where(RATING, $rating)
-            ->when($this->condition === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));

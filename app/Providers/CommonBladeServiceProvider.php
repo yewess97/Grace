@@ -140,7 +140,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                     \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$status_title.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
 
-                    if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE])) {
+                    if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && request()?->input(CONDITION) !== TRASHED) {
                         \$add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button>\";
                     }
 
@@ -184,13 +184,11 @@ class CommonBladeServiceProvider extends ServiceProvider
         );
 
         /**
-         * Iteration Loop for Table Rows and Columns.
+         * Iteration Loop for Table Rows.
          *
          * @return string
          */
-        Blade::directive('loopIteration', static fn(string $collectionFirstItem) =>
-            "<?php echo '<td><p>'.$collectionFirstItem+\$key.'</p></td>' ?>"
-        );
+        Blade::directive('loopIteration', static fn() => "<?php echo '<td><p>'.++\$key.'</p></td>' ?>");
 
         /**
          * No Results Found.

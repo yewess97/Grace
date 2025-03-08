@@ -10,11 +10,11 @@ if (!function_exists('responseSuccess')) {
     /**
      * Success Response.
      *
-     * @param string $status
+     * @param string|null $status
      * @param array $otherVars
      * @return JsonResponse|ResponseClass
      */
-    function responseSuccess(string $status = '', array $otherVars = []): JsonResponse|ResponseClass
+    function responseSuccess(string $status = null, array $otherVars = []): JsonResponse|ResponseClass
     {
         if ($status || $otherVars) {
             return response()->json(['status' => $status, ...$otherVars], Response::HTTP_OK);

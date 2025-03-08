@@ -35,15 +35,6 @@ const Common = {
 
 
     /**
-     * Get the query parameter from the url.
-     *
-     * @param key
-     * @returns {string}
-     */
-    getQueryParam: (key) => new URLSearchParams(location.search).get(key),
-
-
-    /**
      * Configure the rows checking settings.
      *
      * @param target
@@ -663,6 +654,10 @@ const Common = {
             if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
                 return setTimeout(() => User.reloadReviewsTab(extra), 1800);
             }
+
+            if ($(location).attr('href') !== extra) {
+                return location.href = extra;
+            }
         }
 
         Swal.fire({
@@ -673,15 +668,15 @@ const Common = {
             timerProgressBar: true,
         });
 
-        setTimeout(() => {
-            if (!(extra && extra.includes(IGrace.ADMIN))) {
-                return location.reload();
-            }
-
-            return $(location).attr('href') === extra
-                ? location.reload()
-                : location.href = extra;
-        }, 1800);
+        // setTimeout(() => {
+        //     if (!(extra && extra.includes(IGrace.ADMIN))) {
+        //         return location.reload();
+        //     }
+        //
+        //     return $(location).attr('href') === extra
+        //         ? location.reload()
+        //         : location.href = extra;
+        // }, 1800);
     },
 
 
@@ -840,14 +835,19 @@ const Common = {
      * @returns {{method: string, success: *, url: string}}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, multiple, forceDeleteRequest, selectedIds, successMessage, collectionTrashed } = options;
+        const { target, deleteRoute, collection, collectionId, multiple, forceDeleteRequest, selectedIds, successMessage, collectionTrashed } = options;
 
         return {
             url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
             method: IGrace.DELETE.toUpperCase(),
-            success: () => {
+            success: (data) => {
                 $('.check-row').prop('checked', false);
                 $('#check_all').prop({'checked': false, 'indeterminate': false});
+
+                if (parseInt(data.status) === 200) {
+                    $(`#row_${collectionId}`).fadeOut(500, () => target.remove());
+                }
+
                 Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
             },
         };
@@ -940,8 +940,9 @@ const Common = {
             const
                 target             = $(this),
                 delete_route       = target.data('route'),
+                collection_id      = target.data(IGrace.ID),
                 collection_name    = target.data(IGrace.NAME),
-                collection_trashed = ['trashed'].includes(Common.getQueryParam(IGrace.STATUS)),
+                collection_trashed = new URLSearchParams(location.search).get(IGrace.CONDITION),
                 delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_cancel_message  = `${
                     collection === IGrace.ADDRESS
@@ -950,7 +951,10 @@ const Common = {
                 } is safe`;
 
             const delete_options = {
+                target:            target,
                 deleteRoute:       delete_route,
+                collection:        collection,
+                collectionId:      collection_id,
                 collectionTrashed: collection_trashed,
                 successMessage:    delete_success_message,
             };
@@ -987,7 +991,7 @@ const Common = {
 
             const
                 delete_all_route = $(this).data('route'),
-                collections_trashed = $.inArray('trashed', [Common.getQueryParam(IGrace.STATUS), Common.getQueryParam('condition')]),
+                collections_trashed = new URLSearchParams(location.search).get(IGrace.CONDITION),
                 selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
@@ -1043,13 +1047,20 @@ const Common = {
             const
                 target                  = $(this),
                 restore_route           = target.data('route'),
+                collection_id           = target.data(IGrace.ID),
                 collection_name         = target.data(IGrace.NAME),
                 restore_success_message = `${collection === IGrace.ADDRESS ? `The ${collection} of the ${IGrace.USER} (${collection_name})` : `*${collection_name}* ${collection}`} has been ${IGrace.RESTORED()}`;
 
             $.ajax({
                 url: restore_route,
                 method: IGrace.PUT,
-                success: () => Common.successMessage(IGrace.RESTORED(), restore_success_message),
+                success: (data) => {
+                    if (parseInt(data.status) === 200) {
+                        $(`#row_${collection_id}`).fadeOut(500, () => target.remove());
+                    }
+
+                    Common.successMessage(IGrace.RESTORED(), restore_success_message)
+                },
                 error: () => Common.somethingWentWrongError,
             });
         });

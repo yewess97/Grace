@@ -401,7 +401,7 @@ const Admin = {
                 route      = target.attr('action'),
                 main_page  = target.data('main'),
                 action     = form.split('_')[0],
-                collection = IGrace.CAPITALIZE(form.split('_')[1]),
+                collection = form.split('_')[1],
                 form_data  = Common.filteredFormData(this);
 
             if (action === IGrace.UPDATE) {
@@ -409,16 +409,24 @@ const Admin = {
                 form_data.append('_method', IGrace.PUT);
             }
 
+            console.log(collection);
+
             $.ajax({
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                success: () => {
+                success: (data) => {
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
                     target[0].reset();
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                    Common.successMessage(IGrace.SUCCESS, `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
+                    action === IGrace.ADD
+                        ? $("tbody").append(data['row'])
+                        : $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']);
+
+                    Common.imageConfig();
+
+                    Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
                 error: (err) => {
                     if (Common.errorStatus(err) === 404) {

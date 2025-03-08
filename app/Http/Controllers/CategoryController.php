@@ -41,14 +41,17 @@ class CategoryController extends Controller
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return Response
-     * @throws ValidationException|RandomException
+     * @return JsonResponse
+     * @throws ValidationException|RandomException|Throwable
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->categoryService->createOrUpdateCategory($operation);
+        $category = $this->categoryService->createOrUpdateCategory($operation);
+        $key = Category::count() - 1;
 
-        return responseSuccess();
+        $row = view(CATEGORY_ROW_PARTIAL, compact(CATEGORY_MODEL, KEY))->render();
+
+        return responseSuccess(null, compact(CATEGORY_MODEL, ROW));
     }
 
     /**
@@ -67,14 +70,13 @@ class CategoryController extends Controller
      * and its images from the database and storage.
      *
      * @param Category $category
-     * @return Response
-     * @throws NotFoundHttpException
+     * @return JsonResponse
      */
-    final public function destroy(Category $category): Response
+    final public function destroy(Category $category): JsonResponse
     {
         $this->categoryService->deleteCategory($category);
 
-        return responseSuccess();
+        return responseSuccess(200);
     }
 
     /**
@@ -95,13 +97,13 @@ class CategoryController extends Controller
      * Restore a specified category.
      *
      * @param Category $category
-     * @return Response
+     * @return JsonResponse
      */
-    final public function restore(Category $category): Response
+    final public function restore(Category $category): JsonResponse
     {
         $this->categoryService->restoreCategory($category);
 
-        return responseSuccess();
+        return responseSuccess(200);
     }
 
     /**

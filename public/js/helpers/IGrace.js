@@ -137,6 +137,7 @@ const IGrace = {
     TITLE : 'title',
     BODY_TEXT : 'body_text',
     CHECKOUT: 'checkout',
+    CONDITION: 'condition',
 
     MAIN_IMAGE : () => `main_${IGrace.IMAGE}`,
     BANNER_IMAGE : () => `banner_${IGrace.IMAGE}`,

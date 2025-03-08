@@ -71,8 +71,6 @@ class AddressService {
      */
     final public function getUserAddressesData(): Application|Factory|View|RedirectResponse
     {
-        $status = request()?->input(STATUS);
-
         try {
             $user_id = auth()->check() && !auth()->user()->isAdmin
                 ? auth()->id()
@@ -83,7 +81,7 @@ class AddressService {
         }
 
         $user_addresses = Address::query()->where(USER_ID, $user_id)
-            ->when($status === TRASHED, static fn($query) => $query->onlyTrashed())
+            ->when(request()?->input(CONDITION), static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);

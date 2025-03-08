@@ -215,6 +215,8 @@ define("PAYMENT",              'payment');
 define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
 define("TRASHED",              'trashed');
+define("KEY",                  'key');
+define("ROW",                  'row');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
 
@@ -791,16 +793,27 @@ define("RESET_PASSWORD_EMAIL", email(RESET_PASSWORD));
 /**
  * Main Partials.
  */
-define("ADD_USER_ADDRESS_PARTIAL",      partial(ADDRESSES_TABLE.'.'.ADD.'-'.kebabAll(singularize(USER_ADDRESSES))));
-define("EDIT_USER_ADDRESS_PARTIAL",     partial(ADDRESSES_TABLE.'.'.EDIT.'-'.kebabAll(singularize(USER_ADDRESSES))));
-define("REVIEW_RATING_PARTIAL",         partial(REVIEWS_TABLE.'.'.kebabAll(REVIEW_RATING)));
-define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout'));
-define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears'));
+define("ADD_USER_ADDRESS_PARTIAL",      partial(ADD.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
+define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
+define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
+define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
+define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
+
+/**
+ * Collection Row Partials.
+ */
+define("CATEGORY_ROW_PARTIAL",    partial(CATEGORY_MODEL));
+define("SUBCATEGORY_ROW_PARTIAL", partial(SUBCATEGORY_MODEL));
+define("PRODUCT_ROW_PARTIAL",     partial(PRODUCT_MODEL));
+define("ORDER_ROW_PARTIAL",       partial(ORDER_MODEL));
+define("USER_ROW_PARTIAL",        partial(USER_MODEL));
+define("ADDRESS_ROW_PARTIAL",     partial(ADDRESS_MODEL));
+define("REVIEW_ROW_PARTIAL",      partial(REVIEW_MODEL));
 
 /**
  * Errors Partials
  */
-define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(REVIEWS_TABLE.'.'.pluralize(kebabAll(UPDATE_REVIEW_ERROR))));
+define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(REVIEWS_TABLE, pluralize(kebabAll(UPDATE_REVIEW_ERROR))));
 
 #################################### End Partials ####################################
 
@@ -1082,11 +1095,16 @@ function component(string $componentName): string
  * Partial.
  *
  * @param string $partialName
+ * @param string $folderName
  * @return string
  */
-function partial(string $partialName): string
+function partial(string $partialName, string $folderName = 'table-row'): string
 {
-    return "partials.$partialName";
+    if ($folderName === 'table-row') {
+        $partialName .= '-'.ROW;
+    }
+
+    return "partials.$folderName.$partialName";
 }
 
 
