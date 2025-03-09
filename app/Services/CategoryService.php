@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use stdClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class CategoryService
 {
@@ -23,7 +24,7 @@ class CategoryService
      *
      * @param string $operation
      * @return Category
-     * @throws ValidationException|RandomException
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
     final public function createOrUpdateCategory(string $operation): Category
     {
@@ -84,6 +85,7 @@ class CategoryService
      *
      * @param Category $categories
      * @return Category|bool
+     * @throws NotFoundHttpException
      */
     final public function deleteMultipleCategories(Category $categories): Category|bool
     {

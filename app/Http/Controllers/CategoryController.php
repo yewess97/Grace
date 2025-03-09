@@ -8,10 +8,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Throwable;
 
 class CategoryController extends Controller
@@ -42,7 +42,7 @@ class CategoryController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException|RandomException|Throwable
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -71,6 +71,7 @@ class CategoryController extends Controller
      *
      * @param Category $category
      * @return JsonResponse
+     * @throws NotFoundHttpException
      */
     final public function destroy(Category $category): JsonResponse
     {
@@ -84,13 +85,14 @@ class CategoryController extends Controller
      * and their images from the database and storage.
      *
      * @param Category $categories
-     * @return Response
+     * @return JsonResponse
+     * @throws NotFoundHttpException
      */
-    final public function destroyMultiple(Category $categories): Response
+    final public function destroyMultiple(Category $categories): JsonResponse
     {
         $this->categoryService->deleteMultipleCategories($categories);
 
-        return responseSuccess();
+        return responseSuccess(200);
     }
 
     /**
@@ -110,12 +112,12 @@ class CategoryController extends Controller
      * Restore the selected categories.
      *
      * @param Category $categories
-     * @return Response
+     * @return JsonResponse
      */
-    final public function restoreMultiple(Category $categories): Response
+    final public function restoreMultiple(Category $categories): JsonResponse
     {
         $this->categoryService->restoreMultipleCategories($categories);
 
-        return responseSuccess();
+        return responseSuccess(200);
     }
 }

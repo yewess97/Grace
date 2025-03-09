@@ -829,13 +829,30 @@ const Common = {
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
 
     /**
+     * Remove the row from the table.
+     *
+     * @param target
+     * @param ids
+     * @param multiple
+     * @return {void}
+     */
+    removeRow: (target, ids, multiple = false) => {
+        const remove_row = (target, id) => $(`#row_${id}`).fadeOut(500, () => target.remove());
+
+        multiple
+            ? $.each((ids), (_, id) => remove_row(target, id))
+            : remove_row(target, ids);
+    },
+
+
+    /**
      * Ajax request to delete a single or multiple items.
      *
      * @param options
      * @returns {{method: string, success: *, url: string}}
      */
     ajaxDeleteItems: (options) => {
-        const { target, deleteRoute, collection, collectionId, multiple, forceDeleteRequest, selectedIds, successMessage, collectionTrashed } = options;
+        const { target, deleteRoute, collection, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
 
         return {
             url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
@@ -845,7 +862,9 @@ const Common = {
                 $('#check_all').prop({'checked': false, 'indeterminate': false});
 
                 if (parseInt(data.status) === 200) {
-                    $(`#row_${collectionId}`).fadeOut(500, () => target.remove());
+                    multiple
+                        ? Common.removeRow(target, selectedIds, true)
+                        : Common.removeRow(target, collectionId);
                 }
 
                 Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
@@ -865,7 +884,7 @@ const Common = {
 
         const del_args_options = {
             deleteRoute: deleteRoute,
-            multiple: multiple,
+            multiple:    multiple,
             selectedIds: selectedIds,
         };
 
@@ -999,9 +1018,9 @@ const Common = {
 
             const delete_multiple_options = {
                 deleteRoute:       delete_all_route,
-                collectionTrashed: collections_trashed,
                 multiple:          true,
                 selectedIds:       selected_rows,
+                collectionTrashed: collections_trashed,
                 successMessage:    delete_multi_success_message,
             };
 
@@ -1077,10 +1096,11 @@ const Common = {
             e.preventDefault();
 
             const
-                restore_all_route = $(this).data('route'),
+                target = $(this),
+                restore_all_route = target.data('route'),
                 selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
-                restore_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
+                restore_multi_success_message = `Selected ${is_multiple_selection ?  `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
 
             if ($.isEmptyObject(selected_rows)) {
                 return Swal.fire({
@@ -1094,9 +1114,14 @@ const Common = {
             $.ajax({
                 url: `${restore_all_route}?selected_ids=${selected_rows}`,
                 method: IGrace.PUT,
-                success: () => {
+                success: (data) => {
                     $('.check-row').prop('checked', false);
                     $('#check_all').prop({'checked': false, 'indeterminate': false});
+
+                    if (parseInt(data.status) === 200) {
+                        Common.removeRow(target, selected_rows, true);
+                    }
+
                     Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);
                 },
                 error: () => Common.somethingWentWrongError,

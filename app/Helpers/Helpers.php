@@ -798,7 +798,7 @@ if (!function_exists('storeImageWithoutBackground')) {
      * @param mixed $image
      * @param string $image_path
      * @return string
-     * @throws RandomException|ServiceUnavailableHttpException
+     * @throws ServiceUnavailableHttpException|RandomException
      */
     function storeImageWithoutBackground(mixed $image, string $image_path): string
     {
@@ -832,7 +832,7 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
      * @param string|null $imageType
      * @param mixed|null $image
      * @return string
-     * @throws RandomException
+     * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
     function storeOrUpdateImage(Model|stdClass $model, string $modelId = null, string $imageType = null, mixed $image = null): string
     {
@@ -992,6 +992,7 @@ if (!function_exists(DELETE)) {
      * @param bool $isMultiple
      * @param bool $deleteImages
      * @return bool
+     * @throws NotFoundHttpException
      */
     function delete(Model|stdClass $model, bool $isMultiple = false, bool $deleteImages = false): bool
     {
@@ -1028,6 +1029,7 @@ if (!function_exists(DELETE.'Images')) {
      * @param bool $isMultiple
      * @param array $selectedIds
      * @return bool
+     * @throws NotFoundHttpException
      */
     function deleteImages(Model|stdClass $model, bool $isMultiple = false, array $selectedIds = []): bool
     {
