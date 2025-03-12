@@ -61,7 +61,7 @@ class SubcategoryController extends Controller
      */
     final public function edit(Subcategory $subcategory): JsonResponse
     {
-        return $this->subcategoryService->getSubcategoryData($subcategory);
+        return responseWithData([SUBCATEGORY_MODEL => $subcategory->data]);
     }
 
     /**

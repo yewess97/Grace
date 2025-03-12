@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Throwable;
 
@@ -47,9 +48,10 @@ class AdminController extends Controller
     /**
      * Categories.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|View|JsonResponse
+     * @throws Throwable
      */
-    final public function categories(): Application|Factory|View
+    final public function categories(): Application|Factory|View|JsonResponse
     {
         $categories = Category::when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
@@ -57,15 +59,20 @@ class AdminController extends Controller
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
         $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
 
+        if (request()?->ajax()) {
+            return ajaxPaginationResponse($categories, ADMIN_CATEGORIES_PAGINATION, CATEGORIES_TABLE);
+        }
+
         return view(ADMIN_CATEGORIES_VIEW, compact(CATEGORIES_TABLE, ADD_CATEGORY_ERROR, UPDATE_CATEGORY_ERROR));
     }
 
     /**
      * Subcategories.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|View|JsonResponse
+     * @throws Throwable
      */
-    final public function subcategories(): Application|Factory|View
+    final public function subcategories(): Application|Factory|View|JsonResponse
     {
         $subcategories = Subcategory::with($this->relatedCategories())
             ->when($this->condition, static fn($query) => $query->onlyTrashed())
@@ -76,15 +83,20 @@ class AdminController extends Controller
         $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
         $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
 
+        if (request()?->ajax()) {
+            return ajaxPaginationResponse($subcategories, ADMIN_SUBCATEGORIES_PAGINATION, SUBCATEGORIES_TABLE);
+        }
+
         return view(ADMIN_SUBCATEGORIES_VIEW, compact(SUBCATEGORIES_TABLE, CATEGORIES_TABLE, ADD_SUBCATEGORY_ERROR, UPDATE_SUBCATEGORY_ERROR));
     }
 
     /**
      * Products.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|View|JsonResponse
+     * @throws Throwable
      */
-    final public function products(): Application|Factory|View
+    final public function products(): Application|Factory|View|JsonResponse
     {
         $id_name_attributes = $this->id_name;
 
@@ -108,16 +120,20 @@ class AdminController extends Controller
         $add_product_error    = static fn(string $attributeName) => formError(ADD, PRODUCT_MODEL, $attributeName);
         $update_product_error = static fn(string $attributeName) => formError(UPDATE, PRODUCT_MODEL, $attributeName);
 
+        if (request()?->ajax()) {
+            return ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE);
+        }
+
         return view(ADMIN_PRODUCTS_VIEW, compact(PRODUCTS_TABLE, CATEGORIES_TABLE, SUBCATEGORIES_TABLE, SIZES, ADD_PRODUCT_ERROR, UPDATE_PRODUCT_ERROR));
     }
 
     /**
      * Customers and Admins Users.
      *
-     * @return RedirectResponse|Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function users(): RedirectResponse|Application|Factory|View|string
+    final public function users(): Application|Factory|View|JsonResponse
     {
         $users = User::when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
@@ -129,7 +145,7 @@ class AdminController extends Controller
         $filter_users_error = static fn(string $attributeName) => formError(FILTER, USERS_TABLE, $attributeName);
 
         if (request()?->ajax()) {
-            return view(ADMIN_USERS_PAGINATION, compact(USERS_TABLE))->render();
+            return ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE);
         }
 
         return view(ADMIN_USERS_VIEW, compact(USERS_TABLE, pluralize(ROLE), ADD_USER_ERROR, UPDATE_USER_ERROR, FILTER_USERS_ERROR));

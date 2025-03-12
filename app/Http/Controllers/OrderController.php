@@ -59,7 +59,7 @@ class OrderController extends Controller
      */
     final public function edit(Order $order): JsonResponse
     {
-        return $this->orderService->getOrderData($order);
+        return responseWithData([ORDER_MODEL => $order->data]);
     }
 
     /**

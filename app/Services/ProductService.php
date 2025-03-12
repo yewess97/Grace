@@ -8,7 +8,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
@@ -134,18 +133,6 @@ class ProductService
 
 
         return $create_or_update_product;
-    }
-
-    /**
-     * Get the data of a specified product
-     * with its related sizes, subcategories, and thumbnail images.
-     *
-     * @param Product $product
-     * @return JsonResponse
-     */
-    final public function getProductData(Product $product): JsonResponse
-    {
-        return responseWithData([PRODUCT_MODEL => $product->data]);
     }
 
     /**

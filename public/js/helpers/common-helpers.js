@@ -320,6 +320,26 @@ const Common = {
 
 
     /**
+     * Custom filter the form data.
+     *
+     * @param target
+     * @return {FormData}
+     */
+    filteredFormData: (target) => {
+        return [...new FormData($(target)[0])]
+            .reduce((formData, [attribute, value]) => {
+                const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
+
+                if (!value.toString().includes(',') || is_file_input) {
+                    formData.append(attribute, value);
+                }
+
+                return formData;
+            }, new FormData());
+    },
+
+
+    /**
      * Add some classes, styles, and attributes on each image.
      *
      * @return {void}
@@ -364,73 +384,34 @@ const Common = {
 
 
     /**
-     * Get the countries from the (restcountries.com) API.
+     * Arrange the table rows.
      *
-     * @return {void}
+     * @param startIndex
+     * @returns {*}
      */
-    getCountries: () => {
-        const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
-
-        if (country_elements.length) {
-            $.getJSON('https://restcountries.com/v3.1/all', (countries) => {
-                let countries_names = countries.map((country) => country.name.common);
-
-                countries_names.sort((opt1, opt2) => opt1.localeCompare(opt2));
-
-                const countries_options = countries_names.map((countryName) =>
-                    `<option value="${countryName}">${countryName}</option>`
-                ).join("");
-
-                $.each((country_elements), (_, countryElement) =>
-                    $(countryElement).append(countries_options)
-                );
-            })
-                .fail(() => console.error("Failed to fetch countries!"));
-        }
-    },
+    arrangeTableRows: (startIndex = null) =>
+        $.each(($(".table tbody tr")), (key, row) => $(row).find(".row-num > p").html(startIndex + (++key))),
 
 
     /**
-     * Set up the pagination.
+     * Update the table rows after deletion/restoration.
      *
+     * @param ids
      * @return {void}
      */
-    paginate: () => {
-        $(document).on(IGrace.CLICK, '.pagination .page-link', function (e) {
-            e.preventDefault();
+    updateTableRows: (ids) => {
+        const remove_row = (id) => {
+            const row = $(`#row_${id}`);
+            row.css({ transition: "opacity 0.5s", opacity: 0 });
+            setTimeout(() => row.remove(), 500);
+        };
 
-            const
-                target = $(this),
-                route  = target.data('route'),
-                page   = target.attr('href').split('page=')[1];
+        $('.check-row').prop('checked', false);
+        $('#check_all').prop({'checked': false, 'indeterminate': false});
 
-            let url = `${route}?page=${page}`;
+        $.each((ids), (_, id) => remove_row(id));
 
-            if (route.includes(IGrace.FILTER)) {
-                return User.ajaxFilterProductsRequest({
-                    route: route,
-                    page: page,
-                });
-            }
-
-            if (route.includes(IGrace.CHECKOUT)) {
-                return User.ajaxCheckoutUserAddressesRequest(page);
-            }
-
-            if (route.includes(IGrace.PLURALIZE(IGrace.ORDER))) {
-                url = `${location.href}&page=${page}`;
-            }
-
-            $.ajax({
-                url: url,
-                method: IGrace.GET,
-                success: (data) => {
-                    $('.pagination-container').html(data);
-                    Common.imageConfig();
-                },
-                error: () => Common.somethingWentWrongError(),
-            });
-        });
+        setTimeout(() => Common.arrangeTableRows(), 500);
     },
 
 
@@ -473,22 +454,29 @@ const Common = {
 
 
     /**
-     * Custom filter the form data.
+     * Get the countries from the (restcountries.com) API.
      *
-     * @param target
-     * @return {FormData}
+     * @return {void}
      */
-    filteredFormData: (target) => {
-        return [...new FormData($(target)[0])]
-            .reduce((formData, [attribute, value]) => {
-                const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
+    ajaxGetCountries: () => {
+        const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
 
-                if (!value.toString().includes(',') || is_file_input) {
-                    formData.append(attribute, value);
-                }
+        if (country_elements.length) {
+            $.getJSON('https://restcountries.com/v3.1/all', (countries) => {
+                let countries_names = countries.map((country) => country.name.common);
 
-                return formData;
-            }, new FormData());
+                countries_names.sort((opt1, opt2) => opt1.localeCompare(opt2));
+
+                const countries_options = countries_names.map((countryName) =>
+                    `<option value="${countryName}">${countryName}</option>`
+                ).join("");
+
+                $.each((country_elements), (_, countryElement) =>
+                    $(countryElement).append(countries_options)
+                );
+            })
+                .fail(() => console.error("Failed to fetch countries!"));
+        }
     },
 
 
@@ -594,16 +582,15 @@ const Common = {
      * @param message
      * @return {object}
      */
-    confirmMessage: (message) => {
-        return Common.swalWithButtons.fire({
+    confirmMessage: (message) =>
+        Common.swalWithButtons.fire({
             html: `Are you sure you want to ${message}`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             showCancelButton: true,
             confirmButtonText: `Yes, ${message.includes(IGrace.REMOVE) ? IGrace.REMOVE : IGrace.DELETE}!`,
             cancelButtonText: 'No, cancel!',
-        });
-    },
+        }),
 
 
     /**
@@ -686,7 +673,7 @@ const Common = {
      * @param message
      * @return {void}
      */
-    cancelMessage: (message) => {
+    cancelMessage: (message) =>
         Swal.fire({
             title: 'Canceled',
             html: `${message} <i class="far fa-smile"></i>`,
@@ -694,8 +681,7 @@ const Common = {
             showConfirmButton: false,
             timer: 1800,
             timerProgressBar: true,
-        });
-    },
+        }),
 
 
     /**
@@ -704,9 +690,7 @@ const Common = {
      * @param error
      * @return {void}
      */
-    swalResponseJsonErrorMessage: (error) => {
-        Common.somethingWentWrongError(Common.responseJsonError(error, true));
-    },
+    swalResponseJsonErrorMessage: (error) => Common.somethingWentWrongError(Common.responseJsonError(error, true)),
 
 
     /**
@@ -716,7 +700,7 @@ const Common = {
      *
      * @return {void}
      */
-    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") => {
+    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") =>
         Common.swalWithButtons.fire({
             title: 'Sorry!',
             html: message,
@@ -728,8 +712,7 @@ const Common = {
                 if (refresh.isConfirmed) {
                     location.reload();
                 }
-            });
-    },
+            }),
 
 
     /**
@@ -740,11 +723,57 @@ const Common = {
      * @param role
      * @return {void}
      */
-    removeErrorsWhenEditModelHides: (role) => {
+    removeErrorsWhenEditModelHides: (role) =>
         $(document).on('hidden.bs.modal', `.${role}-${IGrace.EDIT}-modal`, function (e) {
             e.preventDefault();
 
             $(this).find(IGrace.ERROR_ELEMENT(IGrace.UPDATE)).empty();
+        }),
+
+
+    /**
+     * Set up the pagination.
+     *
+     * @return {void}
+     */
+    ajaxPagination: () => {
+        $(document).on(IGrace.CLICK, '.pagination .page-link', function (e) {
+            e.preventDefault();
+
+            const
+                target                 = $(this),
+                route                  = target.data('route'),
+                page                   = target.attr('href').split('page=')[1],
+                previous_page_rows_num = $(".table tbody tr").length;
+
+            let url = `${route}?page=${page}`;
+
+            if (route.includes(IGrace.FILTER)) {
+                return User.ajaxFilterProductsRequest({
+                    route: route,
+                    page: page,
+                });
+            }
+
+            if (route.includes(IGrace.CHECKOUT)) {
+                return User.ajaxCheckoutUserAddressesRequest(page);
+            }
+
+            if (route.includes([IGrace.PLURALIZE(IGrace.ORDER), IGrace.PLURALIZE(IGrace.REVIEW)])) {
+                url = `${location.href}&page=${page}`;
+            }
+
+            $.ajax({
+                url: url,
+                method: IGrace.GET,
+                success: (data) => {
+                    $('.pagination-container').html(data['html']);
+
+                    Common.imageConfig();
+                    Common.arrangeTableRows((data['current_page'] - 1) * data['per_page']);
+                },
+                error: () => Common.somethingWentWrongError(),
+            });
         });
     },
 
@@ -829,43 +858,21 @@ const Common = {
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
 
     /**
-     * Remove the row from the table.
-     *
-     * @param target
-     * @param ids
-     * @param multiple
-     * @return {void}
-     */
-    removeRow: (target, ids, multiple = false) => {
-        const remove_row = (target, id) => $(`#row_${id}`).fadeOut(500, () => target.remove());
-
-        multiple
-            ? $.each((ids), (_, id) => remove_row(target, id))
-            : remove_row(target, ids);
-    },
-
-
-    /**
      * Ajax request to delete a single or multiple items.
      *
      * @param options
      * @returns {{method: string, success: *, url: string}}
      */
     ajaxDeleteItems: (options) => {
-        const { target, deleteRoute, collection, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
+        const { target, deleteRoute, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
 
         return {
             url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
             method: IGrace.DELETE.toUpperCase(),
-            success: (data) => {
-                $('.check-row').prop('checked', false);
-                $('#check_all').prop({'checked': false, 'indeterminate': false});
-
-                if (parseInt(data.status) === 200) {
-                    multiple
-                        ? Common.removeRow(target, selectedIds, true)
-                        : Common.removeRow(target, collectionId);
-                }
+            success: () => {
+                multiple
+                    ? Common.updateTableRows(selectedIds)
+                    : Common.updateTableRows([collectionId]);
 
                 Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
             },
@@ -882,7 +889,7 @@ const Common = {
     forceDeleteConfirmation: (options) => {
         const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
 
-        const del_args_options = {
+        const delete_options = {
             deleteRoute: deleteRoute,
             multiple:    multiple,
             selectedIds: selectedIds,
@@ -904,13 +911,13 @@ const Common = {
                     let force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1 ? force_delete_requests.pop() : force_delete_requests.shift();
                     $.ajax({
                         ...Common.ajaxDeleteItems({
-                            ...del_args_options,
+                            ...delete_options,
                             successMessage: successMessage,
                             forceDeleteRequest: force_delete_request,
                         }),
                         error: (err) => Common.handleDeleteErrors({
                             error: err,
-                            ...del_args_options,
+                            ...delete_options,
                             cancelMessage: cancelMessage,
                             forceDeleteRequests: force_delete_requests,
                         }),
@@ -972,7 +979,6 @@ const Common = {
             const delete_options = {
                 target:            target,
                 deleteRoute:       delete_route,
-                collection:        collection,
                 collectionId:      collection_id,
                 collectionTrashed: collection_trashed,
                 successMessage:    delete_success_message,
@@ -1016,7 +1022,7 @@ const Common = {
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
 
-            const delete_multiple_options = {
+            const delete_options = {
                 deleteRoute:       delete_all_route,
                 multiple:          true,
                 selectedIds:       selected_rows,
@@ -1037,10 +1043,10 @@ const Common = {
                 .then((willDelete) => {
                     if (willDelete.isConfirmed) {
                         $.ajax({
-                            ...Common.ajaxDeleteItems(delete_multiple_options),
+                            ...Common.ajaxDeleteItems(delete_options),
                             error: (err) => Common.handleDeleteErrors({
                                 error: err,
-                                ...delete_multiple_options,
+                                ...delete_options,
                                 cancelMessage: delete_multi_cancel_message,
                             }),
                         });
@@ -1052,6 +1058,8 @@ const Common = {
         });
     },
 
+
+    /* ---------------------------------- RESTORE REQUEST ---------------------------------- */
 
     /**
      * Restore Ajax Request.
@@ -1073,10 +1081,8 @@ const Common = {
             $.ajax({
                 url: restore_route,
                 method: IGrace.PUT,
-                success: (data) => {
-                    if (parseInt(data.status) === 200) {
-                        $(`#row_${collection_id}`).fadeOut(500, () => target.remove());
-                    }
+                success: () => {
+                    Common.updateTableRows([collection_id]);
 
                     Common.successMessage(IGrace.RESTORED(), restore_success_message)
                 },
@@ -1114,13 +1120,11 @@ const Common = {
             $.ajax({
                 url: `${restore_all_route}?selected_ids=${selected_rows}`,
                 method: IGrace.PUT,
-                success: (data) => {
+                success: () => {
                     $('.check-row').prop('checked', false);
                     $('#check_all').prop({'checked': false, 'indeterminate': false});
 
-                    if (parseInt(data.status) === 200) {
-                        Common.removeRow(target, selected_rows, true);
-                    }
+                    Common.updateTableRows(selected_rows);
 
                     Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);
                 },

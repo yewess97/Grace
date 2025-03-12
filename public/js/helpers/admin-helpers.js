@@ -409,8 +409,6 @@ const Admin = {
                 form_data.append('_method', IGrace.PUT);
             }
 
-            console.log(collection);
-
             $.ajax({
                 url: route,
                 method: IGrace.POST,
@@ -425,6 +423,7 @@ const Admin = {
                         : $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']);
 
                     Common.imageConfig();
+                    Common.arrangeTableRows();
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },

@@ -411,8 +411,11 @@ if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
 // Set up the form select settings
 Common.formSelectConfig();
 
+// Arrange the table rows
+Common.arrangeTableRows();
+
 // Get the countries
-Common.getCountries();
+Common.ajaxGetCountries();
 
 // Scroll to top action
 Common.scrollToTop();

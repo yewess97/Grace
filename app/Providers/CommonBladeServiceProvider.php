@@ -188,7 +188,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('loopIteration', static fn() => "<?php echo '<td><p>'.++\$key.'</p></td>' ?>");
+        Blade::directive('loopIteration', static fn() => "<?php echo \"<td class='row-num'><p></p></td>\" ?>");
 
         /**
          * No Results Found.

@@ -55,7 +55,7 @@ class AddressController extends Controller
      */
     final public function edit(Address $address): JsonResponse
     {
-        return $this->addressService->getAddressData($address);
+        return responseWithData([ADDRESS_MODEL => $address->data]);
     }
 
     /**

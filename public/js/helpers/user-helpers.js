@@ -199,6 +199,8 @@ const User = {
                         return location.href = data['redirect_to'];
                     }
 
+                    Common.arrangeTableRows();
+
                     if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
 

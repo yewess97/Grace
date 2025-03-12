@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -41,17 +40,6 @@ class UserService
     final public function createOrUpdateUser(string $operation): User
     {
         return storeOrUpdateUser($operation);
-    }
-
-    /**
-     * Get the data of a specified user.
-     *
-     * @param User $user
-     * @return JsonResponse
-     */
-    final public function getUserData(User $user): JsonResponse
-    {
-        return responseWithData([USER_MODEL => $user->data]);
     }
 
     /**

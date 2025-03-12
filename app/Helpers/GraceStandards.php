@@ -215,7 +215,6 @@ define("PAYMENT",              'payment');
 define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
 define("TRASHED",              'trashed');
-define("KEY",                  'key');
 define("ROW",                  'row');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));

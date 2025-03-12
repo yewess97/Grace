@@ -291,8 +291,11 @@ $(document).ready(() => {
 
     Common.formSelectConfig();
 
+    // Arrange the table rows
+    Common.arrangeTableRows();
+
     // Get the countries
-    Common.getCountries();
+    Common.ajaxGetCountries();
 
     Common.scrollToTop();
 

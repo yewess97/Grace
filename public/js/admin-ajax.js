@@ -226,4 +226,4 @@ Admin.ajaxClearSearchFilterRequest();
 
 
 /* ---------------------------------- PAGINATION ---------------------------------- */
-Common.paginate();
+Common.ajaxPagination();

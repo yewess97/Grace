@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route as Routing;
 use Illuminate\Routing\RouteRegistrar;
@@ -1169,5 +1170,28 @@ if (!function_exists(RESTORE)) {
         return $isMultiple
             ? $model::query()->whereIn(ID, $selected_ids)->restore()
             : $model->restore();
+    }
+}
+
+
+if (!function_exists('ajaxPaginationResponse')) {
+    /**
+     * Get the ajax pagination response.
+     * To update the row number through ajax,
+     * when a new row is added or deleted/restored.
+     *
+     * @param LengthAwarePaginator $collection
+     * @param string $view
+     * @param string $table
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table): JsonResponse
+    {
+        $html         = view($view, [$table => $collection])->render();
+        $current_page = $collection->currentPage();
+        $per_page     = $collection->perPage();
+
+        return responseWithData(compact('html', 'current_page', 'per_page'));
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\ReviewRequest;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\BadRequestException;
@@ -96,17 +95,6 @@ class ReviewService
                 $product_id => $product_id_value,
                 USER_ID     => auth()->id(),
             ]);
-    }
-
-    /**
-     * Get the data of a specified review.
-     *
-     * @param Review $review
-     * @return JsonResponse
-     */
-    final public function getReviewData(Review $review): JsonResponse
-    {
-        return responseWithData([REVIEW_MODEL => $review->data]);
     }
 
     /**

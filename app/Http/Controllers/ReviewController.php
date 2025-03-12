@@ -56,7 +56,7 @@ class ReviewController extends Controller
      */
     final public function edit(Review $review): JsonResponse
     {
-        return $this->reviewService->getReviewData($review);
+        return responseWithData([REVIEW_MODEL => $review->data]);
     }
 
     /**

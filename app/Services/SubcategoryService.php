@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Requests\SubcategoryRequest;
 use App\Models\Subcategory;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -45,18 +44,6 @@ class SubcategoryService
         createOrUpdateMultipleCollections($create_or_update_subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
         return $create_or_update_subcategory;
-    }
-
-    /**
-     * Get the data of a specified subcategory
-     * with its related categories.
-     *
-     * @param Subcategory $subcategory
-     * @return JsonResponse
-     */
-    final public function getSubcategoryData(Subcategory $subcategory): JsonResponse
-    {
-        return responseWithData([SUBCATEGORY_MODEL => $subcategory->data]);
     }
 
     /**

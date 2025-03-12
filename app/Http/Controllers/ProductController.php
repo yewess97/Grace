@@ -71,7 +71,7 @@ class ProductController extends Controller
      */
     final public function edit(Product $product): JsonResponse
     {
-        return $this->productService->getProductData($product);
+        return responseWithData([PRODUCT_MODEL => $product->data]);
     }
 
     /**

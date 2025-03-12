@@ -130,6 +130,6 @@ $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODU
 /*============================== Pagination ==============================*/
 
 // Default pagination
-Common.paginate();
+Common.ajaxPagination();
 
 /*============================== End Pagination ==============================*/

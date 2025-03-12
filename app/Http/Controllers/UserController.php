@@ -56,7 +56,7 @@ class UserController extends Controller
      */
     final public function edit(User $user): JsonResponse
     {
-        return $this->userService->getUserData($user);
+        return responseWithData([USER_MODEL => $user->data]);
     }
 
     /**

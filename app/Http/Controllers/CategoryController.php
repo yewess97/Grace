@@ -8,6 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -47,11 +48,10 @@ class CategoryController extends Controller
     final public function storeOrUpdate(string $operation): JsonResponse
     {
         $category = $this->categoryService->createOrUpdateCategory($operation);
-        $key = Category::count() - 1;
 
-        $row = view(CATEGORY_ROW_PARTIAL, compact(CATEGORY_MODEL, KEY))->render();
+        $row = view(CATEGORY_ROW_PARTIAL, compact(CATEGORY_MODEL))->render();
 
-        return responseSuccess(null, compact(CATEGORY_MODEL, ROW));
+        return responseWithData(compact(CATEGORY_MODEL, ROW));
     }
 
     /**
@@ -62,7 +62,7 @@ class CategoryController extends Controller
      */
     final public function edit(Category $category): JsonResponse
     {
-        return $this->categoryService->getCategoryData($category);
+        return responseWithData([CATEGORY_MODEL => $category->data]);
     }
 
     /**
@@ -70,14 +70,14 @@ class CategoryController extends Controller
      * and its images from the database and storage.
      *
      * @param Category $category
-     * @return JsonResponse
+     * @return Response
      * @throws NotFoundHttpException
      */
-    final public function destroy(Category $category): JsonResponse
+    final public function destroy(Category $category): Response
     {
         $this->categoryService->deleteCategory($category);
 
-        return responseSuccess(200);
+        return responseSuccess();
     }
 
     /**
@@ -85,39 +85,39 @@ class CategoryController extends Controller
      * and their images from the database and storage.
      *
      * @param Category $categories
-     * @return JsonResponse
+     * @return Response
      * @throws NotFoundHttpException
      */
-    final public function destroyMultiple(Category $categories): JsonResponse
+    final public function destroyMultiple(Category $categories): Response
     {
         $this->categoryService->deleteMultipleCategories($categories);
 
-        return responseSuccess(200);
+        return responseSuccess();
     }
 
     /**
      * Restore a specified category.
      *
      * @param Category $category
-     * @return JsonResponse
+     * @return Response
      */
-    final public function restore(Category $category): JsonResponse
+    final public function restore(Category $category): Response
     {
         $this->categoryService->restoreCategory($category);
 
-        return responseSuccess(200);
+        return responseSuccess();
     }
 
     /**
      * Restore the selected categories.
      *
      * @param Category $categories
-     * @return JsonResponse
+     * @return Response
      */
-    final public function restoreMultiple(Category $categories): JsonResponse
+    final public function restoreMultiple(Category $categories): Response
     {
         $this->categoryService->restoreMultipleCategories($categories);
 
-        return responseSuccess(200);
+        return responseSuccess();
     }
 }

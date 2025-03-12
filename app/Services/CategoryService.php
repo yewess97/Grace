@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
@@ -50,17 +49,6 @@ class CategoryService
                 $banner_image => $banner_image_name,
             ]
         );
-    }
-
-    /**
-     * Get the data of a specified category.
-     *
-     * @param Category $category
-     * @return JsonResponse
-     */
-    final public function getCategoryData(Category $category): JsonResponse
-    {
-        return responseWithData([CATEGORY_MODEL => $category->data]);
     }
 
     /**
