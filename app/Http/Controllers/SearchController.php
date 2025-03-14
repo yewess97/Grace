@@ -17,6 +17,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -49,42 +50,42 @@ class SearchController extends Controller
     /**
      * Search for specified category(ies).
      *
-     * @return string
+     * @return JsonResponse
      * @throws NotFoundHttpException|Throwable
      */
-    final public function searchCategories(): string
+    final public function searchCategories(): JsonResponse
     {
         $categories = Category::search($this->search_value, [NAME])
             ?->fastPaginate(16);
 
         noResultsException($categories);
 
-        return view(ADMIN_CATEGORIES_PAGINATION, compact(CATEGORIES_TABLE))->render();
+        return ajaxPaginationResponse($categories, ADMIN_CATEGORIES_PAGINATION, CATEGORIES_TABLE);
     }
 
     /**
      * Search for specified subcategory(ies).
      *
-     * @return string
+     * @return JsonResponse
      * @throws NotFoundHttpException|Throwable
      */
-    final public function searchSubcategories(): string
+    final public function searchSubcategories(): JsonResponse
     {
         $subcategories = Subcategory::search($this->search_value, [NAME], [CATEGORIES_TABLE => [NAME]])
             ?->fastPaginate(16);
 
         noResultsException($subcategories);
 
-        return view(ADMIN_SUBCATEGORIES_PAGINATION, compact(SUBCATEGORIES_TABLE))->render();
+        return ajaxPaginationResponse($subcategories, ADMIN_SUBCATEGORIES_PAGINATION, SUBCATEGORIES_TABLE);
     }
 
     /**
      * Search for specified product(s).
      *
-     * @return Application|Factory|View|string
-     * @throws Throwable
+     * @return Application|Factory|View|JsonResponse
+     * @throws NotFoundHttpException|Throwable
      */
-    final public function searchProducts(): Application|Factory|View|string
+    final public function searchProducts(): Application|Factory|View|JsonResponse
     {
         $products = Product::query()->latest()
             ->search($this->search_value,
@@ -140,10 +141,10 @@ class SearchController extends Controller
      * Search for specified user(s).
      *
      * @param string|null $type
-     * @return string
-     * @throws Throwable
+     * @return JsonResponse
+     * @throws ValidationException|Throwable
      */
-    final public function searchUsers(string $type = null): string
+    final public function searchUsers(string $type = null): JsonResponse
     {
         $filter_users_attribute = array(Arr::last(USER_ATTRIBUTES));
 
@@ -162,7 +163,7 @@ class SearchController extends Controller
 
         noResultsException($users);
 
-        return view(ADMIN_USERS_PAGINATION, compact(USERS_TABLE))->render();
+        return ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE);
     }
 
     /**

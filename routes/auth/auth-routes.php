@@ -7,6 +7,7 @@ use App\Http\Controllers\AddressController,
     App\Http\Controllers\OrderController,
     App\Http\Controllers\ReviewController,
     App\Http\Controllers\UserController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------

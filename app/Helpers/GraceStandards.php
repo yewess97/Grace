@@ -857,16 +857,17 @@ define("USER_EDIT_REVIEW_MODAL",        modal(EDIT, REVIEW_MODEL, true));
 /**
  * Search Table.
  */
-define("SEARCH_CATEGORIES",    searchableTable(CATEGORIES_TABLE));
-define("SEARCH_SUBCATEGORIES", searchableTable(SUBCATEGORIES_TABLE));
-define("SEARCH_PRODUCTS",      searchableTable(PRODUCTS_TABLE));
-define("SEARCH_ORDERS",        searchableTable(ORDERS_TABLE));
-define("SEARCH_USERS",         searchableTable(USERS_TABLE));
-define("SEARCH_ADDRESSES",     searchableTable(ADDRESSES_TABLE));
-define("SEARCH_REVIEWS",       searchableTable(REVIEWS_TABLE));
-define("FILTER_DASHBOARD",     searchableTable(DASHBOARD,      true));
-define("FILTER_PRODUCTS",      searchableTable(PRODUCTS_TABLE, true));
-define("FILTER_ORDERS",        searchableTable(ORDERS_TABLE,   true));
+define("SEARCH_CATEGORIES",     searchableTable(CATEGORIES_TABLE));
+define("SEARCH_SUBCATEGORIES",  searchableTable(SUBCATEGORIES_TABLE));
+define("SEARCH_PRODUCTS",       searchableTable(PRODUCTS_TABLE));
+define("ADMIN_SEARCH_PRODUCTS", searchableTable(PRODUCTS_TABLE, false, ADMIN));
+define("SEARCH_ORDERS",         searchableTable(ORDERS_TABLE));
+define("SEARCH_USERS",          searchableTable(USERS_TABLE));
+define("SEARCH_ADDRESSES",      searchableTable(ADDRESSES_TABLE));
+define("SEARCH_REVIEWS",        searchableTable(REVIEWS_TABLE));
+define("FILTER_DASHBOARD",      searchableTable(DASHBOARD,      true));
+define("FILTER_PRODUCTS",       searchableTable(PRODUCTS_TABLE, true));
+define("FILTER_ORDERS",         searchableTable(ORDERS_TABLE,   true));
 
 #################################### End Search Table ####################################
 
@@ -1140,13 +1141,14 @@ function email(string $emailName): string
  *
  * @param string $table
  * @param bool $isFilter
+ * @param string|null $role
  * @return string
  */
-function searchableTable(string $table, bool $isFilter = false): string
+function searchableTable(string $table, bool $isFilter = false, string $role = null): string
 {
     return $isFilter
         ? "filter_$table"
-        : "search_$table";
+        : ($role ?? null)."_search_$table";
 }
 
 

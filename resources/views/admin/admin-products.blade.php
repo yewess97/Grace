@@ -10,7 +10,7 @@
                     {{-- Products Search & Action Buttons --}}
                     <div class="row col-12 justify-content-between align-items-center gap-3">
                         {{-- Products Search --}}
-                        @search(SEARCH_PRODUCTS)
+                        @search(ADMIN_SEARCH_PRODUCTS)
 
                         {{-- Products Main Buttons --}}
                         @collectionButtons(PRODUCTS_TABLE, ADMIN_PRODUCTS_ROUTE)

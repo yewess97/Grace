@@ -71,7 +71,7 @@ const User = {
             type: IGrace.GET,
             dataType: 'html',
             success: (data) => $(`.tab-pane.${IGrace.PLURALIZE(IGrace.REVIEW)}`).html(data),
-            error: (err) => console.error('Error loading content:', err),
+            error: () => Common.somethingWentWrongError(),
         });
 
         const
@@ -357,8 +357,10 @@ const User = {
             success: (data) => {
                 $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                $('.pagination-container').html(data);
-                Common.imageConfig();
+                Common.paginationResponse($('.pagination-container'), data);
+
+                // $('.pagination-container').html(data);
+                // Common.imageConfig();
                 User.ajaxGetProductDataRequest();
             },
             error: (err) => {

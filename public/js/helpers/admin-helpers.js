@@ -656,10 +656,8 @@ const Admin = {
      * @return {void}
      */
     searchFilterSuccessResponse: (data) => {
-        const search_table = $('.search-table');
+        Common.paginationResponse($('.search-table'), data);
 
-        search_table.html(data);
-        Common.imageConfig();
         $(`.carousel-item.${IGrace.ADMIN}-${IGrace.PRODUCT}-imgs:first-child`).addClass('active');
     },
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController,
     App\Http\Controllers\Auth\LoginController,
     App\Http\Controllers\Auth\RegisterController,
     App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------

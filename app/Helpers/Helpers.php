@@ -159,19 +159,15 @@ if (!function_exists('searchRoute')) {
      * Generate search routes.
      *
      * @param string $searchableTable
-     * @param bool $isMatch
      * @param string|null $urlParam
      * @return Routing
      */
-    function searchRoute(string $searchableTable, bool $isMatch = false, string $urlParam = null): Routing
+    function searchRoute(string $searchableTable, string $urlParam = null): Routing
     {
-        $search_uri = '/'.kebabAll($searchableTable).(isset($urlParam) ? '/'.$urlParam : '');
+        $searchable_table = str($searchableTable)->ltrim('_')->value();
+        $search_uri = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
 
-        if ($isMatch) {
-            return Route::match(['get', 'post'], $search_uri, capitalizeAllFromSecondWord($searchableTable))->name($searchableTable);
-        }
-
-        return Route::get($search_uri, capitalizeAllFromSecondWord($searchableTable))->name($searchableTable);
+        return Route::match(['get', 'post'], $search_uri, capitalizeAllFromSecondWord($searchable_table))->name($searchableTable);
     }
 }
 
@@ -626,10 +622,10 @@ if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
      * when searching or filtering.
      *
      * @param LengthAwarePaginator $products
-     * @return Application|Factory|View|string
-     * @throws Throwable
+     * @return Application|Factory|View|JsonResponse
+     * @throws NotFoundHttpException|Throwable
      */
-    function viewProducts(LengthAwarePaginator $products): Application|Factory|View|string
+    function viewProducts(LengthAwarePaginator $products): Application|Factory|View|JsonResponse
     {
         $products_pagination_route = match (Route::currentRouteName()) {
             SEARCH_PRODUCTS => SEARCH_PRODUCTS,
@@ -640,9 +636,10 @@ if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
         noResultsException($products);
 
         if (request()?->ajax()) {
+            dd(url()->current());
             return isAdminRoute()
-                ? view(ADMIN_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE))->render()
-                : view(USER_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE, PRODUCTS_PAGINATION_ROUTE))->render();
+                ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
+                : ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route]);
         }
 
         return showView(USER_PRODUCTS_VIEW, productsPageVars($products, $products_pagination_route));
@@ -1183,12 +1180,13 @@ if (!function_exists('ajaxPaginationResponse')) {
      * @param LengthAwarePaginator $collection
      * @param string $view
      * @param string $table
+     * @param mixed|null $otherVars
      * @return JsonResponse
      * @throws Throwable
      */
-    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table): JsonResponse
+    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, mixed $otherVars = null): JsonResponse
     {
-        $html         = view($view, [$table => $collection])->render();
+        $html         = view($view, [$table => $collection, ...$otherVars])->render();
         $current_page = $collection->currentPage();
         $per_page     = $collection->perPage();
 

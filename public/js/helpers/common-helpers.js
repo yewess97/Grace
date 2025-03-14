@@ -732,6 +732,21 @@ const Common = {
 
 
     /**
+     * Setup the pagination response after an ajax request.
+     *
+     * @param element
+     * @param data
+     * @return {void}
+     */
+    paginationResponse: (element, data) => {
+        element.html(data['html']);
+
+        Common.imageConfig();
+        Common.arrangeTableRows((data['current_page'] - 1) * data['per_page']);
+    },
+
+
+    /**
      * Set up the pagination.
      *
      * @return {void}
@@ -766,12 +781,7 @@ const Common = {
             $.ajax({
                 url: url,
                 method: IGrace.GET,
-                success: (data) => {
-                    $('.pagination-container').html(data['html']);
-
-                    Common.imageConfig();
-                    Common.arrangeTableRows((data['current_page'] - 1) * data['per_page']);
-                },
+                success: (data) => Common.paginationResponse($('.pagination-container'), data),
                 error: () => Common.somethingWentWrongError(),
             });
         });

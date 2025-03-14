@@ -68,6 +68,6 @@ Route::controller(PaymentAboutContactController::class)->group(function () {
  * Search Routes
  */
 Route::controller(SearchController::class)->group(function () {
-    searchRoute(SEARCH_PRODUCTS, true);
-    searchRoute(FILTER_PRODUCTS, true);
+    searchRoute(SEARCH_PRODUCTS);
+    searchRoute(FILTER_PRODUCTS);
 });
