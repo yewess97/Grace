@@ -24,13 +24,6 @@ class DBServiceProvider extends ServiceProvider
         Builder::macro('filterByDates', fn(array $dates) => $this->whereBetween(DATES[0], $dates));
 
         /**
-         * Orders Statuses Filter.
-         *
-         * @return Builder
-         */
-        Builder::macro('whereSDC', fn() => $this->whereIn(STATUS, array_values(Arr::only(ORDER_STATUS_ENUM, ['Shipped', 'Delivered', 'Completed']))));
-
-        /**
          * Sum Total Cost.
          *
          * @return Builder
@@ -49,11 +42,9 @@ class DBServiceProvider extends ServiceProvider
             $last_24_hours_orders_count = $orders_count_based_on_time($this, '<');
             $new_orders_count           = $orders_count_based_on_time($this, '>=');
 
-            if ($last_24_hours_orders_count > 0) {
-                return ($new_orders_count - $last_24_hours_orders_count) * 100 / $last_24_hours_orders_count;
-            }
-
-            return $new_orders_count > 0 ? 100 : 0;
+            return $last_24_hours_orders_count > 0
+                ? ($new_orders_count - $last_24_hours_orders_count) * 100 / $last_24_hours_orders_count
+                : ($new_orders_count > 0) * 100;
         });
 
         /**

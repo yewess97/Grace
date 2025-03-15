@@ -310,28 +310,33 @@ const Admin = {
 
         update_collection_image_preview.removeAttr('class');
 
-        if (imageType.includes(IGrace.THUMB_IMAGE())) {
-            if ($.isEmptyObject(imageSrc)) {
-                update_collection_image_preview.addClass('my-3 fs-6 fw-600 text-center')
-                    .html('*No Thumbnail Images to Preview*');
-            }
-            else {
-                update_collection_image_preview.addClass('row row-cols-2 row-cols-md-3 justify-content-center align-items-center gap-3 my-3');
-                update_collection_image_preview.html('');
+        const image_actions = {
+            true: () => {
+                const image_src_actions = {
+                    true: () => update_collection_image_preview.addClass('my-3 fs-6 fw-600 text-center')
+                        .html('*No Thumbnail Images to Preview*'),
+                    false: () => {
+                        update_collection_image_preview.addClass('row row-cols-2 row-cols-md-3 justify-content-center align-items-center gap-3 my-3');
+                        update_collection_image_preview.html('');
 
-                $.each(imageSrc, (_, image_source) =>
-                    update_collection_image_preview.append(`
-                        <div class="col w-auto">
-                            <img src="${image_source}" class="img-thumbnail" width="200px" height="200px" alt="${collection_var[IGrace.NAME]}">
-                        </div>
-                    `)
-                );
-            }
-        }
-        else {
-            update_collection_image_preview.addClass('d-grid place-items-center my-3')
-                .html(`<img src="${imageSrc}" class="img-thumbnail" width="200px" height="200px" alt="${collection_var[IGrace.NAME]}">`);
-        }
+                        $.each(imageSrc, (_, image_source) =>
+                            update_collection_image_preview.append(`
+                                <div class="col w-auto">
+                                    <img src="${image_source}" class="img-thumbnail" width="200px" height="200px" alt="${collection_var[IGrace.NAME]}">
+                                </div>
+                            `)
+                        );
+                    },
+                };
+
+                image_src_actions[$.isEmptyObject(imageSrc)]();
+            },
+            false: () =>
+                update_collection_image_preview.addClass('d-grid place-items-center my-3')
+                    .html(`<img src="${imageSrc}" class="img-thumbnail" width="200px" height="200px" alt="${collection_var[IGrace.NAME]}">`),
+        };
+
+        image_actions[imageType.includes(IGrace.THUMB_IMAGE())]();
     },
 
 
@@ -399,10 +404,11 @@ const Admin = {
             const
                 target     = $(this),
                 route      = target.attr('action'),
-                main_page  = target.data('main'),
                 action     = form.split('_')[0],
                 collection = form.split('_')[1],
                 form_data  = Common.filteredFormData(this);
+
+            let main_page  = target.data('main');
 
             if (action === IGrace.UPDATE) {
                 // FormData() accepts only POST method
@@ -418,16 +424,31 @@ const Admin = {
                     target[0].reset();
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                    action === IGrace.ADD
-                        ? $("tbody").append(data['row'])
-                        : $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']);
+                    const data_actions = {
+                        true: () => {
+                            let url = main_page;
 
-                    $.ajax({
-                        url: `${main_page}?page=${data['last_page']}`,
-                        method: IGrace.GET,
-                        success: (successData) => Common.paginationResponse($('.pagination-container'), successData),
-                        error: () => Common.somethingWentWrongError,
-                    });
+                            const actions = {
+                                [IGrace.ADD]: () => {
+                                    $("tbody").append(data['row']);
+                                    url += `?page=${data['last_page']}`;
+                                },
+                                default: () => $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']),
+                            };
+
+                            (actions[action] || actions.default)();
+
+                            $.ajax({
+                                url: url,
+                                method: IGrace.GET,
+                                success: (successData) => Common.paginationResponse($('.pagination-container'), successData),
+                                error: () => Common.somethingWentWrongError,
+                            });
+                        },
+                        false: () => main_page = IGrace.ADMIN,
+                    };
+
+                    data_actions[$.inArray(collection, [IGrace.ORDER, IGrace.REVIEW]) === -1]();
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },

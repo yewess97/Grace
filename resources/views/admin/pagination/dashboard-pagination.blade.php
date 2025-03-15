@@ -8,7 +8,7 @@
         <tbody class="text-center">
         @forelse($users as $key => $user)
             <tr>
-                @loopIteration($users->firstItem())
+                @loopIteration()
                 <td>
                     <p>{{ $user->{FULL_NAME} }}</p>
                 </td>
@@ -33,4 +33,4 @@
     </table>
 </div>
 
-<div class="table-pagination col-12 pt-4">@pagination($users, ADMIN_USERS_ROUTE)</div>
+<div class="table-pagination col-12 pt-4">@pagination($users, ADMIN_DASHBOARD_ROUTE)</div>

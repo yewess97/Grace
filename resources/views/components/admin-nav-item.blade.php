@@ -17,36 +17,24 @@
             <i class="fas fa-angle-down nav-menu-item-rotate-icon {{adminCurrentUrl($url, 'rotate-180')}}"></i>
         </a>
         <ul role="list" id="nav_menu_item_{{$url}}_submenu" class="nav-submenu-list row gap-3 box-content {{str_contains(url()->current(), ADMIN."/$url") ? 'show' : 'collapse'}}">
-            @php
-                $all_table = collect(array_from(htmlspecialchars_decode($all_table)))
-                ->sortBy(fn($column) => preg_match('/\d+/', $column, $matches) ? $matches[0] : $column)
-                ->all()
-            @endphp
+            @foreach ((object) $all_table as $table)
+                <li role="listitem" class="nav-submenu-list-item {{str(Request::query($column_name))->whenContains($table->{$column_name}, fn() => 'active')}}">
+                    <a href="{{str_contains(Request::query($column_name), $table->{$column_name}) ? 'javascript:;' : route($route_name, [$column_name => $table->{$column_name}])}}" role="link" class="nav-submenu-item d-flex align-items-center">
+                        @if ($column_name === STATUS)
+                            <span class="nav-submenu-item-title">{{orderStatus($table)}}</span>
+                        @endif
 
-            @if(isset($all_table) && !empty(array_filter($all_table)))
-                @foreach ($all_table as $table)
-                    @php
-                        $table = json_decode(preg_replace('/(\w+):/', '"$1":', $table), false, 512, JSON_THROW_ON_ERROR);
-                    @endphp
-
-                    <li role="listitem" class="nav-submenu-list-item {{str(Request::query($column_name))->whenContains($table->{$column_name}, fn() => 'active')}}">
-                        <a href="{{str_contains(Request::query($column_name), $table->{$column_name}) ? 'javascript:;' : route($route_name, [$column_name => $table->{$column_name}])}}" role="link" class="nav-submenu-item d-flex align-items-center">
-                            @if ($column_name === STATUS)
-                                <span class="nav-submenu-item-title">{{orderStatus($table)}}</span>
-                            @endif
-
-                            @if ($column_name === RATING)
-                                @for ($i = 1; $i <= $table->{$column_name}; $i++)
-                                    <span class="position-relative star-fill" aria-label="Filled Star">★</span>
-                                @endfor
-                                @for ($j = 1; $j <= 5 - $table->{$column_name}; $j++)
-                                    <span class="position-relative star-empty" aria-label="Empty Star">☆</span>
-                                @endfor
-                            @endif
-                        </a>
-                    </li>
-                @endforeach
-            @endif
+                        @if ($column_name === RATING)
+                            @for ($i = 1; $i <= $table->{$column_name}; $i++)
+                                <span class="position-relative star-fill" aria-label="Filled Star">★</span>
+                            @endfor
+                            @for ($j = 1; $j <= 5 - $table->{$column_name}; $j++)
+                                <span class="position-relative star-empty" aria-label="Empty Star">☆</span>
+                            @endfor
+                        @endif
+                    </a>
+                </li>
+            @endforeach
         </ul>
     </li>
 

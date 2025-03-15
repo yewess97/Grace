@@ -39,10 +39,10 @@ class SearchController extends Controller
     /**
      * Filter the dashboard by dates.
      *
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse|string
      * @throws ValidationException|Throwable
      */
-    final public function filterDashboard(): Application|Factory|View|string
+    final public function filterDashboard(): Application|Factory|View|JsonResponse|string
     {
         return $this->dashboardService->dashboardData(true);
     }

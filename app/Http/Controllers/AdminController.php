@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class AdminController extends Controller
@@ -34,13 +35,14 @@ class AdminController extends Controller
         $this->id_name   = [ID, NAME];
         $this->condition = request()?->input(CONDITION);
     }
+
     /**
      * Dashboard.
      *
-     * @return Application|Factory|View|string
-     * @throws Throwable
+     * @return Application|Factory|View|JsonResponse|string
+     * @throws ValidationException|Throwable
      */
-    final public function dashboard(): Application|Factory|View|string
+    final public function dashboard(): Application|Factory|View|JsonResponse|string
     {
         return $this->dashboardService->dashboardData();
     }

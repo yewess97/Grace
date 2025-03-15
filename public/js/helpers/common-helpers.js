@@ -186,34 +186,38 @@ const Common = {
             'aria-required': true,
         });
 
-        if (userType === IGrace.ADMIN) {
-            $.each((multi_related_collection), (key, value) => {
-                const option_text = relational_collection.includes(IGrace.SIZE)
-                    ? key
-                    : value[IGrace.NAME];
+        const role_actions = {
+            [IGrace.ADMIN]: () => {
+                $.each((multi_related_collection), (key, value) => {
+                    const option_text = relational_collection.includes(IGrace.SIZE)
+                        ? key
+                        : value[IGrace.NAME];
 
-                const option_value = relational_collection.includes(IGrace.SIZE)
-                    ? value
-                    : value[IGrace.ID];
+                    const option_value = relational_collection.includes(IGrace.SIZE)
+                        ? value
+                        : value[IGrace.ID];
 
-                related_collection_select_element.append($('<option>', {
-                    text: option_text,
-                    value: option_value,
-                }));
-            });
-        }
-        else {
-            $.each((collection[IGrace.PLURALIZE(relation)]), (_, product_size) =>
-                $.each((Object.entries(product_size).filter(([key, _]) => key === IGrace.SIZE)), (_, value) =>
-                    $.each((Object.entries(multi_related_collection).filter(([_, size_value]) => +size_value === +value[1])), (_, [size, size_value]) =>
-                        related_collection_select_element.append($('<option>', {
-                            text: size,
-                            value: size_value,
-                        }))
+                    related_collection_select_element.append($('<option>', {
+                        text: option_text,
+                        value: option_value,
+                    }));
+                });
+            },
+            default: () => {
+                $.each((collection[IGrace.PLURALIZE(relation)]), (_, product_size) =>
+                    $.each((Object.entries(product_size).filter(([key, _]) => key === IGrace.SIZE)), (_, value) =>
+                        $.each((Object.entries(multi_related_collection).filter(([_, size_value]) => +size_value === +value[1])), (_, [size, size_value]) =>
+                            related_collection_select_element.append($('<option>', {
+                                text: size,
+                                value: size_value,
+                            }))
+                        )
                     )
-                )
-            );
-        }
+                );
+            },
+        };
+
+        (role_actions[userType] || role_actions.default)();
 
         related_collection_select_element.insertBefore(related_collection_hidden_input);
 
@@ -264,27 +268,33 @@ const Common = {
                 select_all_checkbox     = all_items.first(),
                 related_collection_hidden_input = target.parents('.filter-multi-select').next();
 
-            if (is_checked) {
-                if (is_select_all) {
-                    multiSelectedValuesList.length = 0;
-                    select_all_checkbox.val('');
-                    related_collection_hidden_input.val('');
+            const check_actions = {
+                true: () => {
+                    const select_actions = {
+                        true: () => {
+                            multiSelectedValuesList.length = 0;
+                            select_all_checkbox.val('');
+                            related_collection_hidden_input.val('');
 
-                    $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
+                            $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
 
-                    select_all_checkbox.next().html('Unselect All');
-                }
-                else {
-                    multiSelectedValuesList.push(target.val());
-                }
-            }
-            else {
-                is_select_all
-                    ? multiSelectedValuesList.length = 0
-                    : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+                            select_all_checkbox.next().html('Unselect All');
+                        },
+                        false: () => multiSelectedValuesList.push(target.val()),
+                    };
 
-                select_all_checkbox.next().html('Select All');
-            }
+                    select_actions[is_select_all]();
+                },
+                false: () => {
+                    is_select_all
+                        ? multiSelectedValuesList.length = 0
+                        : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+
+                    select_all_checkbox.next().html('Select All');
+                },
+            };
+
+            check_actions[is_checked]();
 
             multiSelectedValuesList = multiSelectedValuesList.filter((value) => value !== '').join(',');
 
@@ -436,7 +446,7 @@ const Common = {
      * @param startIndex
      * @returns {*}
      */
-    arrangeTableRows: (startIndex = null) =>
+    arrangeTableRows: (startIndex = 0) =>
         $.each(($(".table tbody tr")), (key, row) => $(row).find(".row-num > p").html(startIndex + (++key))),
 
 
@@ -583,15 +593,19 @@ const Common = {
                 attr_err.html(`<li>${error_message}</li>`);
 
                 const login_attempts_interval = setInterval(() => {
-                    if (seconds > 0) {
-                        $('#count_down').text(seconds);
-                        seconds--;
-                    }
-                    else {
-                        clearInterval(login_attempts_interval);
-                        hide_error_element(attr_err);
-                        login_btn.removeAttr('disabled');
-                    }
+                    const login_actions = {
+                        true: () => {
+                            $('#count_down').text(seconds);
+                            seconds--;
+                        },
+                        false: () => {
+                            clearInterval(login_attempts_interval);
+                            hide_error_element(attr_err);
+                            login_btn.removeAttr('disabled');
+                        },
+                    };
+
+                    login_actions[seconds > 0]();
                 }, 1000);
 
                 return;
@@ -628,12 +642,21 @@ const Common = {
      * @return {void}
      */
     successMessage: (status, message, extra = null) => {
-        const properties = {
-            title: `${IGrace.CAPITALIZE(status)}!`,
-            html: message,
-            icon: IGrace.SUCCESS,
-            showConfirmButton: true,
-        };
+        const
+            properties = {
+                title: `${IGrace.CAPITALIZE(status)}!`,
+                html: message,
+                icon: IGrace.SUCCESS,
+                showConfirmButton: true,
+            },
+
+            swal_message = () => Swal.fire({
+                ...properties,
+                html: `${message} successfully!`,
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true,
+            });
 
         if (extra) {
             if (extra.includes(IGrace.FORGOT_PASSWORD())) {
@@ -665,31 +688,20 @@ const Common = {
             }
 
             if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
+                swal_message();
                 return setTimeout(() => User.reloadReviewsTab(extra), 1800);
             }
 
-            if ($(location).attr('href') !== extra) {
-                return location.href = extra;
+            if ($.inArray(message, [IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)])
+                && message.includes(IGrace.UPDATED())
+                && extra.includes(IGrace.ADMIN))
+            {
+                swal_message();
+                return setTimeout(() => location.reload(), 1800);
             }
         }
 
-        Swal.fire({
-            ...properties,
-            html: `${message} successfully!`,
-            showConfirmButton: false,
-            timer: 1800,
-            timerProgressBar: true,
-        });
-
-        // setTimeout(() => {
-        //     if (!(extra && extra.includes(IGrace.ADMIN))) {
-        //         return location.reload();
-        //     }
-        //
-        //     return $(location).attr('href') === extra
-        //         ? location.reload()
-        //         : location.href = extra;
-        // }, 1800);
+        swal_message();
     },
 
 
@@ -1215,13 +1227,18 @@ const Common = {
                 method: IGrace.POST,
                 data: form_data,
                 success: (data) => {
-                    if (collection === IGrace.DASHBOARD) {
-                        $(`.${IGrace.DASHBOARD}-main`).html(data);
-                        Admin.googleGeoChartConfig();
-                        Admin.googlePieChartConfig();
-                    }
+                    const actions = {
+                        [IGrace.DASHBOARD]: () => {
+                            $(`.${IGrace.DASHBOARD}-main`).html(data);
 
-                    Common.searchFilterSuccessResponse(data);
+                            Admin.googleGeoChartConfig();
+                            Admin.googlePieChartConfig();
+                            Common.arrangeTableRows();
+                        },
+                        default: () => Common.searchFilterSuccessResponse(data),
+                    };
+
+                    (actions[collection] || actions.default)();
 
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
                 },
@@ -1255,19 +1272,14 @@ const Common = {
                 filter_form         = $(`.${IGrace.FILTER}-form`),
                 clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
                 dashboard_main      = $(`.${IGrace.DASHBOARD}-main`),
-                page             = (location.href).split('page=')[1],
-                page_query_param = `page=${page}`,
                 clear_form          = (form) => form[0].reset();
-
-            let url = `${route}?${page_query_param}`;
-
-            console.log(page);
 
             $.ajax({
                 url: route,
                 success: (data) => {
                     if (dashboard_main.length) {
                         dashboard_main.html(data);
+
                         Admin.googleGeoChartConfig();
                         Admin.googlePieChartConfig();
                     }

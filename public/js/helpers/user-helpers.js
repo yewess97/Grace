@@ -223,7 +223,7 @@ const User = {
                         return User.confirmLoginMessage();
                     }
 
-                    if ($.inArray(Common.errorStatus(err), [400, 403]) !== -1) {
+                    if ($.inArray(Common.errorStatus(err), [400, 403])) {
                         return Common.swalWithButtons.fire({
                             title: 'Sorry!',
                             html: Common.responseJsonError(err, true),

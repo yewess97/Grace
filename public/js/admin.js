@@ -238,19 +238,23 @@ $(document).on(IGrace.CLICK, (e) => {
     // Add the (close) class to the nav element if the nav menu key exists in the session storage,
     // otherwise, add the (open) class, and configure the charts
     if (target.is(`.${nav_menu_toggle}, .${nav_menu_toggle}-icon`)) {
-        if (Admin.loadClosedMenu().indexOf(nav_menu) < 0) {
-            Admin.menuAction(nav_menu, 'close');
+        const nav_menu_actions = {
+            true: () => {
+                Admin.menuAction(nav_menu, 'close');
 
-            $(`.${nav_menu} .${nav_menu_list_item}:not(.current-item)`).removeClass('active');
-            $(`.${nav_menu} .${nav_menu_list_item} ul.nav-submenu-list`).removeClass('show')
-                .addClass('collapse');
-        }
-        else {
-            Admin.menuAction(nav_menu, 'open');
+                $(`.${nav_menu} .${nav_menu_list_item}:not(.current-item)`).removeClass('active');
+                $(`.${nav_menu} .${nav_menu_list_item} ul.nav-submenu-list`).removeClass('show')
+                    .addClass('collapse');
+            },
+            false: () => {
+                Admin.menuAction(nav_menu, 'open');
 
-            $(`.${nav_menu} .${nav_menu_list_item}.active ul.nav-submenu-list`).addClass('show')
-                .removeClass('collapse');
-        }
+                $(`.${nav_menu} .${nav_menu_list_item}.active ul.nav-submenu-list`).addClass('show')
+                    .removeClass('collapse');
+            },
+        };
+
+        nav_menu_actions[Admin.loadClosedMenu().indexOf(nav_menu) < 0]();
 
         setTimeout(() => {
             Admin.googleGeoChartConfig();

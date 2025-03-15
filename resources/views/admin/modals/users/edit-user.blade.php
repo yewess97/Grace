@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </div>
             <div class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_USER, UPDATE)}}" method="post" role="form" id="update_user_form" class="grace-form">
+                <form action="{{route(CREATE_UPDATE_USER, UPDATE)}}" method="post" role="form" id="update_user_form" class="grace-form" data-main="{{route(ADMIN_USERS_ROUTE)}}">
                     @csrf
                     @method('PUT')
                     <div class="grace-form-body row col-12 pt-2 pb-4">

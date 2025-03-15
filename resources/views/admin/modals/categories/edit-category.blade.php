@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </div>
             <div class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_CATEGORY, UPDATE)}}" method="post" role="form" id="update_category_form" class="grace-form" enctype="multipart/form-data">
+                <form action="{{route(CREATE_UPDATE_CATEGORY, UPDATE)}}" method="post" role="form" id="update_category_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_CATEGORIES_ROUTE)}}">
                     @csrf
                     @method('PUT')
                     <div class="grace-form-body row col-12 pt-2 pb-4">
