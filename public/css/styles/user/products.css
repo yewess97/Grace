@@ -1,6 +1,10 @@
 /* ===================================== Products Styles ===================================== */
 
 /* =================================== Main Body =================================== */
+.products-main .filter-products-errors {
+    margin-top: calc(var(--twenty-four-pixels) * -1);
+}
+
 .products-main .filter-products-errors .grace-form-error > ul.form-error li {
     margin: 0;
 }

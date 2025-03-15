@@ -102,10 +102,10 @@ class SearchController extends Controller
     /**
      * Filter the product(s).
      *
-     * @return Application|Factory|View|string
-     * @throws Throwable
+     * @return Application|Factory|View|JsonResponse
+     * @throws ValidationException|NotFoundHttpException|Throwable
      */
-    final public function filterProducts(): Application|Factory|View|string
+    final public function filterProducts(): Application|Factory|View|JsonResponse
     {
         $query_params = Arr::except(request()?->query(), ['page']);
 
@@ -142,7 +142,7 @@ class SearchController extends Controller
      *
      * @param string|null $type
      * @return JsonResponse
-     * @throws ValidationException|Throwable
+     * @throws ValidationException|NotFoundHttpException|Throwable
      */
     final public function searchUsers(string $type = null): JsonResponse
     {
@@ -170,10 +170,10 @@ class SearchController extends Controller
      * Search for specified address(s).
      *
      * @param int $userId
-     * @return string
-     * @throws Throwable
+     * @return JsonResponse
+     * @throws NotFoundHttpException|Throwable
      */
-    final public function searchAddresses(int $userId): string
+    final public function searchAddresses(int $userId): JsonResponse
     {
         $user_addresses = Address::query()->where(USER_ID, $userId)
             ->search($this->search_value, ADDRESS_ATTRIBUTES)
@@ -181,7 +181,7 @@ class SearchController extends Controller
 
         noResultsException($user_addresses);
 
-        return view(ADMIN_USER_ADDRESSES_PAGINATION, compact(USER_ADDRESSES))->render();
+        return ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION, USER_ADDRESSES);
     }
 
     /**
@@ -189,10 +189,10 @@ class SearchController extends Controller
      *
      * @param int $status
      * @param string|null $type
-     * @return string
-     * @throws Throwable
+     * @return JsonResponse
+     * @throws ValidationException|NotFoundHttpException|Throwable
      */
-    final public function searchOrders(int $status, string $type = null): string
+    final public function searchOrders(int $status, string $type = null): JsonResponse
     {
         $orders = Order::query()->latest()
             ->whereStatus($status);
@@ -212,17 +212,17 @@ class SearchController extends Controller
 
         noResultsException($orders);
 
-        return view(ADMIN_ORDERS_PAGINATION, compact(ORDERS_TABLE))->render();
+        return ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE);
     }
 
     /**
      * Search for specified review(s).
      *
      * @param string $rating
-     * @return string
-     * @throws Throwable
+     * @return JsonResponse
+     * @throws NotFoundHttpException|Throwable
      */
-    final public function searchReviews(string $rating): string
+    final public function searchReviews(string $rating): JsonResponse
     {
         $reviews = Review::query()->where(RATING, $rating)
             ->search($this->search_value,
@@ -235,6 +235,6 @@ class SearchController extends Controller
 
         noResultsException($reviews);
 
-        return view(ADMIN_REVIEWS_PAGINATION, compact(REVIEWS_TABLE))->render();
+        return ajaxPaginationResponse($reviews, ADMIN_REVIEWS_PAGINATION, REVIEWS_TABLE);
     }
 }

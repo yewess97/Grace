@@ -18,11 +18,6 @@ const
     responsive_nav_menu_items = $(`.responsive-${nav_menu} .${nav_menu_item}`),
     responsive_nav_submenu_lists = $(`.responsive-${nav_menu} .nav-submenu-list`);
 
-const
-    truncate = $('.truncate p'),
-    truncate_text = '.truncate-text',
-    show_char = 70;
-
 const clear_search_button = $('.clear-search-btn');
 
 let
@@ -53,24 +48,7 @@ $.each(Admin.loadClosedMenu(), (_, navMenu) => {
 Common.imageConfig();
 
 // Truncate the text that has more than 70 characters
-$.each((truncate), (_, truncateElement) => {
-    const data = $(truncateElement).html();
-    if (data.length > show_char) {
-        let content =
-            `
-            <div class="truncate-text" style="display:block">
-                ${data.substring(0, show_char)}
-                <span>.... <a class="show-less fw-600">&nbsp;Show More</a></span>
-            </div>
-            <div class="truncate-text" style="display:none">
-                ${data}
-                <a class="show-less less fw-600 lh-sm">&nbsp; Show Less</a>
-            </div>
-            `;
-
-        $(truncateElement).html(content);
-    }
-});
+Common.truncateText();
 
 /* ---------=========== Change Action ===========--------- */
 $(document).on(IGrace.INPUT, (e) => {
@@ -210,9 +188,9 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
+    childList:       true,
+    subtree:         true,
+    attributes:      true,
     attributeFilter: ['class'],
 });
 
@@ -221,7 +199,22 @@ observer.observe(document.body, {
 
 /* ---------=========== Click Action ===========--------- */
 $(document).on(IGrace.CLICK, (e) => {
-    const target = $(e.target);
+    const
+        target                = $(e.target),
+        add_product           = IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+        update_product        = IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
+        related_categories    = IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        related_subcategories = IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
+        sizes                 = IGrace.PLURALIZE(IGrace.SIZE),
+
+        add_operation_args = {
+            target: target,
+            actionCollection: add_product,
+        },
+        update_operation_args = {
+            target: target,
+            actionCollection: update_product,
+        };
 
     // Active the responsive nav menu and overlay
     if (target.is(nav_menu_toggler)) {
@@ -272,35 +265,7 @@ $(document).on(IGrace.CLICK, (e) => {
         target_parent.find(`.${nav_menu_item_rotate_icon}`).toggleClass('rotate-180');
     }
 
-    // Truncate the text if the (Show More) is clicked on
-    if (target.hasClass('show-less')) {
-        const
-            closest_truncate_text = target.closest(truncate_text),
-            is_less = target.hasClass('less');
-
-        closest_truncate_text.prev(truncate_text).toggle(is_less);
-        closest_truncate_text.slideToggle(is_less);
-        closest_truncate_text.toggle(!is_less);
-        closest_truncate_text.next(truncate_text).fadeToggle(!is_less);
-    }
-
     // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
-    const
-        add_product           = IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-        update_product        = IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-        related_categories    = IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        related_subcategories = IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-        sizes                 = IGrace.PLURALIZE(IGrace.SIZE),
-
-        add_operation_args = {
-            target: target,
-            actionCollection: add_product,
-        },
-        update_operation_args = {
-            target: target,
-            actionCollection: update_product,
-        };
-
     if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...add_operation_args,

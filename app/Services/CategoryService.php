@@ -22,10 +22,10 @@ class CategoryService
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return Category
+     * @return array
      * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
-    final public function createOrUpdateCategory(string $operation): Category
+    final public function createOrUpdateCategory(string $operation): array
     {
         $category_request = new CategoryRequest($operation, CATEGORY_MODEL, CATEGORY_ATTRIBUTES);
 
@@ -40,7 +40,7 @@ class CategoryService
         $main_image_name   = storeOrUpdateImage(new Category(), $category_id, MAIN_IMAGE,   $main_image_value);
         $banner_image_name = storeOrUpdateImage(new Category(), $category_id, BANNER_IMAGE, $banner_image_value);
 
-        return Category::query()->updateOrCreate(
+        $category = Category::query()->updateOrCreate(
             [ID => $category_id],
             [
                 $name         => $name_value,
@@ -49,6 +49,8 @@ class CategoryService
                 $banner_image => $banner_image_name,
             ]
         );
+
+        return [$category, getLastPage(new Category())];
     }
 
     /**

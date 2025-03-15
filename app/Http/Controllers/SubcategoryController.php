@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Throwable;
 
 class SubcategoryController extends Controller
@@ -42,14 +43,16 @@ class SubcategoryController extends Controller
      * and its main image in the database and storage.
      *
      * @param string $operation
-     * @return Response
-     * @throws ValidationException|RandomException
+     * @return JsonResponse
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->subcategoryService->createOrUpdateSubcategory($operation);
+        [$subcategory, $last_page] = $this->subcategoryService->createOrUpdateSubcategory($operation);
 
-        return responseSuccess();
+        $row = view(SUBCATEGORY_ROW_PARTIAL, compact(SUBCATEGORY_MODEL))->render();
+
+        return responseWithData(compact(SUBCATEGORY_MODEL, ROW, LAST_PAGE));
     }
 
     /**

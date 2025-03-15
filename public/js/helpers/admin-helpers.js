@@ -422,8 +422,12 @@ const Admin = {
                         ? $("tbody").append(data['row'])
                         : $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']);
 
-                    Common.imageConfig();
-                    Common.arrangeTableRows();
+                    $.ajax({
+                        url: `${main_page}?page=${data['last_page']}`,
+                        method: IGrace.GET,
+                        success: (successData) => Common.paginationResponse($('.pagination-container'), successData),
+                        error: () => Common.somethingWentWrongError,
+                    });
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
@@ -642,144 +646,6 @@ const Admin = {
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
-        });
-    },
-
-
-
-    /* ---------------------------------- SEARCH & FILTER REQUEST ---------------------------------- */
-
-    /**
-     * Success response for search/filter.
-     *
-     * @param data
-     * @return {void}
-     */
-    searchFilterSuccessResponse: (data) => {
-        Common.paginationResponse($('.search-table'), data);
-
-        $(`.carousel-item.${IGrace.ADMIN}-${IGrace.PRODUCT}-imgs:first-child`).addClass('active');
-    },
-
-
-    /**
-     * Search Ajax Request.
-     */
-    ajaxSearchRequest: () => {
-        $(document).on(IGrace.KEYUP, 'input[type="search"]', function (e) {
-            e.preventDefault();
-
-            const
-                target             = $(this),
-                search_form        = target.parents('#search_form'),
-                route              = search_form.attr('action'),
-                search_value       = target.val(),
-                no_results_img_src = search_form.data('no_results');
-
-            $.ajax({
-                url: `${route}?search_value=${search_value}`,
-                method: IGrace.GET,
-                success: (data) => Admin.searchFilterSuccessResponse(data),
-                error: (err) => {
-                    if (Common.responseJsonError(err, true) === 'no-results') {
-                        return Common.searchFilterErrorResponse({
-                            role: IGrace.ADMIN,
-                            imageSrc: no_results_img_src,
-                        });
-                    }
-
-                    Common.somethingWentWrongError();
-                },
-            });
-        });
-    },
-
-
-    /**
-     * Filter Ajax Request.
-     */
-    ajaxFilterRequest: (args) => {
-        const { collection, eventType = IGrace.SUBMIT, element = 'form' } = args;
-
-        $(document).on(eventType, `#${IGrace.FILTER}_${collection}_${element}`, function (e) {
-            e.preventDefault();
-
-            const
-                target = $(this),
-                filter_form = eventType === IGrace.CHANGE
-                    ? target.parents(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_form`)
-                    : target,
-                route = filter_form.attr('action'),
-                form_data = new FormData(filter_form[0]),
-                no_results_img_src = filter_form.data('no_results');
-
-            $.ajax({
-                url: route,
-                method: IGrace.POST,
-                data: form_data,
-                success: (data) => {
-                    if (collection === IGrace.DASHBOARD) {
-                        $(`.${IGrace.DASHBOARD}-main`).html(data);
-                        Admin.googleGeoChartConfig();
-                        Admin.googlePieChartConfig();
-                    }
-
-                    Admin.searchFilterSuccessResponse(data);
-
-                    $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
-                },
-                error: (err) => {
-                    if (Common.errorStatus(err) === 422) {
-                        return Common.errorMessage(IGrace.FILTER, Common.responseJsonError(err));
-                    }
-
-                    if (Common.responseJsonError(err, true) === 'no-results') {
-                        return Common.searchFilterErrorResponse({
-                            imageSrc: no_results_img_src,
-                        });
-                    }
-
-                    Common.somethingWentWrongError();
-                },
-            });
-        });
-    },
-
-
-    /**
-     * Clear Search/Filter Ajax Request.
-     */
-    ajaxClearSearchFilterRequest: () => {
-        $(document).on(IGrace.CLICK, `#clear_${IGrace.SEARCH}, #clear_${IGrace.FILTER}`, function (e) {
-            e.preventDefault();
-
-            const
-                route               = $(this).attr('href') ?? $(this).data('route'),
-                search_form         = $('#search_form'),
-                filter_form         = $(`.${IGrace.FILTER}-form`),
-                clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
-                dashboard_main      = $(`.${IGrace.DASHBOARD}-main`);
-
-
-            $.ajax({
-                url: route,
-                success: (data) => {
-                    if (dashboard_main.length) {
-                        dashboard_main.html(data);
-                        Admin.googleGeoChartConfig();
-                        Admin.googlePieChartConfig();
-                    }
-
-                    Admin.searchFilterSuccessResponse(data);
-
-                    if (search_form.length) search_form[0].reset();
-                    if (filter_form.length) filter_form[0].reset();
-                    if (clear_search_button.length) clear_search_button.css({'opacity': '0', 'visibility': 'hidden'});
-
-                    $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
-                },
-                error: () => Common.somethingWentWrongError(),
-            });
         });
     },
 }

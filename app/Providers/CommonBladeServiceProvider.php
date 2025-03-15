@@ -94,8 +94,18 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? array_from($searchArgs)[1]
                 : null;
 
-            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll($table).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
+            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll(str($table)->ltrim(ADMIN)->value()).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
         });
+
+        /**
+         * Clear Search or Filter.
+         *
+         * @param string $route
+         * @return string
+         */
+        Blade::directive('clearSearchFilter', static fn(string $route) =>
+            "<?php echo \"<a href=\".array_from($route)[0].\" role='link' id='clear_filter' class='text-decoration-underline lh-base'>Clear Search/\".ucfirst(FILTER).\"</a>\" ?>"
+        );
 
         /**
          * Collection Buttons.
@@ -217,7 +227,7 @@ class CommonBladeServiceProvider extends ServiceProvider
         Blade::directive('pagination', static function (string $paginationArgs) {
             [$collection, $route] = array_from($paginationArgs);
 
-            return "<?php echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route)]) ?>";
+            return "<?php echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route, [ID => request()?->input(ID), STATUS => request()?->input(STATUS), RATING => request()?->input(RATING)])]) ?>";
         });
     }
 }

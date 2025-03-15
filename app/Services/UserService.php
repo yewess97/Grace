@@ -34,12 +34,12 @@ class UserService
      * Store or Update a user.
      *
      * @param string $operation
-     * @return User
+     * @return array
      * @throws ValidationException
      */
-    final public function createOrUpdateUser(string $operation): User
+    final public function createOrUpdateUser(string $operation): array
     {
-        return storeOrUpdateUser($operation);
+        return [storeOrUpdateUser($operation), getLastPage(new User())];
     }
 
     /**

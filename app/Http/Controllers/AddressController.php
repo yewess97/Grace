@@ -25,10 +25,10 @@ class AddressController extends Controller
     /**
      * Get the detailed data of a specified user's addresses.
      *
-     * @return Application|Factory|View|RedirectResponse
+     * @return Application|Factory|View|RedirectResponse|JsonResponse
      * @throws Throwable
      */
-    final public function userAddresses(): Application|Factory|View|RedirectResponse
+    final public function userAddresses(): Application|Factory|View|RedirectResponse|JsonResponse
     {
         return $this->addressService->getUserAddressesData();
     }

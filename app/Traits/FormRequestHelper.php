@@ -396,7 +396,10 @@ trait FormRequestHelper
                 ? ["in:".implode(',', array_values(PRODUCT_SIZE_ENUM))]
                 : ["not_in:0", "exists:$tableName,".ID];
 
-            $multiple_selection_rules["{$this->dataKeyOf($attribute)}.*"] = [...$multiple_selection_rules["{$this->dataKeyOf($attribute)}.*"], ...$additional_rules];
+            $multiple_selection_rules["{$this->dataKeyOf($attribute)}.*"] = [
+                ...$multiple_selection_rules["{$this->dataKeyOf($attribute)}.*"],
+                ...$additional_rules
+            ];
         }
 
         if ($isMessage) {

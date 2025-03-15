@@ -38,14 +38,16 @@ class UserController extends Controller
      * Store or Update a user.
      *
      * @param string $operation
-     * @return Response
-     * @throws ValidationException
+     * @return JsonResponse
+     * @throws ValidationException|Throwable
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->userService->createOrUpdateUser($operation);
+        [$user, $last_page] = $this->userService->createOrUpdateUser($operation);
 
-        return responseSuccess();
+        $row = view(USER_ROW_PARTIAL, compact(USER_MODEL))->render();
+
+        return responseWithData(compact(USER_MODEL, ROW, LAST_PAGE));
     }
 
     /**

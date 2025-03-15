@@ -47,11 +47,11 @@ class CategoryController extends Controller
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $category = $this->categoryService->createOrUpdateCategory($operation);
+        [$category, $last_page] = $this->categoryService->createOrUpdateCategory($operation);
 
         $row = view(CATEGORY_ROW_PARTIAL, compact(CATEGORY_MODEL))->render();
 
-        return responseWithData(compact(CATEGORY_MODEL, ROW));
+        return responseWithData(compact(CATEGORY_MODEL, ROW, LAST_PAGE));
     }
 
     /**

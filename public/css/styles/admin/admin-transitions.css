@@ -1,8 +1,7 @@
 .nav-menu .nav-menu-toggle,
 .nav-menu .nav-menu-main ul.nav-menu-list :is(li.nav-menu-list-item, li.nav-menu-list-item > .nav-menu-item :where(.nav-menu-item-title, .nav-menu-item-icon, .nav-menu-item-rotate-icon)),
 .nav-menu .nav-menu-main ul.nav-menu-list li.nav-menu-list-item :is(ul.nav-submenu-list, ul.nav-submenu-list li.nav-submenu-list-item),
-.dashboard-main :is(.analytic-card, .metric-card),
-.clear-search-btn {
+.dashboard-main :is(.analytic-card, .metric-card) {
     -webkit-transition: var(--trans-300);
     -moz-transition: var(--trans-300);
     -ms-transition: var(--trans-300);

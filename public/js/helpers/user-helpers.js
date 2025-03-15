@@ -348,27 +348,22 @@ const User = {
     ajaxFilterProductsRequest: (args) => {
         const { route, action, formData, noResultsImageSrc, page = 1 } = args;
 
-        const form_data = new FormData($(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_form`)[0]);
-
         $.ajax({
             url: `${route}?page=${page}`,
             method: IGrace.POST,
-            data: formData ?? form_data,
+            data: formData,
             success: (data) => {
-                $(IGrace.ERROR_ELEMENT(action)).empty();
+                $(IGrace.ERROR_ELEMENT(action)).empty()
+                    .parent()
+                    .removeClass(`show-${IGrace.ERROR} mt-3`);
 
                 Common.paginationResponse($('.pagination-container'), data);
 
-                // $('.pagination-container').html(data);
-                // Common.imageConfig();
                 User.ajaxGetProductDataRequest();
             },
             error: (err) => {
                 if (Common.responseJsonError(err, true) === 'no-results') {
-                    return Common.searchFilterErrorResponse({
-                        role: IGrace.USER,
-                        imageSrc: noResultsImageSrc,
-                    });
+                    return Common.searchFilterErrorResponse(noResultsImageSrc);
                 }
 
                 if (Common.errorStatus(err) === 422) {

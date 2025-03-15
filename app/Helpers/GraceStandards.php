@@ -216,6 +216,7 @@ define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
 define("TRASHED",              'trashed');
 define("ROW",                  'row');
+define("LAST_PAGE",            'last_page');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
 
@@ -794,6 +795,7 @@ define("RESET_PASSWORD_EMAIL", email(RESET_PASSWORD));
  */
 define("ADD_USER_ADDRESS_PARTIAL",      partial(ADD.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
 define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
+define("USER_ADDRESSES_PAGINATION",     partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
 define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
 define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
 define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
@@ -812,7 +814,7 @@ define("REVIEW_ROW_PARTIAL",      partial(REVIEW_MODEL));
 /**
  * Errors Partials
  */
-define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(REVIEWS_TABLE, pluralize(kebabAll(UPDATE_REVIEW_ERROR))));
+define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(pluralize(kebabAll(UPDATE_REVIEW_ERROR)), REVIEWS_TABLE));
 
 #################################### End Partials ####################################
 
@@ -1148,7 +1150,7 @@ function searchableTable(string $table, bool $isFilter = false, string $role = n
 {
     return $isFilter
         ? "filter_$table"
-        : ($role ?? null)."_search_$table";
+        : (isset($role) ? $role.'_' : null)."search_$table";
 }
 
 

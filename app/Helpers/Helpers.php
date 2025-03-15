@@ -164,7 +164,7 @@ if (!function_exists('searchRoute')) {
      */
     function searchRoute(string $searchableTable, string $urlParam = null): Routing
     {
-        $searchable_table = str($searchableTable)->ltrim('_')->value();
+        $searchable_table = str($searchableTable)->ltrim(ADMIN.'_')->value();
         $search_uri = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
 
         return Route::match(['get', 'post'], $search_uri, capitalizeAllFromSecondWord($searchable_table))->name($searchableTable);
@@ -209,6 +209,24 @@ if (!function_exists('adminCurrentUrl')) {
                 ? implode(' ', $action)
                 : $action;
         });
+    }
+}
+
+
+if (!function_exists('getLastPage')) {
+    /**
+     * Get the last page number.
+     * To add the new item to the last position in the last page.
+     *
+     * @param Model|stdClass $model
+     * @return int
+     */
+    function getLastPage(Model|stdClass $model): int
+    {
+        $per_page = 16;
+        $total_users = $model::query()->count();
+
+        return ceil($total_users / $per_page);
     }
 }
 
@@ -446,8 +464,8 @@ if (!function_exists(CART_MODEL.'Config')) {
     {
         $user_cart_items = Cart::query()
             ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
-            $product->select(PRODUCT_ITEM_ATTRIBUTES))
-            ->where(USER_ID, auth()->id())->get();
+                $product->select(PRODUCT_ITEM_ATTRIBUTES))
+                ->where(USER_ID, auth()->id())->get();
 
         if ($user_cart_items->isEmpty()) {
             Session::flash(EMPTY_CART);
@@ -581,7 +599,6 @@ if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
      * @param LengthAwarePaginator $products
      * @param string|null $productsPaginationRoute
      * @return array|string
-     * @throws Throwable
      */
     function productsPageVars(LengthAwarePaginator $products, string $productsPaginationRoute = null): array|string
     {
@@ -636,7 +653,6 @@ if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
         noResultsException($products);
 
         if (request()?->ajax()) {
-            dd(url()->current());
             return isAdminRoute()
                 ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
                 : ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route]);
@@ -720,11 +736,9 @@ if (!function_exists('showView')) {
      */
     function showView(string $viewName, array $vars = []): Application|Factory|View
     {
-        $cart_config_vars = $vars;
-
         $view_vars = isAdminRoute()
             ? $vars
-            : cartConfig($cart_config_vars);
+            : cartConfig($vars);
 
         return view($viewName, $view_vars);
     }
@@ -932,8 +946,7 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
 
             validateAttributes($user_request);
         }
-
-        if ($operation !== REGISTER) {
+        else {
             $user_request = new UserRequest($operation, USER_MODEL, $user_attributes);
 
             $user_id = request()?->input(UPDATE_USER_ID);
@@ -955,7 +968,7 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
         if ($operation !== REGISTER) {
             $role_value = Arr::last($user_request->dataValues());
 
-            $attributes = [...$attributes, ROLE => $role_value];
+            $attributes[] = [ROLE => $role_value];
 
             return User::query()->updateOrCreate(
                 [ID => $user_id], $attributes
@@ -1180,13 +1193,13 @@ if (!function_exists('ajaxPaginationResponse')) {
      * @param LengthAwarePaginator $collection
      * @param string $view
      * @param string $table
-     * @param mixed|null $otherVars
+     * @param array $otherCompactVars
      * @return JsonResponse
      * @throws Throwable
      */
-    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, mixed $otherVars = null): JsonResponse
+    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, array $otherCompactVars = []): JsonResponse
     {
-        $html         = view($view, [$table => $collection, ...$otherVars])->render();
+        $html         = view($view, [$table => $collection, ...$otherCompactVars])->render();
         $current_page = $collection->currentPage();
         $per_page     = $collection->perPage();
 

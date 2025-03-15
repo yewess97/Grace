@@ -1,6 +1,7 @@
 'use strict';
 
 import { IGrace } from "./IGrace.js";
+import { Admin } from "./admin-helpers.js";
 import { User } from "./user-helpers.js";
 
 
@@ -340,18 +341,6 @@ const Common = {
 
 
     /**
-     * Add some classes, styles, and attributes on each image.
-     *
-     * @return {void}
-     */
-    imageConfig: () => $.each(($('img')), (_, image) =>
-        $(image).addClass('img-fluid h-100')
-            .css('mix-blend-mode', 'multiply')
-            .attr('loading', 'lazy')
-    ),
-
-
-    /**
      * Count the characters in a textarea.
      *
      * @param textArea
@@ -379,6 +368,64 @@ const Common = {
                 counter_element.empty();
                 counter_element.removeClass('mt-3 mb-2');
             }
+        });
+    },
+
+
+    /**
+     * Add some classes, styles, and attributes on each image.
+     *
+     * @return {void}
+     */
+    imageConfig: () => $.each(($('img')), (_, image) =>
+        $(image).addClass('img-fluid h-100')
+            .css('mix-blend-mode', 'multiply')
+            .attr('loading', 'lazy')
+    ),
+
+
+    /**
+     * Truncate the text that has more than 70 characters.
+     *
+     * @return {void}
+     */
+    truncateText: () => {
+        const
+            truncate = $('.truncate p'),
+            truncate_text = '.truncate-text',
+            show_char = 70;
+
+        $.each((truncate), (_, truncateElement) => {
+            const data = $(truncateElement).html();
+            if (data.length > show_char) {
+                let content =
+                    `
+            <div class="truncate-text" style="display:block">
+                ${data.substring(0, show_char)}
+                <span>.... <a class="show-less fw-600">&nbsp;Show More</a></span>
+            </div>
+            <div class="truncate-text" style="display:none">
+                ${data}
+                <a class="show-less less fw-600 lh-sm">&nbsp; Show Less</a>
+            </div>
+            `;
+
+                $(truncateElement).html(content);
+            }
+        });
+
+        // Truncate the text if the (Show More) is clicked on
+        $(document).on(IGrace.CLICK, '.show-less', function (e) {
+            e.preventDefault();
+
+            const
+                closest_truncate_text = $(this).closest(truncate_text),
+                is_less = $(this).hasClass('less');
+
+            closest_truncate_text.prev(truncate_text).toggle(is_less);
+            closest_truncate_text.slideToggle(is_less);
+            closest_truncate_text.toggle(!is_less);
+            closest_truncate_text.next(truncate_text).fadeToggle(!is_less);
         });
     },
 
@@ -522,7 +569,7 @@ const Common = {
         hide_error_element(error_element);
 
         $.each((errors), (attr, msg) => {
-            attr = attr.replace(/\.0$/, ''); // Remove trailing '.0' if there is
+            attr = attr.replace(/\.\d+$/, ''); // Remove the trailing if there is
             const attr_err = $(`#${attr}_${IGrace.ERROR}`);
             $(attr_err).parent().addClass(`${show_error_class} ${!status ? margin : ''}`);
 
@@ -552,27 +599,6 @@ const Common = {
 
             $.each((msg), (_, errMsg) => attr_err.append(`<li role="listitem">${errMsg}</li>`));
         });
-    },
-
-
-    /**
-     * Error response for search & filter.
-     *
-     * @param args
-     * @return {void}
-     */
-    searchFilterErrorResponse: (args) => {
-        const { role, imageSrc } = args;
-
-        const search_filter_container = role === IGrace.ADMIN
-            ? $('.search-table')
-            : $('.pagination-container');
-
-        search_filter_container.html(
-            `<div class="d-flex justify-content-center mt-5">
-                <img src=${imageSrc} alt="No Results Found" class="img-fluid h-100" style="width:300px">
-            </div>`
-        );
     },
 
 
@@ -732,7 +758,7 @@ const Common = {
 
 
     /**
-     * Setup the pagination response after an ajax request.
+     * Set up the pagination response after an ajax request.
      *
      * @param element
      * @param data
@@ -741,51 +767,37 @@ const Common = {
     paginationResponse: (element, data) => {
         element.html(data['html']);
 
+        Common.truncateText();
         Common.imageConfig();
         Common.arrangeTableRows((data['current_page'] - 1) * data['per_page']);
     },
 
 
     /**
-     * Set up the pagination.
+     * Success response for search/filter.
      *
+     * @param data
      * @return {void}
      */
-    ajaxPagination: () => {
-        $(document).on(IGrace.CLICK, '.pagination .page-link', function (e) {
-            e.preventDefault();
+    searchFilterSuccessResponse: (data) => {
+        Common.paginationResponse($('.search-table'), data);
 
-            const
-                target                 = $(this),
-                route                  = target.data('route'),
-                page                   = target.attr('href').split('page=')[1],
-                previous_page_rows_num = $(".table tbody tr").length;
-
-            let url = `${route}?page=${page}`;
-
-            if (route.includes(IGrace.FILTER)) {
-                return User.ajaxFilterProductsRequest({
-                    route: route,
-                    page: page,
-                });
-            }
-
-            if (route.includes(IGrace.CHECKOUT)) {
-                return User.ajaxCheckoutUserAddressesRequest(page);
-            }
-
-            if (route.includes([IGrace.PLURALIZE(IGrace.ORDER), IGrace.PLURALIZE(IGrace.REVIEW)])) {
-                url = `${location.href}&page=${page}`;
-            }
-
-            $.ajax({
-                url: url,
-                method: IGrace.GET,
-                success: (data) => Common.paginationResponse($('.pagination-container'), data),
-                error: () => Common.somethingWentWrongError(),
-            });
-        });
+        $(`.carousel-item.${IGrace.ADMIN}-${IGrace.PRODUCT}-imgs:first-child`).addClass('active');
     },
+
+
+    /**
+     * Error response for search/filter.
+     *
+     * @param imageSrc
+     * @return {void}
+     */
+    searchFilterErrorResponse: (imageSrc) =>
+        $('.search-table').html(
+            `<div class="d-flex justify-content-center mt-5">
+                <img src=${imageSrc} alt="No Results Found" class="img-fluid h-100" style="width:300px">
+            </div>`
+        ),
 
 
     /* ---------------------------------- EDIT REQUEST ---------------------------------- */
@@ -1139,6 +1151,180 @@ const Common = {
                     Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);
                 },
                 error: () => Common.somethingWentWrongError,
+            });
+        });
+    },
+
+
+    /* ---------------------------------- SEARCH & FILTER REQUEST ---------------------------------- */
+
+    /**
+     * Search Ajax Request.
+     */
+    ajaxSearchRequest: () => {
+        $(document).on(IGrace.KEYUP, 'input[type="search"]', function (e) {
+            e.preventDefault();
+
+            const
+                target             = $(this),
+                search_form        = target.parents('#search_form'),
+                route              = search_form.attr('action'),
+                search_value       = target.val(),
+                no_results_img_src = search_form.data('no_results');
+
+            if (target.is('#search_products')) return;
+
+
+
+            $.ajax({
+                url: `${route}?search_value=${search_value}`,
+                method: IGrace.GET,
+                success: (data) => Common.searchFilterSuccessResponse(data),
+                error: (err) => {
+                    if (Common.responseJsonError(err, true) === 'no-results') {
+                        return Common.searchFilterErrorResponse(no_results_img_src);
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
+        });
+    },
+
+
+    /**
+     * Filter Ajax Request.
+     */
+    ajaxFilterRequest: (args) => {
+        const { collection, eventType = IGrace.SUBMIT, element = 'form' } = args;
+
+        $(document).on(eventType, `#${IGrace.FILTER}_${collection}_${element}`, function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                filter_form = eventType === IGrace.CHANGE
+                    ? target.parents(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_form`)
+                    : target,
+                route = filter_form.attr('action'),
+                form_data = new FormData(filter_form[0]),
+                no_results_img_src = filter_form.data('no_results');
+
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: form_data,
+                success: (data) => {
+                    if (collection === IGrace.DASHBOARD) {
+                        $(`.${IGrace.DASHBOARD}-main`).html(data);
+                        Admin.googleGeoChartConfig();
+                        Admin.googlePieChartConfig();
+                    }
+
+                    Common.searchFilterSuccessResponse(data);
+
+                    $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
+                },
+                error: (err) => {
+                    if (Common.errorStatus(err) === 422) {
+                        return Common.errorMessage(IGrace.FILTER, Common.responseJsonError(err));
+                    }
+
+                    if (Common.responseJsonError(err, true) === 'no-results') {
+                        return Common.searchFilterErrorResponse(no_results_img_src);
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
+        });
+    },
+
+
+    /**
+     * Clear Search/Filter Ajax Request.
+     */
+    ajaxClearSearchFilterRequest: () => {
+        $(document).on(IGrace.CLICK, `#clear_${IGrace.SEARCH}, #clear_${IGrace.FILTER}`, function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                route               = target.attr('href') ?? target.data('route'),
+                search_form         = $('#search_form'),
+                filter_form         = $(`.${IGrace.FILTER}-form`),
+                clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
+                dashboard_main      = $(`.${IGrace.DASHBOARD}-main`),
+                page             = (location.href).split('page=')[1],
+                page_query_param = `page=${page}`,
+                clear_form          = (form) => form[0].reset();
+
+            let url = `${route}?${page_query_param}`;
+
+            console.log(page);
+
+            $.ajax({
+                url: route,
+                success: (data) => {
+                    if (dashboard_main.length) {
+                        dashboard_main.html(data);
+                        Admin.googleGeoChartConfig();
+                        Admin.googlePieChartConfig();
+                    }
+
+                    Common.searchFilterSuccessResponse(data);
+
+                    if (search_form.length) clear_form(search_form);
+                    if (filter_form.length) clear_form(filter_form);
+                    if (clear_search_button.length) clear_search_button.css({'opacity': '0', 'visibility': 'hidden'});
+
+                    $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
+                },
+                error: () => Common.somethingWentWrongError(),
+            });
+        });
+    },
+
+
+    /* ---------------------------------- PAGINATION REQUEST ---------------------------------- */
+
+    /**
+     * Set up the pagination.
+     *
+     * @return {void}
+     */
+    ajaxPagination: () => {
+        $(document).on(IGrace.CLICK, '.pagination .page-link', function (e) {
+            e.preventDefault();
+
+            const
+                target           = $(this),
+                route            = target.data('route'),
+                page             = target.attr('href').split('page=')[1],
+                page_query_param = `page=${page}`;
+
+            let url = `${route}?${page_query_param}`;
+
+            if (route.includes(IGrace.FILTER)) {
+                return User.ajaxFilterProductsRequest({
+                    route: route,
+                    page: page,
+                });
+            }
+
+            if (route.includes(IGrace.CHECKOUT)) {
+                return User.ajaxCheckoutUserAddressesRequest(page);
+            }
+
+            if (route.includes('?')) {
+                url = `${route}&${page_query_param}`;
+            }
+
+            $.ajax({
+                url: url,
+                method: IGrace.GET,
+                success: (data) => Common.paginationResponse($('.pagination-container'), data),
+                error: () => Common.somethingWentWrongError(),
             });
         });
     },

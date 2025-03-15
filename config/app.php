@@ -1,6 +1,5 @@
 <?php
 
-use App\Providers\AdminBladeServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\BlueprintServiceProvider;
@@ -220,7 +219,6 @@ return [
         /*
          * Application Service Providers...
          */
-        AdminBladeServiceProvider::class,
         AppServiceProvider::class,
         AuthServiceProvider::class,
         BlueprintServiceProvider::class,

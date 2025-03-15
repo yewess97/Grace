@@ -5,7 +5,7 @@
     <main role="main" class="products-main py-6">
         <div class="container">
             {{-- Errors --}}
-            <section class="filter-products-errors row mb-1">
+            <section class="filter-products-errors row mb-3">
                 {{$filter_products_error(CATEGORIES_TABLE)}}
                 {{$filter_products_error(SUBCATEGORIES_TABLE)}}
                 {{$filter_products_error(SIZES)}}

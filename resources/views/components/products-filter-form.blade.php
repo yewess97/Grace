@@ -9,6 +9,7 @@
         {{-- Clear All Selections --}}
         <button type="button" role="button" title="Clear All {{ucfirst(pluralize(FILTER))}}" class="clear-filter px-3 bg-transparent border-0">Clear All</button>
     </article>
+
     {{-- Filter By Categories --}}
     <article class="box-filter border bg-white rounded-start">
         {{-- Filter Label --}}
@@ -32,6 +33,7 @@
         </ul>
         <input type="hidden" name="filter_products_categories[]">
     </article>
+
     {{-- Filter By Collections (Subcategories) --}}
     <article class="box-filter border bg-white rounded-start">
         {{-- Filter Label --}}
@@ -55,6 +57,7 @@
         </ul>
         <input type="hidden" name="filter_products_subcategories[]">
     </article>
+
     {{-- Filter By Sizes --}}
     <article class="box-filter border bg-white rounded-start">
         {{-- Filter Label --}}
@@ -76,6 +79,7 @@
         </ul>
         <input type="hidden" name="filter_products_sizes[]">
     </article>
+
     {{-- Filter By Price --}}
     <article class="box-filter position-relative bg-white border rounded-start">
         {{-- Filter Label --}}
@@ -113,6 +117,7 @@
             </article>
         </div>
     </article>
+
     {{-- Filter Button --}}
     <article class="box-filter">
         <button type="submit" role="button" title="{{ucfirst(FILTER)}}" class="btn btn-block">{{ucfirst(FILTER)}}</button>

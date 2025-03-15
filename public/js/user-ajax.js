@@ -113,7 +113,7 @@ $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODU
         target             = $(this),
         route              = target.attr('action'),
         action             = target.attr(IGrace.ID).split('_')[0],
-        form_data          = new FormData(target[0]),
+        form_data          = Common.filteredFormData(this),
         no_results_img_src = target.data('no_results');
 
     User.ajaxFilterProductsRequest({
@@ -125,6 +125,17 @@ $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODU
 });
 
 /*============================== End Filter ==============================*/
+
+
+/*============================== Search & Clear Search/Filter ==============================*/
+
+// Search
+Common.ajaxSearchRequest();
+
+// Clear the Search/Filter
+Common.ajaxClearSearchFilterRequest();
+
+/*============================== End Search & Clear Search/Filter ==============================*/
 
 
 /*============================== Pagination ==============================*/

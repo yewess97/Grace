@@ -199,17 +199,17 @@ Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.REVIEW));
 /* ---------------------------------- FILTER ---------------------------------- */
 
 // Filter Dashboard
-Admin.ajaxFilterRequest({
+Common.ajaxFilterRequest({
     collection: IGrace.DASHBOARD,
 });
 
 // Filter the Orders
-Admin.ajaxFilterRequest({
+Common.ajaxFilterRequest({
     collection: IGrace.PLURALIZE(IGrace.ORDER),
 });
 
 // Filter the Users
-Admin.ajaxFilterRequest({
+Common.ajaxFilterRequest({
     collection: IGrace.PLURALIZE(IGrace.USER),
     eventType: IGrace.CHANGE,
     element: IGrace.ROLE
@@ -219,10 +219,10 @@ Admin.ajaxFilterRequest({
 /* ---------------------------------- SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
 // Search
-Admin.ajaxSearchRequest();
+Common.ajaxSearchRequest();
 
 // Clear the Search/Filter
-Admin.ajaxClearSearchFilterRequest();
+Common.ajaxClearSearchFilterRequest();
 
 
 /* ---------------------------------- PAGINATION ---------------------------------- */

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,10 +55,10 @@ class AddressService {
     /**
      * Get the detailed data of a specified user's addresses.
      *
-     * @return Application|Factory|View|RedirectResponse
+     * @return Application|Factory|View|RedirectResponse|JsonResponse
      * @throws Throwable
      */
-    final public function getUserAddressesData(): Application|Factory|View|RedirectResponse
+    final public function getUserAddressesData(): Application|Factory|View|RedirectResponse|JsonResponse
     {
         try {
             $user_id = auth()->check() && !auth()->user()->isAdmin
@@ -78,7 +79,9 @@ class AddressService {
         $add_address_error    = static fn(string $attributeName) => formError(ADD, ADDRESS_MODEL, $attributeName);
         $update_address_error = static fn(string $attributeName) => formError(UPDATE, ADDRESS_MODEL, $attributeName);
 
-        return showView(USER_ADDRESSES_COMPONENT, compact(USER_ID, USER_ADDRESSES, USER_ADDRESSES_TITLE, ROLE, ADD_ADDRESS_ERROR, UPDATE_ADDRESS_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION, USER_ADDRESSES)
+            : showView(USER_ADDRESSES_COMPONENT, compact(USER_ID, USER_ADDRESSES, USER_ADDRESSES_TITLE, ROLE, ADD_ADDRESS_ERROR, UPDATE_ADDRESS_ERROR));
     }
 
     /**

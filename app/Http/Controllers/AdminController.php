@@ -59,11 +59,9 @@ class AdminController extends Controller
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
         $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
 
-        if (request()?->ajax()) {
-            return ajaxPaginationResponse($categories, ADMIN_CATEGORIES_PAGINATION, CATEGORIES_TABLE);
-        }
-
-        return view(ADMIN_CATEGORIES_VIEW, compact(CATEGORIES_TABLE, ADD_CATEGORY_ERROR, UPDATE_CATEGORY_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($categories, ADMIN_CATEGORIES_PAGINATION, CATEGORIES_TABLE)
+            : view(ADMIN_CATEGORIES_VIEW, compact(CATEGORIES_TABLE, ADD_CATEGORY_ERROR, UPDATE_CATEGORY_ERROR));
     }
 
     /**
@@ -83,11 +81,9 @@ class AdminController extends Controller
         $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
         $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
 
-        if (request()?->ajax()) {
-            return ajaxPaginationResponse($subcategories, ADMIN_SUBCATEGORIES_PAGINATION, SUBCATEGORIES_TABLE);
-        }
-
-        return view(ADMIN_SUBCATEGORIES_VIEW, compact(SUBCATEGORIES_TABLE, CATEGORIES_TABLE, ADD_SUBCATEGORY_ERROR, UPDATE_SUBCATEGORY_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($subcategories, ADMIN_SUBCATEGORIES_PAGINATION, SUBCATEGORIES_TABLE)
+            : view(ADMIN_SUBCATEGORIES_VIEW, compact(SUBCATEGORIES_TABLE, CATEGORIES_TABLE, ADD_SUBCATEGORY_ERROR, UPDATE_SUBCATEGORY_ERROR));
     }
 
     /**
@@ -120,11 +116,9 @@ class AdminController extends Controller
         $add_product_error    = static fn(string $attributeName) => formError(ADD, PRODUCT_MODEL, $attributeName);
         $update_product_error = static fn(string $attributeName) => formError(UPDATE, PRODUCT_MODEL, $attributeName);
 
-        if (request()?->ajax()) {
-            return ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE);
-        }
-
-        return view(ADMIN_PRODUCTS_VIEW, compact(PRODUCTS_TABLE, CATEGORIES_TABLE, SUBCATEGORIES_TABLE, SIZES, ADD_PRODUCT_ERROR, UPDATE_PRODUCT_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
+            : view(ADMIN_PRODUCTS_VIEW, compact(PRODUCTS_TABLE, CATEGORIES_TABLE, SUBCATEGORIES_TABLE, SIZES, ADD_PRODUCT_ERROR, UPDATE_PRODUCT_ERROR));
     }
 
     /**
@@ -144,20 +138,18 @@ class AdminController extends Controller
         $update_user_error  = static fn(string $attributeName) => formError(UPDATE, USER_MODEL,  $attributeName);
         $filter_users_error = static fn(string $attributeName) => formError(FILTER, USERS_TABLE, $attributeName);
 
-        if (request()?->ajax()) {
-            return ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE);
-        }
-
-        return view(ADMIN_USERS_VIEW, compact(USERS_TABLE, pluralize(ROLE), ADD_USER_ERROR, UPDATE_USER_ERROR, FILTER_USERS_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE)
+            : view(ADMIN_USERS_VIEW, compact(USERS_TABLE, pluralize(ROLE), ADD_USER_ERROR, UPDATE_USER_ERROR, FILTER_USERS_ERROR));
     }
 
     /**
      * Orders.
      *
-     * @return RedirectResponse|Application|Factory|View|string
+     * @return RedirectResponse|Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function orders(): RedirectResponse|Application|Factory|View|string
+    final public function orders(): RedirectResponse|Application|Factory|View|JsonResponse
     {
         $status = request()?->input(STATUS);
 
@@ -184,19 +176,18 @@ class AdminController extends Controller
         $update_order_error  = static fn(string $attributeName) => formError(UPDATE, ORDER_MODEL,  $attributeName);
         $filter_orders_error = static fn(string $attributeName) => formError(FILTER, ORDERS_TABLE, $attributeName);
 
-        if (request()?->ajax()) {
-            return view(ADMIN_ORDERS_PAGINATION, compact(ORDERS_TABLE))->render();
-        }
-
-        return view(ADMIN_ORDERS_VIEW, compact(ORDERS_TABLE, pluralize(STATUS), ORDERS_TITLE, ORDER_MODEL.'_'.STATUS, UPDATE_ORDER_ERROR, FILTER_ORDERS_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE)
+            : view(ADMIN_ORDERS_VIEW, compact(ORDERS_TABLE, pluralize(STATUS), ORDERS_TITLE, ORDER_MODEL.'_'.STATUS, UPDATE_ORDER_ERROR, FILTER_ORDERS_ERROR));
     }
 
     /**
      * Reviews.
      *
-     * @return RedirectResponse|Application|Factory|View
+     * @return RedirectResponse|Application|Factory|View|JsonResponse
+     * @throws Throwable
      */
-    final public function reviews(): RedirectResponse|Application|Factory|View
+    final public function reviews(): RedirectResponse|Application|Factory|View|JsonResponse
     {
         $rating = request()?->input(RATING);
 
@@ -223,7 +214,9 @@ class AdminController extends Controller
 
         $update_review_error = static fn(string $attributeName) => reviewData($attributeName, UPDATE);
 
-        return view(ADMIN_REVIEWS_VIEW, compact(REVIEWS_TABLE, REVIEW_RATING, UPDATE_REVIEW_ERROR));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($reviews, ADMIN_REVIEWS_PAGINATION, REVIEWS_TABLE)
+            : view(ADMIN_REVIEWS_VIEW, compact(REVIEWS_TABLE, REVIEW_RATING, UPDATE_REVIEW_ERROR));
     }
 
     /**

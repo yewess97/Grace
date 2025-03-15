@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Throwable;
 
 class ProductController extends Controller
@@ -52,14 +53,16 @@ class ProductController extends Controller
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return Response
-     * @throws ValidationException|RandomException
+     * @return JsonResponse
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->productService->createOrUpdateProduct($operation);
+        [$product, $last_page] = $this->productService->createOrUpdateProduct($operation);
 
-        return responseSuccess();
+        $row = view(PRODUCT_ROW_PARTIAL, compact(PRODUCT_MODEL))->render();
+
+        return responseWithData(compact(PRODUCT_MODEL, ROW, LAST_PAGE));
     }
 
     /**

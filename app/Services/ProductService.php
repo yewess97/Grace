@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Throwable;
 
 class ProductService
@@ -54,10 +55,10 @@ class ProductService
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return Product
-     * @throws ValidationException|RandomException
+     * @return array
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
-    final public function createOrUpdateProduct(string $operation): Product
+    final public function createOrUpdateProduct(string $operation): array
     {
         $product_attributes = PRODUCT_ATTRIBUTES;
         $thumb_image_input_name = "{$operation}_".PRODUCT_MODEL."_".THUMB_IMAGE;
@@ -78,7 +79,7 @@ class ProductService
 
         $main_image_name = storeOrUpdateImage(new Product(), $product_id, MAIN_IMAGE, $main_image_value);
 
-        $create_or_update_product = Product::query()->updateOrCreate(
+        $product = Product::query()->updateOrCreate(
             [ID => $product_id],
             [
                 $name              => $name_value,
@@ -92,7 +93,7 @@ class ProductService
                 $status            => $status_value,
             ]);
 
-        $new_product_id = [PRODUCT_ID => $create_or_update_product->{ID}];
+        $new_product_id = [PRODUCT_ID => $product->{ID}];
 
         /*---------------------------- One to Many Relationships ----------------------------*/
         // Product Thumbnail Images
@@ -110,7 +111,7 @@ class ProductService
                 ];
             }, $thumb_images);
 
-            $create_or_update_product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
+            $product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
         }
 
         // Product Sizes
@@ -121,18 +122,18 @@ class ProductService
                 ...$new_product_id
             ];
         });
-        $create_or_update_product->{SIZES}()->delete();
-        $create_or_update_product->{SIZES}()->createMany($sizes_values);
+        $product->{SIZES}()->delete();
+        $product->{SIZES}()->createMany($sizes_values);
 
         /*---------------------------- Many to Many Relationships ----------------------------*/
         // Product Related Categories
-        createOrUpdateMultipleCollections($create_or_update_product, CATEGORIES_TABLE, $related_categories_ids_values);
+        createOrUpdateMultipleCollections($product, CATEGORIES_TABLE, $related_categories_ids_values);
 
         // Product Related Subcategories
-        createOrUpdateMultipleCollections($create_or_update_product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
+        createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
 
-        return $create_or_update_product;
+        return [$product, getLastPage(new Product())];
     }
 
     /**

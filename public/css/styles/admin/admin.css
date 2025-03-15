@@ -194,33 +194,3 @@
 .admin-table .table .review-rating {
     width: 10rem;
 }
-
-/*********************************************************************/
-
-
-/* -----------------================== Search & Filters ==================----------------- */
-input[type="search"] {
-    padding-block: var(--eight-pixels);
-    font-size: var(--fourteen-pixels);
-}
-
-input[type=search]::-webkit-search-cancel-button {
-    display: none;
-}
-
-#clear_filter {
-    font-size: var(--fifteen-pixels);
-    color: var(--main-color);
-}
-
-.clear-search-btn {
-    right: var(--twelve-pixels);
-    padding: var(--two-pixels) var(--four-pixels);
-    background-color: var(--gray-color);
-    color: var(--light-gray-color);
-    border: var(--one-pixel) solid var(--gray-color);
-    opacity: 0;
-    visibility: hidden;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-}

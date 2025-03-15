@@ -7,6 +7,7 @@ use App\Models\Subcategory;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class SubcategoryService
 {
@@ -15,10 +16,10 @@ class SubcategoryService
      * and its main image in the database and storage.
      *
      * @param string $operation
-     * @return Subcategory
-     * @throws ValidationException|RandomException
+     * @return array
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
-    final public function createOrUpdateSubcategory(string $operation): Subcategory
+    final public function createOrUpdateSubcategory(string $operation): array
     {
         $subcategory_request = new SubcategoryRequest($operation, SUBCATEGORY_MODEL, SUBCATEGORY_ATTRIBUTES);
 
@@ -32,7 +33,7 @@ class SubcategoryService
 
         $main_image_name = storeOrUpdateImage(new Subcategory(), $subcategory_id, MAIN_IMAGE, $main_image_value);
 
-        $create_or_update_subcategory = Subcategory::query()->updateOrCreate(
+        $subcategory = Subcategory::query()->updateOrCreate(
             [ID => $subcategory_id],
             [
                 $name       => $name_value,
@@ -41,9 +42,9 @@ class SubcategoryService
             ]
         );
 
-        createOrUpdateMultipleCollections($create_or_update_subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
+        createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
-        return $create_or_update_subcategory;
+        return [$subcategory, getLastPage(new Subcategory())];
     }
 
     /**
