@@ -580,8 +580,8 @@ if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
         $order_number_title = ucfirst(ORDER_MODEL).' Number #'.$order->{TRACKING_NUM};
 
         $order_details = [
-            "Creation Date" => "<span class='fw-500'>".dates($order, 0)."</span>",
-            "Number of Items" => "<span class='fw-500'>".$order->{NUM_ITEMS}." Items</span>",
+            "Bought at" => "<span class='fw-500'>".dates($order, 0)."</span>",
+            "Number of Products" => "<span class='fw-500'>".$order->{NUM_ITEMS}.' '.ucfirst(PRODUCTS_TABLE)."</span>",
             ucfirst(STATUS) => "<span class='badge badge-".orderStatus($order, 'badge')." rounded-pill d-inline p-2'>".orderStatus($order)."</span>",
         ];
 

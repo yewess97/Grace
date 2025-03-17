@@ -1116,6 +1116,7 @@ const Common = {
                 url: restore_route,
                 method: IGrace.PUT,
                 success: () => {
+                    console.log(collection_id);
                     Common.updateTableRows([collection_id]);
 
                     Common.successMessage(IGrace.RESTORED(), restore_success_message)

@@ -25,7 +25,7 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($review->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_REVIEW)}}" class="restore-review-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_REVIEW, $review->id)}}" data-name="{{ $review->{TITLE} }}">
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_REVIEW)}}" class="restore-review-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_REVIEW, $review->id)}}" data-id="{{$review->id}}" data-name="{{ $review->{TITLE} }}">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </button>
             @else
@@ -33,7 +33,7 @@
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($review->trashed() ? DELETE_REVIEW : REMOVE_REVIEW)}}" class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_REVIEW, $review->id)}}" data-name="{{ $review->{TITLE} }}">
+            <button type="button" role="button" title="{{capitalizeAll($review->trashed() ? DELETE_REVIEW : REMOVE_REVIEW)}}" class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_REVIEW, $review->id)}}" data-id="{{$review->id}}" data-name="{{ $review->{TITLE} }}">
                 <i class="{{$review->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
             </button>
         </div>

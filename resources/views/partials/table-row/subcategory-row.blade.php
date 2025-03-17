@@ -19,7 +19,7 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($subcategory->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}" class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-name="{{ $subcategory->{NAME} }}">
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}" class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}" data-name="{{ $subcategory->{NAME} }}">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </button>
             @else
@@ -27,7 +27,7 @@
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($subcategory->trashed() ? DELETE_SUBCATEGORY : REMOVE_SUBCATEGORY)}}" class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}" data-name="{{ $subcategory->{NAME} }}">
+            <button type="button" role="button" title="{{capitalizeAll($subcategory->trashed() ? DELETE_SUBCATEGORY : REMOVE_SUBCATEGORY)}}" class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}" data-name="{{ $subcategory->{NAME} }}">
                 <i class="{{$subcategory->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
             </button>
         </div>

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -14,20 +15,18 @@ class UserService
     /**
      * Get all the data of a specified user with relations.
      *
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function getUserProfile(): Application|Factory|View|string
+    final public function getUserProfile(): Application|Factory|View|JsonResponse
     {
         $user               = User::profileData();
         $user_orders        = $user->{ORDERS_TABLE}()->fastPaginate(5);
         $user_profile_title = auth()->user()->{FULL_NAME}.' - '.ucfirst(PROFILE);
 
-        if (request()?->ajax()) {
-            return view(USER_PROFILE_PAGINATION, compact(USER_MODEL, USER_ORDERS))->render();
-        }
-
-        return showView(USER_PROFILE_VIEW, compact(USER_MODEL, USER_ORDERS, USER_PROFILE_TITLE));
+        return request()?->ajax()
+            ? ajaxPaginationResponse($user_orders, USER_PROFILE_PAGINATION, USER_ORDERS, compact(USER_MODEL))
+            : showView(USER_PROFILE_VIEW, compact(USER_MODEL, USER_ORDERS, USER_PROFILE_TITLE));
     }
 
     /**

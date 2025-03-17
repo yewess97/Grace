@@ -118,9 +118,10 @@ class CommonBladeServiceProvider extends ServiceProvider
 
             return "<?php
                     \$main_buttons_class = 'col-md-4';
-                    \$button_class = 'btn d-flex justify-content-center align-items-center gap-2';
-                    \$trash_icon_class = 'fa-solid fa-trash';
-                    \$status = request()?->input(STATUS);
+                    \$button_class       = 'btn d-flex justify-content-center align-items-center gap-2';
+                    \$trash_icon_class   = 'fa-solid fa-trash';
+                    \$status             = request()?->input(STATUS);
+
                     \$get_status_title = static function (\$haystack) use (\$status) {
                         return ucfirst(array_search((int) \$status, \$haystack, true)).'_';
                     };
@@ -129,23 +130,25 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                     \$button_text = REMOVE;
 
+                    \$route = !isAdminRoute() ? trim(str_replace(ADMIN.'_', '', $route)) : $route;
+
                     if (Route::currentRouteName() === ADMIN_ORDERS_ROUTE) {
                         \$main_buttons_class = 'col-md-12 mt-3';
-                        \$status_title = \$get_status_title(ORDER_STATUS_ENUM);
+                        \$status_title       = \$get_status_title(ORDER_STATUS_ENUM);
                     }
 
                     if (Route::currentRouteName() === ADMIN_REVIEWS_ROUTE) {
                         \$status_title = \$get_status_title(REVIEW_RATING_ENUM);
                     }
 
-                    \$trashed_main_button = \"<a href=\".route($route, [...request()?->input(), CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
+                    \$trashed_main_button = \"<a href=\".route(\$route, [...request()?->input(), CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
 
                     if (request()?->input(CONDITION)) {
                         \$button_text = DELETE;
 
                         \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$status_title.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
 
-                        \$trashed_main_button = \"<a href=\".route($route, [...request()?->except(CONDITION)]).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$status_title.$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$status_title.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$status_title.$table_name).\"</a>\";
+                        \$trashed_main_button = \"<a href=\".route(\$route, [...request()?->except(CONDITION)]).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$status_title.$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$status_title.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$status_title.$table_name).\"</a>\";
                     }
 
                     \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$status_title.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";

@@ -27,7 +27,7 @@
             @endif
 
             @if($user->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_USER)}}" class="restore-user-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_USER, $user->id)}}" data-name="{{ $user->{FULL_NAME} }}">
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_USER)}}" class="restore-user-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_USER, $user->id)}}" data-id="{{$user->id}}" data-name="{{ $user->{FULL_NAME} }}">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </button>
             @else
@@ -36,7 +36,7 @@
                 </button>
             @endif
 
-            <button type="button" role="button" title="{{capitalizeAll($user->trashed() ? DELETE_USER : REMOVE_USER)}}" class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_USER, $user->id)}}" data-name="{{ $user->{FULL_NAME} }}">
+            <button type="button" role="button" title="{{capitalizeAll($user->trashed() ? DELETE_USER : REMOVE_USER)}}" class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_USER, $user->id)}}" data-id="{{$user->id}}" data-name="{{ $user->{FULL_NAME} }}">
                 <i class="{{$user->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
             </button>
         </div>

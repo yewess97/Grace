@@ -26,10 +26,10 @@ class UserController extends Controller
      * Display the user's profile
      * By getting all the data of a specified user with relations.
      *
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function profile(): Application|Factory|View|string
+    final public function profile(): Application|Factory|View|JsonResponse
     {
         return $this->userService->getUserProfile();
     }

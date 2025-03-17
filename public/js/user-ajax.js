@@ -44,6 +44,12 @@ Common.ajaxDeleteRequest(IGrace.ADDRESS);
 // Delete Selected Addresses
 Common.ajaxDeleteMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
 
+// Restore Address
+Common.ajaxRestoreRequest(IGrace.ADDRESS);
+
+// Restore Selected Addresses
+Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
+
 /*============================== End Address ==============================*/
 
 

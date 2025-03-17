@@ -22,7 +22,7 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($address->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_ADDRESS)}}" class="restore-address-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_ADDRESS, $address->id)}}" data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}">
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_ADDRESS)}}" class="restore-address-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_ADDRESS, $address->id)}}" data-id="{{$address->id}}" data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </button>
             @else
@@ -30,7 +30,7 @@
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($address->trashed() ? DELETE_ADDRESS : REMOVE_ADDRESS)}}" class="delete-address-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_ADDRESS, $address->id)}}" data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}">
+            <button type="button" role="button" title="{{capitalizeAll($address->trashed() ? DELETE_ADDRESS : REMOVE_ADDRESS)}}" class="delete-address-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_ADDRESS, $address->id)}}" data-id="{{$address->id}}" data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}">
                 <i class="{{$address->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
             </button>
         </div>
