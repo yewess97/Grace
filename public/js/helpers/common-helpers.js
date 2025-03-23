@@ -457,16 +457,14 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (ids) => {
-        const remove_row = (id) => {
-            const row = $(`#row_${id}`);
-            row.css({ transition: "opacity 0.5s", opacity: 0 });
-            setTimeout(() => row.remove(), 500);
-        };
-
         $('.check-row').prop('checked', false);
         $('#check_all').prop({'checked': false, 'indeterminate': false});
 
-        $.each((ids), (_, id) => remove_row(id));
+        $.each((ids), (_, id) => {
+            const row = $(`#row_${id}`) || $(`#${IGrace.CART}_item_${id}`);
+            row.css({ transition: "opacity 0.5s", opacity: 0 });
+            setTimeout(() => row.remove(), 500);
+        });
 
         setTimeout(() => Common.arrangeTableRows(), 500);
     },

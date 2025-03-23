@@ -18,4 +18,5 @@
     @endforeach
 </div>
 
+{{-- Checkout User Addresses Pagination --}}
 <div class="table-pagination col-12 pt-4">@pagination($user_addresses, CHECKOUT)</div>

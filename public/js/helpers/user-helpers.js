@@ -271,6 +271,7 @@ const User = {
             const
                 target        = $(this),
                 route         = target.attr('action'),
+                collection_id = target.data(IGrace.ID),
                 reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
                 form_data     = new FormData(target[0]);
 
@@ -282,11 +283,25 @@ const User = {
                             method: IGrace.DELETE.toUpperCase(),
                             data: form_data,
                             success: (data) => {
-                                const success_message = collection === IGrace.CART
-                                    ? (data.status === 'decremented'
+                                let success_message = `Your selected ${collection} has been ${IGrace.DELETED()}`;
+
+                                if (collection === IGrace.CART) {
+                                    success_message = data.status === 'decremented'
                                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
-                                        : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`)
-                                    : `Your selected ${collection} has been ${IGrace.DELETED()}`;
+                                        : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`;
+
+                                    const row = $(`#${IGrace.CART}_item_${collection_id}`);
+                                    row.css({ transition: "opacity 0.5s", opacity: 0 });
+                                    setTimeout(() => {
+                                        row.remove();
+
+                                        $(`#${IGrace.CART}_content`).replaceWith(data['row']);
+
+                                        $.each(($('.total-cost')), (_, totalCost) => $(totalCost).html('EGP ' + parseFloat(data['total_cost']).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')));
+
+                                        Common.imageConfig();
+                                    }, 500);
+                                }
 
                                 Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
                             },
@@ -395,13 +410,13 @@ const User = {
                 form_data.append('_method', IGrace.PUT);
             }
 
-            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((key, cart_product) => {
+            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((_, cart_product) => {
                 const
-                    cart_product_value_of = (value) => +$(cart_product).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
+                    cart_product_value_of = (value) => $(cart_product).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
 
                     product_id       = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
                     product_size     = cart_product_value_of(IGrace.PRODUCT_SIZE()),
-                    product_quantity = cart_product_value_of(IGrace.PRODUCT_QUANTITY());
+                    product_quantity = cart_product_value_of(`${IGrace.PRODUCT_QUANTITY()}_${product_id}`);
 
                 if ((product_id !== 0 && !isNaN(product_id)) && (!isNaN(product_size)) && (product_quantity !== 0 && !isNaN(product_quantity))) {
                     return {
@@ -421,14 +436,23 @@ const User = {
                         update_cart_product_id:       products.map((product) => product[IGrace.ID]),
                         update_cart_product_size:     products.map((product) => product[IGrace.SIZE]),
                         update_cart_product_quantity: products.map((product) => product[IGrace.QUANTITY]),
+                        '_method': IGrace.PUT,
                     }),
                 contentType: action === IGrace.ADD
                     ? false
                     : 'application/json',
-                success: () => {
-                    const success_message = action === IGrace.ADD
-                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`
-                        : `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
+                success: (data) => {
+                    let success_message = `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`;
+
+                    if (action === IGrace.UPDATE) {
+                        success_message = `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
+
+                        $(`#${IGrace.CART}_content`).replaceWith(data['row']);
+
+                        $.each(($('.total-cost')), (_, totalCost) => $(totalCost).html('EGP ' + parseFloat(data['total_cost']).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')));
+
+                        Common.imageConfig();
+                    }
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },

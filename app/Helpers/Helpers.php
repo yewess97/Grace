@@ -219,14 +219,14 @@ if (!function_exists('getLastPage')) {
      * To add the new item to the last position in the last page.
      *
      * @param Model|stdClass $model
+     * @param int $perPage
      * @return int
      */
-    function getLastPage(Model|stdClass $model): int
+    function getLastPage(Model|stdClass $model, int $perPage = 16): int
     {
-        $per_page = 16;
         $total_users = $model::query()->count();
 
-        return ceil($total_users / $per_page);
+        return ceil($total_users / $perPage);
     }
 }
 
@@ -465,15 +465,19 @@ if (!function_exists(CART_MODEL.'Config')) {
         $user_cart_items = Cart::query()
             ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
                 $product->select(PRODUCT_ITEM_ATTRIBUTES))
-                ->where(USER_ID, auth()->id())->get();
+            ->where(USER_ID, auth()->id())
+            ->fastPaginate(5);
 
         if ($user_cart_items->isEmpty()) {
             Session::flash(EMPTY_CART);
         }
 
-        $total_cost = $user_cart_items
-            ->map(static fn(Cart $cart_item) => $cart_item->{PRODUCT_MODEL}->{STATUS} === 1 ? ($cart_item->{PRODUCT_QUANTITY}) * ($cart_item->{PRODUCT_MODEL}->{NEW_PRICE}) : 0)
-            ->sum();
+        $total_cost = Cart::query()
+            ->where(USER_ID, auth()->id())
+            ->whereHas(PRODUCT_MODEL, fn(Builder $product) => $product->where(STATUS, 1))
+            ->with(PRODUCT_MODEL)
+            ->lazy()
+            ->sum(fn(Cart $cart_item) => $cart_item->{PRODUCT_MODEL}->{NEW_PRICE} * $cart_item->{PRODUCT_QUANTITY});
 
         $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST);
 
@@ -1012,7 +1016,9 @@ if (!function_exists(DELETE)) {
             : [];
 
         $destroy = static function (mixed $ids) use ($model, $isMultiple, $deleteImages, $selected_ids) {
-            if (!$model::query()->whereIn(ID, $ids)->get()->every(fn($collection) => $collection->trashed())) {
+            $is_collection_trashed = $model::query()->whereIn(ID, $ids)->get()->every(fn($collection) => Cart::class ? false : $collection->trashed());
+
+            if (!$is_collection_trashed) {
                 return $model::destroy($ids);
             }
 

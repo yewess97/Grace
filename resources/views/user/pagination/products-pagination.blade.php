@@ -6,6 +6,7 @@
     @endforeach
 </ul>
 
+{{-- User Products Pagination --}}
 <div class="table-pagination col-12 pt-4">@pagination($products, $products_pagination_route)</div>
 
 

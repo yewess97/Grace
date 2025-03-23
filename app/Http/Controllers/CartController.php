@@ -27,12 +27,14 @@ class CartController extends Controller
     /**
      * Display the cart resource.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View
+    final public function index(): Application|Factory|View|JsonResponse
     {
-        return showView(USER_CART_VIEW);
+        return request()?->ajax()
+            ? ajaxPaginationResponse(cartConfig()[USER_CART_ITEMS], CART_PAGINATION, USER_CART_ITEMS)
+            : showView(USER_CART_VIEW);
     }
 
 
@@ -40,14 +42,17 @@ class CartController extends Controller
      * Store or Update a cart.
      *
      * @param string $operation
-     * @return Response
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException
+     * @return JsonResponse
+     * @throws AuthenticationException|ModelNotFoundException|ValidationException|Throwable
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->cartService->createOrUpdateCart($operation);
+        [$user_cart_items, $last_page] = $this->cartService->createOrUpdateCart($operation);
 
-        return responseSuccess();
+        $row = view(CART_CONTENT_PARTIAL, compact(USER_CART_ITEMS))->render();
+        $total_cost = cartConfig()[TOTAL_COST];
+
+        return responseWithData(compact(USER_CART_ITEMS, ROW, LAST_PAGE, TOTAL_COST));
     }
 
     /**
@@ -55,17 +60,22 @@ class CartController extends Controller
      *  or decrement the cart's product quantity.
      *
      * @param Cart $cart
-     * @return Response|JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
-    final public function destroy(Cart $cart): Response|JsonResponse
+    final public function destroy(Cart $cart): JsonResponse
     {
-        $delete_cart = $this->cartService->deleteCart($cart);
+        $delete_cart     = $this->cartService->deleteCart($cart);
+        $user_cart_items = cartConfig()[USER_CART_ITEMS];
+        $total_cost      = cartConfig()[TOTAL_COST];
+        $row             = view(CART_CONTENT_PARTIAL, compact(USER_CART_ITEMS))->render();
 
-        if ($delete_cart instanceof JsonResponse) {
-            return $delete_cart;
+        if (is_array($delete_cart)) {
+            return responseSuccess($delete_cart[0], compact(ROW, TOTAL_COST));
         }
 
-        return responseSuccess();
+        return responseWithData(compact(ROW, TOTAL_COST));
+//        return responseSuccess();
     }
 
 

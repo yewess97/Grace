@@ -394,6 +394,22 @@ define("FILTER_PRODUCTS_ATTRIBUTES", [
 ]);
 
 /**
+ * Cart Common.
+ */
+define("CART_COMMON_ATTRIBUTES", [
+    PRODUCT_SIZE,
+    PRODUCT_QUANTITY,
+]);
+
+/**
+ * Quick View Common.
+ */
+define("QUICK_VIEW_COMMON_ATTRIBUTES", [
+    PRODUCT_SIZE_QUICK_VIEW,
+    PRODUCT_QUANTITY_QUICK_VIEW,
+]);
+
+/**
  * Address.
  */
 define("ADDRESS_ATTRIBUTES", [
@@ -798,6 +814,7 @@ define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(US
 define("USER_ADDRESSES_PAGINATION",     partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
 define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
 define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
+define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content', 'other'));
 define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
 
 /**
@@ -886,8 +903,9 @@ define("ADMIN_ORDERS_PAGINATION",            pagination(ORDERS_TABLE));
 define("ADMIN_USERS_PAGINATION",             pagination(USERS_TABLE));
 define("ADMIN_USER_ADDRESSES_PAGINATION",    pagination(kebabAll(USER_ADDRESSES)));
 define("ADMIN_REVIEWS_PAGINATION",           pagination(REVIEWS_TABLE));
-define("USER_PROFILE_PAGINATION",            pagination(PROFILE, true));
-define("USER_PRODUCTS_PAGINATION",           pagination(PRODUCTS_TABLE, true));
+define("USER_PROFILE_PAGINATION",            pagination(PROFILE,                      true));
+define("USER_PRODUCTS_PAGINATION",           pagination(PRODUCTS_TABLE,               true));
+define("CART_PAGINATION",                    pagination(CART_MODEL,                   true));
 define("CHECKOUT_USER_ADDRESSES_PAGINATION", pagination(kebabAll(CHECKOUT_USER_ADDRESSES), true));
 
 #################################### End Admin/User Pagination Views ####################################

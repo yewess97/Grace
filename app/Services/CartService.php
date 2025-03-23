@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Http\Requests\CartRequest;
 use App\Models\Cart;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
@@ -17,10 +19,10 @@ class CartService
      * Store or Update a cart.
      *
      * @param string $operation
-     * @return Cart|int|bool
+     * @return array
      * @throws AuthenticationException|ModelNotFoundException|ValidationException
      */
-    final public function createOrUpdateCart(string $operation): Cart|int|bool
+    final public function createOrUpdateCart(string $operation): array
     {
         if (!auth()->check()) {
             throw new AuthenticationException('unauthenticated');
@@ -28,16 +30,18 @@ class CartService
 
         $cart_attributes = [PRODUCT_ID];
 
-        $cart_attributes = $this->mergeIfRequestHas($this->getActionNames($operation), $cart_attributes, [PRODUCT_SIZE, PRODUCT_QUANTITY]);
+        $cart_attributes = $this->mergeIfRequestHas($this->getActionNames($operation), $cart_attributes, CART_COMMON_ATTRIBUTES);
 
-        $cart_attributes = $this->mergeIfRequestHas($this->getActionNames($operation, true), $cart_attributes, [PRODUCT_SIZE_QUICK_VIEW, PRODUCT_QUANTITY_QUICK_VIEW]);
+        $cart_attributes = $this->mergeIfRequestHas($this->getActionNames($operation, true), $cart_attributes, QUICK_VIEW_COMMON_ATTRIBUTES);
 
         $cart_request = new CartRequest($operation, CART_MODEL, $cart_attributes);
 
         $product_id = $cart_attributes[0];
 
         if ($operation === UPDATE) {
-            return $this->updateCartItems($cart_request, $product_id);
+            $updated_cart = $this->updateCartItems($cart_request, $product_id);
+
+            return [$updated_cart, getLastPage(new Cart(), 5)];
         }
 
         $product_id_value       = (int)   $cart_request->dataValues()[0];
@@ -55,7 +59,9 @@ class CartService
             $product_id => $product->getKey(),
         ];
 
-        return $this->createOrUpdateCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
+        $created_cart = $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
+
+        return [$created_cart, getLastPage(new Cart(), 5)];
     }
 
     /**
@@ -63,12 +69,12 @@ class CartService
      * or decrement the cart's product quantity if it's greater than 1.
      *
      * @param Cart $cart
-     * @return JsonResponse|bool
+     * @return array|bool
      * @throws ModelNotFoundException
      */
-    final public function deleteCart(Cart $cart): JsonResponse|bool
+    final public function deleteCart(Cart $cart): array|bool
     {
-        $cart_item = Cart::query()->firstWhere(ID, $cart->getKey());
+        $cart_item = Cart::query()->findOrFail($cart->getKey());
 
         if (is_null($cart_item)) {
             throw new ModelNotFoundException("This ".CART_MODEL."is not found!");
@@ -77,7 +83,7 @@ class CartService
         if ($cart_item->{PRODUCT_QUANTITY} > 1) {
             $cart_item->decrement(PRODUCT_QUANTITY);
 
-            return responseSuccess('decremented');
+            return ['decremented'];
         }
 
         return delete($cart_item);
@@ -136,10 +142,10 @@ class CartService
      *
      * @param CartRequest $cartRequest
      * @param string $productId
-     * @return bool
+     * @return Collection
      * @throws ModelNotFoundException
      */
-    private function updateCartItems(CartRequest $cartRequest, string $productId): bool
+    private function updateCartItems(CartRequest $cartRequest, string $productId): Collection
     {
         [$products_ids_values, $products_sizes_values, $products_quantities_values] = $cartRequest->dataValues();
 
@@ -150,18 +156,19 @@ class CartService
 
         $cart_items = Cart::query()->where(USER_ID, auth()->id())
             ->whereIn($productId, $products_ids)
-            ->get([ID, PRODUCT_QUANTITY]);
+            ->whereIn(PRODUCT_SIZE, $products_sizes_values)
+            ->get([ID, PRODUCT_ID, ...CART_COMMON_ATTRIBUTES])
+            ->load([PRODUCT_MODEL => fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES)]);
+
 
         if ($cart_items->count() !== count($products_quantities_values)) {
             throw new ModelNotFoundException('The number of the '.PRODUCTS_TABLE.' in the '.CART_MODEL.' is not equal to the number of the received quantities!');
         }
 
-        $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {
-            $cartItem->{PRODUCT_QUANTITY} = $products_quantities_values[$key];
+        return $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {
+            $cartItem->{PRODUCT_QUANTITY} = +$products_quantities_values[$key];
             $cartItem->save();
         });
-
-        return true;
     }
 
     /**
@@ -210,13 +217,13 @@ class CartService
      */
     private function shouldCheckCartAttributes(array $cartAttributes): bool
     {
-        return empty(array_intersect([PRODUCT_SIZE, PRODUCT_QUANTITY], $cartAttributes))
-            && empty(array_intersect([PRODUCT_SIZE_QUICK_VIEW, PRODUCT_QUANTITY_QUICK_VIEW], $cartAttributes));
+        return empty(array_intersect(CART_COMMON_ATTRIBUTES, $cartAttributes))
+            && empty(array_intersect(QUICK_VIEW_COMMON_ATTRIBUTES, $cartAttributes));
     }
 
     /**
-     * Update the product quantity of the cart item,
-     * or create a new one if it doesn't exist.
+     * Create a cart item
+     * or increment the product quantity if the cart item is found.
      *
      * @param array $cartAttributes
      * @param array $cartRelations
@@ -224,7 +231,7 @@ class CartService
      * @param int $productQuantityValue
      * @return Cart|bool
      */
-    private function createOrUpdateCartItem(array $cartAttributes, array &$cartRelations, array &$productSizesValues, int &$productQuantityValue): Cart|bool
+    private function createCartItem(array $cartAttributes, array &$cartRelations, array &$productSizesValues, int &$productQuantityValue): Cart|bool
     {
         if ($this->shouldCheckCartAttributes($cartAttributes)) {
             $first_found_cart = Cart::query()->where($cartRelations)

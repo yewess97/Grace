@@ -17,9 +17,6 @@ class UserRequest extends FormRequest
 
 // وشوف حركة تغيير شكل الماوس
 
-// خلي ملفات الـ jquery تبدأ بـ IIFE (function () {
-
-//});
 
 
 
@@ -58,7 +55,7 @@ class UserRequest extends FormRequest
     final public function messages(): array
     {
         if ($this->is_single_attribute && $this->is_subset) {
-            return [...$this->booleanValidation(ROLE, true, "Customer or Admin")];
+            return $this->booleanValidation(ROLE, true, "Customer or Admin");
         }
 
         return $this->userValidation(USER_MODEL, true);

@@ -15,4 +15,5 @@
     </table>
 </div>
 
+{{-- Categories Pagination --}}
 <div class="table-pagination col-12 pt-4">@pagination($categories, ADMIN_CATEGORIES_ROUTE)</div>

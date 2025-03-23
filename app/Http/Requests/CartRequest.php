@@ -26,12 +26,12 @@ class CartRequest extends FormRequest
 
         $rules = [...$this->collectionIdValidation($this->product_id_validation)];
 
-        if (empty(array_diff([PRODUCT_SIZE, PRODUCT_QUANTITY], $this->modelAttributes))) {
+        if (empty(array_diff(CART_COMMON_ATTRIBUTES, $this->modelAttributes))) {
             $rules = [...$rules, ...$this->multipleSelectionValidation(PRODUCT_SIZE, $this->max_product_sizes_count)];
             $rules[$this->dataKeyOf(PRODUCT_QUANTITY)] = $product_quantity_rules;
         }
 
-        if (empty(array_diff([PRODUCT_SIZE_QUICK_VIEW, PRODUCT_QUANTITY_QUICK_VIEW], $this->modelAttributes))) {
+        if (empty(array_diff(QUICK_VIEW_COMMON_ATTRIBUTES, $this->modelAttributes))) {
             $rules = [...$rules, ...$this->multipleSelectionValidation(PRODUCT_SIZE_QUICK_VIEW, $this->max_product_sizes_count)];
             $rules[$this->dataKeyOf(PRODUCT_QUANTITY_QUICK_VIEW)] = $product_quantity_rules;
         }
@@ -47,8 +47,8 @@ class CartRequest extends FormRequest
     final public function messages(): array
     {
         $product_size_quantity = [
-            [PRODUCT_SIZE, PRODUCT_QUANTITY],
-            [PRODUCT_SIZE_QUICK_VIEW, PRODUCT_QUANTITY_QUICK_VIEW],
+            CART_COMMON_ATTRIBUTES,
+            QUICK_VIEW_COMMON_ATTRIBUTES,
         ];
 
         $messages = [...$this->collectionIdValidation($this->product_id_validation, true)];

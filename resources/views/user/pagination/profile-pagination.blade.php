@@ -35,4 +35,5 @@
     </table>
 </div>
 
+{{-- User Orders Pagination --}}
 <div class="table-pagination col-12 pt-4">@pagination($user_orders, PROFILE)</div>
