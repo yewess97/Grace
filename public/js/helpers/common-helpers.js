@@ -44,7 +44,7 @@ const Common = {
     checkRowsConfig: (target) => {
         const
             check_all = $('#check_all'),
-            check_row = $('.check-row');
+            check_row = $(`.check-${IGrace.ROW}`);
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
         if (target.is('#custom_check_all')) {
@@ -59,7 +59,7 @@ const Common = {
         }
 
         // Check/Uncheck the target checkbox in the table and (check_all) checkbox
-        if (target.hasClass('custom-check-row')) {
+        if (target.hasClass(`custom-check-${IGrace.ROW}`)) {
             target.prev().prop('checked', !target.prev().is(':checked'));
 
             const checked_count = check_row.filter(':checked').length;
@@ -447,7 +447,25 @@ const Common = {
      * @returns {*}
      */
     arrangeTableRows: (startIndex = 0) =>
-        $.each(($(".table tbody tr")), (key, row) => $(row).find(".row-num > p").html(startIndex + (++key))),
+        $.each(($(".table tbody tr")), (key, row) => $(row).find(`.${IGrace.ROW}-num > p`).html(startIndex + (++key))),
+
+
+    /**
+     * Remove row with animation and update the content.
+     *
+     * @param element
+     * @param callBack
+     * @return {void}
+     */
+    removeRow: (element, callBack = null) => {
+        element.css({ transition: "opacity 0.5s", opacity: 0 });
+
+        setTimeout(() => {
+            element.remove();
+
+            if (callBack) callBack();
+        }, 500);
+    },
 
 
     /**
@@ -457,16 +475,10 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (ids) => {
-        $('.check-row').prop('checked', false);
+        $(`.check-${IGrace.ROW}`).prop('checked', false);
         $('#check_all').prop({'checked': false, 'indeterminate': false});
 
-        $.each((ids), (_, id) => {
-            const row = $(`#row_${id}`) || $(`#${IGrace.CART}_item_${id}`);
-            row.css({ transition: "opacity 0.5s", opacity: 0 });
-            setTimeout(() => row.remove(), 500);
-        });
-
-        setTimeout(() => Common.arrangeTableRows(), 500);
+        $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
     },
 
 
@@ -687,7 +699,7 @@ const Common = {
 
             if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
                 swal_message();
-                return setTimeout(() => User.reloadReviewsTab(extra), 1800);
+                return setTimeout(() => User.ajaxUpdateReviewsContentRequest(extra), 1800);
             }
 
             if ($.inArray(message, [IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)])
@@ -896,7 +908,7 @@ const Common = {
      * @returns {{method: string, success: *, url: string}}
      */
     ajaxDeleteItems: (options) => {
-        const { target, deleteRoute, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
+        const { deleteRoute, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
 
         return {
             url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
@@ -1009,7 +1021,6 @@ const Common = {
                 } is safe`;
 
             const delete_options = {
-                target:            target,
                 deleteRoute:       delete_route,
                 collectionId:      collection_id,
                 collectionTrashed: collection_trashed,
@@ -1049,7 +1060,7 @@ const Common = {
             const
                 delete_all_route = $(this).data('route'),
                 collections_trashed = new URLSearchParams(location.search).get(IGrace.CONDITION),
-                selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
+                selected_rows = $(`.check-${IGrace.ROW}:checked`).map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
@@ -1137,7 +1148,7 @@ const Common = {
             const
                 target = $(this),
                 restore_all_route = target.data('route'),
-                selected_rows = $('.check-row:checked').map((_, checked_row) => $(checked_row).val()).get(),
+                selected_rows = $(`.check-${IGrace.ROW}:checked`).map((_, checked_row) => $(checked_row).val()).get(),
                 is_multiple_selection = selected_rows.length > 1,
                 restore_multi_success_message = `Selected ${is_multiple_selection ?  `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
 
@@ -1154,9 +1165,6 @@ const Common = {
                 url: `${restore_all_route}?selected_ids=${selected_rows}`,
                 method: IGrace.PUT,
                 success: () => {
-                    $('.check-row').prop('checked', false);
-                    $('#check_all').prop({'checked': false, 'indeterminate': false});
-
                     Common.updateTableRows(selected_rows);
 
                     Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);

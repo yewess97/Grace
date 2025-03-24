@@ -64,36 +64,6 @@ const User = {
         }),
 
 
-    // Reload reviews tab
-    reloadReviewsTab: (reviewsRoute) => {
-        $.ajax({
-            url: reviewsRoute,
-            type: IGrace.GET,
-            dataType: 'html',
-            success: (data) => $(`.tab-pane.${IGrace.PLURALIZE(IGrace.REVIEW)}`).html(data),
-            error: () => Common.somethingWentWrongError(),
-        });
-
-        const
-            review_form = $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`),
-            widths = {
-                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-title`]: '141.6px',
-                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-body-text`]: '82.4px',
-            };
-
-        $.each((widths), (key, width) =>
-            review_form.find(`${key} .not-form-notch`)
-                .removeClass('not-form-notch d-none')
-                .addClass('form-notch')
-                .html(`
-                    <div class="form-notch-leading" style="width: 9px;"></div>
-                    <div class="form-notch-middle" style="width: ${width};"></div>
-                    <div class="form-notch-trailing"></div>
-                `)
-        );
-    },
-
-
     // Display the login confirmation message when the user not logged in
     confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
@@ -107,6 +77,19 @@ const User = {
                     location.href = `/${IGrace.LOGIN}`;
                 }
             });
+    },
+
+
+    updateCartContent: (data) => {
+        $(`.${IGrace.CLASS(IGrace.CART_TOTAL_ITEMS())}`).html(data[IGrace.TOTAL_ITEMS]);
+
+        $.each(($(`.${IGrace.CLASS(IGrace.CART_TOTAL_COST())}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
+
+        $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data[IGrace.HEADER_ROW]).html());
+
+        $(`#${IGrace.CART}_content`).html($(data[IGrace.ROW]).html());
+
+        Common.imageConfig();
     },
 
 
@@ -290,17 +273,7 @@ const User = {
                                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
                                         : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`;
 
-                                    const row = $(`#${IGrace.CART}_item_${collection_id}`);
-                                    row.css({ transition: "opacity 0.5s", opacity: 0 });
-                                    setTimeout(() => {
-                                        row.remove();
-
-                                        $(`#${IGrace.CART}_content`).replaceWith(data['row']);
-
-                                        $.each(($('.total-cost')), (_, totalCost) => $(totalCost).html('EGP ' + parseFloat(data['total_cost']).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')));
-
-                                        Common.imageConfig();
-                                    }, 500);
+                                    Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () => User.updateCartContent(data));
                                 }
 
                                 Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
@@ -442,17 +415,11 @@ const User = {
                     ? false
                     : 'application/json',
                 success: (data) => {
-                    let success_message = `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`;
+                    let success_message = action === IGrace.ADD
+                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`
+                        : `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
 
-                    if (action === IGrace.UPDATE) {
-                        success_message = `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
-
-                        $(`#${IGrace.CART}_content`).replaceWith(data['row']);
-
-                        $.each(($('.total-cost')), (_, totalCost) => $(totalCost).html('EGP ' + parseFloat(data['total_cost']).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')));
-
-                        Common.imageConfig();
-                    }
+                    User.updateCartContent(data);
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
@@ -535,6 +502,36 @@ const User = {
                 error: () => Common.somethingWentWrongError(),
             });
         }
+    },
+
+
+    /* ---------------------------------- UPDATE REVIEWS CONTENT REQUEST ---------------------------------- */
+    ajaxUpdateReviewsContentRequest: (reviewsRoute) => {
+        $.ajax({
+            url: reviewsRoute,
+            type: IGrace.GET,
+            dataType: 'html',
+            success: (data) => $(`.tab-pane.${IGrace.PLURALIZE(IGrace.REVIEW)}`).html(data),
+            error: () => Common.somethingWentWrongError(),
+        });
+
+        const
+            review_form = $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`),
+            widths = {
+                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-title`]: '141.6px',
+                [`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.REVIEW))}-body-text`]: '82.4px',
+            };
+
+        $.each((widths), (key, width) =>
+            review_form.find(`${key} .not-form-notch`)
+                .removeClass('not-form-notch d-none')
+                .addClass('form-notch')
+                .html(`
+                    <div class="form-notch-leading" style="width: 9px;"></div>
+                    <div class="form-notch-middle" style="width: ${width};"></div>
+                    <div class="form-notch-trailing"></div>
+                `)
+        );
     },
 }
 

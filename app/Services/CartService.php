@@ -8,10 +8,10 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class CartService
 {
@@ -19,10 +19,10 @@ class CartService
      * Store or Update a cart.
      *
      * @param string $operation
-     * @return array
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException
+     * @return Cart|Collection|bool|array
+     * @throws AuthenticationException|ModelNotFoundException|ValidationException|Throwable
      */
-    final public function createOrUpdateCart(string $operation): array
+    final public function createOrUpdateCart(string $operation): Cart|Collection|bool|array
     {
         if (!auth()->check()) {
             throw new AuthenticationException('unauthenticated');
@@ -39,9 +39,7 @@ class CartService
         $product_id = $cart_attributes[0];
 
         if ($operation === UPDATE) {
-            $updated_cart = $this->updateCartItems($cart_request, $product_id);
-
-            return [$updated_cart, getLastPage(new Cart(), 5)];
+            return $this->updateCartItems($cart_request, $product_id);
         }
 
         $product_id_value       = (int)   $cart_request->dataValues()[0];
@@ -59,9 +57,7 @@ class CartService
             $product_id => $product->getKey(),
         ];
 
-        $created_cart = $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
-
-        return [$created_cart, getLastPage(new Cart(), 5)];
+        return $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
     }
 
     /**
@@ -75,10 +71,6 @@ class CartService
     final public function deleteCart(Cart $cart): array|bool
     {
         $cart_item = Cart::query()->findOrFail($cart->getKey());
-
-        if (is_null($cart_item)) {
-            throw new ModelNotFoundException("This ".CART_MODEL."is not found!");
-        }
 
         if ($cart_item->{PRODUCT_QUANTITY} > 1) {
             $cart_item->decrement(PRODUCT_QUANTITY);

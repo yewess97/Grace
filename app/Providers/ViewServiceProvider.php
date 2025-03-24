@@ -21,6 +21,7 @@ class ViewServiceProvider extends ServiceProvider
                     'aside_menus'      => commonAsideMenus(),
                     USER_CART_ITEMS    => cartConfig()[USER_CART_ITEMS],
                     TOTAL_COST         => cartConfig()[TOTAL_COST],
+                    TOTAL_ITEMS        => cartConfig()[TOTAL_ITEMS],
                 ]);
             }
         );

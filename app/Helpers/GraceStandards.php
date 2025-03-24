@@ -89,6 +89,11 @@ define("PRODUCT_QUANTITY",    PRODUCT_MODEL.'_'.QUANTITY);
 define("PRODUCT_TOTAL_PRICE", PRODUCT_MODEL.'_total_'.PRICE);
 
 /**
+ * Cart attributes.
+ */
+define("TOTAL_ITEMS", 'total_items');
+
+/**
  * User attributes.
  */
 define("FIRST_NAME",            'first_'.NAME);
@@ -216,6 +221,7 @@ define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
 define("TRASHED",              'trashed');
 define("ROW",                  'row');
+define("HEADER_ROW",           'header_row');
 define("LAST_PAGE",            'last_page');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
@@ -814,6 +820,7 @@ define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(US
 define("USER_ADDRESSES_PAGINATION",     partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
 define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
 define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
+define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'other'));
 define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content', 'other'));
 define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
 

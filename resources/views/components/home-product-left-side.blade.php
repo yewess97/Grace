@@ -91,13 +91,13 @@
                             </h3>
                             <div class="price-info row gap-1">
                                 <div class="new-price-discount d-flex align-items-center">
-                                    <span class="new-price">@price($new_product->new_price)</span>
+                                    <span class="new-price">@priceFormat($new_product->new_price)</span>
                                     @oldprice ($new_product->old_price, $new_product->new_price)
                                         <span class="discount-percent text-white">@discount($new_product->new_price, $new_product->old_price)</span>
                                     @endoldprice
                                 </div>
                                 @oldprice ($new_product->old_price, $new_product->new_price)
-                                    <s class="old-price fs-7">@price($new_product->old_price)</s>
+                                    <s class="old-price fs-7">@priceFormat($new_product->old_price)</s>
                                 @endoldprice
                             </div>
                         </div>

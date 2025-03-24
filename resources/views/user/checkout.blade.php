@@ -113,7 +113,7 @@
                                     </article>
                                     {{-- Order Product Total Amount --}}
                                     <span class="order-product-total-amount col-3 d-flex justify-content-end align-items-center fw-500">
-                                        @price(($cart_item->{PRODUCT_QUANTITY}) * ($cart_item->{PRODUCT_MODEL}->{NEW_PRICE}))
+                                        @priceFormat(($cart_item->{PRODUCT_QUANTITY}) * ($cart_item->{PRODUCT_MODEL}->{NEW_PRICE}))
                                     </span>
                                 </li>
                             @endforeach
@@ -123,7 +123,7 @@
                             <ul role="list" class="d-grid gap-2 pt-4 pb-3 border-bottom">
                                 <li role="listitem" class="d-flex justify-content-between align-items-center">
                                     <span>Subtotal</span>
-                                    <span class="fw-600">@price($total_cost)</span>
+                                    <span class="fw-600">@priceFormat($total_cost)</span>
                                 </li>
                                 <li role="listitem" class="d-flex justify-content-between align-items-center">
                                     <span>Shipping</span>
@@ -135,7 +135,7 @@
                                     <h2 class="fs-6 fw-500">Total</h2>
                                     <p>(Including VAT)</p>
                                 </div>
-                                <span class="fs-5 fw-600">@price($total_cost)</span>
+                                <span class="fs-5 fw-600">@priceFormat($total_cost)</span>
                             </div>
                         </article>
                         {{-- Place Order Button --}}

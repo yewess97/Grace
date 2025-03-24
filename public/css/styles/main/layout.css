@@ -67,7 +67,7 @@
     display: none;
 }
 
-.header .header-user .header-user-cart .header-user-cart-content .cart-icon .cart-total {
+.header .header-user .header-user-cart .header-user-cart-content .cart-icon .cart-total-items {
     width: var(--fifteen-pixels);
     height: var(--fifteen-pixels);
     font-size: var(--eleven-pixels);

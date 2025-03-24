@@ -50,10 +50,10 @@
         </ul>
     </td>
     <td>
-        <p>@price($product->{OLD_PRICE})</p>
+        <p>@priceFormat($product->{OLD_PRICE})</p>
     </td>
     <td>
-        <p>@price($product->{NEW_PRICE})</p>
+        <p>@priceFormat($product->{NEW_PRICE})</p>
     </td>
     <td>
         <p>{{ $product->{QUANTITY} }}</p>

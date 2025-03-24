@@ -55,7 +55,7 @@
                                     </article>
                                     {{-- Order Product Total Amount --}}
                                     <span class="order-product-total-amount col-3 d-flex justify-content-end fw-500">
-                                        @price($order_item->{PRODUCT_TOTAL_PRICE})
+                                        @priceFormat($order_item->{PRODUCT_TOTAL_PRICE})
                                     </span>
                                 </li>
                             @endforeach
@@ -65,7 +65,7 @@
                             <ul role="list" class="d-grid gap-2 pt-4 pb-3 border-bottom">
                                 <li role="listitem" class="d-flex justify-content-between align-items-center">
                                     <span>Subtotal</span>
-                                    <span class="fw-600">@price($order->{ORDER_ITEMS}->sum(PRODUCT_TOTAL_PRICE))</span>
+                                    <span class="fw-600">@priceFormat($order->{ORDER_ITEMS}->sum(PRODUCT_TOTAL_PRICE))</span>
                                 </li>
                                 <li role="listitem" class="d-flex justify-content-between align-items-center">
                                     <span>Shipping</span>
@@ -74,7 +74,7 @@
                             </ul>
                             <div class="d-flex justify-content-between align-items-center py-4">
                                 <span class="fs-6 fw-500">{{ucfirst(ORDER_MODEL)}} {{capitalizeAll(TOTAL_COST)}}</span>
-                                <span class="fs-5 fw-600">@price($order->{ORDER_ITEMS}->sum(PRODUCT_TOTAL_PRICE))</span>
+                                <span class="fs-5 fw-600">@priceFormat($order->{ORDER_ITEMS}->sum(PRODUCT_TOTAL_PRICE))</span>
                             </div>
                         </article>
                     </div>

@@ -24,7 +24,7 @@
                                 <i class="fa-solid fa-angle-down caret-icon fw-bold"></i>
                             </a>
                             {{-- Nav Dropdown List Content --}}
-                            <ul role="list" class="dropdown-content box-content row {{$navbar_dropdown->{TITLE} === CATEGORIES_TABLE ? 'col-12' : 'row-cols-1 row-cols-md-3'}} position-absolute start-0 align-items-center border rounded-bottom">
+                            <ul role="list" class="dropdown-content box-content row {{count($navbar_dropdown->collection) <= 3 ? 'col-12' : 'row-cols-1 row-cols-md-3'}} position-absolute start-0 align-items-center border rounded-bottom">
                                 @foreach ($navbar_dropdown->collection as $collection)
                                     <li role="listitem" class="col">
                                         <a href="{{route($navbar_dropdown->route_name, $collection->{SLUG})}}" role="link" class="d-grid place-items-center gap-2">

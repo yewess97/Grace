@@ -28,7 +28,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $price
          * @return string
          */
-        Blade::directive('price', static fn(string $price) => "<?php echo 'EGP '.number_format($price, 2, '.', ','); ?>");
+        Blade::directive('priceFormat', static fn(string $price) => "<?php echo 'EGP '.number_format($price, 2); ?>");
 
         /**
          * Modal Close Button.

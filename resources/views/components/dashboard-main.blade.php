@@ -43,7 +43,7 @@
                             <article class="total-metrics-info row gap-2">
                                 <span class="metrics-icon total-{{strtolower($order_metric->{NAME})}}-icon material-symbols-rounded fw-500 rounded-circle">{{$order_metric->icon}}</span>
                                 <h2 class="metrics-title fw-500">Total {{ $order_metric->{NAME} }}</h2>
-                                <p class="metrics-total fs-5 fw-bold">@price($order_metric->{TOTAL_COST})</p>
+                                <p class="metrics-total fs-5 fw-bold">@priceFormat($order_metric->{TOTAL_COST})</p>
                                 <small class="text-muted">{{Route::currentRouteName() === FILTER_DASHBOARD ? 'In Filtered Dates' : 'In the Last 24 Hours'}}</small>
                             </article>
                             {{-- Total Metrics Statistic --}}
@@ -51,7 +51,7 @@
                                 <span class="metrics-statistic-icon me-2">
                                     <i class="ti ti-stats-{{$order_metric->statistic > 0 ? 'up' : 'down'}}"></i>
                                 </span>
-                                <span class="metrics-statistic-num">{{number_format($order_metric->statistic, 2)}}%</span>
+                                <span class="metrics-statistic-num">@priceFormat($order_metric->statistic)%</span>
                             </article>
                         </div>
                     </li>

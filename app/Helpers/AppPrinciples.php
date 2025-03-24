@@ -112,10 +112,11 @@ if (!function_exists('pluralize')) {
      * Pluralize a Text/Word.
      *
      * @param string $string
+     * @param int $count
      * @return string
      */
-    function pluralize(string $string): string
+    function pluralize(string $string, int $count = 2): string
     {
-        return str($string)->plural()->value();
+        return str($string)->plural($count)->value();
     }
 }

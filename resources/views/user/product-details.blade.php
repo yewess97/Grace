@@ -48,9 +48,9 @@
                                 </h2>
                                 {{-- Product Price --}}
                                 <div class="product-price d-flex align-items-center">
-                                    <span class="new-price fs-6 fw-600 lh-1">@price($product->new_price)</span>
+                                    <span class="new-price fs-6 fw-600 lh-1">@priceFormat($product->new_price)</span>
                                     @oldprice ($product->old_price, $product->new_price)
-                                    <span class="old-price fs-7 text-decoration-line-through lh-1">@price($product->old_price)</span>
+                                    <span class="old-price fs-7 text-decoration-line-through lh-1">@priceFormat($product->old_price)</span>
                                     <span class="discount-percent fw-500 lh-1 text-white">
                                         @discount($product->new_price, $product->old_price)
                                     </span>

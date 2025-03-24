@@ -430,10 +430,10 @@ const Admin = {
 
                             const actions = {
                                 [IGrace.ADD]: () => {
-                                    $("tbody").append(data['row']);
+                                    $("tbody").append(data[IGrace.ROW]);
                                     url += `?page=${data['last_page']}`;
                                 },
-                                default: () => $(`#row_${data[collection][IGrace.ID]}`).replaceWith(data['row']),
+                                default: () => $(`#${IGrace.ROW}_${data[collection][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
                             };
 
                             (actions[action] || actions.default)();

@@ -3,7 +3,7 @@
     <div class="cart-title d-flex justify-content-between align-items-center border-top border-bottom">
         <h2 class="fs-6 fw-600">My {{ucfirst(CART_MODEL)}}:</h2>
         <p class="cart-count">
-            <span class="cart-counter">{{$user_cart_items->sum(PRODUCT_QUANTITY)}} Items</span>
+            <span class="cart-counter">{{$total_items}} Items</span>
         </p>
     </div>
 
@@ -31,7 +31,7 @@
                             <input type="hidden" name="update_cart_product_size" class="cart-product-size" value="{{ $cart_item->{PRODUCT_SIZE} }}">
                         </p>
                         <p>{{config('app.name')}} Store</p>
-                        <p>@price($cart_item->product->new_price)</p>
+                        <p>@priceFormat($cart_item->product->new_price)</p>
                     </div>
                 </article>
 
@@ -51,7 +51,7 @@
 
                 {{-- Cart Item Total Price --}}
                 <article class="cart-product-total-price d-flex justify-content-end">
-                    <span class="fw-600">@price(($cart_item->product_quantity) * ($cart_item->product->new_price))</span>
+                    <span class="fw-600">@priceFormat(($cart_item->product_quantity) * ($cart_item->product->new_price))</span>
                 </article>
             </li>
         @endforeach

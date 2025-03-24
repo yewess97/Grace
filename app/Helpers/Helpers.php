@@ -479,7 +479,9 @@ if (!function_exists(CART_MODEL.'Config')) {
             ->lazy()
             ->sum(fn(Cart $cart_item) => $cart_item->{PRODUCT_MODEL}->{NEW_PRICE} * $cart_item->{PRODUCT_QUANTITY});
 
-        $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST);
+        $total_items = $user_cart_items->sum(PRODUCT_QUANTITY);
+
+        $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
 
         if (is_null($vars)) {
             return $compact_vars;

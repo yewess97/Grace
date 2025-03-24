@@ -17,7 +17,7 @@
         <p>{{ $order->{NUM_ITEMS} }}</p>
     </td>
     <td>
-        <p>@price($order->{TOTAL_COST})</p>
+        <p>@priceFormat($order->{TOTAL_COST})</p>
     </td>
     <td>
         <span class="badge badge-{{orderStatus($order, 'badge')}} rounded-pill d-inline p-2">{{orderStatus($order)}}</span>

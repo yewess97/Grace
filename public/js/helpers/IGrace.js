@@ -137,6 +137,10 @@ const IGrace = {
     TITLE : 'title',
     BODY_TEXT : 'body_text',
     CHECKOUT: 'checkout',
+    TOTAL_ITEMS: 'total_items',
+    TOTAL_COST: 'total_cost',
+    ROW: 'row',
+    HEADER_ROW: 'header_row',
     CONDITION: 'condition',
 
     MAIN_IMAGE : () => `main_${IGrace.IMAGE}`,
@@ -149,6 +153,8 @@ const IGrace = {
     LAST_NAME : () => `last_${IGrace.NAME}`,
     ADDRESS1 : () => `${IGrace.ADDRESS}_1`,
     ADDRESS2 : () => `${IGrace.ADDRESS}_2`,
+    CART_TOTAL_ITEMS : () => `${IGrace.CART}_${IGrace.TOTAL_ITEMS}`,
+    CART_TOTAL_COST : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
 
     /*################################### End Common Attributes ###################################*/
 
@@ -260,6 +266,8 @@ const IGrace = {
             ? `#${IGrace.IDENTIFY(collection_action)}_${action.includes(IGrace.EDIT) ? 'modal' : 'btn'}`
             : `.${collection_action}-btn`;
     },
+
+    PRICE_FORMAT: (price) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP' }).format(price),
 
     /*################################### End Other Features ###################################*/
 }

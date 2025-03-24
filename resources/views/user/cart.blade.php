@@ -39,7 +39,7 @@
                                 <ul role="list" class="summary-body d-grid">
                                     <li role="listitem" class="d-flex justify-content-between align-items-center">
                                         <span>Subtotal</span>
-                                        <span class="total-cost fw-600">@price($total_cost)</span>
+                                        <span class="cart-total-cost fw-600">@priceFormat($total_cost)</span>
                                     </li>
                                     <li role="listitem" class="d-flex justify-content-between align-items-center">
                                         <span>Shipping</span>
@@ -53,7 +53,7 @@
                                         <h2 class="fw-600">Total</h2>
                                         <p>(Including VAT)</p>
                                     </div>
-                                    <span class="total-cost fw-600">@price($total_cost)</span>
+                                    <span class="cart-total-cost fw-600">@priceFormat($total_cost)</span>
                                 </article>
 
                                 {{-- Summary Proceed to Checkout Button --}}

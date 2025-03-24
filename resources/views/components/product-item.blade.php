@@ -28,9 +28,9 @@
         <article class="product-info">
             <h3 class="product-info-name text-capitalize">{{ $product->{NAME} }}</h3>
             <div class="product-info-price d-flex flex-wrap align-items-center w-100 overflow-hidden lh-1">
-                <span class="new-price fs-6 fw-600">@price($product->new_price)</span>
+                <span class="new-price fs-6 fw-600">@priceFormat($product->new_price)</span>
                 @oldprice ($product->old_price, $product->new_price)
-                    <s class="old-price fs-7">@price($product->old_price)</s>
+                    <s class="old-price fs-7">@priceFormat($product->old_price)</s>
                 @endoldprice
             </div>
         </article>
