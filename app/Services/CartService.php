@@ -61,6 +61,31 @@ class CartService
     }
 
     /**
+     * Get the cart data for the cart partials.
+     *
+     * @param array $otherVars
+     * @return array
+     * @throws Throwable
+     */
+    final public function getCartData(array $otherVars = []): array
+    {
+        $user_cart_items  = cartConfig()[USER_CART_ITEMS];
+        $total_cost       = cartConfig()[TOTAL_COST];
+        $total_items      = cartConfig()[TOTAL_ITEMS];
+        $row_compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
+
+        $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
+        $row        = view(CART_CONTENT_PARTIAL, $row_compact_vars)->render();
+
+        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, HEADER_ROW, ROW);
+
+        return [
+            ...$compact_vars,
+            ...$otherVars,
+        ];
+    }
+
+    /**
      * Delete a specified cart
      * or decrement the cart's product quantity if it's greater than 1.
      *
@@ -114,8 +139,8 @@ class CartService
     }
 
     /**
-     * Merge the cart attributes with the attributes that are in the request,
-     * if the request has the keys.
+     * If the request has the keys,
+     * merge the cart attributes with the attributes that are in the request.
      *
      * @param array $keys
      * @param array $cartAttributes

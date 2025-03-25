@@ -5,7 +5,7 @@
     {{-- Cart Main --}}
     <main role="main" class="cart-main py-6">
         <div class="container">
-            <div class="row justify-content-center align-items-center">
+            <div id="cart_main" class="row justify-content-center align-items-center">
                 @if (Session::has(EMPTY_CART))
                     <div class="col">
                         <div class="empty-cart d-grid place-items-center gap-5">

@@ -80,14 +80,21 @@ const User = {
     },
 
 
-    updateCartContent: (data) => {
+    updateCartContent: (data, isClearAllCart = false) => {
         $(`.${IGrace.CLASS(IGrace.CART_TOTAL_ITEMS())}`).html(data[IGrace.TOTAL_ITEMS]);
 
         $.each(($(`.${IGrace.CLASS(IGrace.CART_TOTAL_COST())}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
         $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data[IGrace.HEADER_ROW]).html());
 
-        $(`#${IGrace.CART}_content`).html($(data[IGrace.ROW]).html());
+        const cart_content_update_actions = {
+            true: () => $(`#${IGrace.CART}_main`).html($(data[IGrace.ROW]).find(`#${IGrace.CART}_main`).html()),
+            false: () => data[IGrace.TOTAL_ITEMS] === 0
+                    ? $(`#${IGrace.CART}_main`).html('')
+                    : $(`#${IGrace.CART}_content`).html($(data[IGrace.ROW]).html()),
+        };
+
+        cart_content_update_actions[isClearAllCart]();
 
         Common.imageConfig();
     },
@@ -162,7 +169,7 @@ const User = {
                 form_data     = Common.filteredFormData(this),
 
                 form_reset = (target, action) => {
-                    target[0].reset();
+                    target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                 };
 
@@ -273,7 +280,10 @@ const User = {
                                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
                                         : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`;
 
-                                    Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () => User.updateCartContent(data));
+                                    Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () =>
+                                        User.updateCartContent(data));
+
+                                    return Common.successMessage(data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
                                 }
 
                                 Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
@@ -419,6 +429,14 @@ const User = {
                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`
                         : `Your ${IGrace.CART} has been ${IGrace.UPDATED()}`;
 
+                    $.each(($(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-form`)), (_, form) => {
+                        $(form).trigger('reset')
+                            .find('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false}).end()
+                            .find('input[type="hidden"]').val('').end()
+                            .find('.selected-items').empty().end()
+                            .find('.placeholder').removeAttr('hidden');
+                    });
+
                     User.updateCartContent(data);
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
@@ -456,7 +474,11 @@ const User = {
                         $.ajax({
                             url: route,
                             method: IGrace.DELETE.toUpperCase(),
-                            success: () => Common.successMessage(IGrace.SUCCESS, `Your ${IGrace.CAPITALIZE(IGrace.CART)} has been cleared`),
+                            success: (data) => {
+                                User.updateCartContent(data, true);
+
+                                Common.successMessage(IGrace.SUCCESS, `Your ${IGrace.CAPITALIZE(IGrace.CART)} has been cleared`);
+                            },
                             error: () => Common.somethingWentWrongError(),
                         });
                     }

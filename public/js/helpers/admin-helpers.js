@@ -421,7 +421,7 @@ const Admin = {
                 data: form_data,
                 success: (data) => {
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
-                    target[0].reset();
+                    target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
                     const data_actions = {

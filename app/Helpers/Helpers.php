@@ -456,11 +456,11 @@ if (!function_exists(CART_MODEL.'Config')) {
     /**
      * Configure the cart.
      *
-     * @param array|null $vars
+     * @param array $vars
      * @return array|string
      * @throws Throwable
      */
-    function cartConfig(array $vars = null): array|string
+    function cartConfig(array $vars = []): array|string
     {
         $user_cart_items = Cart::query()
             ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
@@ -468,26 +468,24 @@ if (!function_exists(CART_MODEL.'Config')) {
             ->where(USER_ID, auth()->id())
             ->fastPaginate(5);
 
-        if ($user_cart_items->isEmpty()) {
-            Session::flash(EMPTY_CART);
-        }
+        $user_cart_items->isEmpty()
+            ? Session::flash(EMPTY_CART)
+            : Session::forget(EMPTY_CART);
 
         $total_cost = Cart::query()
             ->where(USER_ID, auth()->id())
             ->whereHas(PRODUCT_MODEL, fn(Builder $product) => $product->where(STATUS, 1))
             ->with(PRODUCT_MODEL)
             ->lazy()
-            ->sum(fn(Cart $cart_item) => $cart_item->{PRODUCT_MODEL}->{NEW_PRICE} * $cart_item->{PRODUCT_QUANTITY});
+            ->sum(fn(Cart $cartItem) => $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * $cartItem->{PRODUCT_QUANTITY});
 
         $total_items = $user_cart_items->sum(PRODUCT_QUANTITY);
 
         $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
 
-        if (is_null($vars)) {
-            return $compact_vars;
-        }
-
-        return [...$compact_vars, ...$vars];
+        return empty($vars)
+            ? $compact_vars
+            : [...$compact_vars, ...$vars];
     }
 }
 

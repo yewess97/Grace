@@ -3,7 +3,7 @@
         {{-- Cart Empty --}}
         <div class="cart-empty d-grid place-items-center gap-1">
             <i class="ti ti-bag opacity-25"></i>
-            <p>No {{PRODUCTS_TABLE}} in your {{CART_MODEL}}.</p>
+            <p>No {{PRODUCTS_TABLE}} in your {{CART_MODEL}}</p>
         </div>
     @else
         {{-- Cart Product Title --}}

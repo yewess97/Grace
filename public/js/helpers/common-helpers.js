@@ -475,8 +475,7 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (ids) => {
-        $(`.check-${IGrace.ROW}`).prop('checked', false);
-        $('#check_all').prop({'checked': false, 'indeterminate': false});
+        $('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false});
 
         $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
     },
@@ -1279,7 +1278,7 @@ const Common = {
                 filter_form         = $(`.${IGrace.FILTER}-form`),
                 clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
                 dashboard_main      = $(`.${IGrace.DASHBOARD}-main`),
-                clear_form          = (form) => form[0].reset();
+                clear_form          = (form) => form.trigger('reset');
 
             $.ajax({
                 url: route,
