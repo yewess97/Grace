@@ -78,14 +78,6 @@ User.ajaxDeleteAllCartsRequest();
 /*============================== End Cart ==============================*/
 
 
-/*============================== Checkout User Addresses ==============================*/
-
-// Checkout user addresses configuration
-User.ajaxCheckoutUserAddressesRequest();
-
-/*============================== End Checkout User Addresses ==============================*/
-
-
 /*============================== Order ==============================*/
 
 // Place an order

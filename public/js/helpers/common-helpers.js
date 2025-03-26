@@ -361,7 +361,7 @@ const Common = {
             e.preventDefault();
 
             const
-                target     = $(this),
+                target = $(this),
                 text_value = target.val();
 
             let
@@ -563,9 +563,7 @@ const Common = {
      * @return {string}
      */
     responseJsonError: (error, isMessage = false) =>
-        isMessage
-            ? error.responseJSON.message
-            : error.responseJSON.errors,
+        error.responseJSON?.[isMessage ? 'message' : 'errors'],
 
 
     /**
@@ -582,15 +580,23 @@ const Common = {
             error_element = `.${element}-${IGrace.ERROR}`,
             login_btn = $(`.${IGrace.LOGIN}-btn`),
             show_error_class = `show-${IGrace.ERROR}`,
-            margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT) ? 'mt-2 mb-1' : 'mt-3',
-            hide_error_element = (error_element) => $(error_element).empty().parent().removeClass(`${show_error_class} ${margin}`);
+            margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT)
+                ? 'mt-2 mb-1'
+                : 'mt-3',
+            hide_error_element = (error_element) =>
+                $(error_element).empty()
+                .parent()
+                .removeClass(`${show_error_class} ${margin}`);
 
         hide_error_element(error_element);
 
         $.each((errors), (attr, msg) => {
             attr = attr.replace(/\.\d+$/, ''); // Remove the trailing if there is
+
             const attr_err = $(`#${attr}_${IGrace.ERROR}`);
-            $(attr_err).parent().addClass(`${show_error_class} ${!status ? margin : ''}`);
+
+            $(attr_err).parent()
+                .addClass(`${show_error_class} ${!status ? margin : ''}`);
 
             if (status === 429) {
                 let
@@ -1192,8 +1198,6 @@ const Common = {
 
             if (target.is('#search_products')) return;
 
-
-
             $.ajax({
                 url: `${route}?search_value=${search_value}`,
                 method: IGrace.GET,
@@ -1224,8 +1228,9 @@ const Common = {
                 filter_form = eventType === IGrace.CHANGE
                     ? target.parents(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_form`)
                     : target,
-                route = filter_form.attr('action'),
-                form_data = new FormData(filter_form[0]),
+                route              = filter_form.attr('action'),
+                form_data          = new FormData(filter_form[0]),
+                dashboard_main     = `.${IGrace.DASHBOARD}-main`,
                 no_results_img_src = filter_form.data('no_results');
 
             $.ajax({
@@ -1235,7 +1240,7 @@ const Common = {
                 success: (data) => {
                     const actions = {
                         [IGrace.DASHBOARD]: () => {
-                            $(`.${IGrace.DASHBOARD}-main`).html(data);
+                            $(dashboard_main).html($(data).find(dashboard_main).html());
 
                             Admin.googleGeoChartConfig();
                             Admin.googlePieChartConfig();
@@ -1277,14 +1282,14 @@ const Common = {
                 search_form         = $('#search_form'),
                 filter_form         = $(`.${IGrace.FILTER}-form`),
                 clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
-                dashboard_main      = $(`.${IGrace.DASHBOARD}-main`),
+                dashboard_main      = `.${IGrace.DASHBOARD}-main`,
                 clear_form          = (form) => form.trigger('reset');
 
             $.ajax({
                 url: route,
                 success: (data) => {
-                    if (dashboard_main.length) {
-                        dashboard_main.html(data);
+                    if ($(dashboard_main).length) {
+                        $(dashboard_main).html($(data).find(dashboard_main).html());
 
                         Admin.googleGeoChartConfig();
                         Admin.googlePieChartConfig();
@@ -1330,10 +1335,6 @@ const Common = {
                 });
             }
 
-            if (route.includes(IGrace.CHECKOUT)) {
-                return User.ajaxCheckoutUserAddressesRequest(page);
-            }
-
             if (route.includes('?')) {
                 url = `${route}&${page_query_param}`;
             }
@@ -1341,7 +1342,30 @@ const Common = {
             $.ajax({
                 url: url,
                 method: IGrace.GET,
-                success: (data) => Common.paginationResponse($('.pagination-container'), data),
+                success: (data) => {
+                    Common.paginationResponse($('.pagination-container'), data);
+
+                    if (route.includes(IGrace.CHECKOUT)) {
+                        const
+                            radio_inputs = $('input[type=radio]'),
+                            selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+
+                        if (selected_value) {
+                            radio_inputs.filter(`[value="${selected_value}"]`)
+                                .prop('checked', true)
+                                .closest('.card')
+                                .addClass('border-danger');
+                        }
+
+                        radio_inputs.on(IGrace.CHANGE, function () {
+                            sessionStorage.setItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`, $(this).val());
+
+                            $.each((radio_inputs), (_, radioInput) =>
+                                $(radioInput).closest('.card').toggleClass('border-danger', $(radioInput).is(':checked'))
+                            );
+                        });
+                    }
+                },
                 error: () => Common.somethingWentWrongError(),
             });
         });

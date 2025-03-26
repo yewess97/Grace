@@ -791,7 +791,6 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
  */
 define("LOGIN_REGISTER_COMPONENT",         component(kebabAll(LOGIN.'_'.REGISTER.'_template')));
 define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component('home-'.PRODUCT_MODEL.'-left-side'));
-define("ADMIN_DASHBOARD_COMPONENT",        component(DASHBOARD.'-main'));
 define("PRODUCT_ITEM_COMPONENT",           component(PRODUCT_MODEL.'-item'));
 define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES)));
 define("ORDER_DETAILS_COMPONENT",          component(kebabAll(ORDER_DETAILS)));

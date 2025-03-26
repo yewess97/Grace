@@ -73,9 +73,12 @@ class CartService
         $total_cost       = cartConfig()[TOTAL_COST];
         $total_items      = cartConfig()[TOTAL_ITEMS];
         $row_compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
+        $row_view = $total_items === 0
+            ? USER_CART_VIEW
+            : CART_CONTENT_PARTIAL;
 
         $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
-        $row        = view(CART_CONTENT_PARTIAL, $row_compact_vars)->render();
+        $row        = view($row_view, $row_compact_vars)->render();
 
         $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, HEADER_ROW, ROW);
 

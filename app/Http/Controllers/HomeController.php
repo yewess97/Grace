@@ -46,10 +46,8 @@ class HomeController extends Controller
         $services                  = object_from_array($services);
         $products_pagination_route = 'home';
 
-        if (request()?->ajax()) {
-            return view(USER_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE, PRODUCTS_PAGINATION_ROUTE));
-        }
-
-        return showView(USER_HOME_VIEW, compact(PRODUCTS_TABLE, SERVICES, PRODUCTS_PAGINATION_ROUTE));
+        return request()?->ajax()
+            ? view(USER_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE, PRODUCTS_PAGINATION_ROUTE))
+            : showView(USER_HOME_VIEW, compact(PRODUCTS_TABLE, SERVICES, PRODUCTS_PAGINATION_ROUTE));
     }
 }

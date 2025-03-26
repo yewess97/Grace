@@ -121,7 +121,7 @@ class DashboardService
             ? $query->filterByDates($filter_dashboard_dates)
             : $query;
 
-        $users            = $apply_filter($users_with_orders)->fastPaginate(1);
+        $users            = $apply_filter($users_with_orders)->fastPaginate(5);
         $registered_users = $apply_filter($registered_users_by_country)->get();
         $subcategories    = $apply_filter($subcategories_with_products_count)->get();
 
@@ -130,14 +130,14 @@ class DashboardService
 
         $view_vars = compact(ORDERS_TABLE.'_metrics', ORDERS_TABLE.'_'.pluralize(STATUS), REVIEWS_TABLE.'_'.pluralize(RATING), USERS_TABLE, 'registered_'.USERS_TABLE, SUBCATEGORIES_TABLE, FILTER_DASHBOARD_ERROR);
 
-        if (request()?->ajax()) {
-            if (request()?->input('page')) {
-                return ajaxPaginationResponse($users, ADMIN_DASHBOARD_PAGINATION, USERS_TABLE);
-            }
+        $view = view(ADMIN_DASHBOARD_VIEW, $view_vars);
 
-            return view(ADMIN_DASHBOARD_COMPONENT, $view_vars)->render();
+        if (request()?->ajax()) {
+            return request()?->input('page')
+                ? ajaxPaginationResponse($users, ADMIN_DASHBOARD_PAGINATION, USERS_TABLE)
+                : $view->render();
         }
 
-        return view(ADMIN_DASHBOARD_VIEW, $view_vars);
+        return $view;
     }
 }

@@ -81,6 +81,10 @@ const User = {
 
 
     updateCartContent: (data, isClearAllCart = false) => {
+        const
+            cart_main        = `#${IGrace.CART}_main`,
+            update_cart_main = $(cart_main).html($(data[IGrace.ROW]).find(cart_main).html());
+
         $(`.${IGrace.CLASS(IGrace.CART_TOTAL_ITEMS())}`).html(data[IGrace.TOTAL_ITEMS]);
 
         $.each(($(`.${IGrace.CLASS(IGrace.CART_TOTAL_COST())}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
@@ -88,9 +92,9 @@ const User = {
         $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data[IGrace.HEADER_ROW]).html());
 
         const cart_content_update_actions = {
-            true: () => $(`#${IGrace.CART}_main`).html($(data[IGrace.ROW]).find(`#${IGrace.CART}_main`).html()),
+            true: () => update_cart_main,
             false: () => data[IGrace.TOTAL_ITEMS] === 0
-                    ? $(`#${IGrace.CART}_main`).html('')
+                    ? update_cart_main
                     : $(`#${IGrace.CART}_content`).html($(data[IGrace.ROW]).html()),
         };
 
@@ -432,7 +436,7 @@ const User = {
                     $.each(($(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-form`)), (_, form) => {
                         $(form).trigger('reset')
                             .find('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false}).end()
-                            .find('input[type="hidden"]').val('').end()
+                            .find('input[name*="quick_view"][type="hidden"]').val('').end()
                             .find('.selected-items').empty().end()
                             .find('.placeholder').removeAttr('hidden');
                     });
@@ -487,43 +491,6 @@ const User = {
                     }
                 });
         });
-    },
-
-
-    /* ---------------------------------- CHECKOUT USER ADDRESSES REQUEST ---------------------------------- */
-    ajaxCheckoutUserAddressesRequest: (page = 1) => {
-        if (Common.urlLastDirectory().includes(IGrace.CHECKOUT)) {
-            $.ajax({
-                url: `${IGrace.CHECKOUT}?page=${page}`,
-                method: IGrace.GET,
-                success: (data) => {
-                    $('.pagination-container').html(data);
-
-                    const
-                        radio_inputs   = $('input[type=radio]'),
-                        selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
-
-
-                    if (selected_value) {
-                        radio_inputs.filter(`[value="${selected_value}"]`)
-                            .prop('checked', true)
-                            .closest('.card')
-                            .addClass('border-danger');
-                    }
-
-                    radio_inputs.on(IGrace.CHANGE, function () {
-                        sessionStorage.setItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`, $(this).val());
-
-                        $.each(radio_inputs, (_, radioInput) =>
-                            $(radioInput).is(':checked')
-                                ? $(radioInput).closest('.card').addClass('border-danger')
-                                : $(radioInput).closest('.card').removeClass('border-danger')
-                        );
-                    });
-                },
-                error: () => Common.somethingWentWrongError(),
-            });
-        }
     },
 
 

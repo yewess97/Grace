@@ -17,7 +17,7 @@
                 {{-- Products Filter Responsive Nav Menu --}}
                 <article class="products-filter-nav-menu col d-none">
                     {{-- Products Filter Nav Menu Toggler --}}
-                    <div role="button" class="nav-menu-toggler d-flex align-items-center gap-2 fs-4 text-black" tabindex="0" aria-label="Open filtration menu" aria-expanded="false" aria-controls="products_filter_menu">
+                    <div role="button" class="nav-menu-toggler d-flex align-items-center gap-2 fs-5 text-black" tabindex="0" aria-label="Open filtration menu" aria-expanded="false" aria-controls="products_filter_menu">
                         <i class="fa-solid fa-list-ul"></i>
                         <h2 class="fs-5 fw-500">{{ucfirst(FILTER)}}</h2>
                     </div>
