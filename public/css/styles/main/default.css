@@ -215,8 +215,7 @@ ul.dropdown-content {
     transform: translateY(var(--fifteen-pixels));
 }
 
-ul.dropdown-content li.dropdown-item {
-    color: inherit;
+.dropdown-item:is(.active, :active, :focus, :hover) {
     background-color: transparent;
 }
 
