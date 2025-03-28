@@ -6,7 +6,7 @@
     <main role="main" class="log-reg-main py-6">
         <div class="container">
             <div class="row col-12 justify-content-center align-items-center">
-                <section class="col-4">
+                <section class="col-12 col-lg-4 col-md-7">
                     <div class="box-content border rounded">
                         <form action="{{route(RESET_PASSWORD_USER)}}" method="post" role="form" id="reset_password_form" class="grace-form auth-form row mt-2">
                             @csrf

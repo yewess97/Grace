@@ -86,7 +86,8 @@ const User = {
      */
     confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
-            html: `<p style="font-size: var(--eighteen-pixels)">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti-face-smile"></i></p>`,
+            title: `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
+            html: `<p style="font-size: var(--eighteen-pixels)">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti ti-face-smile"></i></p>`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             confirmButtonText: `Go to ${IGrace.LOGIN} page`,
@@ -130,6 +131,34 @@ const User = {
     },
 
 
+    /**
+     * Set a border-danger class to the selected address,
+     * and save the selected address in the session storage.
+     *
+     * @return {void}
+     */
+    checkoutAddressesConfig: () => {
+        const
+            radio_inputs   = $('input[type=radio]'),
+            selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+
+        if (selected_value) {
+            radio_inputs.filter(`[value="${selected_value}"]`)
+                .prop('checked', true)
+                .closest('.card')
+                .addClass('border-danger');
+        }
+
+        radio_inputs.on(IGrace.CHANGE, function () {
+            sessionStorage.setItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`, $(this).val());
+
+            $.each((radio_inputs), (_, radioInput) =>
+                $(radioInput).closest('.card').toggleClass('border-danger', $(radioInput).is(':checked'))
+            );
+        });
+    },
+
+
 
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
     ajaxAuthRequest: (authAction) => {
@@ -139,43 +168,44 @@ const User = {
             const
                 target    = $(this),
                 route     = target.attr('action'),
-                form_data = new FormData(this);
+                form_data = Common.filteredFormData(this);
 
             $.ajax({
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
                 success: (data) => {
+                    let success_message;
+
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
                         return location.href = data['redirect_to'];
                     }
 
                     if (data.status === `sent_${IGrace.EMAIL}`) {
-                        const success_message = `<p>Check your email to reset your password</p><p class="mt-3" style="font-size: var(--fifteen-pixels)">You will find the email in your inbox, otherwise, check your spam or junk folder</p>`;
-
-                        return Common.successMessage(IGrace.SUCCESS, success_message, IGrace.FORGOT_PASSWORD());
+                        success_message = `<p>Check your email to reset your password</p><p class="mt-3" style="font-size: var(--fifteen-pixels)">You will find the email in your inbox, otherwise, check your spam or junk folder</p>`;
                     }
 
                     if (data.status === `${IGrace.RESET_PASSWORD()}_${IGrace.SUCCESS}`) {
-                        const success_message = `Your ${IGrace.PASSWORD} has been changed successfully`;
-
-                        return Common.successMessage(IGrace.SUCCESS, success_message, IGrace.RESET_PASSWORD());
+                        success_message = `Your ${IGrace.PASSWORD} has been changed successfully`;
                     }
+
+                    target.trigger('reset');
+                    $(IGrace.ERROR_ELEMENT(authAction)).empty();
+
+                    return Common.successMessage(IGrace.SUCCESS, success_message, authAction);
                 },
                 error: (err) => {
                     if (err.status === 404) {
                         return Common.swalResponseJsonErrorMessage(err);
                     }
 
-                    if (err.status === 422) {
-                        return Common.errorMessage(authAction, Common.responseJsonError(err));
-                    }
-
                     if (err.status === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err), err.status);
                     }
 
-                    if (err.status === `failed_send_${IGrace.EMAIL}`) {
+                    console.log(err.status);
+
+                    if (err.status === 422 || IGrace.IS_IN_ARRAY([`${IGrace.FORGOT_PASSWORD()}_failed`, `${IGrace.RESET_PASSWORD()}_failed`], err.status)) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
 
@@ -206,6 +236,12 @@ const User = {
             // FormData() accepts only POST method
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
 
+            // Because of the pagination
+            if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
+                const key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`;
+                form_data.set(key, sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`));
+            }
+
             let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
 
             $.ajax({
@@ -217,22 +253,21 @@ const User = {
                         return location.href = data['redirect_to'];
                     }
 
-                    Common.arrangeTableRows();
-
                     if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
 
                         return Common.successMessage(IGrace.SUCCESS, success_message, collection);
                     }
 
-                    $(IGrace.MODAL(IGrace.USER)).modal('hide');
-                    form_reset(target, action);
-
                     if (collection === IGrace.CAPITALIZE(IGrace.REVIEW)) {
                         const reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW));
 
                         return Common.successMessage(IGrace.SUCCESS, success_message, reviews_route);
                     }
+
+                    Common.arrangeTableRows();
+                    $(IGrace.MODAL(IGrace.USER)).modal('hide');
+                    form_reset(target, action);
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
@@ -241,7 +276,7 @@ const User = {
                         return User.confirmLoginMessage();
                     }
 
-                    if (IGrace.IS_IN_STRING([400, 403], err.status)) {
+                    if (IGrace.IS_IN_ARRAY([400, 403], err.status)) {
                         return Common.swalWithButtons.fire({
                             title:             'Sorry!',
                             html:              Common.responseJsonError(err, true),

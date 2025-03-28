@@ -663,7 +663,10 @@ const Common = {
             }
 
             if (extra.includes(IGrace.RESET_PASSWORD())) {
-                return Common.swalWithButtons.fire(properties)
+                return Common.swalWithButtons.fire({
+                    ...properties,
+                    confirmButtonText: IGrace.CAPITALIZE(IGrace.LOGIN),
+                })
                     .then((ok) => {
                         if (ok.isConfirmed) {
                             location.href = `/${IGrace.LOGIN}`;
@@ -671,7 +674,7 @@ const Common = {
                     });
             }
 
-            if (IGrace.IS_IN_STRING([IGrace.CAPITALIZE(IGrace.ORDER), 'contact-us'], extra)) {
+            if (IGrace.IS_IN_ARRAY([IGrace.CAPITALIZE(IGrace.ORDER), 'contact-us'], extra)) {
                 return Common.swalWithButtons.fire({
                     ...properties,
                     confirmButtonText: 'Thanks',
@@ -688,7 +691,7 @@ const Common = {
                 return setTimeout(() => User.ajaxUpdateReviewsContentRequest(extra), 1800);
             }
 
-            if (IGrace.IS_IN_STRING([IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)], message)
+            if (IGrace.IS_IN_ARRAY([IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)], message)
                 && message.includes(IGrace.UPDATED())
                 && extra.includes(IGrace.ADMIN))
             {
@@ -1331,24 +1334,7 @@ const Common = {
                     Common.paginationResponse($('.pagination-container'), data);
 
                     if (route.includes(IGrace.CHECKOUT)) {
-                        const
-                            radio_inputs   = $('input[type=radio]'),
-                            selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
-
-                        if (selected_value) {
-                            radio_inputs.filter(`[value="${selected_value}"]`)
-                                .prop('checked', true)
-                                .closest('.card')
-                                .addClass('border-danger');
-                        }
-
-                        radio_inputs.on(IGrace.CHANGE, function () {
-                            sessionStorage.setItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`, $(this).val());
-
-                            $.each((radio_inputs), (_, radioInput) =>
-                                $(radioInput).closest('.card').toggleClass('border-danger', $(radioInput).is(':checked'))
-                            );
-                        });
+                        User.checkoutAddressesConfig();
                     }
                 })
                 .fail(Common.somethingWentWrongError);

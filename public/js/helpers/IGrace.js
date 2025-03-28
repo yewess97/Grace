@@ -295,16 +295,18 @@ const IGrace = {
      * @param string
      * @return {boolean}
      */
-    IS_NOT_EMPTY: (string) => (typeof string === 'string' && string.length > 0 && string.trim()) || typeof string !== 'undefined' || string !== null,
+    IS_NOT_EMPTY: (string) => ($.type(string) === 'string' && string.length > 0 && string.trim()) || $.type(string) !== 'undefined' || string !== null,
 
     /**
-     * Check if a string is in another string.
+     * Check if a string or integer is in an array.
      *
      * @param haystack
      * @param needle
      * @return {boolean}
      */
-    IS_IN_STRING: (haystack, needle) => haystack.some((word) => needle.includes(word)),
+    IS_IN_ARRAY: (haystack, needle) => $.type(needle) === 'string'
+        ? haystack.some((word) => needle.includes(word))
+        : haystack.includes(needle),
 
     /*################################### End Other Features ###################################*/
 }

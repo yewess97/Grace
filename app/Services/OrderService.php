@@ -9,9 +9,9 @@ use App\Models\Order;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
@@ -63,7 +63,7 @@ class OrderService {
 
             Mail::to(auth()->user()->{EMAIL})->send(new OrderMail($user_order));
 
-            return Cart::destroy($user_cart_items);
+            return Cart::destroy($user_cart_items->pluck(ID)->toArray());
         }
         catch (\Exception $exception) {
             DB::rollBack();
@@ -158,11 +158,11 @@ class OrderService {
     /**
      * Create an order item for specified cart items.
      *
-     * @param Collection $cartItems
+     * @param LengthAwarePaginator $cartItems
      * @param Order $order
      * @return void
      */
-    private function createOrderItems(Collection $cartItems, Order $order): void
+    private function createOrderItems(LengthAwarePaginator $cartItems, Order $order): void
     {
         $cartItems->each(static function ($cart_item) use (&$order) {
             $product_total_price = $cart_item->{PRODUCT_QUANTITY} * $cart_item->{PRODUCT_MODEL}->{NEW_PRICE};

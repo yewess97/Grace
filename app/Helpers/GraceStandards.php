@@ -737,6 +737,7 @@ define("FILTER_REVIEWS_ERROR",   collectionActionError(FILTER, REVIEWS_TABLE));
 /**
  * Auth views.
  */
+define("LOGIN_REGISTER_VIEW",  authView(kebabAll(LOGIN.'_'.REGISTER)));
 define("FORGOT_PASSWORD_VIEW", authView(kebabAll(FORGOT_PASSWORD)));
 define("RESET_PASSWORD_VIEW",  authView(kebabAll(RESET_PASSWORD)));
 
@@ -789,7 +790,6 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
 /**
  * Components.
  */
-define("LOGIN_REGISTER_COMPONENT",         component(kebabAll(LOGIN.'_'.REGISTER.'_template')));
 define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component('home-'.PRODUCT_MODEL.'-left-side'));
 define("PRODUCT_ITEM_COMPONENT",           component(PRODUCT_MODEL.'-item'));
 define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES)));

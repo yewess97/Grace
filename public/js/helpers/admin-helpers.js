@@ -431,7 +431,7 @@ const Admin = {
                         false: () => main_page = IGrace.ADMIN,
                     };
 
-                    data_actions[!IGrace.IS_IN_STRING([IGrace.ORDER, IGrace.REVIEW], collection)]();
+                    data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection)]();
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },

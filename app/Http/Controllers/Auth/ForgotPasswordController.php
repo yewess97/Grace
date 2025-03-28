@@ -7,9 +7,10 @@ use App\Services\AuthService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Mail\SentMessage;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 use Throwable;
 
 class ForgotPasswordController extends Controller
@@ -38,16 +39,14 @@ class ForgotPasswordController extends Controller
      * Mailing the user to reset his/her password.
      *
      * @return JsonResponse
-     * @throws ValidationException
+     * @throws ValidationException|ModelNotFoundException|RuntimeException
      */
     final public function forgotPassword(): JsonResponse
     {
         $forgot_password = $this->authService->forgotPasswordUser();
 
-        if (!$forgot_password instanceof SentMessage) {
-            return responseError("failed_send_".EMAIL);
-        }
-
-        return responseSuccess("sent_".EMAIL);
+        return !$forgot_password
+            ? responseError(FORGOT_PASSWORD.'_failed')
+            : responseSuccess("sent_".EMAIL);
     }
 }

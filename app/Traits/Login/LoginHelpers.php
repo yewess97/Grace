@@ -37,11 +37,11 @@ trait LoginHelpers
 
         $this->clearLoginAttempts($email);
 
-        if (auth()->user()->isAdmin) {
-            return responseSuccess(AUTH_SUCCESS, ['redirect_to' => route(ADMIN_DASHBOARD_ROUTE)]);
-        }
+        $response_with_redirect_to = static fn($redirection) => responseSuccess(AUTH_SUCCESS, ['redirect_to' => $redirection]);
 
-        return responseSuccess(AUTH_SUCCESS, ['redirect_to' => RouteServiceProvider::PRODUCTS_LIST]);
+        return auth()->user()->isAdmin
+            ? $response_with_redirect_to(route(ADMIN_DASHBOARD_ROUTE))
+            : $response_with_redirect_to(RouteServiceProvider::PRODUCTS_LIST);
     }
 
     /**

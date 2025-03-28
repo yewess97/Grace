@@ -29,10 +29,10 @@ class LoginController extends Controller
      */
     final public function index(): Application|Factory|View
     {
-        $auth_action = LOGIN;
+        $auth_action      = LOGIN;
         $login_user_error = static fn(string $attributeName) => formError(LOGIN, USER_MODEL, $attributeName);
 
-        return showView(LOGIN_REGISTER_COMPONENT, compact(AUTH_ACTION, LOGIN_USER_ERROR));
+        return showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, LOGIN_USER_ERROR));
     }
 
     /**

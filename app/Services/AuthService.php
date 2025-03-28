@@ -10,13 +10,16 @@ use App\Traits\Login\RememberMeExpiration;
 use App\Traits\Login\ThrottlesLogins;
 use Cache;
 use Carbon\Carbon;
+use Hash;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Mail\SentMessage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class AuthService {
@@ -81,6 +84,8 @@ class AuthService {
 
     /**
      * Logout the user.
+     *
+     * @return null
      */
     final public function logoutUser(): null
     {
@@ -88,7 +93,7 @@ class AuthService {
 
         $this->guard()->logout();
 
-        if ($user) {
+        if (assert($user instanceof User)) {
             $user->{'remember_token'} = null;
             $user->save();
 
@@ -104,10 +109,10 @@ class AuthService {
     /**
      * Mailing the user to reset his/her password.
      *
-     * @return SentMessage
-     * @throws ValidationException
+     * @return bool
+     * @throws ValidationException|ModelNotFoundException|RuntimeException
      */
-    final public function forgotPasswordUser(): SentMessage
+    final public function forgotPasswordUser(): bool
     {
         $forgot_password_attributes = [LOGIN_ATTRIBUTES[0]];
 
@@ -119,8 +124,12 @@ class AuthService {
 
         [$email_value] = $forgot_password_request->dataValues();
 
-        $token = encrypt(Str::random(64));
-        $user = User::query()->whereEmail($email_value)->first(USER_SELECTED_ATTRIBUTES);
+        $token = Hash::make(Str::random(64));
+        $user  = User::query()->whereEmail($email_value)->first(USER_SELECTED_ATTRIBUTES);
+
+        if (!$user) {
+            throw new ModelNotFoundException("The ".USER_MODEL." with this ".EMAIL." *$email_value* is not found");
+        }
 
         DB::table(PASSWORD_RESETS_TABLE)->insert([
             $email   => $email_value,
@@ -133,16 +142,22 @@ class AuthService {
             USER_MODEL => $user,
         ];
 
-        return Mail::to($email_value)->send(new ResetPasswordMail($reset_password_data));
+        try {
+            Mail::to($email_value)->send(new ResetPasswordMail($reset_password_data));
+            return true;
+        }
+        catch (RuntimeException) {
+            throw new RuntimeException("Failed to send the ".EMAIL." to reset the ".PASSWORD."!");
+        }
     }
 
     /**
      * Reset user's password.
      *
-     * @return int
-     * @throws ValidationException
+     * @return bool
+     * @throws ValidationException|InvalidArgumentException|ModelNotFoundException
      */
-    final public function resetPasswordUser(): int
+    final public function resetPasswordUser(): bool
     {
         $reset_password_request = new AuthRequest(RESET_PASSWORD, USER_MODEL, RESET_PASSWORD_ATTRIBUTES);
 
@@ -152,13 +167,30 @@ class AuthService {
 
         [$email_value, $token_value, $password_value] = $reset_password_request->dataValues();
 
-        User::query()->whereEmail($email_value)->update([
+        $reset_entry = DB::table(PASSWORD_RESETS_TABLE)
+            ->where($email, $email_value)
+            ->first([$token]);
+
+        if (!$reset_entry) {
+            throw new InvalidArgumentException("Invalid or expired ".PASSWORD." reset request");
+        }
+
+        if ($token_value !== $reset_entry->{$token}) {
+            throw new InvalidArgumentException("Invalid ".PASSWORD." reset token");
+        }
+
+        $user = User::query()->whereEmail($email_value)->first(USER_SELECTED_ATTRIBUTES);
+
+        if (!$user) {
+            throw new ModelNotFoundException("The ".USER_MODEL." with this ".EMAIL." *$email_value* is not found");
+        }
+
+        $user->update([
             $password => bcrypt($password_value)
         ]);
 
-        return DB::table(PASSWORD_RESETS_TABLE)->where([
-            $email => $email_value,
-            $token => $token_value,
-        ])->delete();
+        DB::table(PASSWORD_RESETS_TABLE)->whereEmail($email_value)->delete();
+
+        return true;
     }
 }

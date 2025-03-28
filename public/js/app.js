@@ -349,6 +349,9 @@ $(document).ready(() => {
     // Get the countries
     Common.ajaxGetCountries();
 
+    // Configure the checkout addresses
+    User.checkoutAddressesConfig();
+
     // Scroll to top action
     Common.scrollToTop();
 

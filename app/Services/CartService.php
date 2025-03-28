@@ -25,7 +25,7 @@ class CartService
     final public function createOrUpdateCart(string $operation): Cart|Collection|bool|array
     {
         if (!auth()->check()) {
-            throw new AuthenticationException('unauthenticated');
+            throw new AuthenticationException();
         }
 
         $cart_attributes = [PRODUCT_ID];

@@ -242,6 +242,10 @@ ul {
     margin-bottom: 1rem !important;
 }
 
+.p-2 {
+    padding: 0.5rem !important;
+}
+
 .px-5 {
     padding-right: 3rem !important;
     padding-left: 3rem !important;

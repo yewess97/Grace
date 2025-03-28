@@ -243,11 +243,9 @@ trait FormRequestHelper
         ];
 
         if ($requestType === FORGOT_PASSWORD) {
-            if ($isMessage) {
-                return $email_messages;
-            }
-
-            return $email_rules;
+            return $isMessage
+                ? $email_messages
+                : $email_rules;
         }
 
         $password_rules = [
@@ -265,17 +263,15 @@ trait FormRequestHelper
         ];
 
         if ($requestType === LOGIN) {
-            if ($isMessage) {
-                return [
+            return $isMessage
+                ? [
                     ...$email_messages,
                     ...$password_messages,
-                ];
-            }
-
-            return [
+                ]
+                : [
                 ...$email_rules,
                 ...$password_rules,
-            ];
+                ];
         }
 
         if ($requestType === RESET_PASSWORD) {
@@ -330,18 +326,14 @@ trait FormRequestHelper
         ];
 
         if ($requestType === USER_MODEL) {
-            if ($isMessage) {
-                return [...$register_user_messages, ...$this->booleanValidation(ROLE, true, "Customer or Admin")];
-            }
-
-            return [...$register_user_rules, ...$this->booleanValidation(ROLE)];
+            return $isMessage
+                ? [...$register_user_messages, ...$this->booleanValidation(ROLE, true, "Customer or Admin")]
+                : [...$register_user_rules, ...$this->booleanValidation(ROLE)];
         }
 
-        if ($requestType === REGISTER && $isMessage) {
-            return $register_user_messages;
-        }
-
-        return $register_user_rules;
+        return $requestType === REGISTER && $isMessage
+            ? $register_user_messages
+            : $register_user_rules;
     }
 
     /**

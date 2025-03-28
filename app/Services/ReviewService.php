@@ -39,7 +39,7 @@ class ReviewService
     final public function createOrUpdateReview(string $operation): Review
     {
         if (!auth()->check()) {
-            throw new AuthenticationException('unauthenticated');
+            throw new AuthenticationException();
         }
 
         $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);

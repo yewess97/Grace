@@ -48,7 +48,7 @@ class ResetPasswordMail extends Mailable
     {
         return new Content(
             markdown: RESET_PASSWORD_EMAIL,
-            with: $this->reset_password_data,
+            with:     $this->reset_password_data,
         );
     }
 }

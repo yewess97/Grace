@@ -7,8 +7,10 @@ use App\Services\AuthService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Throwable;
 
 class ResetPasswordController extends Controller
@@ -28,8 +30,8 @@ class ResetPasswordController extends Controller
      */
     final public function index(): Application|Factory|View
     {
-        $token = request()?->input(TOKEN);
-        $email = request()?->input(EMAIL);
+        $token                     = request()?->input(TOKEN);
+        $email                     = request()?->input(EMAIL);
         $reset_password_user_error = static fn(string $attributeName) => formError(RESET_PASSWORD, USER_MODEL, $attributeName);
 
         return showView(RESET_PASSWORD_VIEW, compact(RESET_PASSWORD_USER_ERROR, TOKEN, EMAIL));
@@ -39,12 +41,14 @@ class ResetPasswordController extends Controller
      * Reset user's password.
      *
      * @return JsonResponse
-     * @throws ValidationException
+     * @throws ValidationException|InvalidArgumentException|ModelNotFoundException
      */
     final public function resetPassword(): JsonResponse
     {
-        $this->authService->resetPasswordUser();
+        $reset_password = $this->authService->resetPasswordUser();
 
-        return responseSuccess(RESET_PASSWORD.'_success');
+        return !$reset_password
+            ? responseError(RESET_PASSWORD.'_failed')
+            : responseSuccess(RESET_PASSWORD.'_success');
     }
 }
