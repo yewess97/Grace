@@ -207,13 +207,11 @@ const IGrace = {
             { regex: /s$/i, replacement: '' } // remove 's' for default singular form
         ];
 
-        // Check if the word is already singular, then return it.
-        return singular_rules.reduce((word, rule) =>
-            rule.regex.test(word)
-                ? word.replace(rule.regex, rule.replacement)
-                : word
-            , word
-        );
+        for (let { regex, replacement } of singular_rules) {
+            if (regex.test(word)) return word.replace(regex, replacement);
+        }
+
+        return word;
     },
 
     /**
@@ -243,13 +241,11 @@ const IGrace = {
             { regex: /$/, replacement: 's' } // default: add 's'
         ];
 
-        // Check if the word is already plural, then return it.
-        return plural_rules.reduce((word, rule) =>
-            rule.regex.test(word)
-                ? word.replace(rule.regex, rule.replacement)
-                : word
-            , word
-        );
+        for (let { regex, replacement } of plural_rules) {
+            if (regex.test(word)) return word.replace(regex, replacement);
+        }
+
+        return word;
     },
 
     /**
@@ -264,8 +260,7 @@ const IGrace = {
      * Convert an element to be a class.
      *
      * @param element
-     *
-     *
+     * @return {string}
      */
     CLASS: (element) => element.replace(/_/g, '-'),
 
@@ -290,352 +285,26 @@ const IGrace = {
      * Format Price.
      *
      * @param price
-     * @returns {string}
-     * @re
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
-     *
-     *
-     *
-     *
-     * wr
+     * @return {string}
      */
     PRICE_FORMAT: (price) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP' }).format(price),
+
+    /**
+     * Check if a string is not empty.
+     *
+     * @param string
+     * @return {boolean}
+     */
+    IS_NOT_EMPTY: (string) => (typeof string === 'string' && string.length > 0 && string.trim()) || typeof string !== 'undefined' || string !== null,
+
+    /**
+     * Check if a string is in another string.
+     *
+     * @param haystack
+     * @param needle
+     * @return {boolean}
+     */
+    IS_IN_STRING: (haystack, needle) => haystack.some((word) => needle.includes(word)),
 
     /*################################### End Other Features ###################################*/
 }

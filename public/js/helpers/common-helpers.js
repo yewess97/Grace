@@ -671,7 +671,7 @@ const Common = {
                     });
             }
 
-            if (extra.includes(IGrace.CAPITALIZE(IGrace.ORDER))) {
+            if (IGrace.IS_IN_STRING([IGrace.CAPITALIZE(IGrace.ORDER), 'contact-us'], extra)) {
                 return Common.swalWithButtons.fire({
                     ...properties,
                     confirmButtonText: 'Thanks',
@@ -688,7 +688,7 @@ const Common = {
                 return setTimeout(() => User.ajaxUpdateReviewsContentRequest(extra), 1800);
             }
 
-            if ($.inArray(message, [IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)])
+            if (IGrace.IS_IN_STRING([IGrace.CAPITALIZE(IGrace.ORDER), IGrace.CAPITALIZE(IGrace.REVIEW)], message)
                 && message.includes(IGrace.UPDATED())
                 && extra.includes(IGrace.ADMIN))
             {

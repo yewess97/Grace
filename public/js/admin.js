@@ -80,11 +80,11 @@ $(document).on(IGrace.KEYUP, (e) => {
      * otherwise, hide it
      */
     if (target.is('#search')) {
-        const is_visible = $('#search').val() !== '';
+        const serch_value = $('#search').val();
 
         clear_search_button.css({
-            opacity:    is_visible ? '1' : '0',
-            visibility: is_visible ? 'visible' : 'hidden'
+            opacity:    IGrace.IS_NOT_EMPTY(serch_value) ? '1' : '0',
+            visibility: IGrace.IS_NOT_EMPTY(serch_value) ? 'visible' : 'hidden',
         });
     }
 });

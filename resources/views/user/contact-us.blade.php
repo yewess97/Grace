@@ -21,7 +21,7 @@
                         <article class="contact-us-content row row-cols-1 row-cols-lg-2 align-items-baseline rounded-3">
                             <!----======= Left Side =======---->
                             <div class="col">
-                                <form method="post" role="form" id="contact_us_form" class="row grace-form contact-us-form ">
+                                <form method="post" role="form" id="contact_us_form" class="row grace-form contact-us-form">
                                     @csrf
                                     {{-- Form Header --}}
                                     <article class="grace-form-header contact-us-content-header mb-4">
@@ -30,40 +30,34 @@
                                     {{-- Form Body --}}
                                     <article class="grace-form-body row col-12">
                                         {{-- Name --}}
-                                        <div class="contact-name">
+                                        <div class="add-contact-name">
                                             <div class="form-outline col-12">
-                                                <input type="text" name="name" id="name" class="form-control fs-7 rounded-2" min="2" max="50" aria-required="true">
-                                                <label for="name" class="form-label">
+                                                <input type="text" name="add_contact_name" id="add_contact_name" class="form-control fs-7 rounded-2" min="2" max="50" aria-required="true">
+                                                <label for="add_contact_name" class="form-label">
                                                     <sup class="me-1">*</sup>Your {{ucfirst(NAME)}}
                                                 </label>
                                             </div>
-                                            <div class="grace-form-error">
-                                                <ul role="list" class="form-error text-danger" id="name_error"></ul>
-                                            </div>
+                                            {{formError(ADD, 'contact', NAME)}}
                                         </div>
                                         {{-- Email --}}
-                                        <div class="contact-email">
+                                        <div class="add-contact-email">
                                             <div class="form-outline col-12">
-                                                <input type="email" name="email" id="email" class="form-control fs-7 rounded-2" aria-required="true">
-                                                <label for="email" class="form-label">
+                                                <input type="email" name="add_contact_email" id="add_contact_email" class="form-control fs-7 rounded-2" aria-required="true">
+                                                <label for="add_contact_email" class="form-label">
                                                     <sup class="me-1">*</sup>Your {{ucfirst(EMAIL)}}
                                                 </label>
                                             </div>
-                                            <div class="grace-form-error">
-                                                <ul class="form-error text-danger" id="email_error"></ul>
-                                            </div>
+                                            {{formError(ADD, 'contact', EMAIL)}}
                                         </div>
                                         {{-- Message --}}
-                                        <div class="contact-message">
+                                        <div class="add-contact-message">
                                             <div class="form-outline col-12">
-                                                <textarea name="message" id="message" class="form-control fs-7" rows="4" minlength="2" aria-required="true"></textarea>
-                                                <label for="message" class="form-label textarea-label">
+                                                <textarea name="add_contact_message" id="add_contact_message" class="form-control fs-7" rows="4" aria-required="true"></textarea>
+                                                <label for="add_contact_message" class="form-label textarea-label">
                                                     <sup class="me-1">*</sup>Message
                                                 </label>
                                             </div>
-                                            <div class="grace-form-error">
-                                                <ul class="form-error text-danger" id="message_error"></ul>
-                                            </div>
+                                            {{formError(ADD, 'contact', 'message')}}
                                         </div>
                                         {{-- Send Button --}}
                                         <div class="form-group col-12">
@@ -152,5 +146,5 @@
         })();
     </script>
 
-    <script type="application/javascript" src="{{asset('js/contact-us.js')}}"></script>
+    <script type="module" src="{{asset('js/contact-us.js')}}"></script>
 @endsection

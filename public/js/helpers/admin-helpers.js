@@ -396,7 +396,6 @@ const Admin = {
                 [action, collection] = form.split('_'),
                 form_data            = Common.filteredFormData(this);
 
-
             let main_page = target.data('main');
 
             // FormData() accepts only POST method
@@ -432,7 +431,7 @@ const Admin = {
                         false: () => main_page = IGrace.ADMIN,
                     };
 
-                    data_actions[$.inArray(collection, [IGrace.ORDER, IGrace.REVIEW]) === -1]();
+                    data_actions[!IGrace.IS_IN_STRING([IGrace.ORDER, IGrace.REVIEW], collection)]();
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },

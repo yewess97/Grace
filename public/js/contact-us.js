@@ -1,122 +1,90 @@
 'use strict';
 
+import { IGrace, Common } from "./helpers/common-helpers.js";
+
+
+
 $(document).ready(() => {
+    $(document).on(IGrace.SUBMIT, '#contact_us_form', function (e) {
+        e.preventDefault();
 
-    $(document).on('submit', '#contact_us_form', (e) => {
+        const
+            fields = {
+                add_contact_name:    $('#add_contact_name'),
+                add_contact_email:   $('#add_contact_email'),
+                add_contact_message: $('#add_contact_message'),
+            },
 
-        const name = $('#name'),
-            email = $('#email'),
-            message = $('#message');
+            regex = {
+                add_contact_name:  /^[a-zA-Z ,.'-]+$/,
+                add_contact_email: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
+            };
 
-        const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
-            nameRegex = /^[a-zA-Z ,.'-]+$/;
 
-        const errorName = $('#name_error'),
-            errorEmail = $('#email_error'),
-            errorMessage = $('#message_error');
+        /* ---------------------------------- VALIDATION ---------------------------------- */
+        /**
+         * Validate input fields
+         *
+         * @param fields
+         * @param rules
+         * @return {object}
+         */
+        const validateFields = (fields, rules) =>
+            rules.reduce((errors, { field, conditions }) => {
+                const
+                    value = fields[field].val(),
+                    error = conditions.find(({ condition }) => condition(value));
 
-        if (name && email && message) {
+                if (error) errors[field] = [error.msg];
 
-            let errorNameMsg = '',
-                errorEmailMsg = '',
-                errorMessageMsg = '';
+                return errors;
+            }, {});
 
-            /* ======= Name Error ======= */
-            if (!name.val()) {
-                errorNameMsg = 'Name is required';
-            } else if (nameRegex && !nameRegex.test(name.val())) {
-                errorNameMsg = 'Name must be only characters';
-            } else if (name.val().length < 2) {
-                errorNameMsg = 'Name must be at least 2 characters';
-            } else if (name.val().length > 50) {
-                errorNameMsg = 'Name must be less than 50 characters';
-            }
+        // Define validation rules dynamically
+        const rules = [
+            { field: 'add_contact_name', conditions: [
+                    { condition: (value) => !value, msg: 'Name is required' },
+                    { condition: (value) => !regex.add_contact_name.test(value), msg: 'Name must be only characters' },
+                    { condition: (value) => value.length <= 2, msg: 'Name must be at least 2 characters' },
+                    { condition: (value) => value.length > 50, msg: 'Name must be less than 50 characters' }
+                ]},
+            { field: 'add_contact_email', conditions: [
+                    { condition: (value) => !value, msg: 'Email is required' },
+                    { condition: (value) => !regex.add_contact_email.test(value), msg: 'Invalid Email Format' }
+                ]},
+            { field: 'add_contact_message', conditions: [
+                    { condition: (value) => !value, msg: 'Message is required' },
+                    { condition: (value) => value.length < 2, msg: 'Message must be at least 2 characters' }
+                ]}
+        ];
 
-            /* ======= Email Error ======= */
-            if (!email.val()) {
-                errorEmailMsg = 'E-mail is required';
-            } else if (emailRegex && !emailRegex.test(email.val())) {
-                errorEmailMsg = 'Invalid E-mail Format';
-            }
+        // Validate input fields
+        const errors = validateFields(fields, rules);
 
-            /* ======= Message Error ======= */
-            if (!message.val()) {
-                errorMessageMsg = 'Message is required';
-            } else if (message.val().length < 2) {
-                errorMessageMsg = 'Message must be at least 2 characters';
-            }
+        // Display error messages
+        Common.errorMessage(IGrace.ADD, errors);
 
-            /* ======= Display Error Messages ======= */
-            if (errorNameMsg || errorEmailMsg || errorMessageMsg) {
-                e.preventDefault();
+        // Stop the form submission if there are invalid fields
+        if (Object.keys(errors).length) return;
 
-                /* ======= Clear Error Messages ======= */
-                errorName.empty();
-                errorEmail.empty();
-                errorMessage.empty();
 
-                /* ======= Name ValidationHelper ======= */
-                if (errorNameMsg) {
-                    errorName.parent().css({'display': 'block', 'margin-top': '1rem'});
-                    errorName.append(`<li>${errorNameMsg}</li>`);
-                } else {
-                    errorName.parent().css('display', 'none');
-                }
+        /* ---------------------------------- SEND EMAIL ---------------------------------- */
+        const
+            service_id = 'service_ri1slgn',
+            template_id = 'template_5xiszts',
+            params = {
+                name:    fields.add_contact_name.val(),
+                email:   fields.add_contact_email.val(),
+                message: fields.add_contact_message.val(),
+            };
 
-                /* ======= Email ValidationHelper ======= */
-                if (errorEmailMsg) {
-                    errorEmail.parent().css({'display': 'block', 'margin-top': '1rem'});
-                    errorEmail.append(`<li>${errorEmailMsg}</li>`);
-                } else {
-                    errorEmail.parent().css('display', 'none');
-                }
+        emailjs.send(service_id, template_id, params)
+            .then(() => {
+                $(this).trigger('reset');
+                $(IGrace.ERROR_ELEMENT(IGrace.ADD)).empty();
 
-                /* ======= Message ValidationHelper ======= */
-                if (errorMessageMsg) {
-                    errorMessage.parent().css({'display': 'block', 'margin-top': '1rem'});
-                    errorMessage.append(`<li>${errorMessageMsg}</li>`);
-                } else {
-                    errorMessage.parent().css('display', 'none');
-                }
-
-            } else {
-                e.preventDefault();
-
-                /* ======= Send Email ======= */
-
-                let params = {
-                    name: name.val(),
-                    email: email.val(),
-                    message: message.val(),
-                };
-
-                const serviceID = 'service_ri1slgn',
-                    templateID = 'template_5xiszts';
-
-                emailjs.send(serviceID, templateID, params)
-                    .then((res) => {
-                        Swal.fire({
-                            title: 'Success!',
-                            html: `<h2 class="fs-5">Thank you ${name.val()}</h2><h3 class="mt-2 fs-6">You message has been sent successfully to Yousif Ayman (The Admin)!</h3>`,
-                            icon: 'success',
-                            showConfirmButton: true,
-                        });
-                        $(e.target)[0].reset();
-                        errorName.empty();
-                        errorEmail.empty();
-                        errorMessage.empty();
-                        $('.form-notch-middle').css('border-top', '');
-                    })
-                    .catch((err) => {
-                        Swal.fire({
-                            title: 'Error!',
-                            html: `<h2 class="fs-5">Sorry ${name.val()}</h2><h3 class="mt-2 fs-6">Something went wrong, please try again later!</h3>`,
-                            icon: 'error',
-                            showConfirmButton: true,
-                        });
-                    });
-
-            }
-        }
+                Common.successMessage('sent', `<h2 class="fs-5">Thank you ${params.name}</h2><h3 class="mt-2 fs-6">Your message has been sent successfully to Yousif Ayman (The Admin)!</h3>`, 'contact-us');
+            })
+            .catch(() => Common.somethingWentWrongError());
     });
 });
