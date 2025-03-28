@@ -5,17 +5,24 @@ import { IGrace, Common } from "./common-helpers.js";
 
 const User = {
 
-    // Configure the carousel slider
-    carouselSlider: (item, display, nav, dots, autoplay) => {
-        $(item).owlCarousel({
-            items: display,
-            rewind: true,
-            margin: 10,
-            nav: nav,
-            navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
-            dots: dots,
-            autoplay: autoplay,
-            autoplayTimeout: 4000,
+    /**
+     * Configure the carousel slider.
+     *
+     * @param args
+     * @return {void}
+     */
+    carouselSliderConfig: (args) => {
+        const { element, displayItemsCount, nav = true, dots = false, autoplay = true } = args;
+
+        element.owlCarousel({
+            items:              displayItemsCount,
+            rewind:             true,
+            margin:             10,
+            nav:                nav,
+            navText:            ['<i class= "fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+            dots:               dots,
+            autoplay:           autoplay,
+            autoplayTimeout:    4000,
             autoplayHoverPause: true,
         });
 
@@ -24,47 +31,59 @@ const User = {
         $('.owl-nav .owl-next').attr('title', 'Go to Next');
 
         $('.owl-dot').attr({
-            type: 'button',
+            type:  'button',
             title: 'Go to Slider'
         });
     },
 
 
-    // Handle the chosen filter products multiple items with hidden input
+    /**
+     * Handle the chosen filter products multiple items with hidden input.
+     *
+     * @param args
+     * @return {void}
+     */
     handleFilterProductsMultiItemsWithHiddenInput: (args) => {
         let { target, multiSelectedValuesList, relation } = args;
 
-        if (target.is(`input[name="${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_${relation}[]"]`)) {
-            const filter_collection_hidden_input = target.parents('.filter-content').next();
+        if (!target.is(`input[name="${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_${relation}[]"]`)) return;
 
-            target.is(':checked')
-                ? multiSelectedValuesList.push(target.val())
-                : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+        const filter_collection_hidden_input = target.parents('.filter-content').next();
 
-            multiSelectedValuesList = multiSelectedValuesList.filter((value) => value !== '').join(',');
+        target.is(':checked')
+            ? multiSelectedValuesList.push(target.val())
+            : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
 
-            filter_collection_hidden_input.val(multiSelectedValuesList);
-        }
+        multiSelectedValuesList = multiSelectedValuesList.filter(Boolean).join(','); // filter(Boolean) removes empty values
+
+        filter_collection_hidden_input.val(multiSelectedValuesList);
     },
 
 
-    // Handle the inputs & range of the price filter
+    /**
+     * Handle the inputs & range of the price filter.
+     *
+     * @param input
+     * @param range
+     * @return {void}
+     */
     handlePriceFilter: (input, range) =>
         input.on(IGrace.INPUT, function () {
-            let
-                min_value = parseFloat(input.eq(0).val()),
-                max_value = parseFloat(input.eq(1).val());
+            let [min_value, max_value] = input.map((_, element) => parseFloat($(element).val()));
 
-            if (min_value > max_value) {
-                [min_value, max_value] = [max_value, min_value];
-            }
+            if (min_value > max_value) [min_value, max_value] = [max_value, min_value];
 
             range.eq(0).val(min_value);
             range.eq(1).val(max_value);
         }),
 
 
-    // Display the login confirmation message when the user not logged in
+    /**
+     * Display the login confirmation message,
+     * when the user not logged in.
+     *
+     * @return {void}
+     */
     confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
             html: `<p style="font-size: var(--eighteen-pixels)">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti-face-smile"></i></p>`,
@@ -80,6 +99,13 @@ const User = {
     },
 
 
+    /**
+     * Update the cart content.
+     *
+     * @param data
+     * @param isClearAllCart
+     * @return {void}
+     */
     updateCartContent: (data, isClearAllCart = false) => {
         const
             cart_main        = `#${IGrace.CART}_main`,
@@ -137,19 +163,19 @@ const User = {
                     }
                 },
                 error: (err) => {
-                    if (Common.errorStatus(err) === 404) {
+                    if (err.status === 404) {
                         return Common.swalResponseJsonErrorMessage(err);
                     }
 
-                    if (Common.errorStatus(err) === 422) {
+                    if (err.status === 422) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
 
-                    if (Common.errorStatus(err) === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
-                        return Common.errorMessage(authAction, Common.responseJsonError(err), Common.errorStatus(err));
+                    if (err.status === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
+                        return Common.errorMessage(authAction, Common.responseJsonError(err), err.status);
                     }
 
-                    if (Common.errorStatus(err) === `failed_send_${IGrace.EMAIL}`) {
+                    if (err.status === `failed_send_${IGrace.EMAIL}`) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
 
@@ -177,10 +203,8 @@ const User = {
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                 };
 
-            if (action === IGrace.UPDATE) {
-                // FormData() accepts only POST method
-                form_data.append('_method', IGrace.PUT);
-            }
+            // FormData() accepts only POST method
+            if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
 
             let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
 
@@ -213,24 +237,24 @@ const User = {
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
                 error: (err) => {
-                    if (Common.errorStatus(err) === 401) {
+                    if (err.status === 401) {
                         return User.confirmLoginMessage();
                     }
 
-                    if ($.inArray(Common.errorStatus(err), [400, 403])) {
+                    if ($.inArray(err.status, [400, 403])) {
                         return Common.swalWithButtons.fire({
-                            title: 'Sorry!',
-                            html: Common.responseJsonError(err, true),
-                            icon: IGrace.WARNING,
+                            title:             'Sorry!',
+                            html:              Common.responseJsonError(err, true),
+                            icon:              IGrace.WARNING,
                             showConfirmButton: true,
                         });
                     }
 
-                    if (Common.errorStatus(err) === 404) {
+                    if (err.status === 404) {
                         return Common.swalResponseJsonErrorMessage(err);
                     }
 
-                    if (Common.errorStatus(err) === 422) {
+                    if (err.status === 422) {
                         if (!Common.responseJsonError(err)[`${IGrace.REVIEW}_exists`]) {
                             return Common.errorMessage(action, Common.responseJsonError(err));
                         }
@@ -246,8 +270,8 @@ const User = {
                         return form_reset(target, action);
                     }
 
-                    if (Common.errorStatus(err) === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
-                        return Common.errorMessage(action, Common.responseJsonError(err), Common.errorStatus(err));
+                    if (err.status === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
+                        return Common.errorMessage(action, Common.responseJsonError(err), err.status);
                     }
 
                     Common.somethingWentWrongError();
@@ -325,15 +349,17 @@ const User = {
                     });
                     $(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('').append(product[IGrace.NAME]);
                     $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('').append(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
-                    product[`${IGrace.OLD_PRICE}`] === 0 && product[`${IGrace.OLD_PRICE}`] === product[`${IGrace.NEW_PRICE}`]
-                        ? product_old_price.html('')
-                        : product_old_price.html('').append(`EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`);
+                    product_old_price.html(
+                        product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
+                            ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
+                            : ''
+                    );
                     $(`.${IGrace.PRODUCT}-info-${IGrace.STATUS} span:last-child`).html('').append(product[IGrace.STATUS] === 1 ? 'In Stock' : 'Out of Stock');
                     $(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('').append(product[`${IGrace.SHORT_DESCRIPTION}`]);
                     Common.showMultiSelectData({
-                        userType: IGrace.USER,
-                        collection: product,
-                        collectionName: IGrace.PRODUCT,
+                        userType:          IGrace.USER,
+                        collection:        product,
+                        collectionName:    IGrace.PRODUCT,
                         relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
                     });
                     $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
@@ -368,7 +394,7 @@ const User = {
                     return Common.searchFilterErrorResponse(noResultsImageSrc);
                 }
 
-                if (Common.errorStatus(err) === 422) {
+                if (err.status === 422) {
                     $(IGrace.ERROR_ELEMENT(action)).removeClass('text-danger')
                         .addClass('alert fade show alert-danger fw-500')
                         .attr('data-mdb-color', 'danger');
@@ -392,14 +418,12 @@ const User = {
                 route     = target.attr('action'),
                 form_data = Common.filteredFormData(this);
 
-            if (action === IGrace.UPDATE) {
-                // FormData() accepts only POST method
-                form_data.append('_method', IGrace.PUT);
-            }
+            // FormData() accepts only POST method
+            if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
 
-            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((_, cart_product) => {
+            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((_, cartProduct) => {
                 const
-                    cart_product_value_of = (value) => $(cart_product).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
+                    cart_product_value_of = (value) => $(cartProduct).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
 
                     product_id       = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
                     product_size     = cart_product_value_of(IGrace.PRODUCT_SIZE()),
@@ -446,15 +470,15 @@ const User = {
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
                 error: (err) => {
-                    if (Common.errorStatus(err) === 401) {
+                    if (err.status === 401) {
                         return User.confirmLoginMessage();
                     }
 
-                    if (Common.errorStatus(err) === 404) {
+                    if (err.status === 404) {
                         return Common.swalResponseJsonErrorMessage(err);
                     }
 
-                    if (Common.errorStatus(err) === 422) {
+                    if (err.status === 422) {
                         return Common.errorMessage(IGrace.CLASS(action), Common.responseJsonError(err));
                     }
 

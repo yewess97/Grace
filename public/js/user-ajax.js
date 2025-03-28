@@ -6,11 +6,12 @@ import { IGrace, Common, User } from "./helpers/user-helpers.js";
 // Ajax Setup
 Common.ajaxSetup();
 
+
 // Remove the errors when the edit modal is closed/hidden
 Common.removeErrorsWhenEditModelHides(IGrace.USER);
 
 
-/*============================== Authentication & Authorization ==============================*/
+/* ---------------------------------- AUTHENTICATION & AUTHORIZATION ---------------------------------- */
 
 // Register
 User.ajaxAuthRequest(IGrace.REGISTER);
@@ -24,10 +25,10 @@ User.ajaxAuthRequest(IGrace.FORGOT_PASSWORD());
 // Reset Password
 User.ajaxAuthRequest(IGrace.RESET_PASSWORD());
 
-/*============================== End Authentication & Authorization ==============================*/
+/* ---------------------------------- END AUTHENTICATION & AUTHORIZATION ---------------------------------- */
 
 
-/*============================== Address ==============================*/
+/* ---------------------------------- ADDRESS ---------------------------------- */
 
 // Add Address
 User.ajaxCreateOrUpdateRequest(IGrace.ADD_COLLECTION(IGrace.ADDRESS));
@@ -50,18 +51,16 @@ Common.ajaxRestoreRequest(IGrace.ADDRESS);
 // Restore Selected Addresses
 Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
 
-/*============================== End Address ==============================*/
+/* ---------------------------------- END ADDRESS ---------------------------------- */
 
 
-/*============================== Product ==============================*/
-
-// Product Quick View Data
+/* ---------------------------------- PRODUCT QUICK VIEW DATA ---------------------------------- */
 User.ajaxGetProductDataRequest();
 
-/*============================== End Product ==============================*/
+/* ---------------------------------- END PRODUCT QUICK VIEW DATA ---------------------------------- */
 
 
-/*============================== Cart ==============================*/
+/* ---------------------------------- CART ---------------------------------- */
 
 // Add Cart
 User.ajaxCreateOrUpdateCartRequest(IGrace.ADD);
@@ -75,18 +74,16 @@ User.ajaxDeleteRequest(IGrace.CART);
 // Delete all user's carts
 User.ajaxDeleteAllCartsRequest();
 
-/*============================== End Cart ==============================*/
+/* ---------------------------------- END CART ---------------------------------- */
 
 
-/*============================== Order ==============================*/
-
-// Place an order
+/* ---------------------------------- PLACE ORDER ---------------------------------- */
 User.ajaxCreateOrUpdateRequest(IGrace.ADD_COLLECTION(IGrace.ORDER));
 
-/*============================== End Order ==============================*/
+/* ---------------------------------- END PLACE ORDER ---------------------------------- */
 
 
-/*============================== Reviews ==============================*/
+/* ---------------------------------- REVIEWS ---------------------------------- */
 
 // Add Review
 User.ajaxCreateOrUpdateRequest(IGrace.ADD_COLLECTION(IGrace.REVIEW));
@@ -100,10 +97,10 @@ User.ajaxCreateOrUpdateRequest(IGrace.UPDATE_COLLECTION(IGrace.REVIEW));
 // Delete Review
 User.ajaxDeleteRequest(IGrace.REVIEW);
 
-/*============================== End Reviews ==============================*/
+/* ---------------------------------- END REVIEWS ---------------------------------- */
 
 
-/*============================== Filter ==============================*/
+/* ---------------------------------- FILTER ---------------------------------- */
 $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_form`, function (e) {
     e.preventDefault();
 
@@ -122,10 +119,10 @@ $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODU
     });
 });
 
-/*============================== End Filter ==============================*/
+/* ---------------------------------- END FILTER ---------------------------------- */
 
 
-/*============================== Search & Clear Search/Filter ==============================*/
+/* ---------------------------------- SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
 // Search
 Common.ajaxSearchRequest();
@@ -133,12 +130,10 @@ Common.ajaxSearchRequest();
 // Clear the Search/Filter
 Common.ajaxClearSearchFilterRequest();
 
-/*============================== End Search & Clear Search/Filter ==============================*/
+/* ---------------------------------- END SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
 
-/*============================== Pagination ==============================*/
-
-// Default pagination
+/* ---------------------------------- PAGINATION ---------------------------------- */
 Common.ajaxPagination();
 
-/*============================== End Pagination ==============================*/
+/* ---------------------------------- END PAGINATION ---------------------------------- */

@@ -117,44 +117,44 @@ const IGrace = {
     /**
      * Common Attributes.
      */
-    ID : 'id',
-    NAME : 'name',
-    IMAGE : 'image',
+    ID                : 'id',
+    NAME              : 'name',
+    IMAGE             : 'image',
     SHORT_DESCRIPTION : 'short_description',
-    LONG_DESCRIPTION : 'long_description',
-    OLD_PRICE : 'old_price',
-    NEW_PRICE : 'new_price',
-    SIZE : 'size',
-    QUANTITY : 'quantity',
-    STATUS : 'status',
-    CITY : 'city',
-    STATE : 'state',
-    COUNTRY : 'country',
-    POSTAL_CODE : 'postal_code',
-    EMAIL : 'email',
-    ROLE : 'role',
-    RATING : 'rating',
-    TITLE : 'title',
-    BODY_TEXT : 'body_text',
-    CHECKOUT: 'checkout',
-    TOTAL_ITEMS: 'total_items',
-    TOTAL_COST: 'total_cost',
-    ROW: 'row',
-    HEADER_ROW: 'header_row',
-    CONDITION: 'condition',
+    LONG_DESCRIPTION  : 'long_description',
+    OLD_PRICE         : 'old_price',
+    NEW_PRICE         : 'new_price',
+    SIZE              : 'size',
+    QUANTITY          : 'quantity',
+    STATUS            : 'status',
+    CITY              : 'city',
+    STATE             : 'state',
+    COUNTRY           : 'country',
+    POSTAL_CODE       : 'postal_code',
+    EMAIL             : 'email',
+    ROLE              : 'role',
+    RATING            : 'rating',
+    TITLE             : 'title',
+    BODY_TEXT         : 'body_text',
+    CHECKOUT          : 'checkout',
+    TOTAL_ITEMS       : 'total_items',
+    TOTAL_COST        : 'total_cost',
+    ROW               : 'row',
+    HEADER_ROW        : 'header_row',
+    CONDITION         : 'condition',
 
-    MAIN_IMAGE : () => `main_${IGrace.IMAGE}`,
-    BANNER_IMAGE : () => `banner_${IGrace.IMAGE}`,
-    THUMB_IMAGE : () => `thumb_${IGrace.IMAGE}`,
-    PRODUCT_SIZE : () => `${IGrace.PRODUCT}_${IGrace.SIZE}`,
+    MAIN_IMAGE              : () => `main_${IGrace.IMAGE}`,
+    BANNER_IMAGE            : () => `banner_${IGrace.IMAGE}`,
+    THUMB_IMAGE             : () => `thumb_${IGrace.IMAGE}`,
+    PRODUCT_SIZE            : () => `${IGrace.PRODUCT}_${IGrace.SIZE}`,
     PRODUCT_SIZE_QUICK_VIEW : () => `${IGrace.PRODUCT_SIZE()}_quick_view`,
-    PRODUCT_QUANTITY : () => `${IGrace.PRODUCT}_${IGrace.QUANTITY}`,
-    FIRST_NAME : () => `first_${IGrace.NAME}`,
-    LAST_NAME : () => `last_${IGrace.NAME}`,
-    ADDRESS1 : () => `${IGrace.ADDRESS}_1`,
-    ADDRESS2 : () => `${IGrace.ADDRESS}_2`,
-    CART_TOTAL_ITEMS : () => `${IGrace.CART}_${IGrace.TOTAL_ITEMS}`,
-    CART_TOTAL_COST : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
+    PRODUCT_QUANTITY        : () => `${IGrace.PRODUCT}_${IGrace.QUANTITY}`,
+    FIRST_NAME              : () => `first_${IGrace.NAME}`,
+    LAST_NAME               : () => `last_${IGrace.NAME}`,
+    ADDRESS1                : () => `${IGrace.ADDRESS}_1`,
+    ADDRESS2                : () => `${IGrace.ADDRESS}_2`,
+    CART_TOTAL_ITEMS        : () => `${IGrace.CART}_${IGrace.TOTAL_ITEMS}`,
+    CART_TOTAL_COST         : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
 
     /*################################### End Common Attributes ###################################*/
 
@@ -172,6 +172,9 @@ const IGrace = {
     /*################################### Other Features ###################################*/
     /**
      * Capitalize String.
+     *
+     * @param string
+     * @return {string}
      */
     CAPITALIZE: (string) =>
         string.split(' ')
@@ -180,6 +183,9 @@ const IGrace = {
 
     /**
      * Singularize Word.
+     *
+     * @param word
+     * @return {string}
      */
     SINGULARIZE: (word) => {
         const singular_rules = [
@@ -201,19 +207,21 @@ const IGrace = {
             { regex: /s$/i, replacement: '' } // remove 's' for default singular form
         ];
 
-        for (let singular_rule in singular_rules) {
-            const rule = singular_rules[singular_rule];
-
-            if (rule.regex.test(word)) {
-                return word.replace(rule.regex, rule.replacement);
-            }
-        }
-
-        return word;
+        // Check if the word is already singular, then return it.
+        return singular_rules.reduce((word, rule) =>
+            rule.regex.test(word)
+                ? word.replace(rule.regex, rule.replacement)
+                : word
+            , word
+        );
     },
 
     /**
      * Pluralize Word.
+     *
+     * @param word
+     * @return {string}
+     *
      */
     PLURALIZE: (word) => {
         const plural_rules = [
@@ -235,29 +243,40 @@ const IGrace = {
             { regex: /$/, replacement: 's' } // default: add 's'
         ];
 
-        for (let plural_rule in plural_rules) {
-            const rule = plural_rules[plural_rule];
-
-            if (rule.regex.test(word)) {
-                return word.replace(rule.regex, rule.replacement);
-            }
-        }
-
-        return word;
+        // Check if the word is already plural, then return it.
+        return plural_rules.reduce((word, rule) =>
+            rule.regex.test(word)
+                ? word.replace(rule.regex, rule.replacement)
+                : word
+            , word
+        );
     },
 
     /**
      * Convert an element to be an id.
+     *
+     * @param element
+     * @return {string}
      */
     IDENTIFY: (element) => element.replace(/-/g, '_'),
 
     /**
      * Convert an element to be a class.
+     *
+     * @param element
+     *
+     *
      */
     CLASS: (element) => element.replace(/_/g, '-'),
 
     /**
      * Delete or Restore an/many element(s).
+     *
+     * @param action
+     * @param collection
+     * @param isId
+     * @return {string}
+     *
      */
     COLLECTION_ACTION: (action, collection, isId = false) => {
         const collection_action = `${action}-${collection}`;
@@ -267,6 +286,355 @@ const IGrace = {
             : `.${collection_action}-btn`;
     },
 
+    /**
+     * Format Price.
+     *
+     * @param price
+     * @returns {string}
+     * @re
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+     *
+     *
+     *
+     *
+     * wr
+     */
     PRICE_FORMAT: (price) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EGP' }).format(price),
 
     /*################################### End Other Features ###################################*/

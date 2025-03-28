@@ -678,10 +678,10 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, string $slug = null): Application|Factory|View|string
     {
-        $products = $table === PRODUCTS_TABLE
-            ? Product::fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
-            : Product::query()->whereHas($table, static fn(Builder $query) => $query->where(SLUG, $slug))
-                ->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
+        $products = Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
+            $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
+        )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
+
 
         return viewProducts($products);
     }

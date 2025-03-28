@@ -198,7 +198,7 @@ Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.REVIEW));
 
 /* ---------------------------------- FILTER ---------------------------------- */
 
-// Filter Dashboard
+// Filter the Dashboard
 Common.ajaxFilterRequest({
     collection: IGrace.DASHBOARD,
 });
@@ -215,6 +215,8 @@ Common.ajaxFilterRequest({
     element: IGrace.ROLE
 });
 
+/* ---------------------------------- END FILTER ---------------------------------- */
+
 
 /* ---------------------------------- SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
@@ -224,6 +226,10 @@ Common.ajaxSearchRequest();
 // Clear the Search/Filter
 Common.ajaxClearSearchFilterRequest();
 
+/* ---------------------------------- END SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
+
 
 /* ---------------------------------- PAGINATION ---------------------------------- */
 Common.ajaxPagination();
+
+/* ---------------------------------- END PAGINATION ---------------------------------- */

@@ -6,27 +6,9 @@ import { IGrace, Common, Admin } from "./helpers/admin-helpers.js";
 
 /* ========================================= Global Variables ========================================= */
 const
-    nav_menu = 'nav-menu',
-    nav_menu_toggle = `${nav_menu}-toggle`,
-    nav_menu_toggler = $(`.${nav_menu}-toggler > i`),
+    nav_menu           = 'nav-menu',
     nav_menu_list_item = `${nav_menu}-list-item`,
-    nav_menu_item = `${nav_menu}-item`,
-    nav_menu_item_rotate_icon = `${nav_menu_item}-rotate-icon`,
-    nav_menu_close = `.${nav_menu}-close`,
-    nav_menu_overlay = `.${nav_menu}-overlay`,
-    responsive_nav_menu_list_items = $(`.responsive-${nav_menu} .${nav_menu_list_item}`),
-    responsive_nav_menu_items = $(`.responsive-${nav_menu} .${nav_menu_item}`),
-    responsive_nav_submenu_lists = $(`.responsive-${nav_menu} .nav-submenu-list`);
-
-const clear_search_button = $('.clear-search-btn');
-
-let
-    add_multi_selected_related_categories_values       = [],
-    add_multi_selected_related_subcategories_values    = [],
-    add_multi_selected_sizes_values                    = [],
-    update_multi_selected_related_categories_values    = [],
-    update_multi_selected_related_subcategories_values = [],
-    update_multi_selected_sizes_values                 = [];
+    nav_menu_item      = `${nav_menu}-item`;
 
 
 /* ========================================= Functions & Events ========================================= */
@@ -36,15 +18,12 @@ $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
 
 // Restore the closed menu when page load
 $.each(Admin.loadClosedMenu(), (_, navMenu) => {
-    $(`.${navMenu}`).addClass('close');
+    $(`.${navMenu}`).toggleClass('close', $(window).width() > 991.98);
 
-    if ($(window).width() <= 991.98) {
-        sessionStorage.clear();
-        $(`.${nav_menu}`).removeClass('close');
-    }
+    if ($(window).width() <= 991.98) sessionStorage.clear();
 });
 
-// Add some classes and styles and attribute on each image
+// Add some classes, styles, and attributes on each image
 Common.imageConfig();
 
 // Truncate the text that has more than 70 characters
@@ -54,32 +33,34 @@ Common.truncateText();
 $(document).on(IGrace.INPUT, (e) => {
     const target = $(e.target);
 
-    // When adding a new product,
-    // set the value of the old price input with the value of the new price input automatically
+    /**
+     * When adding a new product,
+     * set the value of the old price input with the value of the new price input automatically
+     */
     if (target.is(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.NEW_PRICE}`)) {
         $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.OLD_PRICE}`).val(target.val());
     }
 
     /**
      * When adding a new category, subcategory or product,
-     * set the value of the main image to the value of the hidden input automatically
-     * and remove the image preview when changing the main image
+     * set the value of the image to the value of the hidden input automatically
+     * and remove the image preview when changing the image
      */
     Admin.imageConfig({
-        target: target,
+        target:     target,
         collection: IGrace.CATEGORY,
     });
     Admin.imageConfig({
-        target: target,
+        target:     target,
         collection: IGrace.CATEGORY,
-        imageType: IGrace.BANNER_IMAGE(),
+        imageType:  IGrace.BANNER_IMAGE(),
     });
     Admin.imageConfig({
-        target: target,
+        target:     target,
         collection: IGrace.SUBCATEGORY,
     });
     Admin.imageConfig({
-        target: target,
+        target:     target,
         collection: IGrace.PRODUCT,
     });
 });
@@ -89,13 +70,20 @@ $(document).on(IGrace.INPUT, (e) => {
 
 /* ---------=========== Keyup Action ===========--------- */
 $(document).on(IGrace.KEYUP, (e) => {
-    const target = $(e.target);
+    const
+        target              = $(e.target),
+        clear_search_button = $('.clear-search-btn');
 
+    /**
+     * When typing in the search field,
+     * show the clear button,
+     * otherwise, hide it
+     */
     if (target.is('#search')) {
         const is_visible = $('#search').val() !== '';
 
         clear_search_button.css({
-            opacity: is_visible ? '1' : '0',
+            opacity:    is_visible ? '1' : '0',
             visibility: is_visible ? 'visible' : 'hidden'
         });
     }
@@ -109,7 +97,7 @@ const observer = new MutationObserver((mutations) => {
     $.each((mutations), (_, mutation) => {
         if (mutation.type === 'childList' || mutation.type === 'subtree' || mutation.type === 'attributes') {
             const
-                target = $(mutation.target),
+                target             = $(mutation.target),
                 add_category       = IGrace.ADD_COLLECTION(IGrace.CATEGORY),
                 update_category    = IGrace.UPDATE_COLLECTION(IGrace.CATEGORY),
                 add_subcategory    = IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
@@ -123,22 +111,26 @@ const observer = new MutationObserver((mutations) => {
 
             const
                 add_category_common = {
-                    target: target,
+                    target:           target,
                     actionCollection: add_category,
                 },
                 update_category_common = {
-                    target: target,
+                    target:           target,
                     actionCollection: update_category,
                 },
                 add_product_common = {
-                    target: target,
+                    target:           target,
                     actionCollection: add_product,
                 },
                 update_product_common = {
-                    target: target,
+                    target:           target,
                     actionCollection: update_product,
                 };
 
+            /**
+             * When adding or updating a category, subcategory or product,
+             * show or hide the image preview
+             */
             Admin.showHideImagePreview({
                 ...add_category_common,
             });
@@ -154,11 +146,11 @@ const observer = new MutationObserver((mutations) => {
                 imageType: banner_image,
             });
             Admin.showHideImagePreview({
-                target: target,
+                target:           target,
                 actionCollection: add_subcategory,
             });
             Admin.showHideImagePreview({
-                target: target,
+                target:           target,
                 actionCollection: update_subcategory,
             });
             Admin.showHideImagePreview({
@@ -180,7 +172,10 @@ const observer = new MutationObserver((mutations) => {
             Common.showHideMultiSelectedItems(target);
 
             // Remove the 'show' class from any list in the closed nav menu
-            if (target.is(`.${nav_menu}.close .${nav_menu_list_item} .nav-submenu-list`) && target.hasClass('show') && target.hasClass('collapse')) {
+            if (target.is(`.${nav_menu}.close .${nav_menu_list_item} .nav-submenu-list`)
+                && target.hasClass('show')
+                && target.hasClass('collapse'))
+            {
                 target.removeClass('show');
             }
         }
@@ -198,21 +193,35 @@ observer.observe(document.body, {
 
 
 /* ---------=========== Click Action ===========--------- */
+
+let
+    add_multi_selected_related_categories_values       = [],
+    add_multi_selected_related_subcategories_values    = [],
+    add_multi_selected_sizes_values                    = [],
+    update_multi_selected_related_categories_values    = [],
+    update_multi_selected_related_subcategories_values = [],
+    update_multi_selected_sizes_values                 = [];
+
 $(document).on(IGrace.CLICK, (e) => {
     const
-        target                = $(e.target),
-        add_product           = IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-        update_product        = IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-        related_categories    = IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        related_subcategories = IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-        sizes                 = IGrace.PLURALIZE(IGrace.SIZE),
+        target                    = $(e.target),
+        nav_menu_toggle           = `${nav_menu}-toggle`,
+        nav_menu_toggler          = $(`.${nav_menu}-toggler > i`),
+        nav_menu_item_rotate_icon = `${nav_menu_item}-rotate-icon`,
+        nav_menu_close            = `.${nav_menu}-close`,
+        nav_menu_overlay          = `.${nav_menu}-overlay`,
+        add_product               = IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+        update_product            = IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
+        related_categories        = IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        related_subcategories     = IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
+        sizes                     = IGrace.PLURALIZE(IGrace.SIZE),
 
         add_operation_args = {
-            target: target,
+            target:           target,
             actionCollection: add_product,
         },
         update_operation_args = {
-            target: target,
+            target:           target,
             actionCollection: update_product,
         };
 
@@ -235,22 +244,23 @@ $(document).on(IGrace.CLICK, (e) => {
         $(nav_menu_item_rotate_icon).removeClass('rotate-180');
     }
 
-    // Add the (close) class to the nav element if the nav menu key exists in the session storage,
-    // otherwise, add the (open) class, and configure the charts
+    /**
+     * Add the (close) class to the nav element,
+     * if the nav menu key exists in the session storage,
+     * otherwise, add the (open) class and configure the charts
+     */
     if (target.is(`.${nav_menu_toggle}, .${nav_menu_toggle}-icon`)) {
         const nav_menu_actions = {
             true: () => {
                 Admin.menuAction(nav_menu, 'close');
 
                 $(`.${nav_menu} .${nav_menu_list_item}:not(.current-item)`).removeClass('active');
-                $(`.${nav_menu} .${nav_menu_list_item} ul.nav-submenu-list`).removeClass('show')
-                    .addClass('collapse');
+                $(`.${nav_menu} .${nav_menu_list_item} ul.nav-submenu-list`).removeClass('show').addClass('collapse');
             },
             false: () => {
                 Admin.menuAction(nav_menu, 'open');
 
-                $(`.${nav_menu} .${nav_menu_list_item}.active ul.nav-submenu-list`).addClass('show')
-                    .removeClass('collapse');
+                $(`.${nav_menu} .${nav_menu_list_item}.active ul.nav-submenu-list`).addClass('show').removeClass('collapse');
             },
         };
 
@@ -264,8 +274,7 @@ $(document).on(IGrace.CLICK, (e) => {
 
     // Toggle the (active) class on the nav menu list item and rotate the icon
     if (target.is(`.${nav_menu_item}, .${nav_menu_item}-icon-title, .${nav_menu_item}-icon, .${nav_menu_item}-title, .${nav_menu_item_rotate_icon}`) && !target.is(`.${nav_menu}.close .${nav_menu_item}-icon`)) {
-        const target_parent = target.parents(`.${nav_menu_list_item}`).first();
-        target_parent.addClass('active');
+        const target_parent = target.parents(`.${nav_menu_list_item}`).addClass('active');
         target_parent.find(`.${nav_menu_item_rotate_icon}`).toggleClass('rotate-180');
     }
 
@@ -273,61 +282,60 @@ $(document).on(IGrace.CLICK, (e) => {
     if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...add_operation_args,
-            actionCollection: IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
             multiSelectedValuesList: add_multi_selected_related_categories_values,
-            relation: related_categories,
+            relation:                related_categories,
         });
 
         update_multi_selected_related_categories_values = $('input[name="update_subcategory_related_categories[]"]:hidden').val().split(',');
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...update_operation_args,
-            actionCollection: IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
+            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
             multiSelectedValuesList: update_multi_selected_related_categories_values,
-            relation: related_categories,
+            relation:                related_categories,
         });
     }
-
 
     if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...add_operation_args,
             multiSelectedValuesList: add_multi_selected_related_categories_values,
-            relation: related_categories,
+            relation:                related_categories,
         });
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...add_operation_args,
             multiSelectedValuesList: add_multi_selected_related_subcategories_values,
-            relation: related_subcategories,
+            relation:                related_subcategories,
         });
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...add_operation_args,
             multiSelectedValuesList: add_multi_selected_sizes_values,
-            relation: sizes,
+            relation:                sizes,
         });
-
 
         update_multi_selected_related_categories_values = $('input[name="update_product_related_categories[]"]:hidden').val().split(',');
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...update_operation_args,
             multiSelectedValuesList: update_multi_selected_related_categories_values,
-            relation: related_categories,
+            relation:                related_categories,
         });
 
         update_multi_selected_related_subcategories_values = $('input[name="update_product_related_subcategories[]"]:hidden').val().split(',');
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...update_operation_args,
             multiSelectedValuesList: update_multi_selected_related_subcategories_values,
-            relation: related_subcategories,
+            relation:                related_subcategories,
         });
 
         update_multi_selected_sizes_values = $('input[name="update_product_sizes[]"]:hidden').val().split(',');
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...update_operation_args,
             multiSelectedValuesList: update_multi_selected_sizes_values,
-            relation: sizes,
+            relation:                sizes,
         });
     }
 
+    // Check/Uncheck the (check_all) checkbox and checkboxes in the table
     Common.checkRowsConfig(target);
 });
 
@@ -347,8 +355,10 @@ Common.charsCounter(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`
 // Add (active) class on the first child of the carousel item
 $('.carousel-item:first-child').addClass('active');
 
-// When adding a new category, subcategory or product or updating an existing one,
-// set the main image of each one of them automatically
+/**
+ * When adding a new category, subcategory or product, or updating an existing one,
+ * set the main image of each one of them automatically
+ */
 Admin.setImage(IGrace.ADD_COLLECTION(IGrace.CATEGORY));
 Admin.setImage(IGrace.UPDATE_COLLECTION(IGrace.CATEGORY));
 Admin.setImage(IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY));
@@ -356,17 +366,21 @@ Admin.setImage(IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY));
 Admin.setImage(IGrace.ADD_COLLECTION(IGrace.PRODUCT));
 Admin.setImage(IGrace.UPDATE_COLLECTION(IGrace.PRODUCT));
 
-// When adding a new category or updating an existing one,
-// set the banner image of it automatically
+/**
+ * When adding a new category or updating an existing one,
+ * set the banner image of it automatically
+ */
 Admin.setImage(IGrace.ADD_COLLECTION(IGrace.CATEGORY),    IGrace.BANNER_IMAGE());
 Admin.setImage(IGrace.UPDATE_COLLECTION(IGrace.CATEGORY), IGrace.BANNER_IMAGE());
 
-// When adding a new product or updating an existing one,
-// set the thumb images of it automatically
+/**
+ * When adding a new product or updating an existing one,
+ * set the thumb images of it automatically
+ */
 Admin.setThumbImages(IGrace.ADD);
 Admin.setThumbImages(IGrace.UPDATE);
 
-// Set up the form multi select settings
+// Set up the form multiselect settings
 if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
     Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY), IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()));
 }
@@ -392,6 +406,11 @@ Common.scrollToTop();
 
 /* ---------=========== Responsiveness ===========--------- */
 
+const
+    responsive_nav_menu_list_items = $(`.responsive-${nav_menu} .${nav_menu_list_item}`),
+    responsive_nav_menu_items      = $(`.responsive-${nav_menu} .${nav_menu_item}`),
+    responsive_nav_submenu_lists   = $(`.responsive-${nav_menu} .nav-submenu-list`);
+
 // Add the "responsive_" prefix to the IDs of all responsive nav menu list items
 Admin.addResponsivePrefix({
     elements: responsive_nav_menu_list_items,
@@ -410,12 +429,6 @@ Admin.addResponsivePrefix({
 // Add the "responsive_" prefix to the IDs of all responsive nav submenu lists
 Admin.addResponsivePrefix({
     elements: responsive_nav_submenu_lists,
-});
-
-// Responsive the geo and pie charts
-$(window).resize(() => {
-    Admin.drawGeoChart();
-    Admin.drawPieChart();
 });
 
 /* ---------=========== End Responsiveness ===========--------- */

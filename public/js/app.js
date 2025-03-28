@@ -8,38 +8,41 @@ $(document).ready(() => {
     // Load the preloader
     $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
 
-    const offers_sales = $('.nav-offer .offer-sale');
-
-    $.each((offers_sales), (_, offer_sale) => {
-        const offers = $(offer_sale).find('p');
+    // Show the offers sales one after the other every 3 seconds
+    $.each(($('.nav-offer .offer-sale')), (_, offerSale) => {
+        const offers      = $(offerSale).find('p');
         let current_offer = 0;
 
-        setInterval(() => {
-            offers.eq(current_offer).removeClass('active');
-            current_offer = (current_offer + 1) % offers.length;
-            offers.eq(current_offer).addClass('active');
-        }, 3000);
+        setInterval(() =>
+                offers.eq(current_offer)
+                    .toggleClass('active', false)
+                    .end()
+                    .eq(current_offer = (current_offer + 1) % offers.length)
+                    .toggleClass('active', true),
+            3000);
     });
 
+    // Add some classes, styles, and attributes on each image
     Common.imageConfig();
 
+
+    /* ---------=========== Carousel Config ============--------- */
     let
-        customers_reviews_display = 1,
-        partners_display = 4,
-        related_products_display = 4;
+        customers_reviews_display_items_count = 1,
+        partners_display_items_count          = 4,
+        related_products_display_items_count  = 4;
 
+    // Adjust the display items count according to the screen size
     if ($(window).width() >= 320 && $(window).width() < 768) {
-        partners_display = 2;
-        related_products_display = 2;
+        partners_display_items_count         = 2;
+        related_products_display_items_count = 2;
     }
-
     if ($(window).width() >= 768 && $(window).width() < 992) {
-        customers_reviews_display = 2;
-        partners_display = 3;
+        customers_reviews_display_items_count = 2;
+        partners_display_items_count          = 3;
     }
-
     if ($(window).width() >= 768 && $(window).width() < 1200) {
-        related_products_display = 3;
+        related_products_display_items_count = 3;
     }
 
     $(window).width() < 992
@@ -50,13 +53,37 @@ $(document).ready(() => {
         ? $('.header-search').children().remove()
         : $('.nav-search').children().remove();
 
-    User.carouselSlider('.home-carousel', 1, false, true,  true);
-    User.carouselSlider(`.customers-${IGrace.PLURALIZE(IGrace.REVIEW)}-carousel`, customers_reviews_display, false, true,  true);
-    User.carouselSlider('.partners-carousel', partners_display, true,  false, true);
-    User.carouselSlider(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.THUMB_IMAGE()))}-carousel`, 4, true,  false, false);
-    User.carouselSlider('.related-products-carousel', related_products_display, true,  false, true);
+    // Configure the carousels
+    User.carouselSliderConfig({
+        element:           $('.home-carousel'),
+        displayItemsCount: 1,
+        nav:               false,
+        dots:              true,
+    });
+    User.carouselSliderConfig({
+        element:           $(`.customers-${IGrace.PLURALIZE(IGrace.REVIEW)}-carousel`),
+        displayItemsCount: customers_reviews_display_items_count,
+        nav:               false,
+        dots:              true,
+    });
+    User.carouselSliderConfig({
+        element:           $('.partners-carousel'),
+        displayItemsCount: partners_display_items_count,
+    });
+    User.carouselSliderConfig({
+        element:           $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.THUMB_IMAGE()))}-carousel`),
+        displayItemsCount: 4,
+        autoplay:          false,
+    });
+    User.carouselSliderConfig({
+        element: $('.related-products-carousel'),
+        displayItemsCount: related_products_display_items_count,
+    });
+
+    /* ---------=========== End Carousel Config ============--------- */
 
 
+    /* ---------=========== Handle Price Filter ============--------- */
     const
         price_inputs = $(`.price-input input[type="number"]`),
         price_ranges = $(`.price-range input[type="range"]`);
@@ -70,13 +97,15 @@ $(document).ready(() => {
     User.handlePriceFilter(price_inputs, price_ranges);
     User.handlePriceFilter(price_ranges, price_inputs);
 
+    /* ---------=========== End Handle Price Filter ============--------- */
 
+    // Adjust the height of the more details description
     $('.more-details-desc').first().css({
-        'margin-top': 'var(--ten-pixels)',
+        'margin-top':  'var(--ten-pixels)',
         'line-height': 'var(--twenty-five-pixels)',
     });
 
-
+    // Show the main image according to the selected thumb image
     const product_thumb_images = $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.THUMB_IMAGE())}`);
     $.each(product_thumb_images, (_, productThumbImage) => {
         $(productThumbImage).on(IGrace.CLICK, () => {
@@ -86,16 +115,34 @@ $(document).ready(() => {
         });
     });
 
+    /**
+     * Set the value of the address input with the value of the address radio automatically,
+     * when the page is reloaded based on the selected address in the session storage
+     */
+    const selected_address = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+    if (selected_address) {
+        $(`#${IGrace.ORDER}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`).val(`${selected_address},`);
+    }
 
+
+    /* ---------=========== Change Action ============--------- */
     $(document).on(IGrace.INPUT, (e) => {
         const target = $(e.target);
 
+        /**
+         * When adding a new review,
+         * set the value of the rating input with the value of the rating radio automatically
+         */
         if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"]:radio`)) {
             target.parent()
                 .next()
                 .val(target.val());
         }
 
+        /**
+         * When adding a new order,
+         * set the value of the address input with the value of the address radio automatically
+         */
         if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.ORDER)}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}"]:radio`)) {
             target.closest(`#${IGrace.ADD_COLLECTION(IGrace.ORDER)}_form`)
                 .find(`#${IGrace.ORDER}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`)
@@ -103,11 +150,28 @@ $(document).ready(() => {
         }
     });
 
-    const selected_address = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
-    if (selected_address) {
-        $(`#${IGrace.ORDER}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`).val(`${selected_address},`);
-    }
+    /* ---------=========== End Change Action ============--------- */
 
+
+    /* ---------=========== Mutation Observer Action ===========--------- */
+    const observer = new MutationObserver((mutations) => {
+        $.each((mutations), (key, mutation) => {
+            if (mutation.type === 'childList' || mutation.type === 'subtree') {
+                // Show or hide the number of selected items when selecting multiple items
+                Common.showHideMultiSelectedItems($(mutation.target));
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree:   true,
+    });
+
+    /* ---------=========== End Mutation Observer Action ===========--------- */
+
+
+    /* ---------=========== Click Action ============--------- */
     let
         add_multi_selected_product_sizes_values            = [],
         add_multi_selected_product_sizes_quick_view_values = [],
@@ -119,31 +183,36 @@ $(document).ready(() => {
         const target = $(e.target);
 
         const
-            nav_menu = 'nav-menu',
-            nav_submenu = 'nav-submenu',
-            footer_menu = 'footer-menu',
-            nav_menu_toggler = $(`.${nav_menu}-toggler > i`),
-            nav_menu_close = `.${nav_menu}-close`,
-            nav_menu_overlay = `.${nav_menu}-overlay`,
-            nav_menu_list_header = `.${nav_menu}-list-header`,
-            nav_menu_list_content = `.${nav_menu}-list-content`,
-            nav_menu_list_icon = `.${nav_menu}-list-icon`,
-            nav_menu_list_title = `.${nav_menu}-list-title`,
-            nav_submenu_list_header = `.${nav_submenu}-list-header`,
-            nav_submenu_list_content = `.${nav_submenu}-list-content`,
-            nav_submenu_item_title = `.${nav_submenu}-item-title`,
-            nav_submenu_item_badge = `.${nav_submenu}-item-badge`,
+            nav_menu                     = 'nav-menu',
+            nav_submenu                  = 'nav-submenu',
+            footer_menu                  = 'footer-menu',
+            nav_menu_toggler             = $(`.${nav_menu}-toggler > i`),
+            nav_menu_close               = `.${nav_menu}-close`,
+            nav_menu_overlay             = `.${nav_menu}-overlay`,
+            nav_menu_list_header         = `.${nav_menu}-list-header`,
+            nav_menu_list_content        = `.${nav_menu}-list-content`,
+            nav_menu_list_icon           = `.${nav_menu}-list-icon`,
+            nav_menu_list_title          = `.${nav_menu}-list-title`,
+            nav_submenu_list_header      = `.${nav_submenu}-list-header`,
+            nav_submenu_list_content     = `.${nav_submenu}-list-content`,
+            nav_submenu_item_title       = `.${nav_submenu}-item-title`,
+            nav_submenu_item_badge       = `.${nav_submenu}-item-badge`,
             nav_submenu_item_rotate_icon = `.${nav_submenu}-item-rotate-icon`,
-            footer_menu_list_header = `.${footer_menu}-list-header`,
-            footer_menu_item_title = `.${footer_menu}-item-title`,
+            footer_menu_list_header      = `.${footer_menu}-list-header`,
+            footer_menu_item_title       = `.${footer_menu}-item-title`,
             footer_menu_item_rotate_icon = `.${footer_menu}-item-rotate-icon`;
 
         const
-            quantity_input = target.parent().find(`.${IGrace.QUANTITY}-input`),
-            current_quantity_value = +quantity_input.val(),
+            quantity_input           = target.parent().find(`.${IGrace.QUANTITY}-input`),
+            current_quantity_value   = +quantity_input.val(),
             cart_product_remove_form = $(`#${IGrace.CART_PRODUCT()}_remove_form`);
 
+        const common_select_all_multi_items = {
+            target:           target,
+            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
+        };
 
+        // Active the responsive nav menu and overlay
         if (target.is(nav_menu_toggler)) {
             target.parent()
                 .next()
@@ -151,6 +220,7 @@ $(document).ready(() => {
                 .addClass('active');
         }
 
+        // Hide the responsive nav menu and close any list
         if (target.is(`${nav_menu_overlay}, ${nav_menu_close}`)) {
             $(`.${nav_menu}`).add($(`.${nav_menu} *`))
                 .add($(nav_menu_overlay))
@@ -162,6 +232,7 @@ $(document).ready(() => {
             $(nav_submenu_item_rotate_icon).removeClass('rotate-180');
         }
 
+        // Show or hide the nav menu list
         if (target.is(`${nav_menu_list_header}, ${nav_menu_list_icon}, ${nav_menu_list_title}`)) {
             const nav_menu_list_header_parent = target.is(nav_menu_list_header)
                 ? target
@@ -170,25 +241,27 @@ $(document).ready(() => {
             nav_menu_list_header_parent.toggleClass('active');
         }
 
+        // Show or hide the nav submenu list
         if (target.is(`${nav_submenu_list_header}, ${nav_submenu_item_title}, ${nav_submenu_item_badge}, ${nav_submenu_item_rotate_icon}`)) {
-            const nav_menu_list_item = target.parents(`.${nav_menu}-list-item`).first();
-            nav_menu_list_item.toggleClass('active');
+            const nav_menu_list_item = target.parents(`.${nav_menu}-list-item`).toggleClass('active');
             nav_menu_list_item.find(nav_submenu_item_rotate_icon).toggleClass('rotate-180');
         }
 
+        // Show or hide the footer menu list
         if (target.is(`${footer_menu_list_header}, ${footer_menu_item_title}, ${footer_menu_item_rotate_icon}`)) {
             const footer_item = target.parents('.footer-item').first();
             footer_item.find(footer_menu_item_rotate_icon).toggleClass('rotate-180');
         }
 
+        // Increment or decrement the quantity
         if (target.hasClass('decrement-btn')) {
             quantity_input.val(Math.max(current_quantity_value - 1, 1));
         }
-
         if (target.hasClass('increment-btn')) {
             quantity_input.val(current_quantity_value + 1);
         }
 
+        // Clear the products filter
         if (target.hasClass(`clear-${IGrace.FILTER}`)) {
             $(`.${IGrace.FILTER}-checkbox`).prop('checked', false);
 
@@ -207,6 +280,7 @@ $(document).ready(() => {
                 .val(max_range);
         }
 
+        // Remove the product from the cart
         if (target.hasClass(`${IGrace.CLASS(IGrace.CART_PRODUCT())}-remove`)) {
             cart_product_remove_form.attr('action', target.data('route')).submit();
             let cart_product_info = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
@@ -214,69 +288,47 @@ $(document).ready(() => {
             cart_product_info(IGrace.PRODUCT_QUANTITY());
         }
 
+        // Show or hide the review form
         if (target.hasClass(`write-${IGrace.REVIEW}-btn`)) {
-            $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`).fadeToggle('slow')
-                .toggleClass('show-form');
+            $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`).fadeToggle('slow').toggleClass('show-form');
         }
 
+        // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
         User.handleFilterProductsMultiItemsWithHiddenInput({
-            target: target,
+            target:                  target,
             multiSelectedValuesList: filter_products_categories_values,
-            relation: IGrace.PLURALIZE(IGrace.CATEGORY),
+            relation:                IGrace.PLURALIZE(IGrace.CATEGORY),
         });
-
         User.handleFilterProductsMultiItemsWithHiddenInput({
-            target: target,
+            target:                  target,
             multiSelectedValuesList: filter_products_subcategories_values,
-            relation: IGrace.PLURALIZE(IGrace.SUBCATEGORY),
+            relation:                IGrace.PLURALIZE(IGrace.SUBCATEGORY),
         });
-
         User.handleFilterProductsMultiItemsWithHiddenInput({
-            target: target,
+            target:                  target,
             multiSelectedValuesList: filter_products_sizes_values,
-            relation: IGrace.PLURALIZE(IGrace.SIZE),
+            relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
-
-        const common_select_all_multi_items = {
-            target: target,
-            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
-        };
 
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...common_select_all_multi_items,
             multiSelectedValuesList: add_multi_selected_product_sizes_quick_view_values,
-            relation: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
+            relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
         });
-
         Common.handleSelectAllMultiItemsWithHiddenInput({
             ...common_select_all_multi_items,
             multiSelectedValuesList: add_multi_selected_product_sizes_values,
-            relation: IGrace.PRODUCT_SIZE(),
+            relation:                IGrace.PRODUCT_SIZE(),
         });
 
+        // Check/Uncheck the (check_all) checkbox and checkboxes in the table
         Common.checkRowsConfig(target);
     });
 
-
+    // Count the number of characters of the review body
     Common.charsCounter(`${IGrace.REVIEW}-${IGrace.CLASS(IGrace.BODY_TEXT)}`);
 
-
-    const observer = new MutationObserver((mutations) => {
-        $.each((mutations), (key, mutation) => {
-            if (mutation.type === 'childList' || mutation.type === 'subtree') {
-                // Show or hide the number of selected items when selecting multiple items
-                Common.showHideMultiSelectedItems($(mutation.target));
-            }
-        });
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-    });
-
-
-
+    // Set up the form multiselect settings
     const
         add_cart_product_sizes_quick_view = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`),
         add_cart_product_sizes = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`);
@@ -284,11 +336,11 @@ $(document).ready(() => {
     if (add_cart_product_sizes_quick_view.length) {
         Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.CART), IGrace.PRODUCT_SIZE_QUICK_VIEW());
     }
-
     if (add_cart_product_sizes.length) {
         Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.CART), IGrace.PRODUCT_SIZE());
     }
 
+    // Set up the form select settings
     Common.formSelectConfig();
 
     // Arrange the table rows
@@ -297,8 +349,9 @@ $(document).ready(() => {
     // Get the countries
     Common.ajaxGetCountries();
 
+    // Scroll to top action
     Common.scrollToTop();
 
+    // Set up the tooltip
     $('[data-tooltip="tooltip"]').tooltip();
-
 });

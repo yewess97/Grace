@@ -17,7 +17,7 @@ const Common = {
     swalWithButtons: Swal.mixin({
         customClass: {
             confirmButton: 'btn me-2',
-            cancelButton: 'btn ms-2',
+            cancelButton:  'btn ms-2',
         },
         buttonsStyling: false,
     }),
@@ -63,16 +63,17 @@ const Common = {
             target.prev().prop('checked', !target.prev().is(':checked'));
 
             const checked_count = check_row.filter(':checked').length;
+
             check_all.prop({
+                'checked':       checked_count === check_row.length,
                 'indeterminate': checked_count > 0 && checked_count < check_row.length,
-                'checked': checked_count === check_row.length
             });
         }
     },
 
 
     /**
-     * Configure the form multi select settings.
+     * Configure the form multiselect settings.
      *
      * @param actionCollection
      * @param relation
@@ -87,11 +88,11 @@ const Common = {
             : relation[0];
 
         element.filterMultiSelect({
-            placeholderText: `Select ${IGrace.CAPITALIZE(relation)}`,
-            filterText: 'Search...',
-            selectAllText: 'Select All',
-            selectionLimit: 0,
-            caseSensitive: false,
+            placeholderText:           `Select ${IGrace.CAPITALIZE(relation)}`,
+            filterText:                'Search...',
+            selectAllText:             'Select All',
+            selectionLimit:            0,
+            caseSensitive:             false,
             allowEnablingAndDisabling: false,
         });
 
@@ -108,47 +109,48 @@ const Common = {
      * @return {void}
      */
     showHideMultiSelectedItems: (target) => {
-        if (target.hasClass('selected-items')) {
-            const
-                num_selected_items_element = target.prevAll(':eq(1)'),
-                selected_items_length = target.children().length,
-                multiselect_items = target.parent().next().find('.items'),
-                multiselect_max_num_items = multiselect_items.children().length - 1,
-                multi_select = target.parents('.filter-multi-select'),
-                multiselect_label = multi_select.prev(),
-                multiselect_hidden_input = multi_select.next(),
-                select_all = multiselect_items.find('.custom-control:first-child'),
-                select_all_label = select_all.find('.custom-control-label'),
-                select_all_checkbox = select_all.find('.custom-checkbox'),
-                is_hidden = selected_items_length > 3,
-                related_collection = (collection) => multiselect_label.html().includes(IGrace.CAPITALIZE(IGrace.PLURALIZE(collection))),
-                multiselect_related_collection_label = related_collection(IGrace.CATEGORY) || related_collection(IGrace.SUBCATEGORY),
-                top_value = multiselect_related_collection_label
-                    ? (selected_items_length > 0 && selected_items_length <= 3 ? '7%' : '18%')
-                    : '18%';
+        if (!target.hasClass('selected-items')) return;
 
-            multiselect_label.css('top', top_value);
+        const
+            num_selected_items_element           = target.prevAll(':eq(1)'),
+            selected_items_length                = target.children().length,
+            multiselect                          = target.parents('.filter-multi-select'),
+            multiselect_label                    = multiselect.prev(),
+            multiselect_items                    = target.parent().next().find('.items'),
+            multiselect_max_num_items            = multiselect_items.children().length - 1,
+            multiselect_hidden_input             = multiselect.next(),
+            select_all                           = multiselect_items.find('.custom-control:first-child'),
+            select_all_label                     = select_all.find('.custom-control-label'),
+            select_all_checkbox                  = select_all.find('.custom-checkbox'),
+            is_hidden                            = selected_items_length > 3,
+            multiselect_related_collection_label = [IGrace.CATEGORY, IGrace.SUBCATEGORY].some((collection) =>
+                multiselect_label.html().includes(IGrace.CAPITALIZE(IGrace.PLURALIZE(collection)))),
+            top_value = (multiselect_related_collection_label && selected_items_length > 0 && selected_items_length <= 3)
+                ? '7%'
+                : '18%';
 
-            target.attr('hidden', is_hidden);
 
-            num_selected_items_element.attr('hidden', !is_hidden)
-                .removeClass('mr-2')
-                .addClass('me-2');
+        multiselect_label.css('top', top_value);
 
-            select_all_label.html(selected_items_length === multiselect_max_num_items ? 'Unselect All' : 'Select All');
+        target.attr('hidden', is_hidden);
 
-            if (selected_items_length === 1) {
-                select_all_checkbox.val(`${multiselect_hidden_input.val()},`);
-                multiselect_hidden_input.val(`${multiselect_hidden_input.val()},`);
-            }
+        num_selected_items_element.attr('hidden', !is_hidden)
+            .removeClass('mr-2')
+            .addClass('me-2');
 
-            num_selected_items_element.html(`${selected_items_length}/${multiselect_max_num_items} Selected items`);
+        select_all_label.html(selected_items_length === multiselect_max_num_items ? 'Unselect All' : 'Select All');
+
+        if (selected_items_length === 1) {
+            select_all_checkbox.val(`${multiselect_hidden_input.val()},`);
+            multiselect_hidden_input.val(`${multiselect_hidden_input.val()},`);
         }
+
+        num_selected_items_element.html(`${selected_items_length}/${multiselect_max_num_items} Selected items`);
     },
 
 
     /**
-     * Show the data of the multi select input.
+     * Show the data of the multiselect input.
      *
      * @param args
      * @return {void}
@@ -157,32 +159,38 @@ const Common = {
         const { userType, collection, collectionName, relatedCollection } = args;
 
         const
-            action_collection = userType === IGrace.ADMIN
+            is_admin = userType === IGrace.ADMIN,
+            action_collection = is_admin
                 ? IGrace.UPDATE_COLLECTION(collectionName)
                 : IGrace.ADD_COLLECTION(IGrace.CART),
-            relational_collection = userType === IGrace.ADMIN
+            relational_collection = is_admin
                 ? IGrace.PLURALIZE(relatedCollection)
                 : relatedCollection,
             related_collection_words = relational_collection.split('_'),
-            relation = `${related_collection_words.length > 1 ? related_collection_words[1] : related_collection_words[0]}`,
-            select_element_class = userType === IGrace.ADMIN
-                ? IGrace.CLASS(`${collectionName}-${relational_collection}`)
-                : IGrace.CLASS(relational_collection),
-            select_element_id = `${action_collection}_${relational_collection}`,
-            select_element_name = `${select_element_id}[]`,
+            relation = `${related_collection_words.length > 1
+                ? related_collection_words[1]
+                : related_collection_words[0]}`,
+            select_element_class = IGrace.CLASS(
+                is_admin
+                    ? `${collectionName}-${relational_collection}`
+                    : relational_collection
+            ),
+            select_element_id                    = `${action_collection}_${relational_collection}`,
+            select_element_name                  = `${select_element_id}[]`,
             action_collection_related_collection = $(`.${IGrace.CLASS(select_element_id)}`),
-            multi_related_collection = action_collection_related_collection.data(relational_collection),
-            filter_multi_select_element = action_collection_related_collection.find('.filter-multi-select'),
-            related_collection_hidden_input = action_collection_related_collection.find(`input[name="${select_element_name}"]:hidden`);
+            multi_related_collection             = action_collection_related_collection.data(relational_collection),
+            filter_multi_select_element          = action_collection_related_collection.find('.filter-multi-select'),
+            related_collection_hidden_input      = action_collection_related_collection.find(`input[name="${select_element_name}"]:hidden`);
+
 
         filter_multi_select_element.remove();
         related_collection_hidden_input.val('');
 
         let related_collection_select_element = $('<select>', {
-            name: select_element_name,
-            id: select_element_id,
-            class: `${select_element_class} d-none`,
-            multiple: true,
+            name:            select_element_name,
+            id:              select_element_id,
+            class:           `${select_element_class} d-none`,
+            multiple:        true,
             'aria-required': true,
         });
 
@@ -198,18 +206,18 @@ const Common = {
                         : value[IGrace.ID];
 
                     related_collection_select_element.append($('<option>', {
-                        text: option_text,
+                        text:  option_text,
                         value: option_value,
                     }));
                 });
             },
             default: () => {
-                $.each((collection[IGrace.PLURALIZE(relation)]), (_, product_size) =>
-                    $.each((Object.entries(product_size).filter(([key, _]) => key === IGrace.SIZE)), (_, value) =>
-                        $.each((Object.entries(multi_related_collection).filter(([_, size_value]) => +size_value === +value[1])), (_, [size, size_value]) =>
+                $.each((collection[IGrace.PLURALIZE(relation)]), (_, productSize) =>
+                    $.each((Object.entries(productSize).filter(([key]) => key === IGrace.SIZE)), (_, value) =>
+                        $.each((Object.entries(multi_related_collection).filter(([_, sizeValue]) => +sizeValue === +value[1])), (_, [size, sizeValue]) =>
                             related_collection_select_element.append($('<option>', {
-                                text: size,
-                                value: size_value,
+                                text:  size,
+                                value: sizeValue,
                             }))
                         )
                     )
@@ -223,9 +231,9 @@ const Common = {
 
         const related_collection_element = $(`.${select_element_class}`);
 
-        if (userType === IGrace.ADMIN) {
-            $.each((collection[relation]), (_, related_collection) => related_collection_element.find('option')
-                .filter((_, rel_collection) => +rel_collection.value === (relational_collection.includes(IGrace.SIZE) ? +related_collection[IGrace.SIZE] : +related_collection[IGrace.ID]))
+        if (is_admin) {
+            $.each((collection[relation]), (_, relatedCollection) => related_collection_element.find('option')
+                .filter((_, rel_collection) => +rel_collection.value === (relational_collection.includes(IGrace.SIZE) ? +relatedCollection[IGrace.SIZE] : +relatedCollection[IGrace.ID]))
                 .attr('selected', true));
         }
 
@@ -236,15 +244,11 @@ const Common = {
 
         const all_multi_related_collection = filter_multi_select_element.end().find('.items input[type="checkbox"]');
 
-        let multi_selected_related_collection_values = [];
-
-        $.each((all_multi_related_collection), (_, related_collection) => {
-            if ($(related_collection).is(':checked')) {
-                multi_selected_related_collection_values.push($(related_collection).val());
-            }
-        });
-
-        multi_selected_related_collection_values = multi_selected_related_collection_values.filter((related_collection_value) => related_collection_value !== '').join(',');
+        const multi_selected_related_collection_values = all_multi_related_collection.filter(':checked')
+            .map((_, relatedCollection) => $(relatedCollection).val())
+            .get()
+            .filter(Boolean) // filter(Boolean) removes empty values
+            .join(',');
 
         all_multi_related_collection.first().val(multi_selected_related_collection_values);
         related_collection_hidden_input.val(multi_selected_related_collection_values);
@@ -255,52 +259,52 @@ const Common = {
      * Handle the select-all checkbox for multiple items with hidden input.
      *
      * @param args
-     * @return {any|*[]}
+     * @return {void}
      */
     handleSelectAllMultiItemsWithHiddenInput: (args) => {
         let { target, actionCollection, multiSelectedValuesList, relation } = args;
 
-        if (target.is(`input[name="${actionCollection}_${relation}[]"]`)) {
-            const
-                is_checked              = target.is(':checked'),
-                is_select_all           = target.next().html().includes('All'),
-                all_items               = target.parents('.items').find('input[type="checkbox"]'),
-                select_all_checkbox     = all_items.first(),
-                related_collection_hidden_input = target.parents('.filter-multi-select').next();
+        if (!target.is(`input[name="${actionCollection}_${relation}[]"]`)) return;
 
-            const check_actions = {
-                true: () => {
-                    const select_actions = {
-                        true: () => {
-                            multiSelectedValuesList.length = 0;
-                            select_all_checkbox.val('');
-                            related_collection_hidden_input.val('');
+        const
+            is_checked              = target.is(':checked'),
+            is_select_all           = target.next().html().includes('All'),
+            all_items               = target.parents('.items').find('input[type="checkbox"]'),
+            select_all_checkbox     = all_items.first(),
+            related_collection_hidden_input = target.parents('.filter-multi-select').next();
 
-                            $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
+        const check_actions = {
+            true: () => {
+                const select_actions = {
+                    true: () => {
+                        multiSelectedValuesList.length = 0;
+                        select_all_checkbox.val('');
+                        related_collection_hidden_input.val('');
 
-                            select_all_checkbox.next().html('Unselect All');
-                        },
-                        false: () => multiSelectedValuesList.push(target.val()),
-                    };
+                        $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
 
-                    select_actions[is_select_all]();
-                },
-                false: () => {
-                    is_select_all
-                        ? multiSelectedValuesList.length = 0
-                        : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
+                        select_all_checkbox.next().html('Unselect All');
+                    },
+                    false: () => multiSelectedValuesList.push(target.val()),
+                };
 
-                    select_all_checkbox.next().html('Select All');
-                },
-            };
+                select_actions[is_select_all]();
+            },
+            false: () => {
+                is_select_all
+                    ? multiSelectedValuesList.length = 0
+                    : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
 
-            check_actions[is_checked]();
+                select_all_checkbox.next().html('Select All');
+            },
+        };
 
-            multiSelectedValuesList = multiSelectedValuesList.filter((value) => value !== '').join(',');
+        check_actions[is_checked]();
 
-            select_all_checkbox.val(multiSelectedValuesList);
-            related_collection_hidden_input.val(multiSelectedValuesList);
-        }
+        multiSelectedValuesList = multiSelectedValuesList.filter(Boolean).join(','); // filter(Boolean) removes empty values
+
+        select_all_checkbox.val(multiSelectedValuesList);
+        related_collection_hidden_input.val(multiSelectedValuesList);
     },
 
 
@@ -314,18 +318,19 @@ const Common = {
 
         const form_select = $('.form-select');
 
-        $.each((form_select), (_, select_element) => {
+        $.each((form_select), (_, selectElement) => {
             // Add some styles on the label of the select element
-            const label_style = {
-                'top': '18%',
+            const select_element_label = $(selectElement).hasClass('viewbar')
+                ? $(selectElement).parent().prev()
+                : $(selectElement).prev();
+
+            select_element_label.css({
+                'top':       '18%',
                 'font-size': 'var(--twelve-pixels)',
-            };
-            $(select_element).hasClass('viewbar')
-                ? $(select_element).parent().prev().css(label_style)
-                : $(select_element).prev().css(label_style);
+            })
 
             // Add some styles on the select element
-            $(select_element).css('padding-block', 'var(--twenty-four-pixels) 0.357rem');
+            $(selectElement).css('padding-block', 'var(--twenty-four-pixels) 0.357rem');
         });
     },
 
@@ -361,23 +366,17 @@ const Common = {
             e.preventDefault();
 
             const
-                target = $(this),
-                text_value = target.val();
+                target     = $(this),
+                text_value = target.val(),
+                counter    = target.attr('maxlength') - text_value.length;
 
-            let
-                counter_element,
-                counter = target.attr('maxlength') - text_value.length;
+            let counter_element = textArea.includes(IGrace.REVIEW)
+                ? target.parents().eq(1).next().next().find('> .chars-counter')
+                : target.parent().next().addClass('mt-3 mb-2');
 
-            textArea.includes(IGrace.REVIEW)
-                ? counter_element = target.parents().eq(1).next().next().find('> .chars-counter')
-                : counter_element = target.parent().next().addClass('mt-3 mb-2');
+            counter_element.text(text_value ? `${counter} characters remaining` : '');
 
-            counter_element.text(`${counter} characters remaining`);
-
-            if ($.isEmptyObject(text_value)) {
-                counter_element.empty();
-                counter_element.removeClass('mt-3 mb-2');
-            }
+            if ($.isEmptyObject(text_value)) counter_element.removeClass('mt-3 mb-2');
         });
     },
 
@@ -401,24 +400,25 @@ const Common = {
      */
     truncateText: () => {
         const
-            truncate = $('.truncate p'),
+            truncate      = $('.truncate p'),
             truncate_text = '.truncate-text',
-            show_char = 70;
+            show_char     = 70;
 
         $.each((truncate), (_, truncateElement) => {
             const data = $(truncateElement).html();
+
             if (data.length > show_char) {
                 let content =
-                    `
-            <div class="truncate-text" style="display:block">
-                ${data.substring(0, show_char)}
-                <span>.... <a class="show-less fw-600">&nbsp;Show More</a></span>
-            </div>
-            <div class="truncate-text" style="display:none">
-                ${data}
-                <a class="show-less less fw-600 lh-sm">&nbsp; Show Less</a>
-            </div>
-            `;
+                `
+                    <div class="truncate-text" style="display:block">
+                        ${data.substring(0, show_char)}
+                        <span>.... <a class="show-less fw-600">&nbsp;Show More</a></span>
+                    </div>
+                    <div class="truncate-text" style="display:none">
+                        ${data}
+                        <a class="show-less less fw-600 lh-sm">&nbsp; Show Less</a>
+                    </div>
+                `;
 
                 $(truncateElement).html(content);
             }
@@ -430,7 +430,7 @@ const Common = {
 
             const
                 closest_truncate_text = $(this).closest(truncate_text),
-                is_less = $(this).hasClass('less');
+                is_less               = $(this).hasClass('less');
 
             closest_truncate_text.prev(truncate_text).toggle(is_less);
             closest_truncate_text.slideToggle(is_less);
@@ -444,7 +444,7 @@ const Common = {
      * Arrange the table rows.
      *
      * @param startIndex
-     * @returns {*}
+     * @return {void}
      */
     arrangeTableRows: (startIndex = 0) =>
         $.each(($(".table tbody tr")), (key, row) => $(row).find(`.${IGrace.ROW}-num > p`).html(startIndex + (++key))),
@@ -489,7 +489,7 @@ const Common = {
     scrollToTop: () => {
         const scroll_to_top = '.scroll-to-top';
 
-        scroll(() => $(window).scrollTop() > 150 ? $(scroll_to_top).fadeIn('slow') : $(scroll_to_top).fadeOut('slow'));
+        $(window).scroll(() => $(scroll_to_top).toggleClass('visible', $(window).scrollTop() > 150));
 
         $(document).on(IGrace.CLICK, scroll_to_top, function (e) {
             e.preventDefault();
@@ -511,8 +511,8 @@ const Common = {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
             },
-            async: false,
-            cache: false,
+            async:       false,
+            cache:       false,
             processData: false,
             contentType: false,
         });
@@ -527,32 +527,20 @@ const Common = {
     ajaxGetCountries: () => {
         const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
 
-        if (country_elements.length) {
-            $.getJSON('https://restcountries.com/v3.1/all', (countries) => {
-                let countries_names = countries.map((country) => country.name.common);
+        if (!country_elements.length) return;
 
-                countries_names.sort((opt1, opt2) => opt1.localeCompare(opt2));
+        $.getJSON('https://restcountries.com/v3.1/all')
+            .done((countries) => {
+                const countries_options = countries
+                    .map((country) => country.name.common)
+                    .sort((opt1, opt2) => opt1.localeCompare(opt2))
+                    .map((countryName) => `<option value="${countryName}">${countryName}</option>`)
+                    .join('');
 
-                const countries_options = countries_names.map((countryName) =>
-                    `<option value="${countryName}">${countryName}</option>`
-                ).join("");
-
-                $.each((country_elements), (_, countryElement) =>
-                    $(countryElement).append(countries_options)
-                );
+                country_elements.append(countries_options);
             })
-                .fail(() => console.error("Failed to fetch countries!"));
-        }
+            .fail(() => console.error("Failed to fetch countries!"));
     },
-
-
-    /**
-     * Handle the error status from the server.
-     *
-     * @param error
-     * @return {string}
-     */
-    errorStatus: (error) => error.status,
 
 
     /**
@@ -562,8 +550,7 @@ const Common = {
      * @param isMessage
      * @return {string}
      */
-    responseJsonError: (error, isMessage = false) =>
-        error.responseJSON?.[isMessage ? 'message' : 'errors'],
+    responseJsonError: (error, isMessage = false) => error.responseJSON?.[isMessage ? 'message' : 'errors'],
 
 
     /**
@@ -577,8 +564,8 @@ const Common = {
      */
     errorMessage: (element, errors, status = null) => {
         const
-            error_element = `.${element}-${IGrace.ERROR}`,
-            login_btn = $(`.${IGrace.LOGIN}-btn`),
+            error_element    = `.${element}-${IGrace.ERROR}`,
+            login_btn        = $(`.${IGrace.LOGIN}-btn`),
             show_error_class = `show-${IGrace.ERROR}`,
             margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT)
                 ? 'mt-2 mb-1'
@@ -595,24 +582,18 @@ const Common = {
 
             const attr_err = $(`#${attr}_${IGrace.ERROR}`);
 
-            $(attr_err).parent()
-                .addClass(`${show_error_class} ${!status ? margin : ''}`);
+            $(attr_err).parent().addClass(`${show_error_class} ${!status ? margin : ''}`);
 
             if (status === 429) {
-                let
-                    seconds = msg,
-                    error_message = `Too many ${IGrace.LOGIN} attempts. Please try again in <span id="count_down">${seconds}</span> seconds`;
+                let seconds = msg;
 
-                login_btn.attr('disabled', 'disabled');
+                login_btn.attr('disabled', true);
 
-                attr_err.html(`<li>${error_message}</li>`);
+                attr_err.html(`<li>Too many ${IGrace.LOGIN} attempts. Please try again in <span id="count_down">${seconds}</span> seconds</li>`);
 
                 const login_attempts_interval = setInterval(() => {
                     const login_actions = {
-                        true: () => {
-                            $('#count_down').text(seconds);
-                            seconds--;
-                        },
+                        true: () => $('#count_down').text(--seconds),
                         false: () => {
                             clearInterval(login_attempts_interval);
                             hide_error_element(attr_err);
@@ -639,12 +620,12 @@ const Common = {
      */
     confirmMessage: (message) =>
         Common.swalWithButtons.fire({
-            html: `Are you sure you want to ${message}`,
-            icon: IGrace.WARNING,
+            html:              `Are you sure you want to ${message}`,
+            icon:              IGrace.WARNING,
             showConfirmButton: true,
-            showCancelButton: true,
+            showCancelButton:  true,
             confirmButtonText: `Yes, ${message.includes(IGrace.REMOVE) ? IGrace.REMOVE : IGrace.DELETE}!`,
-            cancelButtonText: 'No, cancel!',
+            cancelButtonText:  'No, cancel!',
         }),
 
 
@@ -659,18 +640,18 @@ const Common = {
     successMessage: (status, message, extra = null) => {
         const
             properties = {
-                title: `${IGrace.CAPITALIZE(status)}!`,
-                html: message,
-                icon: IGrace.SUCCESS,
+                title:             `${IGrace.CAPITALIZE(status)}!`,
+                html:              message,
+                icon:              IGrace.SUCCESS,
                 showConfirmButton: true,
             },
 
             swal_message = () => Swal.fire({
                 ...properties,
-                html: `${message} successfully!`,
+                html:              `${message} successfully!`,
                 showConfirmButton: false,
-                timer: 1800,
-                timerProgressBar: true,
+                timer:             1800,
+                timerProgressBar:  true,
             });
 
         if (extra) {
@@ -728,12 +709,12 @@ const Common = {
      */
     cancelMessage: (message) =>
         Swal.fire({
-            title: 'Canceled',
-            html: `${message} <i class="far fa-smile"></i>`,
-            icon: IGrace.ERROR,
+            title:             'Canceled',
+            html:              `${message} <i class= "far fa-smile"></i>`,
+            icon:              IGrace.ERROR,
             showConfirmButton: false,
-            timer: 1800,
-            timerProgressBar: true,
+            timer:             1800,
+            timerProgressBar:  true,
         }),
 
 
@@ -751,13 +732,14 @@ const Common = {
      * if there's an error but the validation error
      * if confirmed, reload the page.
      *
+     * @param message
      * @return {void}
      */
     somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") =>
         Common.swalWithButtons.fire({
-            title: 'Sorry!',
-            html: message,
-            icon: IGrace.ERROR,
+            title:             'Sorry!',
+            html:              message,
+            icon:              IGrace.ERROR,
             showConfirmButton: true,
             confirmButtonText: "Refresh",
         })
@@ -853,9 +835,8 @@ const Common = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.CITY}`).val(address[IGrace.CITY]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.STATE}`).val(address[IGrace.STATE]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.POSTAL_CODE}`).val(address[IGrace.POSTAL_CODE]);
-                    country.find('option').removeAttr('selected');
-                    country.find('option')
-                        .filter((_, address_country) => address_country.value === address[IGrace.COUNTRY])
+                    country.find('option').removeAttr('selected')
+                        .filter((_, addressCountry) => addressCountry.value === address[IGrace.COUNTRY])
                         .attr('selected', true);
 
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ADDRESS, true)).modal('show');
@@ -885,6 +866,7 @@ const Common = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.REVIEW))}`).val(review[IGrace.ID]);
 
                     update_review_rating_container.empty();
+
                     for (let i = 5; i >= 1; i--) {
                         const
                             rating_input = $(`<input type="radio" name="update_review_rating" id="update_review_rating${i}" value="${i}" ${i >= review[IGrace.RATING] ? 'checked' : ''}>`),
@@ -910,7 +892,7 @@ const Common = {
      * Ajax request to delete a single or multiple items.
      *
      * @param options
-     * @returns {{method: string, success: *, url: string}}
+     * @return {object}
      */
     ajaxDeleteItems: (options) => {
         const { deleteRoute, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
@@ -954,20 +936,24 @@ const Common = {
             showCancelButton: true,
             confirmButtonText: `Yes, ${IGrace.DELETE} ${multiple ? 'them' : 'it'}!`,
             cancelButtonText: 'No, cancel!',
+
         })
             .then((willDelete) => {
                 if (willDelete.isConfirmed) {
-                    let force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1 ? force_delete_requests.pop() : force_delete_requests.shift();
+                    let force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1
+                        ? force_delete_requests.pop()
+                        : force_delete_requests.shift();
+
                     $.ajax({
                         ...Common.ajaxDeleteItems({
                             ...delete_options,
-                            successMessage: successMessage,
+                            successMessage:     successMessage,
                             forceDeleteRequest: force_delete_request,
                         }),
                         error: (err) => Common.handleDeleteErrors({
-                            error: err,
                             ...delete_options,
-                            cancelMessage: cancelMessage,
+                            error:               err,
+                            cancelMessage:       cancelMessage,
                             forceDeleteRequests: force_delete_requests,
                         }),
                     });
@@ -988,15 +974,15 @@ const Common = {
     handleDeleteErrors: (options) => {
         const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
 
-        Common.errorStatus(error) === 404
+        error.status === 404
             ? Common.forceDeleteConfirmation({
-                error: error,
-                deleteRoute: deleteRoute,
+                error:               error,
+                deleteRoute:         deleteRoute,
                 forceDeleteRequests: forceDeleteRequests,
-                multiple: multiple,
-                selectedIds: selectedIds,
-                successMessage: successMessage,
-                cancelMessage: cancelMessage,
+                multiple:            multiple,
+                selectedIds:         selectedIds,
+                successMessage:      successMessage,
+                cancelMessage:       cancelMessage,
             })
             : Common.somethingWentWrongError();
     },
@@ -1013,11 +999,11 @@ const Common = {
             e.preventDefault();
 
             const
-                target             = $(this),
-                delete_route       = target.data('route'),
-                collection_id      = target.data(IGrace.ID),
-                collection_name    = target.data(IGrace.NAME),
-                collection_trashed = new URLSearchParams(location.search).get(IGrace.CONDITION),
+                target                 = $(this),
+                delete_route           = target.data('route'),
+                collection_id          = target.data(IGrace.ID),
+                collection_name        = target.data(IGrace.NAME),
+                collection_trashed     = new URLSearchParams(location.search).get(IGrace.CONDITION),
                 delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_cancel_message  = `${
                     collection === IGrace.ADDRESS
@@ -1038,8 +1024,8 @@ const Common = {
                         $.ajax({
                             ...Common.ajaxDeleteItems(delete_options),
                             error: (err) => Common.handleDeleteErrors({
-                                error: err,
                                 ...delete_options,
+                                error:         err,
                                 cancelMessage: delete_cancel_message,
                             }),
                         });
@@ -1063,12 +1049,12 @@ const Common = {
             e.preventDefault();
 
             const
-                delete_all_route = $(this).data('route'),
-                collections_trashed = new URLSearchParams(location.search).get(IGrace.CONDITION),
-                selected_rows = $(`.check-${IGrace.ROW}:checked`).map((_, checked_row) => $(checked_row).val()).get(),
-                is_multiple_selection = selected_rows.length > 1,
+                delete_all_route             = $(this).data('route'),
+                collections_trashed          = new URLSearchParams(location.search).get(IGrace.CONDITION),
+                selected_rows                = $(`.check-${IGrace.ROW}:checked`).map((_, checkedRow) => $(checkedRow).val()).get(),
+                is_multiple_selection        = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
-                delete_multi_cancel_message = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
+                delete_multi_cancel_message  = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
 
             const delete_options = {
                 deleteRoute:       delete_all_route,
@@ -1093,8 +1079,8 @@ const Common = {
                         $.ajax({
                             ...Common.ajaxDeleteItems(delete_options),
                             error: (err) => Common.handleDeleteErrors({
-                                error: err,
                                 ...delete_options,
+                                error:         err,
                                 cancelMessage: delete_multi_cancel_message,
                             }),
                         });
@@ -1124,13 +1110,14 @@ const Common = {
                 restore_route           = target.data('route'),
                 collection_id           = target.data(IGrace.ID),
                 collection_name         = target.data(IGrace.NAME),
-                restore_success_message = `${collection === IGrace.ADDRESS ? `The ${collection} of the ${IGrace.USER} (${collection_name})` : `*${collection_name}* ${collection}`} has been ${IGrace.RESTORED()}`;
+                restore_success_message = `${collection === IGrace.ADDRESS
+                    ? `The ${collection} of the ${IGrace.USER} (${collection_name})`
+                    : `*${collection_name}* ${collection}`} has been ${IGrace.RESTORED()}`;
 
             $.ajax({
                 url: restore_route,
                 method: IGrace.PUT,
                 success: () => {
-                    console.log(collection_id);
                     Common.updateTableRows([collection_id]);
 
                     Common.successMessage(IGrace.RESTORED(), restore_success_message)
@@ -1151,17 +1138,17 @@ const Common = {
             e.preventDefault();
 
             const
-                target = $(this),
-                restore_all_route = target.data('route'),
-                selected_rows = $(`.check-${IGrace.ROW}:checked`).map((_, checked_row) => $(checked_row).val()).get(),
-                is_multiple_selection = selected_rows.length > 1,
-                restore_multi_success_message = `Selected ${is_multiple_selection ?  `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
+                target                        = $(this),
+                restore_all_route             = target.data('route'),
+                selected_rows                 = $(`.check-${IGrace.ROW}:checked`).map((_, checkedRow) => $(checkedRow).val()).get(),
+                is_multiple_selection         = selected_rows.length > 1,
+                restore_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${IGrace.RESTORED()}`;
 
             if ($.isEmptyObject(selected_rows)) {
                 return Swal.fire({
-                    title: 'Oops!',
-                    text: `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${IGrace.RESTORE}`,
-                    icon: IGrace.WARNING,
+                    title:             'Oops!',
+                    text:              `Please select at least one ${IGrace.SINGULARIZE(collection)} to ${IGrace.RESTORE}`,
+                    icon:              IGrace.WARNING,
                     showConfirmButton: true,
                 });
             }
@@ -1184,6 +1171,8 @@ const Common = {
 
     /**
      * Search Ajax Request.
+     *
+     * @return {void}
      */
     ajaxSearchRequest: () => {
         $(document).on(IGrace.KEYUP, 'input[type="search"]', function (e) {
@@ -1196,26 +1185,24 @@ const Common = {
                 search_value       = target.val(),
                 no_results_img_src = search_form.data('no_results');
 
-            if (target.is('#search_products')) return;
+            if (target.is('#user_search_products')) return;
 
-            $.ajax({
-                url: `${route}?search_value=${search_value}`,
-                method: IGrace.GET,
-                success: (data) => Common.searchFilterSuccessResponse(data),
-                error: (err) => {
-                    if (Common.responseJsonError(err, true) === 'no-results') {
-                        return Common.searchFilterErrorResponse(no_results_img_src);
-                    }
-
-                    Common.somethingWentWrongError();
-                },
-            });
+            $.get(`${route}?search_value=${search_value}`)
+                .done((data) => Common.searchFilterSuccessResponse(data))
+                .fail((err) =>
+                    Common.responseJsonError(err, true) === 'no-results'
+                        ? Common.searchFilterErrorResponse(no_results_img_src)
+                        : Common.somethingWentWrongError()
+                );
         });
     },
 
 
     /**
      * Filter Ajax Request.
+     *
+     * @param args
+     * @return {void}
      */
     ajaxFilterRequest: (args) => {
         const { collection, eventType = IGrace.SUBMIT, element = 'form' } = args;
@@ -1254,7 +1241,7 @@ const Common = {
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
                 },
                 error: (err) => {
-                    if (Common.errorStatus(err) === 422) {
+                    if (err.status === 422) {
                         return Common.errorMessage(IGrace.FILTER, Common.responseJsonError(err));
                     }
 
@@ -1271,13 +1258,15 @@ const Common = {
 
     /**
      * Clear Search/Filter Ajax Request.
+     *
+     * @return {void}
      */
     ajaxClearSearchFilterRequest: () => {
         $(document).on(IGrace.CLICK, `#clear_${IGrace.SEARCH}, #clear_${IGrace.FILTER}`, function (e) {
             e.preventDefault();
 
             const
-                target = $(this),
+                target              = $(this),
                 route               = target.attr('href') ?? target.data('route'),
                 search_form         = $('#search_form'),
                 filter_form         = $(`.${IGrace.FILTER}-form`),
@@ -1285,9 +1274,8 @@ const Common = {
                 dashboard_main      = `.${IGrace.DASHBOARD}-main`,
                 clear_form          = (form) => form.trigger('reset');
 
-            $.ajax({
-                url: route,
-                success: (data) => {
+            $.get(route)
+                .done((data) => {
                     if ($(dashboard_main).length) {
                         $(dashboard_main).html($(data).find(dashboard_main).html());
 
@@ -1302,9 +1290,8 @@ const Common = {
                     if (clear_search_button.length) clear_search_button.css({'opacity': '0', 'visibility': 'hidden'});
 
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
-                },
-                error: () => Common.somethingWentWrongError(),
-            });
+                })
+                .fail(Common.somethingWentWrongError);
         });
     },
 
@@ -1331,7 +1318,7 @@ const Common = {
             if (route.includes(IGrace.FILTER)) {
                 return User.ajaxFilterProductsRequest({
                     route: route,
-                    page: page,
+                    page:  page,
                 });
             }
 
@@ -1339,15 +1326,13 @@ const Common = {
                 url = `${route}&${page_query_param}`;
             }
 
-            $.ajax({
-                url: url,
-                method: IGrace.GET,
-                success: (data) => {
+            $.get(url)
+                .done((data) => {
                     Common.paginationResponse($('.pagination-container'), data);
 
                     if (route.includes(IGrace.CHECKOUT)) {
                         const
-                            radio_inputs = $('input[type=radio]'),
+                            radio_inputs   = $('input[type=radio]'),
                             selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
 
                         if (selected_value) {
@@ -1365,9 +1350,8 @@ const Common = {
                             );
                         });
                     }
-                },
-                error: () => Common.somethingWentWrongError(),
-            });
+                })
+                .fail(Common.somethingWentWrongError);
         });
     },
 }
