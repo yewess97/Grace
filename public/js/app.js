@@ -65,6 +65,7 @@ $(document).ready(() => {
         displayItemsCount: customers_reviews_display_items_count,
         nav:               false,
         dots:              true,
+        autoplay:          false,
     });
     User.carouselSliderConfig({
         element:           $('.partners-carousel'),
