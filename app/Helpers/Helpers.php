@@ -61,7 +61,7 @@ if (!function_exists('basicRoute')) {
      * @param string|null $callbackName
      * @return Routing
      */
-    function basicRoute(string $url, string $routeName, string $callbackName = null): Routing
+    function basicRoute(string $url, string $routeName, ?string $callbackName = null): Routing
     {
         return Route::get("/$url", $callbackName ?? $url)->name($routeName);
     }
@@ -115,7 +115,7 @@ if (!function_exists('generalControllerRoutes')) {
      * @param string|null $urlParam
      * @return RouteRegistrar
      */
-    function generalControllerRoutes(string $controller, string $modelName, string $urlParam = null): RouteRegistrar
+    function generalControllerRoutes(string $controller, string $modelName, ?string $urlParam = null): RouteRegistrar
     {
         $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
         $edit_model             = EDIT.'_'.$modelName;
@@ -162,7 +162,7 @@ if (!function_exists('searchRoute')) {
      * @param string|null $urlParam
      * @return Routing
      */
-    function searchRoute(string $searchableTable, string $urlParam = null): Routing
+    function searchRoute(string $searchableTable, ?string $urlParam = null): Routing
     {
         $searchable_table = str($searchableTable)->ltrim(ADMIN.'_')->value();
         $search_uri = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
@@ -533,7 +533,7 @@ if (!function_exists(ORDER_MODEL.ucfirst(STATUS))) {
      * @param string|null $type
      * @return string
      */
-    function orderStatus(Model|stdClass $order, string $type = null): string
+    function orderStatus(Model|stdClass $order, ?string $type = null): string
     {
         $order_status       = (int) $order->{STATUS};
         $order_status_name  = array_search($order_status, ORDER_STATUS_ENUM,       true);
@@ -604,7 +604,7 @@ if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
      * @param string|null $productsPaginationRoute
      * @return array|string
      */
-    function productsPageVars(LengthAwarePaginator $products, string $productsPaginationRoute = null): array|string
+    function productsPageVars(LengthAwarePaginator $products, ?string $productsPaginationRoute = null): array|string
     {
         $products_list_title = str(Route::currentRouteName())
             ->whenContains([SEARCH_PRODUCTS, FILTER_PRODUCTS],
@@ -673,10 +673,10 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      *
      * @param string $table
      * @param string|null $slug
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    function userProductsView(string $table, string $slug = null): Application|Factory|View|string
+    function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
         $products = Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
             $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
@@ -696,17 +696,17 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
      * @param string|null $operation
      * @return int|string|null
      */
-    function reviewData(mixed $data, string $operation = null): int|string|null
+    function reviewData(mixed $data, ?string $operation = null): int|string|null
     {
         if ($data instanceof Model) {
-            return isset($data->{REVIEWS_TABLE})
-                ? $data->{REVIEWS_TABLE}->avg(RATING)
-                : '0';
+            return $data->{REVIEWS_TABLE}->avg(RATING) ?? '0';
         }
 
-        return isset($operation)
-            ? formError($operation, REVIEW_MODEL, $data)
-            : '';
+        if ($operation) {
+            return formError($operation, REVIEW_MODEL, $data);
+        }
+
+        return null;
     }
 }
 
@@ -850,7 +850,7 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
      * @return string
      * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
-    function storeOrUpdateImage(Model|stdClass $model, string $modelId = null, string $imageType = null, mixed $image = null): string
+    function storeOrUpdateImage(Model|stdClass $model, ?string $modelId = null, ?string $imageType = null, mixed $image = null): string
     {
         $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
         $image_path = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
@@ -883,12 +883,12 @@ if (!function_exists('imageSource')) {
      * @param bool $forDeletePath
      * @return string
      */
-    function imageSource(Model|stdClass|string $modelOrImageName, string $imageType = null, bool $forDeletePath = false): string
+    function imageSource(Model|stdClass|string $modelOrImageName, ?string $imageType = null, bool $forDeletePath = false): string
     {
         $image_path = "images/";
 
         if (is_string($modelOrImageName)) {
-            return asset(Storage::url("$image_path/$modelOrImageName"));
+            return asset(Storage::url("$image_path$modelOrImageName"));
         }
 
         $image_name = $modelOrImageName->{$imageType};

@@ -2,7 +2,8 @@
 .home-product-main .left-side ul.categories-menu :is(li.category-item, li.category-item > .menu-item::after),
 .home-product-main .home-right-side .home-partners .partners-carousel .partner .partner-img,
 .home-product-main .product-right-side .product-imgs-info .product-images .product-thumb-images-carousel .product-thumb-image > img,
-.products-content .product-item .product-form .product-img-actions .discount-percent,
+.products-main .right-side .products-view-sort .products-view > i,
+.product-item .product-form .product-img .discount-percent,
 .cart-main .cart .update-cart-form ul.cart-products li.cart-product .cart-product-img-info .cart-product-info > a,
 .about-us-main :is(.our-mission, .our-vision) img {
     -webkit-transition: var(--trans-300);

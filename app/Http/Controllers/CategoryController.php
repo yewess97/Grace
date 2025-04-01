@@ -29,10 +29,10 @@ class CategoryController extends Controller
      * Display the category products' resource.
      *
      * @param string $category_slug
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function index(string $category_slug): Application|Factory|View|string
+    final public function index(string $category_slug): Application|Factory|View|JsonResponse
     {
         return userProductsView(CATEGORIES_TABLE, $category_slug);
     }

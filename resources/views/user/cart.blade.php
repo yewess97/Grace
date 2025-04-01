@@ -34,7 +34,6 @@
                                 <article class="summary-title border-top border-bottom">
                                     <h2 class="fs-6 fw-600">Summary</h2>
                                 </article>
-
                                 {{-- Summary Body --}}
                                 <ul role="list" class="summary-body d-grid">
                                     <li role="listitem" class="d-flex justify-content-between align-items-center">
@@ -46,7 +45,6 @@
                                         <span class="fw-600">Free</span>
                                     </li>
                                 </ul>
-
                                 {{-- Summary Total --}}
                                 <article class="summary-total d-flex justify-content-between align-items-center border-top">
                                     <div>
@@ -55,7 +53,6 @@
                                     </div>
                                     <span class="cart-total-cost fw-600">@priceFormat($total_cost)</span>
                                 </article>
-
                                 {{-- Summary Proceed to Checkout Button --}}
                                 <a href="{{route(CHECKOUT)}}" type="button" role="link" class="btn btn-block mt-2">
                                     Proceed to {{ucfirst(CHECKOUT)}}

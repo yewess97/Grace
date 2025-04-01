@@ -1,9 +1,5 @@
 @media all and (max-width: 1199.98px) {
     /* ===================================== Layout Styles ===================================== */
-    .row-cols-md-4 > * {
-        flex: 0 0 33.33%;
-        max-width: 33.33%;
-    }
 
     /* ------------============== Top Bar ==============------------ */
     .top-bar .top-bar-content {
@@ -157,11 +153,11 @@
         display: none;
     }
 
-    .products-content .product-item .product-form .product-img-actions .product-action {
+    .products-content .product-item .product-form .product-img .product-actions {
         bottom: 0;
     }
 
-    .products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+    .products-content .product-item .product-form .product-img .product-actions :is(.add-cart-btn, .quick-view-btn) {
         width: var(--thirty-pixels);
         height: var(--thirty-pixels);
         font-size: var(--fourteen-pixels) !important;
@@ -171,6 +167,10 @@
 
     .home-product-main .home-right-side .home-services .box-content .main-services {
         flex-wrap: nowrap;
+    }
+
+    .home-product-main .home-right-side .home-services .box-content .main-services .service {
+        width: auto !important;
     }
 
     /* ------------============== End Home & Products ==============------------ */

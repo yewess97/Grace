@@ -5,6 +5,13 @@ import { IGrace, Common, User } from "./helpers/user-helpers.js";
 
 $(document).ready(() => {
 
+
+    /* ========================================= Global Variables ========================================= */
+    const products_main_view = $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`);
+
+    /* ========================================= End Global Variables ========================================= */
+
+
     // Load the preloader
     $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
 
@@ -13,17 +20,16 @@ $(document).ready(() => {
         const offers      = $(offerSale).find('p');
         let current_offer = 0;
 
-        setInterval(() =>
+        setInterval(
+            () =>
                 offers.eq(current_offer)
                     .toggleClass('active', false)
                     .end()
                     .eq(current_offer = (current_offer + 1) % offers.length)
-                    .toggleClass('active', true),
-            3000);
+                    .toggleClass('active', true)
+            , 3000
+        );
     });
-
-    // Add some classes, styles, and attributes on each image
-    Common.imageConfig();
 
 
     /* ---------=========== Carousel Config ============--------- */
@@ -100,6 +106,11 @@ $(document).ready(() => {
 
     /* ---------=========== End Handle Price Filter ============--------- */
 
+    // Change the products main view
+    if (products_main_view.length) {
+        User.changeProductsView();
+    }
+
     // Adjust the height of the more details description
     $('.more-details-desc').first().css({
         'margin-top':  'var(--ten-pixels)',
@@ -130,14 +141,9 @@ $(document).ready(() => {
     $(document).on(IGrace.INPUT, (e) => {
         const target = $(e.target);
 
-        /**
-         * When adding a new review,
-         * set the value of the rating input with the value of the rating radio automatically
-         */
-        if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"]:radio`)) {
-            target.parent()
-                .next()
-                .val(target.val());
+        // Submit the products sort form when the sort select is changed
+        if (target.is(`select#${IGrace.FILTER_PRODUCTS_SORT()}`)) {
+            target.closest(`form#${IGrace.FILTER_PRODUCTS_SORT()}_form`).submit();
         }
 
         /**
@@ -149,6 +155,16 @@ $(document).ready(() => {
                 .find(`#${IGrace.ORDER}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`)
                 .val(`${target.val()},`);
         }
+
+        /**
+         * When adding a new review,
+         * set the value of the rating input with the value of the rating radio automatically
+         */
+        if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"]:radio`)) {
+            target.parent()
+                .next()
+                .val(target.val());
+        }
     });
 
     /* ---------=========== End Change Action ============--------- */
@@ -156,14 +172,37 @@ $(document).ready(() => {
 
     /* ---------=========== Mutation Observer Action ===========--------- */
     const observer = new MutationObserver((mutations) => {
-        $.each((mutations), (key, mutation) => {
-            if (mutation.type === 'childList' || mutation.type === 'subtree') {
+        $.each((mutations), (_, mutation) => {
+            if (mutation.type === 'childList' || mutation.type === 'subtree' || mutation.type === 'attributes') {
+                // Change the products main view
+                if (products_main_view.length) {
+                    User.changeProductsView();
+
+                    const is_single = products_main_view.attr('data-grid-main-view') === '1';
+
+                    $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-content .${IGrace.PRODUCT}-item`)
+                        .find('.grid-view-single-item')
+                        .toggleClass('d-md-flex d-block', is_single).toggleClass('d-none', !is_single)
+                        .end()
+                        .find('.grid-view-multiple-items')
+                        .toggleClass('d-block', !is_single).toggleClass('d-none', is_single);
+                }
+
                 // Show or hide the number of selected items when selecting multiple items
                 Common.showHideMultiSelectedItems($(mutation.target));
             }
         });
     });
 
+    // Observe the products main view data attribute
+    if (products_main_view.length) {
+        observer.observe(products_main_view[0], {
+            attributes:      true,
+            attributeFilter: ['data-grid-main-view'],
+        });
+    }
+
+    // Observe the body for any changes
     observer.observe(document.body, {
         childList: true,
         subtree:   true,
@@ -252,6 +291,11 @@ $(document).ready(() => {
         if (target.is(`${footer_menu_list_header}, ${footer_menu_item_title}, ${footer_menu_item_rotate_icon}`)) {
             const footer_item = target.parents('.footer-item').first();
             footer_item.find(footer_menu_item_rotate_icon).toggleClass('rotate-180');
+        }
+
+        // Change the products grid view
+        if (target.hasClass('grid')) {
+            products_main_view.attr('data-grid-main-view', target.data('grid-view'));
         }
 
         // Increment or decrement the quantity
@@ -346,6 +390,9 @@ $(document).ready(() => {
 
     // Arrange the table rows
     Common.arrangeTableRows();
+
+    // Add some classes, styles, and attributes on each image
+    Common.imageConfig();
 
     // Get the countries
     Common.ajaxGetCountries();

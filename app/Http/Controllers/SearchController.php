@@ -96,6 +96,8 @@ class SearchController extends Controller
                 ])
             ?->fastPaginate(16);
 
+        noResultsException($products);
+
         return viewProducts($products);
     }
 
@@ -109,30 +111,39 @@ class SearchController extends Controller
     {
         $query_params = Arr::except(request()?->query(), ['page']);
 
-        if ($query_params) {
-            $query_params = collect($query_params);
+        if (!empty($query_params)) {
             $products = Product::query()->select(PRODUCT_ITEM_ATTRIBUTES);
 
-            $query_params->each(fn($collectionValue, $collection) =>
-            $products->whereHas($collection, function (Builder $product) use ($collectionValue) {
-                is_array($collectionValue)
-                    ? $product->whereIn(SLUG, $collectionValue)
-                    : $product->where(SLUG, $collectionValue);
-            }));
+            collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
+                $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
+                    is_array($collectionValue)
+                        ? $product->whereIn(SLUG, $collectionValue)
+                        : $product->where(SLUG, $collectionValue);
+                })
+            );
 
-            return viewProducts($products->fastPaginate(16));
+            $products = $products->fastPaginate(16);
+
+            return viewProducts($products);
         }
 
-        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, FILTER_PRODUCTS_ATTRIBUTES);
+        $filter_products_attributes = request()?->input(FILTER.'_'.PRODUCTS_TABLE.'_'.SORT)
+            ? [SORT]
+            : FILTER_PRODUCTS_ATTRIBUTES;
+
+        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, $filter_products_attributes);
 
         validateAttributes($filter_products_request);
 
         $filter_products_request_values = $filter_products_request->dataValues();
 
         array_walk($filter_products_request_values, static fn(&$filterProductsRequestValue) =>
-        is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null);
+            is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
+        );
 
-        $products = Product::filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request_values);
+        $products = in_array(SORT, $filter_products_attributes, true)
+            ? Product::sort($filter_products_request_values)
+            : Product::filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request_values);
 
         return viewProducts($products);
     }

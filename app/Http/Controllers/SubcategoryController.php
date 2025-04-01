@@ -30,10 +30,10 @@ class SubcategoryController extends Controller
      * Display the subcategory products' resource.
      *
      * @param string $subcategory_slug
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function index(string $subcategory_slug): Application|Factory|View|string
+    final public function index(string $subcategory_slug): Application|Factory|View|JsonResponse
     {
         return userProductsView(SUBCATEGORIES_TABLE, $subcategory_slug);
     }

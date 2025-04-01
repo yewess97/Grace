@@ -20,6 +20,12 @@ class ProductRequest extends FormRequest
     final public function rules(string $id = null): array
     {
         if ($this->operation === FILTER) {
+            if (in_array(SORT, $this->modelAttributes, true)) {
+                return [
+                    $this->dataKeyOf(SORT) => ['required', 'string'],
+                ];
+            }
+
             return [
                 ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, CATEGORIES_TABLE),
                 ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, SUBCATEGORIES_TABLE),
@@ -58,12 +64,20 @@ class ProductRequest extends FormRequest
     final public function messages(): array
     {
         $cap_product           = ucfirst(PRODUCT_MODEL);
-        $cap_categories        = ucfirst(pluralize(CATEGORY_MODEL));
-        $cap_subcategories     = ucfirst(pluralize(SUBCATEGORY_MODEL));
+        $cap_categories        = ucfirst(CATEGORIES_TABLE);
+        $cap_subcategories     = ucfirst(SUBCATEGORIES_TABLE);
         $cap_sizes             = ucfirst(pluralize(SIZE));
+        $cap_sort              = ucfirst(PRODUCTS_TABLE.' '.SORT);
         $name_desc_regex_rules = 'characters, numbers, and some symbols';
 
         if ($this->operation === FILTER) {
+            if (in_array(SORT, $this->modelAttributes, true)) {
+                return [
+                    ...$this->requiredMessage($this->dataKeyOf(SORT), $cap_sort),
+                    "{$this->dataKeyOf(SORT)}.string" => "$cap_sort must be a text",
+                ];
+            }
+
             return [
                 ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, null, $cap_categories, true),
                 ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, null, $cap_subcategories, true),

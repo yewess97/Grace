@@ -39,6 +39,8 @@ class Subcategory extends Model
      */
     final protected function data(): Attribute
     {
-        return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE])?->load(CATEGORIES_TABLE));
+        return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE])?->load([
+            CATEGORIES_TABLE => static fn($category) => $category->select(ID, NAME),
+        ]));
     }
 }

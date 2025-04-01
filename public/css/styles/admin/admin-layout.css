@@ -122,6 +122,7 @@
 }
 
 .nav-menu.close :is(.nav-menu-header-title, .nav-menu-item-title, .nav-menu-item-rotate-icon, ul.nav-submenu-list, .nav-menu-footer .logout-form .nav-menu-item-title) {
+    display: none;
     opacity: 0;
     visibility: hidden;
 }
@@ -167,10 +168,9 @@
 .nav-menu.close .nav-menu-main ul.nav-menu-list li.nav-menu-list-item:hover ul.nav-submenu-list {
     display: flex;
     position: absolute;
-    left: var(--forty-five-pixels);
+    left: var(--fifty-pixels);
     margin-top: calc(var(--sixteen-pixels) * -1);
-    padding-block: var(--twenty-pixels);
-    padding-inline: var(--twenty-five-pixels) var(--twenty-pixels);
+    padding: var(--twenty-pixels);
     background-color: #171529;
     border-radius: 0 var(--ten-pixels) var(--ten-pixels) 0;
     opacity: 1;
@@ -181,7 +181,7 @@
 .nav-menu.close .nav-menu-main ul.nav-menu-list :is(li.nav-menu-list-item:not(#orders_list, #reviews_list):hover .nav-menu-item .nav-menu-item-title, li.nav-menu-list-item ul.nav-submenu-list)::after {
     content: "";
     position: absolute;
-    left: var(--sixteen-pixels);
+    left: 0;
     width: var(--twenty-five-pixels);
     height: var(--forty-pixels);
     z-index: -99;

@@ -139,3 +139,16 @@
 .products-main .right-side .box-content {
     margin-top: var(--thirty-pixels);
 }
+
+.products-main .right-side .products-view-sort .products-view > i.grid {
+    color: var(--black-color);
+    cursor: pointer;
+}
+
+.products-main .right-side .products-view-sort .products-view > i.grid:hover {
+    color: inherit;
+}
+
+.products-main .right-side .products-view-sort .filter-products-sort-form :is(label, select) {
+    font-size: var(--fourteen-pixels) !important;
+}

@@ -252,6 +252,7 @@ define("PRODUCT_SIZE_QUICK_VIEW",     PRODUCT_SIZE.'_'.QUICK_VIEW);
 define("PRODUCT_QUANTITY_QUICK_VIEW", PRODUCT_QUANTITY.'_'.QUICK_VIEW);
 define("PRODUCTS_PRICES",             PRODUCTS_TABLE.'_'.pluralize(PRICE));
 define("PRODUCTS_PAGINATION_ROUTE",   PRODUCTS_TABLE.'_pagination_route');
+define("SORT",                        'sort');
 define("MIN_PRICE",                   'min_'.PRICE);
 define("MAX_PRICE",                   'max_'.PRICE);
 
@@ -382,6 +383,7 @@ define("PRODUCT_ITEM_ATTRIBUTES", [
     ID,
     NAME,
     SLUG,
+    SHORT_DESCRIPTION,
     MAIN_IMAGE,
     OLD_PRICE,
     NEW_PRICE,
@@ -818,10 +820,6 @@ define("ADD_USER_ADDRESS_PARTIAL",      partial(ADD.'-'.kebabAll(singularize(USE
 define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
 define("USER_ADDRESSES_PAGINATION",     partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
 define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
-define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
-define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'other'));
-define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content', 'other'));
-define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
 
 /**
  * Collection Row Partials.
@@ -833,6 +831,15 @@ define("ORDER_ROW_PARTIAL",       partial(ORDER_MODEL));
 define("USER_ROW_PARTIAL",        partial(USER_MODEL));
 define("ADDRESS_ROW_PARTIAL",     partial(ADDRESS_MODEL));
 define("REVIEW_ROW_PARTIAL",      partial(REVIEW_MODEL));
+
+/**
+ * Other Partials.
+ */
+define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
+define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content', 'other'));
+define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'other'));
+define("PRODUCT_ITEM_COMMON_PARTIAL",   partial(PRODUCT_MODEL.'-item-common', 'other'));
+define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
 
 /**
  * Errors Partials
@@ -1170,7 +1177,7 @@ function email(string $emailName): string
  * @param string|null $role
  * @return string
  */
-function searchableTable(string $table, bool $isFilter = false, string $role = null): string
+function searchableTable(string $table, bool $isFilter = false, ?string $role = null): string
 {
     return $isFilter
         ? "filter_$table"

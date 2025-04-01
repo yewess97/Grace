@@ -38,6 +38,19 @@ const User = {
 
 
     /**
+     * Change the products view.
+     *
+     * @return {void}
+     */
+    changeProductsView: () => {
+        // Since products_main_view is a cached jQuery object, its .data() method does not automatically pick up new values when the (data-) attribute changes. This is a well-known limitation of .data() in jQuery.
+        $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-content`)
+            .removeClass((_, className) => (className.match(/\brow-cols-md-\S+/g) || []).join(' '))
+            .addClass(`row-cols-md-${$(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`).attr('data-grid-main-view')}`);
+    },
+
+
+    /**
      * Handle the chosen filter products multiple items with hidden input.
      *
      * @param args
@@ -371,36 +384,38 @@ const User = {
                 target            = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
                 route             = target.data('route'),
                 main_image        = target.data(IGrace.MAIN_IMAGE()),
-                product_old_price = $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`);
+                product_old_price = $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`),
+                quick_view_modal  = $(`#${IGrace.PRODUCT}_quick_view_modal`);
 
             $.get(`${route}?quick_view=true`)
                 .done((data) => {
                     const product = data[IGrace.PRODUCT];
 
-                    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
-                    $(`.${IGrace.PRODUCT}-quick-view-img > img`).attr({
+                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).html($('<img>', {
                         src: main_image,
                         alt: product[IGrace.NAME],
-                    });
-                    $(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('').append(product[IGrace.NAME]);
-                    $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('').append(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
+                    }));
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html(product[IGrace.NAME]);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
                     product_old_price.html(
                         product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
                             ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
                             : ''
                     );
-                    $(`.${IGrace.PRODUCT}-info-${IGrace.STATUS} span:last-child`).html('').append(product[IGrace.STATUS] === 1 ? 'In Stock' : 'Out of Stock');
-                    $(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('').append(product[`${IGrace.SHORT_DESCRIPTION}`]);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.STATUS} span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
                     Common.showMultiSelectData({
                         userType:          IGrace.USER,
                         collection:        product,
                         collectionName:    IGrace.PRODUCT,
                         relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
                     });
-                    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
-                    $(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
 
-                    $(`#${IGrace.PRODUCT}_quick_view_modal`).modal('show');
+                    Common.imageConfig();
+                    quick_view_modal.modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
         });
@@ -409,12 +424,25 @@ const User = {
 
     /* ---------------------------------- FILTER PRODUCTS REQUEST ---------------------------------- */
     ajaxFilterProductsRequest: (args) => {
-        const { route, action, formData, noResultsImageSrc, page = 1 } = args;
+        const { route, action, noResultsImageSrc } = args;
+
+        const
+            stored_filters = JSON.parse(sessionStorage.getItem(IGrace.FILTER_PRODUCTS())) || {},
+
+            /**
+             * Check if value is an array, if not, wrap it inside [value],
+             * then append each value (single or multiple) separately to FormData.
+             */
+            form_data = Object.entries(stored_filters).reduce((formData, [attribute, value]) => {
+                $.each(($.isArray(value) ? value : [value]), (_, val) => formData.append(attribute, val));
+
+                return formData;
+            }, new FormData());
 
         $.ajax({
-            url: `${route}?page=${page}`,
+            url: route,
             method: IGrace.POST,
-            data: formData,
+            data: form_data,
             success: (data) => {
                 $(IGrace.ERROR_ELEMENT(action)).empty()
                     .parent()

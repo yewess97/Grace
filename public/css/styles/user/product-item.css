@@ -7,11 +7,12 @@
     padding-inline: var(--fifteen-pixels);
 }
 
-.products-content .product-item .product-form .product-img-actions {
+/* --------- Product Image --------- */
+.products-content .product-item .product-form .product-img {
     background-color: var(--light-gray-color);
 }
 
-.products-content .product-item .product-form .product-img-actions .discount-percent {
+.products-content .product-item .product-form .product-img .discount-percent {
     top: var(--ten-pixels);
     padding: var(--five-pixels) var(--ten-pixels);
     font-size: var(--twelve-pixels);
@@ -21,16 +22,27 @@
     transform: translateX(calc(var(--sixty-four-pixels) + var(--sixteen-pixels)));
 }
 
-.products-content .product-item:hover .product-form .product-img-actions .discount-percent {
+.products-content .product-item:hover .product-form .product-img .discount-percent {
     -ms-transform: translateX(0);
     transform: translateX(0);
 }
 
-.products-content .product-item .product-form .product-img-actions .product-action {
+/* --------- Product Info --------- */
+.products-content .product-item .product-form .product-info {
+    padding-top: var(--ten-pixels);
+}
+
+.products-content .product-item .product-form .product-info > .product-info-name {
+    margin-top: var(--five-pixels);
+    line-height: 1.6;
+}
+
+/* --------- Product Actions --------- */
+.products-content .product-item .product-form .product-actions {
     bottom: var(--sixteen-pixels);
 }
 
-.products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+.products-content .product-item .product-form .product-actions :is(.add-cart-btn, .quick-view-btn) {
     width: var(--forty-pixels);
     height: var(--forty-pixels);
     margin-right: var(--ten-pixels);
@@ -39,24 +51,30 @@
     visibility: hidden;
 }
 
-.products-content .product-item .product-form .product-img-actions .product-action :is(.add-cart-btn:hover, .quick-view-btn:hover) {
+.products-content .product-item .product-form .product-actions :is(.add-cart-btn:hover, .quick-view-btn:hover) {
     background-color: var(--main-color);
 }
 
-.products-content .product-item:hover .product-form .product-img-actions .product-action :is(.add-cart-btn, .quick-view-btn) {
+.products-content .product-item:hover .product-form .product-actions :is(.add-cart-btn, .quick-view-btn) {
     opacity: 1;
     visibility: visible;
     -ms-transform: translateY(calc(var(--ten-pixels) * -1));
     transform: translateY(calc(var(--ten-pixels) * -1));
 }
 
-.products-content .product-item .product-form .product-info {
-    padding-top: var(--ten-pixels);
+/* --------- Single Item Grid View --------- */
+.products-main .right-side .products-content .product-item .product-form .grid-view-single-item {
+    gap: var(--thirty-pixels);
 }
 
-.products-content .product-item .product-form .product-info > .product-info-name {
-    margin-top: var(--five-pixels);
-    line-height: 1.6;
+.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .quick-view-btn) {
+    width: var(--thirty-five-pixels);
+    height: var(--thirty-five-pixels);
+}
+
+.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item:hover .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .quick-view-btn) {
+    -ms-transform: translateY(0);
+    transform: translateY(0);
 }
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

@@ -410,6 +410,8 @@ const Admin = {
                     target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
+                    console.log(data);
+
                     const data_actions = {
                         true: () => {
                             let url = main_page;
@@ -657,6 +659,64 @@ const Admin = {
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
+        });
+    },
+
+
+    /**
+     * Filter Ajax Request.
+     *
+     * @param args
+     * @return {void}
+     */
+    ajaxFilterRequest: (args) => {
+        const { collection, eventType = IGrace.SUBMIT, element = 'form' } = args;
+
+        $(document).on(eventType, `#${IGrace.FILTER}_${collection}_${element}`, function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                filter_form = eventType === IGrace.CHANGE
+                    ? target.parents(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_form`)
+                    : target,
+                route              = filter_form.attr('action'),
+                form_data          = new FormData(filter_form[0]),
+                dashboard_main     = `.${IGrace.DASHBOARD}-main`,
+                no_results_img_src = filter_form.data('no_results');
+
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: form_data,
+                success: (data) => {
+                    const actions = {
+                        [IGrace.DASHBOARD]: () => {
+                            $(dashboard_main).html($(data).find(dashboard_main).html());
+
+                            Admin.googleGeoChartConfig();
+                            Admin.googlePieChartConfig();
+                            Common.arrangeTableRows();
+                        },
+                        default: () => Common.searchFilterSuccessResponse(data),
+                    };
+
+                    (actions[collection] || actions.default)();
+
+                    $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
+                },
+                error: (err) => {
+                    if (err.status === 422) {
+                        return Common.errorMessage(IGrace.FILTER, Common.responseJsonError(err));
+                    }
+
+                    if (Common.responseJsonError(err, true) === 'no-results') {
+                        return Common.searchFilterErrorResponse(no_results_img_src);
+                    }
+
+                    Common.somethingWentWrongError();
+                },
+            });
         });
     },
 }

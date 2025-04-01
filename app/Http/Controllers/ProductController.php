@@ -28,10 +28,10 @@ class ProductController extends Controller
     /**
      * Display the products' resource.
      *
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View|string
+    final public function index(): Application|Factory|View|JsonResponse
     {
         return userProductsView(PRODUCTS_TABLE);
     }

@@ -4,6 +4,11 @@
         max-width: 980px;
     }
 
+    .row-cols-md-4 > * {
+        flex: 0 0 33.33%;
+        max-width: 33.33%;
+    }
+
     /* ------------============== Footer ==============------------ */
     .footer .footer-top ul.footer-list li.footer-item:first-child .footer-logo > a {
         width: 60%;
@@ -14,15 +19,6 @@
     /* ===================================== End Layout Styles ===================================== */
 
     /* ------------============== Home ==============------------ */
-    .home-product-main .left-side .new-products > .new-products-content > .new-product-item > .new-product {
-        flex-wrap: wrap !important;
-        text-align: center;
-    }
-
-    .home-product-main .left-side .new-products > .new-products-content > .new-product-item :is(.new-product, .new-product .new-product-info .price-info > .new-price-discount) {
-        justify-content: center;
-    }
-
     .home-product-main .home-right-side .home-services .box-content .main-services .service {
         flex-wrap: wrap;
         justify-content: center;
@@ -32,16 +28,16 @@
 
     /* ------------============== End Home ==============------------ */
 
-    /* ------------============== Products ==============------------ */
-    .products-main .left-side {
+    /* ------------============== Home & Products ==============------------ */
+    :is(.home-product-main, .products-main) .left-side {
         width: 33.33333333%;
     }
 
-    .products-main .right-side {
+    :is(.home-product-main, .products-main) .right-side {
         width: 66.66666667%;
     }
 
-    /* ------------============== End Products ==============------------ */
+    /* ------------============== End Home & Products ==============------------ */
 
     /* ------------============== Checkout ==============------------ */
     .checkout-main .left-side .shipping-payment {

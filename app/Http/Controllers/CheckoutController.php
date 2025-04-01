@@ -17,10 +17,10 @@ class CheckoutController extends Controller
     /**
      * Display the checkout resource.
      *
-     * @return RedirectResponse|JsonResponse|Application|Factory|View
+     * @return Application|Factory|View|RedirectResponse|JsonResponse
      * @throws Throwable
      */
-    final public function index(): RedirectResponse|JsonResponse|Application|Factory|View
+    final public function index(): Application|Factory|View|RedirectResponse|JsonResponse
     {
         $user_cart_items = Cart::query()->where(USER_ID, auth()->id())->lazy();
 
@@ -28,15 +28,13 @@ class CheckoutController extends Controller
             return to_route('home')->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
 
-        $user_cart_items->each(static function (Cart $cart_item) {
-            $product_available = Product::query()->whereId($cart_item->{PRODUCT_MODEL}->{ID})
+        $user_cart_items->each(fn(Cart $cart_item) =>
+            !Product::query()->whereId($cart_item->{PRODUCT_MODEL}->{ID})
                 ->whereStatus(1)
-                ->exists();
+                ->exists()
+            && $cart_item->delete()
+        );
 
-            if (!$product_available) {
-                $cart_item->delete();
-            }
-        });
 
         $total_cost      = cartConfig()[TOTAL_COST];
         $user_addresses  = auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES]);

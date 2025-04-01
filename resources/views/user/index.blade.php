@@ -34,7 +34,7 @@
                             {{-- Products Title --}}
                             <article class="box-title">
                                 <h2 class="fs-5 fw-600 text-uppercase border-bottom">
-                                    <span class="position-relative">Special {{PRODUCTS_TABLE}}</span>
+                                    <span class="position-relative">Most Selling</span>
                                 </h2>
                             </article>
                             {{-- Products Container --}}
@@ -65,9 +65,9 @@
                              {{-- Our Services Content --}}
                             <article class="main-services d-flex justify-content-between overflow-auto">
                                 @foreach($services as $service)
-                                    <div class="service d-flex align-items-center w-auto">
+                                    <div class="service d-flex align-items-center w-25">
                                         <article class="service-icon">
-                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="Grace Service">
+                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="Grace Service" style="max-width:35px!important;height:35px!important;">
                                         </article>
                                         <article class="service-info overflow-hidden">
                                             <h6 class="fs-6 fw-600 lh-1 text-capitalize">{{ $service->{TITLE} }}</h6>

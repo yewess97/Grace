@@ -26,10 +26,10 @@ class OrderController extends Controller
     /**
      * Get the detailed data of a specified order.
      *
-     * @return RedirectResponse|Application|Factory|View
+     * @return Application|Factory|View|RedirectResponse
      * @throws Throwable
      */
-    final public function orderDetails(): RedirectResponse|Application|Factory|View
+    final public function orderDetails(): Application|Factory|View|RedirectResponse
     {
         return $this->orderService->getOrderDetailsData();
     }
@@ -44,11 +44,9 @@ class OrderController extends Controller
     {
         $create_order = $this->orderService->createOrder();
 
-        if ($create_order instanceof RedirectResponse) {
-            return $create_order;
-        }
-
-        return responseSuccess();
+        return $create_order instanceof RedirectResponse
+            ? $create_order
+            : responseSuccess();
     }
 
     /**

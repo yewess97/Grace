@@ -16,7 +16,6 @@
                         <header role="banner" class="shipping-payment-header">
                             {{-- Shipping Payment Logo --}}
                             <a href="{{route(PRODUCTS_LIST)}}" role="link" class="shipping-payment-logo">{{config('app.name')}} Store</a>
-
                             {{-- Shipping Payment Breadcrumb --}}
                             <nav role="navigation" class="nav-breadcrumb" aria-label="breadcrumb">
                                 <div class="container">
@@ -68,7 +67,6 @@
                                 <article class="shipping-details-addresses pagination-container">
                                     @include(CHECKOUT_USER_ADDRESSES_PAGINATION, [USER_ADDRESSES => $user_addresses])
                                 </article>
-
                                 {{-- Shipping Payment --}}
                                 <div class="shipping-payment-method mt-5 col-12">
                                     {{-- Shipping Payment Title --}}

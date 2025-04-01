@@ -14,7 +14,7 @@
                     {{-- Product Images and Info --}}
                     <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form">
                         @csrf
-                        <section class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
+                        <div class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
                             <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
                             {{-- Product Images --}}
                             <article class="product-images row col">
@@ -63,7 +63,7 @@
                                     {{-- Select Size --}}
                                     <div class="add-cart-product-sizes col-lg-8 col-md-5 col-sm-6">
                                         <div class="form-group position-relative">
-                                            <label class="label-select position-absolute user-select-none pe-none">
+                                            <label for="add_cart_product_size" class="label-select position-absolute user-select-none pe-none">
                                                 <sup class="me-1">*</sup>{{ucfirst(SIZES)}}
                                             </label>
                                             <select name="add_cart_product_size[]" id="add_cart_product_size" class="product-sizes" multiple="multiple" aria-required="true">
@@ -88,7 +88,7 @@
                                     @endif
                                 </div>
                             </article>
-                        </section>
+                        </div>
                     </form>
                     {{-- Product Long-Description & Reviews --}}
                     <section class="box-content product-details-reviews">

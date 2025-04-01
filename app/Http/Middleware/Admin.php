@@ -21,11 +21,9 @@ class Admin
     final public function handle(Request $request, Closure $next): JsonResponse|Response|RedirectResponse
     {
         if (auth()->check()) {
-            if (auth()->user()->isAdmin) {
-                return $next($request);
-            }
-
-            return abort(HttpResponse::HTTP_FORBIDDEN);
+            return auth()->user()->isAdmin
+                ? $next($request)
+                : abort(HttpResponse::HTTP_FORBIDDEN);
         }
 
         return abort(HttpResponse::HTTP_UNAUTHORIZED);

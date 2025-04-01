@@ -14,7 +14,7 @@
                         {{-- Review Rating --}}
                         <div class="update-review-rating">
                             <div class="form-group">
-                                <label class="form-label">
+                                <label for="rating_container" class="form-label">
                                     <sup class="me-1">*</sup>{{ucfirst(RATING)}}
                                 </label>
                                 <div id="rating_container" class="rate d-flex flex-row-reverse justify-content-end align-items-center"></div>

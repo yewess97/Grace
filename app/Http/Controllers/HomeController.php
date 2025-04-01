@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class HomeController extends Controller
@@ -13,12 +14,12 @@ class HomeController extends Controller
     /**
      * Display the home resource.
      *
-     * @return Application|Factory|View|string
+     * @return Application|Factory|View|JsonResponse
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View|string
+    final public function index(): Application|Factory|View|JsonResponse
     {
-        $products = Product::fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
+        $products = Product::mostSelling();
 
         $services = [
             [
@@ -47,7 +48,7 @@ class HomeController extends Controller
         $products_pagination_route = 'home';
 
         return request()?->ajax()
-            ? view(USER_PRODUCTS_PAGINATION, compact(PRODUCTS_TABLE, PRODUCTS_PAGINATION_ROUTE))
+            ? ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route])
             : showView(USER_HOME_VIEW, compact(PRODUCTS_TABLE, SERVICES, PRODUCTS_PAGINATION_ROUTE));
     }
 }

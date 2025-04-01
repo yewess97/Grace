@@ -56,9 +56,42 @@
 
                 <!----======= Right Side =======---->
                 <section class="right-side col-lg-9 ps-lg-3">
+                    {{-- Products List Title --}}
                     <h1 class="fs-5 fw-600 text-uppercase">{{$products_list_title}}</h1>
+
+                    {{-- Products View & Sort --}}
+                    <div class="products-view-sort" data-grid-main-view="4">
+                        <div class="box-content rounded-start mt-4">
+                            <div class="d-flex justify-content-between align-items-center gap-4">
+                                {{-- Products View --}}
+                                <article class="products-view d-flex align-items-center gap-3 fs-8">
+                                    <i class="ti ti-layout-grid3 grid" data-grid-view="4"></i>
+                                    <i class="ti ti-layout-list-thumb grid" data-grid-view="1"></i>
+                                </article>
+                                {{-- Products Sort --}}
+                                <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_sort_form" class="filter-products-sort-form grace-form d-flex justify-content-end" data-no_results="{{imageSource('no-results.png')}}">
+                                    @csrf
+                                    <div class="grace-form-body">
+                                        <div class="form-group position-relative d-flex align-items-center gap-3">
+                                            <label for="filter_products_sort" class="fw-600">Sort By</label>
+                                            <select name="filter_products_sort" id="filter_products_sort" class="form-select col py-2">
+                                                <option disabled hidden selected>Select Filter</option>
+                                                <option value="best-selling">Best Selling</option>
+                                                <option value="title-ascending">Alphabetically, A-Z</option>
+                                                <option value="title-descending">Alphabetically, Z-A</option>
+                                                <option value="price-ascending">Price, low to high</option>
+                                                <option value="price-descending">Price, high to low</option>
+                                            </select>
+                                        </div>
+    {{--                                    {{$add_cart_product_error(PRODUCT_SIZE)}}--}}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Products --}}
-                    <div class="pagination-container row gap-4">
+                    <div class="products pagination-container row gap-4">
                         @include(USER_PRODUCTS_PAGINATION, [PRODUCTS_TABLE => $products])
                     </div>
                 </section>

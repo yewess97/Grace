@@ -62,7 +62,7 @@
                         {{-- Product Thumbnail Images --}}
                         <div class="update-product-thumb-images">
                             <div class="form-group col-12">
-                                <label class="form-label">Thumbnail Images (optional)</label>
+                                <label for="update_product_thumb_image" class="form-label">Thumbnail Images (optional)</label>
                                 <div id="update_thumb_images" class="product-thumb-images mx-auto mt-2 border overflow-auto"></div>
                             </div>
                             <div id="update_product_thumb_images_preview"></div>

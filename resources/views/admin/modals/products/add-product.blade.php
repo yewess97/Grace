@@ -59,7 +59,7 @@
                         {{-- Product Thumbnail Images --}}
                         <div class="add-product-thumb-images">
                             <div class="form-group col-12">
-                                <label class="form-label">Thumbnail Images (optional)</label>
+                                <label for="add_product_thumb_image" class="form-label">Thumbnail Images (optional)</label>
                                 <div id="add_thumb_images" class="product-thumb-images mx-auto mt-2 border overflow-auto"></div>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                                     <label for="add_product_old_price" class="form-label">
                                         <sup class="me-1">*</sup>{{capitalizeAll(OLD_PRICE)}}
                                     </label>
-                                    <input type="text" inputmode="decimal" name="add_product_old_price" id="add_product_old_price" class="form-control fs-7 rounded-2" min="1" max="7" readonly="readonly" style="color:var(--mute-color)!important;pointer-events:none">
+                                    <input type="text" inputmode="decimal" name="add_product_old_price" id="add_product_old_price" class="form-control fs-7 rounded-2" min="1" max="7" readonly="readonly">
                                 </div>
                                 {{$add_product_error(OLD_PRICE)}}
                             </div>

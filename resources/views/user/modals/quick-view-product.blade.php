@@ -11,9 +11,7 @@
                     <div class="grace-form-body row row-cols-1 row-cols-md-2 justify-content-evenly px-lg-0 py-3">
                         <input type="hidden" name="add_cart_product_id" id="add_cart_product_id">
                         {{-- Product Quick View Main Image --}}
-                        <article class="product-quick-view-img col rounded-3">
-                            <img src="" alt="">
-                        </article>
+                        <article class="product-quick-view-img col rounded-3"></article>
                         <article class="product-quick-view-info col d-grid gap-3 mt-2">
                             {{-- Product Quick View Name & Price --}}
                             <div class="product-info-name-price d-grid gap-3">
@@ -37,7 +35,7 @@
                                 {{-- Product Quick View Select Size --}}
                                 <div class="add-cart-product-size-quick-view col-8" data-product_size_quick_view="{{json_encode(PRODUCT_SIZE_ENUM, JSON_THROW_ON_ERROR)}}">
                                     <div class="form-group position-relative mb-2">
-                                        <label class="label-select position-absolute user-select-none pe-none">
+                                        <label for="add_cart_product_size_quick_view" class="label-select position-absolute user-select-none pe-none">
                                             <sup class="me-1">*</sup>{{ucfirst(SIZES)}}
                                         </label>
                                         <select name="add_cart_product_size_quick_view[]" id="add_cart_product_size_quick_view" class="product-size-quick-view" multiple="multiple" aria-required="true"></select>

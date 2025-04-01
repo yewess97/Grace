@@ -194,3 +194,12 @@
 .admin-table .table .review-rating {
     width: 10rem;
 }
+
+/*********************************************************************/
+
+
+/* ======================================== Modals ======================================== */
+.modal .modal-body #add_product_old_price {
+    color: var(--mute-color) !important;
+    pointer-events:none;
+}
