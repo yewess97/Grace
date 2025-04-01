@@ -27,14 +27,14 @@ class SecurityHeadersPolicy
         $nonce = base64_encode(random_bytes(16));
 
         // Content Security Policy (CSP) - Prevents XSS, data injection, and unauthorized resource loading
-//        $response->header('Content-Security-Policy',
-//            "default-src 'self';
-//            script-src 'self' fonts.gstatic.com cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
-//            style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
-//            font-src 'self' fonts.googleapis.com;
-//            img-src 'self' data:;
-//            frame-ancestors 'self';"
-//        );
+        $response->header('Content-Security-Policy',
+            "default-src 'self';
+            script-src 'self' fonts.gstatic.com cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
+            style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
+            font-src 'self' fonts.googleapis.com;
+            img-src 'self' data:;
+            frame-ancestors 'self';"
+        );
 
         // X-Content-Type-Options - Prevents browsers from MIME-type sniffing
         $response->header('X-Content-Type-Options', 'nosniff');

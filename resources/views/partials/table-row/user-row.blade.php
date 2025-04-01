@@ -1,4 +1,4 @@
-<tr id="row_{{$user->id}}" style="{{$user->isAdmin ? 'background-color:#ffffe0': ''}}">
+<tr id="row_{{$user->id}}" class="{{$user->isAdmin ? 'highlight-background': ''}}">
     @checkRow($user->id)
     @loopIteration()
     <td>

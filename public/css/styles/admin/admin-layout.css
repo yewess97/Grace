@@ -107,11 +107,10 @@
     display: block;
 }
 
-
 /*********************************************************************/
 
 
-/* ======================================== Actions on Closing Navigation Menu ======================================== */
+/* ======================================== Closing Navigation Menu Actions ======================================== */
 .nav-menu.close {
     width: var(--sixty-four-pixels);
 }
@@ -226,7 +225,6 @@
     max-width: 100% !important;
 }
 
-
 /*********************************************************************/
 
 
@@ -246,7 +244,6 @@
     min-height: 100dvh;
     padding-block: var(--thirty-five-pixels);
 }
-
 
 /*++++++++++++++++++++++++++++++++++++++++++++++*/
 
@@ -269,6 +266,3 @@
     -ms-transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
     transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
 }
-
-
-/*********************************************************************/

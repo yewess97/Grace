@@ -13,6 +13,7 @@
     transition: var(--trans-300);
 }
 
+
 .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .card {
     -webkit-transition: var(--trans-500);
     -moz-transition: var(--trans-500);

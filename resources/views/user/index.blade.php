@@ -67,7 +67,7 @@
                                 @foreach($services as $service)
                                     <div class="service d-flex align-items-center w-25">
                                         <article class="service-icon">
-                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="Grace Service" style="max-width:35px!important;height:35px!important;">
+                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="{{config('app.name')}} Service">
                                         </article>
                                         <article class="service-info overflow-hidden">
                                             <h6 class="fs-6 fw-600 lh-1 text-capitalize">{{ $service->{TITLE} }}</h6>

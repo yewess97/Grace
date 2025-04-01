@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Random\RandomException;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -10,9 +11,11 @@ class ViewServiceProvider extends ServiceProvider
      * Bootstrap services.
      *
      * @return void
+     * @throws RandomException
      */
     final public function boot(): void
     {
+        // Share common data with all views
         view()->composer(
             [USER_MODEL.".*"],
             static function ($view) {
@@ -25,5 +28,8 @@ class ViewServiceProvider extends ServiceProvider
                 ]);
             }
         );
+
+        // Generate a unique nonce for inline scripts and styles to enhance security
+        view()->share('nonce', base64_encode(random_bytes(16)));
     }
 }

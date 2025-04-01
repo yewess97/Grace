@@ -43,11 +43,11 @@
                                 <circle class="lamp-light" cx="119.676" cy="44.22" r="40.51" fill="#efefef"/>
                                 <path class="lamp-details" d="M149.306,71.528c0,3.242-13.37,13.889-29.861,13.889S89.583,75.232,89.583,71.528c0-4.166,13.369-13.889,29.861-13.889S149.306,67.362,149.306,71.528z" fill="#202425"/>
                                 <radialGradient class="light-gradient" id="SVGID_1_" cx="119.676" cy="44.22" r="65" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" style="stop-color:var(--white-color); stop-opacity: 1"/>
-                                    <stop offset="50%" style="stop-color:#ededed; stop-opacity: 0.5">
+                                    <stop offset="0%"/>
+                                    <stop offset="50%">
                                         <animate attributeName="stop-opacity" values="0.0; 0.5; 0.0" dur="5000ms" repeatCount="indefinite"></animate>
                                     </stop>
-                                    <stop offset="100%" style="stop-color:#ededed; stop-opacity: 0"/>
+                                    <stop offset="100%"/>
                                 </radialGradient>
                                 <circle class="lamp-light__glow" fill="url(#SVGID_1_)" cx="119.676" cy="44.22" r="65"/>
                                 <path class="lamp-bottom" d="M135.417,487.781c0,1.378-1.244,2.496-2.778,2.496H106.25c-1.534,0-2.778-1.118-2.778-2.496v-74.869c0-1.378,1.244-2.495,2.778-2.495h26.389c1.534,0,2.778,1.117,2.778,2.495V487.781z" fill="#0c0e10"/>

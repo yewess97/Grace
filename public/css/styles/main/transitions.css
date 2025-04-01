@@ -21,6 +21,7 @@ input[type="checkbox"] + .custom-check,
     transition: var(--trans-300);
 }
 
+
 .img-hover-effect::before,
 .img-hover-effect:hover::before,
 .img-hover-effect::after,

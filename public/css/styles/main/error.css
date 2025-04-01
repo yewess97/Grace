@@ -11,6 +11,9 @@
     font-family: "Fira Sans", "Lobster", "Poppins", system-ui, sans-serif;
 }
 
+/*++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
 /* -------------================ Left Side ================------------- */
 .error-main .left-side .door-hanger {
     width: calc(var(--forty-pixels) * 5);
@@ -44,22 +47,25 @@
     color: var(--light-gray-color);
 }
 
+/*++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
 /* -------------================ Right Side ================------------- */
 .error-main .right-side {
     height: 70vh;
 }
 
-/*.error-main .right-side .error-svg .lamp .light-gradient stop:first-child {*/
-/*    stop-color: var(--white-color);*/
-/*    stop-opacity: 1;*/
-/*}*/
+.error-main .right-side .error-svg #lamp .light-gradient stop:first-child {
+    stop-color: var(--white-color);
+    stop-opacity: 1;
+}
 
-/*.error-main .right-side .error-svg .lamp .light-gradient stop:nth-child(2) {*/
-/*    stop-color: #ededed;*/
-/*    stop-opacity: 0.5;*/
-/*}*/
+.error-main .right-side .error-svg #lamp .light-gradient stop:nth-child(2) {
+    stop-color: #ededed;
+    stop-opacity: 0.5;
+}
 
-/*.error-main .right-side .error-svg .lamp .light-gradient stop:last-child {*/
-/*    stop-color: #ededed;*/
-/*    stop-opacity: 0;*/
-/*}*/
+.error-main .right-side .error-svg #lamp .light-gradient stop:last-child {
+    stop-color: #ededed;
+    stop-opacity: 0;
+}

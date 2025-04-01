@@ -410,8 +410,6 @@ const Admin = {
                     target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                    console.log(data);
-
                     const data_actions = {
                         true: () => {
                             let url = main_page;

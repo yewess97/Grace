@@ -3,9 +3,7 @@
 @import url('admin/small-mobiles.css');
 @import url('admin/mobiles-portrait.css');
 @import url('admin/mobiles.css');
-/*@import url('admin/tablets.css');*/
 @import url('admin/desktops.css');
-/*@import url('admin/large-desktops.css');*/
 @import url('admin/common-breakpoints/mobiles-tablets.css');
 @import url('admin/common-breakpoints/all-screens.css');
 @import url('admin/admin-responsive-transitions.css');

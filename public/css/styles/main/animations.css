@@ -60,6 +60,7 @@
     }
 }
 
+
 /* --------- Contact Us --------- */
 @keyframes fly-send {
     from {
@@ -72,6 +73,7 @@
         transform: translateY(calc(var(--two-pixels) * -1));
     }
 }
+
 
 /* --------- Error Code --------- */
 @keyframes swing {

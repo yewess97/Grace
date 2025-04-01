@@ -17,6 +17,9 @@
     margin: 0 !important;
 }
 
+/*++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
 /* -------------================ Left Side ================------------- */
 .products-main .left-side .box-filter {
     margin-bottom: var(--thirty-pixels);
@@ -133,6 +136,8 @@
     pointer-events: auto;
     -webkit-appearance: none;
 }
+
+/*++++++++++++++++++++++++++++++++++++++++++++++*/
 
 
 /* -------------================ Right Side ================------------- */

@@ -1,4 +1,4 @@
-<tr id="row_{{$product->id}}" style="{{$product->{SUBCATEGORIES_TABLE}->isEmpty() ? 'background-color:#ffffe0': ''}}">
+<tr id="row_{{$product->id}}" class="{{$product->{CATEGORIES_TABLE}?->isEmpty() || $product->{SUBCATEGORIES_TABLE}?->isEmpty() ? 'highlight-background' : ''}}">
     @checkRow($product->id)
     @loopIteration()
     <td>

@@ -141,43 +141,16 @@ ul {
     cursor: pointer !important;
 }
 
-/* --------- Preloader --------- */
-#preloader {
-    inset: 0;
-    z-index: 9999;
-    background-color: rgba(255, 255, 255, 0.85);
+.highlight-background {
+    background-color: #ffffe0 !important;
 }
 
-#preloader .preloader-container .preloader-cart :is(.cart-lines, .cart-lines .cart-top, .cart-lines .cart-wheel1, .cart-lines .cart-wheel2, .cart-lines :where(.cart-wheel1, .cart-wheel2) .cart-wheel-stroke) {
-    animation: cart-lines 2000ms ease-in-out infinite;
-}
-
-#preloader .preloader-container .preloader-cart .cart-lines {
-    stroke: var(--main-color);
-}
-
-#preloader .preloader-container .preloader-cart .cart-lines .cart-top {
-    animation-name: cart-top;
-}
-
-#preloader .preloader-container .preloader-cart .cart-lines .cart-wheel1 {
-    animation-name: cart-wheel1;
-    -ms-transform: rotate(-0.25turn);
-    transform: rotate(-0.25turn);
-    -webkit-transform-origin: 2.688rem 6.938rem;
-    transform-origin: 2.688rem 6.938rem;
-}
-
-#preloader .preloader-container .preloader-cart .cart-lines .cart-wheel2 {
-    animation-name: cart-wheel2;
-    -ms-transform: rotate(0.25turn);
-    transform: rotate(0.25turn);
-    -webkit-transform-origin: 6.375rem 6.938rem;
-    transform-origin: 6.375rem 6.938rem;
-}
-
-#preloader .preloader-container .preloader-cart .cart-lines :is(.cart-wheel1, .cart-wheel2) .cart-wheel-stroke {
-    animation-name: cart-wheel-stroke;
+/* --------- Offers --------- */
+.nav-offer .offer-sale p {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    white-space: nowrap;
 }
 
 /* --------- Menu Badge --------- */
@@ -219,12 +192,35 @@ ul.dropdown-content {
     background-color: transparent;
 }
 
-/* --------- Offers --------- */
-.nav-offer .offer-sale p {
+/* --------- Images Hover Effect --------- */
+.img-hover-effect::before,
+.img-hover-effect::after {
+    content: "";
     position: absolute;
+    top: 0;
     left: 0;
     width: 100%;
-    white-space: nowrap;
+    height: 100%;
+}
+
+.img-hover-effect::before {
+    border: calc(var(--sixty-four-pixels) + var(--six-pixels)) solid rgba(255, 255, 255, 0);
+}
+
+.img-hover-effect:hover::before {
+    border: 0 solid rgba(255, 255, 255, 0.7);
+}
+
+.img-hover-effect::after {
+    border: var(--thirty-pixels) solid var(--white-color);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+
+.img-hover-effect:hover::after {
+    opacity: 0;
+    -ms-transform: scale(0.8);
+    transform: scale(0.8);
 }
 
 /* --------- Common Opacity & Visibility --------- */

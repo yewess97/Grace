@@ -1,0 +1,19 @@
+.nav-breadcrumb {
+    --mdb-breadcrumb-divider: '>';
+}
+
+.nav-breadcrumb.breadcrumb-navigation {
+    background-color: #fafafa !important;
+}
+
+.nav-breadcrumb .breadcrumb {
+    margin-top: var(--twenty-pixels) !important;
+}
+
+.nav-breadcrumb .breadcrumb .breadcrumb-item {
+    color: var(--main-color) !important;
+}
+
+.nav-breadcrumb .breadcrumb .breadcrumb-item.active {
+    color: var(--second-color) !important;
+}

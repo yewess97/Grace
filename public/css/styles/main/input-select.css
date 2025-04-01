@@ -223,3 +223,7 @@ input[type=search]::-webkit-search-cancel-button {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
 }
+
+.clear-search-btn:hover {
+    background-color: var(--mute-color);
+}

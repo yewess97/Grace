@@ -2,6 +2,13 @@
 
 @section('content')
 
+    {{-- About Us Main Style --}}
+    <style nonce="{{ $nonce }}">
+        .about-us-main .about-new {
+            background: url('{{ imageSource('about/about-new.png') }}'), fixed no-repeat center center / cover;
+        }
+    </style>
+
     {{-- About Us Main --}}
     <main role="main" class="about-us-main py-6">
         <div class="container">
@@ -60,7 +67,7 @@
                 </div>
                 {{-- About New --}}
                 <div class="col-12">
-                    <div class="box-content about-new position-relative d-grid place-items-center rounded-5" style="background: url('{{imageSource('about/about-new.png')}}'), fixed no-repeat center center/cover">
+                    <div class="box-content about-new position-relative d-grid place-items-center rounded-5">
                         <div class="about-new-content col-12 col-md-6 d-grid place-items-center gap-4 text-center">
                             <h2 class="about-new-title fs-4 fw-600 text-white">New In!</h2>
                             <p class="fs-6 text-white">

@@ -1,4 +1,4 @@
-/* --------- Carousels Nav Buttons --------- */
+/* --------- Carousel Nav Buttons --------- */
 .owl-nav:not(.home-product-main .product-right-side .product-imgs-info .product-images .product-thumb-images-carousel .owl-nav) {
     position: absolute;
     top: calc((var(--sixty-four-pixels) + var(--four-pixels)) * -1);
@@ -19,7 +19,7 @@
     color: var(--white-color) !important;
 }
 
-/* --------- Carousels Dots --------- */
+/* --------- Carousel Dots --------- */
 .owl-dots .owl-dot.active > span {
     background-color: var(--main-color) !important;
 }
@@ -30,25 +30,4 @@
 
 .owl-dots .owl-dot:not(.owl-dot.active):hover > span {
     background-color: #869791 !important;
-}
-
-/* --------- Breadcrumbs --------- */
-.nav-breadcrumb {
-    --mdb-breadcrumb-divider: '>';
-}
-
-.nav-breadcrumb.breadcrumb-navigation {
-    background-color: #fafafa !important;
-}
-
-.nav-breadcrumb .breadcrumb {
-    margin-top: var(--twenty-pixels) !important;
-}
-
-.nav-breadcrumb .breadcrumb .breadcrumb-item {
-    color: var(--main-color) !important;
-}
-
-.nav-breadcrumb .breadcrumb .breadcrumb-item.active {
-    color: var(--second-color) !important;
 }

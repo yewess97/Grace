@@ -7,7 +7,6 @@
     row-gap: var(--thirty-pixels);
 }
 
-
 /*********************************************************************/
 
 
@@ -181,7 +180,6 @@
     height: var(--forty-five-pixels);
 }
 
-
 /*********************************************************************/
 
 
@@ -215,8 +213,13 @@
     padding: var(--twenty-pixels) var(--fifteen-pixels);
 }
 
-.home-product-main .home-right-side .home-services .main-services .service:nth-child(odd) > .service-icon {
-    width: var(--forty-five-pixels);
+.home-product-main .home-right-side .home-services .main-services .service > .service-icon {
+    max-width: var(--forty-five-pixels);
+}
+
+.home-product-main .home-right-side .home-services .main-services .service > .service-icon > img {
+    max-width: 35px !important;
+    height: 35px !important;
 }
 
 .home-product-main .home-right-side .home-services .main-services .service > .service-info {
@@ -226,8 +229,8 @@
 .home-product-main .home-right-side .home-services .main-services .service > .service-info p {
     margin-top: var(--eleven-pixels);
     line-height: var(--seventeen-pixels);
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 /* ------------------ Home Partners ------------------ */
@@ -248,7 +251,6 @@
 .home-product-main .home-right-side .home-partners .partners-carousel .partner-img:hover {
     opacity: 1;
 }
-
 
 /*++++++++++++++++++++++++++++++++++++++++++++++*/
 
@@ -303,7 +305,6 @@
     right: -3%;
 }
 
-
 /* ------------------ Product Info ------------------ */
 .home-product-main .product-right-side .product-imgs-info .product-info {
     gap: var(--twenty-pixels);
@@ -333,7 +334,6 @@
     font-size: var(--twelve-pixels);
     background-color: var(--black-color);
 }
-
 
 /* ------------------ Product Details & Reviews ------------------ */
 .home-product-main .product-right-side .product-details-reviews .product-details-reviews-title {
@@ -375,7 +375,6 @@
 .home-product-main .product-right-side .product-details-reviews .product-details-reviews-content .reviews .review-form.show-form {
     display: flex !important;
 }
-
 
 /* ------------------ Related Products ------------------ */
 .home-product-main .product-right-side .related-products {

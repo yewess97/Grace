@@ -3,12 +3,14 @@
 @import url('styles/main/root.css');
 @import url('styles/main/default.css');
 @import url('styles/main/layout.css');
+@import url('styles/main/preloader.css');
 @import url('styles/main/standard.css');
 @import url('styles/main/input-select.css');
 @import url('styles/main/table.css');
 @import url('styles/main/button.css');
-@import url('styles/main/box-image.css');
-@import url('styles/main/carousel-breadcrumb.css');
+@import url('styles/main/box-content.css');
+@import url('styles/main/carousel.css');
+@import url('styles/main/breadcrumb.css');
 @import url('styles/main/form.css');
 @import url('styles/main/review.css');
 @import url('styles/main/order-details.css');
