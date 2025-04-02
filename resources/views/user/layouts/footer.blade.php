@@ -97,10 +97,8 @@
                             <ul role="list" class="d-flex align-items-center gap-1">
                                 @php($stores = ['google-play', 'app-store'])
                                 @foreach($stores as $store)
-                                    <li role="listitem">
-                                        <a href="javascript:;" role="link" class="d-block p-0 overflow-hidden rounded-3">
-                                            <img src="{{imageSource("$store.png")}}" alt="Our App on {{capitalizeAll($store)}}">
-                                        </a>
+                                    <li role="listitem" class="d-block p-0 overflow-hidden rounded-3 cursor-pointer">
+                                        <img src="{{imageSource("$store.png")}}" alt="Our App on {{capitalizeAll($store)}}">
                                     </li>
                                 @endforeach
                             </ul>

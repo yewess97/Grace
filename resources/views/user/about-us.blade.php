@@ -3,7 +3,7 @@
 @section('content')
 
     {{-- About Us Main Style --}}
-    <style nonce="{{ $nonce }}">
+    <style nonce="{{$nonce}}">
         .about-us-main .about-new {
             background: url('{{ imageSource('about/about-new.png') }}'), fixed no-repeat center center / cover;
         }

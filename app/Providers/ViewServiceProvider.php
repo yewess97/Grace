@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Random\RandomException;
 
@@ -11,7 +12,7 @@ class ViewServiceProvider extends ServiceProvider
      * Bootstrap services.
      *
      * @return void
-     * @throws RandomException
+     * @throws RandomException|BindingResolutionException
      */
     final public function boot(): void
     {
@@ -30,6 +31,8 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         // Generate a unique nonce for inline scripts and styles to enhance security
-        view()->share('nonce', base64_encode(random_bytes(16)));
+        app()->singleton('csp_nonce', fn() => base64_encode(random_bytes(16)));
+
+        view()->share('nonce', app()->make('csp_nonce'));
     }
 }

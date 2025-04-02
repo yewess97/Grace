@@ -3,11 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Random\RandomException;
 
 class SecurityHeadersPolicy
 {
@@ -17,24 +17,16 @@ class SecurityHeadersPolicy
      * @param Request $request
      * @param Closure $next
      * @return Closure|Response|RedirectResponse|JsonResponse
-     * @throws RandomException
+     * @throws BindingResolutionException
      */
     final public function handle(Request $request, Closure $next): Closure|Response|RedirectResponse|JsonResponse
     {
         $response = $next($request);
 
         // Generate a unique nonce for inline scripts and styles to enhance security
-        $nonce = base64_encode(random_bytes(16));
+        $nonce = app()->make('csp_nonce');
 
-        // Content Security Policy (CSP) - Prevents XSS, data injection, and unauthorized resource loading
-        $response->header('Content-Security-Policy',
-            "default-src 'self';
-            script-src 'self' fonts.gstatic.com cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
-            style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com 'nonce-{$nonce}';
-            font-src 'self' fonts.googleapis.com;
-            img-src 'self' data:;
-            frame-ancestors 'self';"
-        );
+        $response->header('Content-Security-Policy', "default-src 'self'; script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com www.gstatic.com 'nonce-{$nonce}'; style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com www.gstatic.com 'nonce-{$nonce}' 'sha256-3ITP0qhJJYBulKb1omgiT3qOK6k0iB3rMDhGfpM8b7c=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-ORYTfWgGeaDP2b2S7MVkXsd+c7Cui4ZVcoC+HzzP/nM=' 'sha256-rRl7CHm+5M/6W322VSJ6spPUB/xQLLTchIPOFgti90E=' 'unsafe-hashes'; font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com fonts.gstatic.com data:; connect-src 'self' www.gstatic.com restcountries.com; img-src 'self' data:; frame-ancestors 'self';");
 
         // X-Content-Type-Options - Prevents browsers from MIME-type sniffing
         $response->header('X-Content-Type-Options', 'nosniff');

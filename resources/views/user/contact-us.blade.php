@@ -140,7 +140,7 @@
 @endsection
 
 @section('user-js')
-    <script type="application/javascript">
+    <script nonce="{{$nonce}}" type="application/javascript">
         (function(){
             emailjs.init("Tw1jJXLceJmoL24nI");
         })();
