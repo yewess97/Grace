@@ -44,10 +44,9 @@
     }
 
     .nav-menu .nav-menu-content .nav-menu-header .nav-menu-close {
-        padding: var(--two-pixels) var(--four-pixels);
-        background: var(--second-color);
-        color: var(--main-color);
-        border: var(--one-pixel) solid var(--second-color);
+        font-size: var(--twenty-pixels);
+        background: var(--main-color);
+        color: var(--second-color);
     }
 
     .nav-menu .nav-menu-main :is(ul.nav-menu-list, ul.nav-submenu-list) {

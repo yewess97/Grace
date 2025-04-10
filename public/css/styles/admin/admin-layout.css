@@ -258,11 +258,44 @@
     box-shadow: 0 var(--eight-pixels) var(--fifty-pixels) rgba(132, 139, 200, 0.18);
 }
 
-.main-admin-body .main-header .main-header-admin-profile > .admin-profile > .admin-name {
-    color: var(--black-color);
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification > .notification-icon:focus {
+    color: var(--second-color);
 }
 
-.main-admin-body .main-header .main-header-admin-profile > .admin-profile > .dropdown-menu {
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification > .notification-icon:after {
+    display: none;
+}
+
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu {
+    width: calc((var(--forty-eight-pixels) * 5) + var(--ten-pixels));
+    max-height: calc((var(--forty-eight-pixels) * 5) + var(--sixteen-pixels));
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item {
+    padding: var(--ten-pixels) var(--fifteen-pixels);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item:not(:last-child) {
+    padding-bottom: 0;
+}
+
+.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item:not(:first-child)::before {
+    content: "";
+    position: relative;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    margin-bottom: var(--ten-pixels);
+    border-top: var(--border);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+.main-admin-body .main-header .main-header-admin-notification-profile :is(.admin-notification, .admin-profile) > .dropdown-menu {
     -ms-transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
     transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
 }

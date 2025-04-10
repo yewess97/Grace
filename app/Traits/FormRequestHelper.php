@@ -57,7 +57,7 @@ trait FormRequestHelper
      * @param  string|null  $type
      * @return array<string, string>
      */
-    private function dataAttributes(string $type = null): array
+    private function dataAttributes(?string $type = null): array
     {
         [$dataKeys, $dataValues] = Arr::divide($this->data());
 
@@ -133,7 +133,7 @@ trait FormRequestHelper
      * @param string|null $uniqueCollection
      * @return array<string, string>
      */
-    final protected function validationMessages(string $attribute, int $min, int $max, string $regexRules = null, string $uniqueCollection = null): array
+    final protected function validationMessages(string $attribute, int $min, int $max, ?string $regexRules = null, ?string $uniqueCollection = null): array
     {
         $cap_attribute = capitalizeAll($attribute);
 
@@ -182,7 +182,7 @@ trait FormRequestHelper
      * @param bool $isMessage
      * @return array<string, string>
      */
-    final protected function categorySubcategoryNameValidation(string|null $id, string $tableName, string $uniqueCollectionForMessage = null, bool $isMessage = false): array
+    final protected function categorySubcategoryNameValidation(string|null $id, string $tableName, ?string $uniqueCollectionForMessage = null, bool $isMessage = false): array
     {
         $unique_collection = Rule::unique($tableName, SLUG);
 
@@ -208,7 +208,7 @@ trait FormRequestHelper
      * @param string|null $id
      * @return array<string, string>
      */
-    final protected function userValidation(string $requestType, bool $isMessage = false, string $id = null): array
+    final protected function userValidation(string $requestType, bool $isMessage = false, ?string $id = null): array
     {
         $cap_token           = ucfirst(TOKEN);
         $cap_email           = ucfirst(EMAIL);
@@ -375,7 +375,7 @@ trait FormRequestHelper
      * @param bool $isMessage
      * @return array<string, string>
      */
-    final protected function multipleSelectionValidation(string $attribute, int|string $max, string $tableName = null, string $capAttribute = null, bool $isMessage = false): array
+    final protected function multipleSelectionValidation(string $attribute, int|string $max, ?string $tableName = null, ?string $capAttribute = null, bool $isMessage = false): array
     {
         $multiple_selection_rules = [
             $this->dataKeyOf($attribute) => ["array", "min:1", "max:$max"],
@@ -423,7 +423,7 @@ trait FormRequestHelper
      * @param string|null $inRules
      * @return array<string, string>
      */
-    final protected function booleanValidation(string $attribute, bool $isMessage = false, string $inRules = null): array
+    final protected function booleanValidation(string $attribute, bool $isMessage = false, ?string $inRules = null): array
     {
         $cap_attribute = ucfirst($attribute);
 

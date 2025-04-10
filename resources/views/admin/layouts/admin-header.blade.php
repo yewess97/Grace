@@ -24,10 +24,25 @@
                 <h1 role="heading" class="main-header-title fs-5 fs-lg-4 fw-600">{{$title}}</h1>
             </article>
 
-            {{-- Header Main Admin Profile --}}
-            <article class="main-header-admin-profile col col-lg-6 d-flex justify-content-end">
+            {{-- Header Main Admin --}}
+            <article class="main-header-admin-notification-profile col col-lg-6 d-flex justify-content-end align-items-center gap-4">
+                {{-- Notification --}}
+                <div class="admin-notification dropdown">
+                    <button type="button" role="button" title="Notifications" id="admin_notification_menu" class="notification-icon dropdown-toggle bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-regular fa-bell fs-5"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger">1</span>
+                    </button>
+                    <ul role="list" class="dropdown-menu" aria-labelledby="admin_notification_menu">
+                        <li role="listitem" class="notification-list-item">
+                            <p class="notification-text mb-2">User Folany has joined to the website</p>
+                            <span class="notification-timer text-muted">a few seconds ago</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Profile --}}
                 <div class="admin-profile dropdown">
-                    <button type="button" role="button" title="{{ auth()->user()->{FULL_NAME} }}" id="admin_heading_menu" class="admin-name dropdown-toggle fs-6 fw-500 bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">@userFullName()</button>
+                    <button type="button" role="button" title="{{ auth()->user()->{FULL_NAME} }}" id="admin_heading_menu" class="admin-name dropdown-toggle fs-6 fw-500 text-black bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">@userFullName()</button>
                     <ul role="list" class="dropdown-menu" aria-labelledby="admin_heading_menu">
                         <li role="listitem">
                             <a href="{{route(PROFILE)}}" role="link" class="dropdown-item d-block">My {{ucfirst(PROFILE)}}</a>

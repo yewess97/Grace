@@ -57,7 +57,7 @@
                                 <span class="metrics-statistic-icon me-2">
                                     <i class="ti ti-stats-{{$order_metric->statistic > 0 ? 'up' : 'down'}}"></i>
                                 </span>
-                                        <span class="metrics-statistic-num">{{number_format($order_metric->statistic), 2}}%</span>
+                                        <span class="metrics-statistic-num">{{number_format($order_metric->statistic, 2)}}%</span>
                                     </article>
                                 </div>
                             </li>

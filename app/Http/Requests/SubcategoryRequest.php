@@ -17,9 +17,9 @@ class SubcategoryRequest extends FormRequest
      * @param string|null $id
      * @return array<string, mixed>
      */
-    final public function rules(string $id = null): array
+    final public function rules(?string $id = null): array
     {
-        $this->max_categories = (count(value: $this->dataValues()[2]) === 5) ? 5 : 4;
+        $this->max_categories = (count((array) $this->dataValues()[2]) === 5) ? 5 : 4;
 
         return [
             ...$this->categorySubcategoryNameValidation($id, SUBCATEGORIES_TABLE),

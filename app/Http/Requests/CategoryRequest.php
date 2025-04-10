@@ -15,7 +15,7 @@ class CategoryRequest extends FormRequest
      * @param string|null $id
      * @return array<string, mixed>
      */
-    final public function rules(string $id = null): array
+    final public function rules(?string $id = null): array
     {
         return [
             ...$this->categorySubcategoryNameValidation($id, CATEGORIES_TABLE),

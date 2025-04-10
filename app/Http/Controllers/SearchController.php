@@ -155,7 +155,7 @@ class SearchController extends Controller
      * @return JsonResponse
      * @throws ValidationException|NotFoundHttpException|Throwable
      */
-    final public function searchUsers(string $type = null): JsonResponse
+    final public function searchUsers(?string $type = null): JsonResponse
     {
         $filter_users_attribute = array(Arr::last(USER_ATTRIBUTES));
 
@@ -203,7 +203,7 @@ class SearchController extends Controller
      * @return JsonResponse
      * @throws ValidationException|NotFoundHttpException|Throwable
      */
-    final public function searchOrders(int $status, string $type = null): JsonResponse
+    final public function searchOrders(int $status, ?string $type = null): JsonResponse
     {
         $orders = Order::query()->latest()
             ->whereStatus($status);

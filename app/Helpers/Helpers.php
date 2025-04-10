@@ -293,8 +293,8 @@ if (!function_exists('commonCollections')) {
     function commonCollections(): array
     {
         $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
-        $categories    = Category::all([...$categories_subcategories_common, BANNER_IMAGE]);
-        $subcategories = Subcategory::all($categories_subcategories_common);
+        $categories    = Category::select([...$categories_subcategories_common, BANNER_IMAGE])->get();
+        $subcategories = Subcategory::select($categories_subcategories_common)->get();
         $new_products  = Product::query()->latest()->take(4)->get(PRODUCT_ITEM_ATTRIBUTES);
 
         if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
@@ -762,9 +762,11 @@ if (!function_exists('validateAttributes')) {
     {
         $validator = Validator::make($formRequest->data(), $formRequest->rules($extraValidationCheck ?? null), $formRequest->messages());
 
-        return $validator->fails()
-            ? throw new ValidationException($validator, responseValidationError($validator))
-            : $validator;
+        if ($validator->fails()) {
+            throw new ValidationException($validator, responseValidationError($validator));
+        }
+
+        return $validator;
     }
 }
 
@@ -798,11 +800,14 @@ if (!function_exists('noResultsException')) {
     function noResultsException(LengthAwarePaginator $model): void
     {
         if ($model->isEmpty()) {
-            request()?->ajax()
-                ? throw new NotFoundHttpException('no-results')
-                : Session::flash('no_results');
+            if (request()?->ajax()) {
+                throw new NotFoundHttpException('no-results');
+            }
+            
+            Session::flash('no_results');
         }
-
+       
+        Session::forget('no_results');
     }
 }
 

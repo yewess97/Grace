@@ -20,7 +20,7 @@ class BlueprintServiceProvider extends ServiceProvider
          * @param string|null $model
          * @return void
          */
-        Blueprint::macro(NAME.ucfirst(SLUG), function (string $model = null) {
+        Blueprint::macro(NAME.ucfirst(SLUG), function (?string $model = null) {
             isset($model) && $model === PRODUCT_MODEL
                 ? $this->string(NAME, 300)->index()
                 : $this->string(NAME)->index();

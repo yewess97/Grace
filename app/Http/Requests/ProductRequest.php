@@ -17,12 +17,13 @@ class ProductRequest extends FormRequest
      * @param string|null $id
      * @return array<string, mixed>
      */
-    final public function rules(string $id = null): array
+    final public function rules(?string $id = null): array
     {
         if ($this->operation === FILTER) {
             if (in_array(SORT, $this->modelAttributes, true)) {
                 return [
-                    $this->dataKeyOf(SORT) => ['required', 'string'],
+                    $this->dataKeyOf(SORT) =>
+                        ['required', 'string', 'in:'.implode(',', array_values(SORT_PRODUCTS_ENUM))],
                 ];
             }
 
@@ -75,6 +76,7 @@ class ProductRequest extends FormRequest
                 return [
                     ...$this->requiredMessage($this->dataKeyOf(SORT), $cap_sort),
                     "{$this->dataKeyOf(SORT)}.string" => "$cap_sort must be a text",
+                    "{$this->dataKeyOf(SORT)}.in"     => "$cap_sort must be one of the following: ".implode(', ', array_values(SORT_PRODUCTS_ENUM)),
                 ];
             }
 

@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
      * @param string|null $id
      * @return array<string, mixed>
      */
-    final public function rules(string $id = null): array
+    final public function rules(?string $id = null): array
     {
         $this->filter_users_attribute = array(Arr::last(USER_ATTRIBUTES));
 

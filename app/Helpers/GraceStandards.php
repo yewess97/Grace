@@ -937,6 +937,17 @@ define("PRODUCT_SIZE_ENUM", [
 ]);
 
 /**
+ * Sort Products Enum.
+ */
+define("SORT_PRODUCTS_ENUM", [
+    'Best Selling'        => 'best-selling',
+    'Alphabetically, A-Z' => 'title-ascending',
+    'Alphabetically, Z-A' => 'title-descending',
+    'Price, low to high'  => 'price-ascending',
+    'Price, high to low'  => 'price-descending',
+]);
+
+/**
  * User Role Enum.
  */
 define("USER_ROLE_ENUM", [

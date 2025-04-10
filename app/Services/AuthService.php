@@ -28,14 +28,15 @@ class AuthService {
     /**
      * Register a new user.
      *
-     * @return null
+     * @return void
      * @throws ValidationException
      */
-    final public function registerUser(): null
+    final public function registerUser(): void
     {
         $user = storeOrUpdateUser(REGISTER);
 
-        return auth()->login($user);
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        auth()->login($user);
     }
 
     /**

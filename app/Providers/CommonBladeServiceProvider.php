@@ -51,7 +51,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? "col-1 ms-3"
                 : "position-absolute top-50";
 
-            return "<?php echo \"<i role='button' title='Close menu' class='fa-solid fa-xmark nav-menu-close $additional_classes fs-7 text-center rounded-circle' aria-label='Close menu' aria-controls=\".$ariaControls.\"></i>\" ?>";
+            return "<?php echo \"<i role='button' title='Close menu' class='fa-solid fa-circle-xmark nav-menu-close $additional_classes text-center rounded-circle' aria-label='Close menu' aria-controls=\".$ariaControls.\"></i>\" ?>";
         });
 
         /**

@@ -16,7 +16,7 @@ class AuthRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    final public function rules(string $requestType = null): array
+    final public function rules(?string $requestType = null): array
     {
         $this->requestType = $requestType ?? REGISTER;
 

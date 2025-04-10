@@ -80,7 +80,7 @@ class User extends Authenticatable
      * @param int|null $id
      * @return static
      */
-    final public static function profileData(int $id = null): static
+    final public static function profileData(?int $id = null): static
     {
         return static::query()->select(USER_SELECTED_ATTRIBUTES)
             ->with([

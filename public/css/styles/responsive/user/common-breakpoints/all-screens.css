@@ -100,11 +100,10 @@
 
     .nav-menu .nav-menu-content .nav-menu-header .nav-menu-close {
         right: var(--twelve-pixels);
-        padding: var(--two-pixels) var(--four-pixels);
         z-index: 99;
-        background-color: var(--second-color);
-        color: var(--main-color);
-        border: var(--one-pixel) solid var(--second-color);
+        font-size: var(--twenty-pixels);
+        background: var(--main-color);
+        color: var(--second-color);
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
     }

@@ -11,6 +11,7 @@
                 {{$filter_products_error(SIZES)}}
                 {{$filter_products_error(MIN_PRICE)}}
                 {{$filter_products_error(MAX_PRICE)}}
+                {{$filter_products_error(SORT)}}
             </section>
             {{-- Main Sides --}}
             <div class="main-sides row flex-lg-nowrap col-12">
@@ -73,17 +74,14 @@
                                     @csrf
                                     <div class="grace-form-body">
                                         <div class="form-group position-relative d-flex align-items-center gap-3">
-                                            <label for="filter_products_sort" class="fw-600">Sort By</label>
+                                            <label for="filter_products_sort" class="fw-600">{{ucfirst(SORT)}} By</label>
                                             <select name="filter_products_sort" id="filter_products_sort" class="form-select col py-2">
-                                                <option disabled hidden selected>Select Filter</option>
-                                                <option value="best-selling">Best Selling</option>
-                                                <option value="title-ascending">Alphabetically, A-Z</option>
-                                                <option value="title-descending">Alphabetically, Z-A</option>
-                                                <option value="price-ascending">Price, low to high</option>
-                                                <option value="price-descending">Price, high to low</option>
+                                                <option disabled hidden selected>Select {{ucfirst(FILTER)}}</option>
+                                                @foreach(SORT_PRODUCTS_ENUM as $sort_type => $sort_value)
+                                                    <option value="{{$sort_value}}">{{$sort_type}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
-    {{--                                    {{$add_cart_product_error(PRODUCT_SIZE)}}--}}
                                     </div>
                                 </form>
                             </div>

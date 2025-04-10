@@ -31,8 +31,7 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         // Generate a unique nonce for inline scripts and styles to enhance security
-        app()->singleton('csp_nonce', fn() => base64_encode(random_bytes(16)));
-
-        view()->share('nonce', app()->make('csp_nonce'));
+        $this->app->singleton('csp_nonce', fn() => base64_encode(random_bytes(16)));
+        view()->share('nonce', $this->app->make('csp_nonce'));
     }
 }
