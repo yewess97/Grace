@@ -293,8 +293,8 @@ if (!function_exists('commonCollections')) {
     function commonCollections(): array
     {
         $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
-        $categories    = Category::select([...$categories_subcategories_common, BANNER_IMAGE])->get();
-        $subcategories = Subcategory::select($categories_subcategories_common)->get();
+        $categories    = Category::get([...$categories_subcategories_common, BANNER_IMAGE]);
+        $subcategories = Subcategory::get($categories_subcategories_common);
         $new_products  = Product::query()->latest()->take(4)->get(PRODUCT_ITEM_ATTRIBUTES);
 
         if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
@@ -803,10 +803,10 @@ if (!function_exists('noResultsException')) {
             if (request()?->ajax()) {
                 throw new NotFoundHttpException('no-results');
             }
-            
+
             Session::flash('no_results');
         }
-       
+
         Session::forget('no_results');
     }
 }
@@ -1004,7 +1004,7 @@ if (!function_exists('getData')) {
 }
 
 
-if (!function_exists(DELETE)) {
+if (!function_exists('custom'.ucfirst(DELETE))) {
     /**
      * Delete a specified record or all/some records of a model.
      *
@@ -1014,13 +1014,15 @@ if (!function_exists(DELETE)) {
      * @return bool
      * @throws NotFoundHttpException
      */
-    function delete(Model|stdClass $model, bool $isMultiple = false, bool $deleteImages = false): bool
+    function customDelete(Model|stdClass $model, bool $deleteImages = false): bool
     {
-        $selected_ids = $isMultiple
-            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
-            : [];
+        $requested_selected_ids = request()?->input('selected_'.pluralize(ID));
 
-        $destroy = static function (mixed $ids) use ($model, $isMultiple, $deleteImages, $selected_ids) {
+        $selected_ids = is_null($requested_selected_ids)
+            ? []
+            : array_map('intval', array_from($requested_selected_ids));
+
+        $destroy = static function (array $ids) use ($model, $deleteImages, $selected_ids) {
             $is_collection_trashed = $model::query()->whereIn(ID, $ids)->get()->every(fn($collection) => Cart::class ? false : $collection->trashed());
 
             if (!$is_collection_trashed) {
@@ -1028,17 +1030,17 @@ if (!function_exists(DELETE)) {
             }
 
             if ($deleteImages) {
-                deleteImages($model, $isMultiple, $selected_ids);
+                deleteImages($model, $selected_ids);
             }
 
-            return $isMultiple
-                ? $model::query()->whereIn(ID, $ids)->forceDelete()
-                : $model->forceDelete();
+            return is_null($selected_ids)
+                ? $model->forceDelete()
+                : $model::query()->whereIn(ID, $ids)->forceDelete();
         };
 
-        return $isMultiple
-            ? $destroy($selected_ids)
-            : $destroy([$model->{ID}]);
+        return empty($selected_ids)
+            ? $destroy([$model->{ID}])
+            : $destroy($selected_ids);
     }
 }
 
@@ -1053,7 +1055,7 @@ if (!function_exists(DELETE.'Images')) {
      * @return bool
      * @throws NotFoundHttpException
      */
-    function deleteImages(Model|stdClass $model, bool $isMultiple = false, array $selectedIds = []): bool
+    function deleteImages(Model|stdClass $model, array $selectedIds = []): bool
     {
         $images_data_list       = [];
         $images                 = [];
@@ -1068,13 +1070,13 @@ if (!function_exists(DELETE.'Images')) {
 
         $exception_message = static fn(array $imageData) => "One or more $imageData[$image_type] in the $table_name named as (".implode(', ', array_unique($imageData[$model_item_name])).") not found in the storage disk!";
 
-        $ids_to_delete = $isMultiple && count($selectedIds)
-            ? $selectedIds
-            : [$model->{ID}];
+        $ids_to_delete = empty($selectedIds)
+            ? [$model->{ID}]
+            : $selectedIds;
 
-        $images_data = static fn(string $imageType) => $isMultiple && count($selectedIds)
-            ? getImagesToDelete($model, $table_name, $imageType, true, $selectedIds)
-            : getImagesToDelete($model, $table_name, $imageType);
+        $images_data = static fn(string $imageType) => empty($selectedIds)
+            ? getImagesToDelete($model, $table_name, $imageType)
+            : getImagesToDelete($model, $table_name, $imageType, true, $selectedIds);
 
         $images_to_delete = $model::query()->whereIn(ID, $ids_to_delete)->onlyTrashed();
 

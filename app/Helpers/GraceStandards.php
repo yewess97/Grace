@@ -11,7 +11,7 @@ define("EDIT",             'edit');
 define("UPDATE",           'update');
 define("SAVE_CHANGES",     'save changes');
 define("REMOVE",           'remove');
-define("DELETE",           'delete');
+define('DELETE',           'delete');
 define("DESTROY",          'destroy');
 define("RESTORE",          'restore');
 define("FILTER",           'filter');

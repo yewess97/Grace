@@ -92,7 +92,7 @@ class AddressService {
      */
     final public function deleteAddress(Address $address): bool
     {
-        return delete($address);
+        return customDelete($address);
     }
 
     /**
@@ -103,7 +103,7 @@ class AddressService {
      */
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
-        return delete($addresses, true);
+        return customDelete($addresses);
     }
 
     /**

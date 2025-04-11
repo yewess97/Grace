@@ -146,7 +146,7 @@ class ProductService
      */
     final public function deleteProduct(Product $product): bool
     {
-        return delete($product, false, true);
+        return customDelete($product, true);
     }
 
     /**
@@ -159,7 +159,7 @@ class ProductService
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        return delete($products, true, true);
+        return customDelete($products, true);
     }
 
     /**

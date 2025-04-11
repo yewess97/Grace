@@ -66,7 +66,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, (new Subcategory()));
         $this->deleteRelatedCollectionItems($category, (new Product()));
 
-        return delete($category, false, true);
+        return customDelete($category, true);
     }
 
     /**
@@ -82,7 +82,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
         $this->deleteRelatedCollectionItems($categories, (new Product()));
 
-        return delete($categories, true, true);
+        return customDelete($categories, true);
     }
 
     /**

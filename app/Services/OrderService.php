@@ -119,7 +119,7 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        return delete($order);
+        return customDelete($order);
     }
 
     /**
@@ -130,7 +130,7 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        return delete($orders, true);
+        return customDelete($orders);
     }
 
     /**

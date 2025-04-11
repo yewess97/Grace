@@ -57,7 +57,7 @@ class SubcategoryService
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        return delete($subcategory, false, true);
+        return customDelete($subcategory, true);
     }
 
     /**
@@ -70,7 +70,7 @@ class SubcategoryService
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        return delete($subcategories, true, true);
+        return customDelete($subcategories, true);
     }
 
     /**

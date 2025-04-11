@@ -106,7 +106,7 @@ class CartService
             return ['decremented'];
         }
 
-        return delete($cart_item);
+        return customDelete($cart_item);
     }
 
     /**
