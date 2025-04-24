@@ -258,44 +258,76 @@
     box-shadow: 0 var(--eight-pixels) var(--fifty-pixels) rgba(132, 139, 200, 0.18);
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification > .notification-icon:focus {
+.main-admin-body .main-header .main-header-admin-notifications-profile .admin-notifications > .notifications-icon:focus {
     color: var(--second-color);
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification > .notification-icon:after {
+.main-admin-body .main-header .main-header-admin-notifications-profile .admin-notifications > .notifications-icon::after {
     display: none;
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu {
-    width: calc((var(--forty-eight-pixels) * 5) + var(--ten-pixels));
-    max-height: calc((var(--forty-eight-pixels) * 5) + var(--sixteen-pixels));
-    overflow-x: hidden;
-    overflow-y: auto;
+.main-admin-body .main-header .main-header-admin-notifications-profile .dropdown-menu {
+    inset: calc(var(--twenty-two-pixels) + 100%) 0 auto auto !important;
+    z-index: 15;
+    color: var(--black-color);
+    -ms-transform: none !important;
+    transform: none !important;
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item {
-    padding: var(--ten-pixels) var(--fifteen-pixels);
-    overflow-x: hidden;
-    overflow-y: auto;
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list {
+    width: calc(var(--sixty-pixels) * 5.5);
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item:not(:last-child) {
-    padding-bottom: 0;
-}
-
-.main-admin-body .main-header .main-header-admin-notification-profile .admin-notification .dropdown-menu li.notification-list-item:not(:first-child)::before {
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list::before {
     content: "";
-    position: relative;
+    position: absolute;
+    right: 0;
+    display: block;
+    width: var(--eighteen-pixels);
+    height: var(--twenty-pixels);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background-color: var(--main-color);
+    -ms-transform: translateY(-100%);
+    transform: translateY(-100%);
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list .notifications-title {
+    line-height: var(--twenty-five-pixels);
+    background-color: var(--main-color);
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list .notifications-title .notifications-title-mark:hover {
+    color: var(--second-color) !important;
+    text-decoration: underline;
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details {
+    max-height: calc((var(--sixty-four-pixels) * 3) + var(--sixteen-pixels));
+    overflow-y: auto;
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details li.notification-item {
+    padding: var(--fifteen-pixels);
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details li.notification-item:not(.no-notifications):hover {
+    background-color: var(--light-gray-color);
+}
+
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details li.notification-item:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--twelve-pixels) * -1);
     left: 50%;
-    display: grid;
-    place-items: center;
-    margin-bottom: var(--ten-pixels);
-    border-top: var(--border);
+    width: 90%;
+    margin-block: var(--ten-pixels);
+    border-top: var(--gray-border);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
 }
 
-.main-admin-body .main-header .main-header-admin-notification-profile :is(.admin-notification, .admin-profile) > .dropdown-menu {
-    -ms-transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
-    transform: translate(var(--eight-pixels), var(--forty-eight-pixels)) !important;
+.main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details li.notification-item .new-notification-circle {
+    right: var(--eight-pixels);
+    width: var(--ten-pixels);
+    height: var(--ten-pixels);
 }

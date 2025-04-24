@@ -6,6 +6,7 @@ use App\Http\Requests\ReviewRequest;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
+use App\Notifications\NewReviewAdded;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\BadRequestException;
@@ -75,7 +76,9 @@ class ReviewService
             throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
 
-        $review = Review::query()->whereHas(PRODUCT_MODEL, static fn($product) => $product->whereId($product_id_value)->whereStatus(1))
+        $review = Review::query()->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
+            return $product->whereId($product_id_value)->whereStatus(1);
+        })
             ->where(USER_ID, auth()->id())
             ->where(ID, '<>', $review_id)
             ->exists();
@@ -86,7 +89,7 @@ class ReviewService
             ]);
         }
 
-        return Review::query()->updateOrCreate(
+        $review = Review::query()->updateOrCreate(
             [ID => $review_id],
             [
                 $rating     => $rating_value,
@@ -94,7 +97,12 @@ class ReviewService
                 $body_text  => $body_text_value,
                 $product_id => $product_id_value,
                 USER_ID     => auth()->id(),
-            ]);
+            ]
+        );
+
+        sendNotificationToAdmins(new NewReviewAdded($review));
+
+        return $review;
     }
 
     /**

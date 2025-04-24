@@ -13,19 +13,11 @@ class ResetPasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * The user instance.
-     */
-    public array $reset_password_data;
-
-    /**
      * Create a new message instance.
      *
      * @return void
      */
-    final public function __construct(array $reset_password_data)
-    {
-        $this->reset_password_data = $reset_password_data;
-    }
+    final public function __construct(protected array $reset_password_data){}
 
     /**
      * Get the message envelope.

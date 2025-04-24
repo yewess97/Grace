@@ -25,19 +25,47 @@
             </article>
 
             {{-- Header Main Admin --}}
-            <article class="main-header-admin-notification-profile col col-lg-6 d-flex justify-content-end align-items-center gap-4">
-                {{-- Notification --}}
-                <div class="admin-notification dropdown">
-                    <button type="button" role="button" title="Notifications" id="admin_notification_menu" class="notification-icon dropdown-toggle bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">
+            <article class="main-header-admin-notifications-profile col col-lg-6 d-flex justify-content-end align-items-center gap-4">
+                {{-- Notificationss --}}
+                <div class="admin-notifications dropdown">
+                    {{-- Notifications Icon --}}
+                    <button type="button" role="button" title="Notifications" id="admin_notifications_list" class="notifications-icon dropdown-toggle bg-transparent border-0" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-controls="notifications_dropdown" data-mdb-toggle="dropdown">
                         <i class="fa-regular fa-bell fs-5"></i>
-                        <span class="badge rounded-pill badge-notification bg-danger">1</span>
+                        @if(auth()->user()->unreadNotifications->count())
+                            <span class="notifications-count badge rounded-pill badge-notification bg-danger">{{auth()->user()->unreadNotifications->count()}}</span>
+                        @endif
                     </button>
-                    <ul role="list" class="dropdown-menu" aria-labelledby="admin_notification_menu">
-                        <li role="listitem" class="notification-list-item">
-                            <p class="notification-text mb-2">User Folany has joined to the website</p>
-                            <span class="notification-timer text-muted">a few seconds ago</span>
-                        </li>
-                    </ul>
+
+                    {{-- Notifications List --}}
+                    <div id="notifications_dropdown" class="notifications-list dropdown-menu border rounded-3" aria-labelledby="admin_notifications_list">
+                        {{-- Notifications Title --}}
+                        <div class="notifications-title row justify-content-between align-items-center px-3 py-2">
+                            <h2 class="notifications-title-text col fs-6 fw-600 text-white">Notifications</h2>
+                            <a href="{{route('mark_all_as_read')}}" role="link" class="notifications-title-mark mark-all-as-read col text-end text-white">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Mark all as read</span>
+                            </a>
+                        </div>
+                        {{-- Notifications Details --}}
+                        <ul role="list" class="notifications-details border-top">
+                            @forelse (auth()->user()->notifications as $notification)
+                                <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-grid gap-1 w-100 {{$notification->read_at ? '' : 'highlight-background'}}">
+                                    <p class="notifications-text mb-2">{{$notification->data['message']}}</p>
+                                    <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>
+
+                                    @if (is_null($notification->read_at))
+                                        <a href="{{route('mark_as_read', [ID => encrypt($notification->{ID})])}}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
+                                            <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
+                                        </a>
+                                    @endif
+                                </li>
+                            @empty
+                                <li role="listitem" class="notification-item no-notifications position-relative d-grid gap-1 w-100">
+                                    <p class="notifications-text text-center">No notifications available</p>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </div>
                 </div>
 
                 {{-- Profile --}}

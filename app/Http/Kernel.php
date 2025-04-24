@@ -13,6 +13,7 @@ use App\Http\Middleware\TrustHosts;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\UserActivity;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\ForceSessionStart;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
@@ -48,6 +49,7 @@ class Kernel extends HttpKernel
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
         SecurityHeadersPolicy::class,
+        ForceSessionStart::class,
     ];
 
     /**

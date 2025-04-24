@@ -346,7 +346,7 @@ const Common = {
             .reduce((formData, [attribute, value]) => {
                 const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
 
-                if (!value.toString().includes(',') || is_file_input) {
+                if (attribute.includes(`${IGrace.PASSWORD}`) || !value.toString().includes(',') || is_file_input) {
                     formData.append(attribute, value);
                 }
 
@@ -901,13 +901,13 @@ const Common = {
      * @return {object}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, multiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
+        const { deleteRoute, isMultiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
 
         return {
-            url: `${deleteRoute}${multiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${multiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
+            url: `${deleteRoute}${isMultiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${isMultiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
             method: IGrace.DELETE.toUpperCase(),
             success: () => {
-                multiple
+                isMultiple
                     ? Common.updateTableRows(selectedIds)
                     : Common.updateTableRows([collectionId]);
 
@@ -924,36 +924,37 @@ const Common = {
      * @return {void}
      */
     forceDeleteConfirmation: (options) => {
-        const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
+        const { error, deleteRoute, forceDeleteRequests, isMultiple, collectionId, selectedIds, successMessage, cancelMessage } = options;
 
         const delete_options = {
-            deleteRoute: deleteRoute,
-            multiple:    multiple,
-            selectedIds: selectedIds,
+            deleteRoute:    deleteRoute,
+            isMultiple:     isMultiple,
+            collectionId:   collectionId,
+            selectedIds:    selectedIds,
+            successMessage: successMessage,
         };
 
-        const force_delete_requests = [1, 2];
+        let force_delete_requests = [1, 2];
 
         Common.swalWithButtons.fire({
             title: 'Oops!',
-            html: `${Common.responseJsonError(error, true)} <br><br> Are you sure you want to delete ${multiple ? 'the selected items' : 'this item'}?`,
+            html: `${Common.responseJsonError(error, true)} <br><br> Are you sure you want to delete ${isMultiple ? 'the selected items' : 'this item'}?`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             showCancelButton: true,
-            confirmButtonText: `Yes, ${IGrace.DELETE} ${multiple ? 'them' : 'it'}!`,
+            confirmButtonText: `Yes, ${IGrace.DELETE} ${isMultiple ? 'them' : 'it'}!`,
             cancelButtonText: 'No, cancel!',
 
         })
             .then((willDelete) => {
                 if (willDelete.isConfirmed) {
-                    let force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1
+                    const force_delete_request = $.type(forceDeleteRequests) !== 'undefined' && forceDeleteRequests.length === 1
                         ? force_delete_requests.pop()
                         : force_delete_requests.shift();
 
                     $.ajax({
                         ...Common.ajaxDeleteItems({
                             ...delete_options,
-                            successMessage:     successMessage,
                             forceDeleteRequest: force_delete_request,
                         }),
                         error: (err) => Common.handleDeleteErrors({
@@ -978,14 +979,15 @@ const Common = {
      * @return {void}
      */
     handleDeleteErrors: (options) => {
-        const { error, deleteRoute, forceDeleteRequests, multiple, selectedIds, successMessage, cancelMessage } = options;
+        const { error, deleteRoute, forceDeleteRequests, isMultiple, collectionId, selectedIds, successMessage, cancelMessage } = options;
 
         error.status === 404
             ? Common.forceDeleteConfirmation({
                 error:               error,
                 deleteRoute:         deleteRoute,
                 forceDeleteRequests: forceDeleteRequests,
-                multiple:            multiple,
+                isMultiple:          isMultiple,
+                collectionId:        collectionId,
                 selectedIds:         selectedIds,
                 successMessage:      successMessage,
                 cancelMessage:       cancelMessage,
@@ -1031,8 +1033,8 @@ const Common = {
                             ...Common.ajaxDeleteItems(delete_options),
                             error: (err) => Common.handleDeleteErrors({
                                 ...delete_options,
-                                error:         err,
-                                cancelMessage: delete_cancel_message,
+                                error:          err,
+                                cancelMessage:  delete_cancel_message,
                             }),
                         });
                     }
@@ -1064,7 +1066,7 @@ const Common = {
 
             const delete_options = {
                 deleteRoute:       delete_all_route,
-                multiple:          true,
+                isMultiple:          true,
                 selectedIds:       selected_rows,
                 collectionTrashed: collections_trashed,
                 successMessage:    delete_multi_success_message,

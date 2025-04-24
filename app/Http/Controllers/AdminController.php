@@ -78,7 +78,7 @@ class AdminController extends Controller
             ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
-        $categories = Category::all($this->id_name);
+        $categories = Category::get($this->id_name);
 
         $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
         $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
@@ -111,8 +111,8 @@ class AdminController extends Controller
             ->when($this->condition, static fn($query) => $query->onlyTrashed())
             ->fastPaginate(16);
 
-        $categories    = Category::all($id_name_attributes);
-        $subcategories = Subcategory::all($id_name_attributes);
+        $categories    = Category::get($id_name_attributes);
+        $subcategories = Subcategory::get($id_name_attributes);
         $sizes         = PRODUCT_SIZE_ENUM;
 
         $add_product_error    = static fn(string $attributeName) => formError(ADD, PRODUCT_MODEL, $attributeName);

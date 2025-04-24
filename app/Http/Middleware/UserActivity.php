@@ -17,7 +17,7 @@ class UserActivity
      * Handle an incoming request.
      *
      * @param Request $request
-     * @param Closure(Request): (Response|RedirectResponse) $next
+     * @param Closure $next
      * @return JsonResponse|Response|RedirectResponse
      */
     final public function handle(Request $request, Closure $next): JsonResponse|Response|RedirectResponse

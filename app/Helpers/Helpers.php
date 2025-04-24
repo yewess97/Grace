@@ -11,6 +11,7 @@ use App\Models\ProductSize;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
 use App\Models\User;
+use App\Notifications\NewUserRegistered;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -28,7 +29,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
-use Illuminate\Validation\Validator as ValidatorClass;
+use Illuminate\Notifications\Notification as NotificationInstance;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -268,16 +270,16 @@ if (!function_exists('viewLayout'.ucfirst(TITLE))) {
      */
     function viewLayoutTitle(string $role): array
     {
+        $layout = $role === ADMIN 
+            ? adminLayout('main') 
+            : userLayout('main');
+
         $title = [
             TITLE => str(request()?->route()?->getName())
                 ->headline()
                 ->after(ucfirst($role === ADMIN ? ADMIN : ''))
                 ->value()
         ];
-
-        $layout = $role === ADMIN
-            ? adminLayout('main')
-            : userLayout('main');
 
         return [$layout => $title];
     }
@@ -755,10 +757,10 @@ if (!function_exists('validateAttributes')) {
      *
      * @param object $formRequest
      * @param mixed|null $extraValidationCheck
-     * @return ValidatorContract|ValidatorClass
+     * @return ValidatorContract|array
      * @throws ValidationException
      */
-    function validateAttributes(object $formRequest, mixed $extraValidationCheck = null): ValidatorContract|ValidatorClass
+    function validateAttributes(object $formRequest, mixed $extraValidationCheck = null): ValidatorContract|array
     {
         $validator = Validator::make($formRequest->data(), $formRequest->rules($extraValidationCheck ?? null), $formRequest->messages());
 
@@ -766,7 +768,7 @@ if (!function_exists('validateAttributes')) {
             throw new ValidationException($validator, responseValidationError($validator));
         }
 
-        return $validator;
+        return $validator->errors()->all();
     }
 }
 
@@ -977,14 +979,34 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
         if ($operation !== REGISTER) {
             $role_value = Arr::last($user_request->dataValues());
 
-            $attributes[] = [ROLE => $role_value];
+            $attributes = array_merge($attributes, [ROLE => (int) $role_value]);
 
             return User::query()->updateOrCreate(
                 [ID => $user_id], $attributes
             );
         }
 
-        return User::query()->create($attributes);
+        $create_user = User::query()->create($attributes);
+
+        if ($operation === REGISTER) {
+            sendNotificationToAdmins(new NewUserRegistered($create_user));
+
+            /*
+            $admins_ids = User::where(ROLE, 1)->pluck(ID)->toArray();
+
+            Notification::create([
+                ID => str()->uuid(),
+                'type' => NewUserRegistered::class,
+                'notifiable_type' => User::class,
+                'notifiable_id' => json_encode($admins_ids),
+                'data' => [
+                    'message' => "A new ".USER_MODEL." *".capitalizeAll($create_user->{FULL_NAME})."* has ".REGISTER."ed",
+                ],
+            ]);
+            */
+        }
+
+        return $create_user;
     }
 }
 
@@ -1193,6 +1215,22 @@ if (!function_exists(RESTORE)) {
         return $isMultiple
             ? $model::query()->whereIn(ID, $selected_ids)->restore()
             : $model->restore();
+    }
+}
+
+
+if (!function_exists(function: 'sendNotificationToAdmins')) {
+    /**
+     * Send a notification to all admins.
+     *
+     * @param NotificationInstance $notification
+     * @return void
+     */
+    function sendNotificationToAdmins(NotificationInstance $notification): void
+    {
+        $admins = User::where(ROLE, 1)->get([ID, ROLE]);
+
+        Notification::send($admins, $notification);
     }
 }
 

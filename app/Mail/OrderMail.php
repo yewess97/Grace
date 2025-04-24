@@ -14,22 +14,12 @@ class OrderMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * The order instance.
-     *
-     * @var Order
-     */
-    public Order $order;
-
-    /**
      * Create a new message instance.
      *
      * @param Order $order
      * @return void
      */
-    final public function __construct(Order $order)
-    {
-        $this->{ORDER_MODEL} = $order;
-    }
+    final public function __construct(protected Order $order){}
 
     /**
      * Get the message envelope.

@@ -1,7 +1,8 @@
-@extends(key(viewLayoutTitle(USER_MODEL)), [TITLE => $exception->getStatusCode().' '.Symfony\Component\HttpFoundation\Response::$statusTexts[$exception->getStatusCode()]])
+@extends(key(isAdminRoute() ? viewLayoutTitle(ADMIN) : viewLayoutTitle(USER_MODEL)))
 
 @section('content')
 
+    {{-- Error Main --}}
     <main role="main" class="error-main py-6">
         <div class="container">
             <div class="row">
@@ -11,14 +12,14 @@
                         <div class="door-hanger position-relative">
                             <article class="top-hook position-absolute start-50 bg-white rounded-circle"></article>
                             <article class="door-hanger-content d-flex flex-column justify-content-center align-items-center h-100">
-                                <h1 class="error-code mb-3">{{$exception->getStatusCode()}}</h1>
+                                <h1 class="error-code mb-3">{{$error_status}}</h1>
                                 <div class="error-status text-center">
                                     <p class="mb-3 fs-2 fw-600">Oops!</p>
-                                    <p class="fw-500">{{Symfony\Component\HttpFoundation\Response::$statusTexts[$exception->getStatusCode()]}}</p>
+                                    <p class="fw-500">{{$error_title}}</p>
                                 </div>
                             </article>
                         </div>
-                        <p class="error-desc mt-4 text-center lh-base">@yield('error-message')</p>
+                        <p class="error-desc mt-4 text-center lh-base">{{$error_message}}</p>
                     </article>
                     {{-- Error Content Right Section --}}
                     <article class="right-side col-12 col-lg-7 col-md-6">

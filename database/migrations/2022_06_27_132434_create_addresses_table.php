@@ -21,7 +21,7 @@ return new class extends Migration
             $table->mediumText(ADDRESS2)->nullable();
             $table->string(CITY, 50);
             $table->string(STATE, 50)->nullable();
-            $table->string(COUNTRY);
+            $table->string(COUNTRY)->index();
             $table->unsignedInteger(POSTAL_CODE);
             $table->foreignIdOf(User::class);
             $table->timestamps();

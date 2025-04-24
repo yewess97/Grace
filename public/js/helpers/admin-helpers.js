@@ -717,6 +717,38 @@ const Admin = {
             });
         });
     },
+
+
+    /**
+     * Mark Notification as read Ajax Request.
+     */
+    ajaxMarkNotificationAsReadRequest: (className) => {
+        $(document).on(IGrace.CLICK, `.${className}`, function (e) {
+            e.preventDefault();
+
+            const route = $(this).attr('href');
+
+            $.post(route)
+                .done((data) => {
+                    if (className.includes('all')) {
+                        $('.notifications-count').css('display', 'none');
+                        $('.notification-item').removeClass('highlight-background');
+                        $('.mark-as-read-icon').remove();
+                        return;
+                    }
+
+                    const notification_item = $(`#notification${data[IGrace.ID]}`);
+
+                    $('.notifications-count').text() > 1 
+                        ? $('.notifications-count').text($('.notifications-count').text() - 1)
+                        : $('.notifications-count').css('display', 'none');
+                        
+                    notification_item.removeClass('highlight-background');
+                    notification_item.find('.mark-as-read-icon').remove();
+                })
+                .fail(Common.somethingWentWrongError);
+        });
+    },
 }
 
 

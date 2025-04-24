@@ -216,8 +216,6 @@ const User = {
                         return Common.errorMessage(authAction, Common.responseJsonError(err), err.status);
                     }
 
-                    console.log(err.status);
-
                     if (err.status === 422 || IGrace.IS_IN_ARRAY([`${IGrace.FORGOT_PASSWORD()}_failed`, `${IGrace.RESET_PASSWORD()}_failed`], err.status)) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }

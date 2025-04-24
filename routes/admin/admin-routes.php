@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController,
     App\Http\Controllers\ProductController,
     App\Http\Controllers\SubcategoryController,
     App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,15 @@ generalControllerRoutes(UserController::class, USER_MODEL);
  * Order Routes
  */
 generalControllerRoutes(OrderController::class, ORDER_MODEL);
+
+
+/**
+ * Notification Routes
+ */
+Route::controller(NotificationController::class)->group(function () {
+    Route::post('/mark-as-read', 'markAsRead')->name('mark_as_read');
+    Route::post('/mark-all-as-read', 'markAllAsRead')->name('mark_all_as_read');
+});
 
 
 /**

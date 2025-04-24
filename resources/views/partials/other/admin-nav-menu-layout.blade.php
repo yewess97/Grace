@@ -25,9 +25,9 @@
         {{-- Users --}}
         <x-admin-nav-item url="{{USERS_TABLE}}" route_name="{{ADMIN_USERS_ROUTE}}" icon="fa-solid fa-users"/>
         {{-- Orders --}}
-        <x-admin-nav-item id="{{ORDERS_TABLE}}_list" url="{{ORDERS_TABLE}}" icon="fa-solid fa-truck-fast" route_name="{{ADMIN_ORDERS_ROUTE}}" submenu="true" :all_table="\App\Models\Order::all([STATUS])->unique(STATUS)" column_name="{{STATUS}}"/>
+        <x-admin-nav-item id="{{ORDERS_TABLE}}_list" url="{{ORDERS_TABLE}}" icon="fa-solid fa-truck-fast" route_name="{{ADMIN_ORDERS_ROUTE}}" submenu="true" :all_table="\App\Models\Order::get([STATUS])->unique(STATUS)" column_name="{{STATUS}}"/>
         {{-- Reviews --}}
-        <x-admin-nav-item id="{{REVIEWS_TABLE}}_list" url="{{REVIEWS_TABLE}}" icon="fa-solid fa-star" route_name="{{ADMIN_REVIEWS_ROUTE}}" submenu="true" :all_table="\App\Models\Review::all([RATING])->unique(RATING)" column_name="{{RATING}}"/>
+        <x-admin-nav-item id="{{REVIEWS_TABLE}}_list" url="{{REVIEWS_TABLE}}" icon="fa-solid fa-star" route_name="{{ADMIN_REVIEWS_ROUTE}}" submenu="true" :all_table="\App\Models\Review::get([RATING])->unique(RATING)" column_name="{{RATING}}"/>
     </ul>
 </main>
 

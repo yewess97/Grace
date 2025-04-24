@@ -6,6 +6,7 @@ use App\Http\Requests\OrderRequest;
 use App\Mail\OrderMail;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Notifications\NewOrderPlaced;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -48,7 +49,7 @@ class OrderService {
                 return to_route('home')->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')->setStatusCode(Response::HTTP_BAD_REQUEST);
             }
 
-            $user_order = Order::query()->create([
+            $order = Order::query()->create([
                 TRACKING_NUM => 'GR'.random_int(11111, 99999),
                 NUM_ITEMS    => $user_cart_items->sum(PRODUCT_QUANTITY),
                 TOTAL_COST   => $order_total_cost,
@@ -57,11 +58,13 @@ class OrderService {
                 $address_id  => $address_id_value ?? null,
             ]);
 
-            $this->createOrderItems($user_cart_items, $user_order);
+            $this->createOrderItems($user_cart_items, $order);
 
             DB::commit();
 
-            Mail::to(auth()->user()->{EMAIL})->send(new OrderMail($user_order));
+            Mail::to(auth()->user()->{EMAIL})->send(new OrderMail($order));
+
+            sendNotificationToAdmins(new NewOrderPlaced($order));
 
             return Cart::destroy($user_cart_items->pluck(ID)->toArray());
         }

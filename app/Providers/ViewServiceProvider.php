@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Random\RandomException;
@@ -16,7 +17,7 @@ class ViewServiceProvider extends ServiceProvider
      */
     final public function boot(): void
     {
-        // Share common data with all views
+        // Share common data with all user views
         view()->composer(
             [USER_MODEL.".*"],
             static function ($view) {

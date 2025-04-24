@@ -16,10 +16,10 @@ class SecurityHeadersPolicy
      *
      * @param Request $request
      * @param Closure $next
-     * @return Closure|Response|RedirectResponse|JsonResponse
+     * @return Closure|JsonResponse|Response|RedirectResponse
      * @throws BindingResolutionException
      */
-    final public function handle(Request $request, Closure $next): Closure|Response|RedirectResponse|JsonResponse
+    final public function handle(Request $request, Closure $next): Closure|JsonResponse|Response|RedirectResponse
     {
         $response = $next($request);
 

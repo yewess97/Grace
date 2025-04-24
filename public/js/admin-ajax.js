@@ -229,6 +229,16 @@ Common.ajaxClearSearchFilterRequest();
 /* ---------------------------------- END SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
 
+/* ---------------------------------- NOTIFICATIONS ---------------------------------- */
+// Mark Notification as Read
+Admin.ajaxMarkNotificationAsReadRequest('mark-as-read-icon');
+
+// Mark All Notifications as Read
+Admin.ajaxMarkNotificationAsReadRequest('mark-all-as-read');
+
+/* ---------------------------------- END NOTIFICATIONS ---------------------------------- */
+
+
 /* ---------------------------------- PAGINATION ---------------------------------- */
 Common.ajaxPagination();
 

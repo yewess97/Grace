@@ -186,8 +186,7 @@ class CartService
         }
 
         return $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {
-            $cartItem->{PRODUCT_QUANTITY} = +$products_quantities_values[$key];
-            $cartItem->save();
+            $cartItem->update([PRODUCT_QUANTITY => +$products_quantities_values[$key]]);
         });
     }
 
