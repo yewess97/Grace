@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route,
     App\Http\Controllers\HomeController,
     App\Http\Controllers\ReviewController,
     App\Http\Controllers\SearchController,
-    App\Http\Controllers\PaymentAboutContactController;
+    App\Http\Controllers\PaymentAboutContactController,
+    App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,3 +72,9 @@ Route::controller(SearchController::class)->group(function () {
     searchRoute(SEARCH_PRODUCTS);
     searchRoute(FILTER_PRODUCTS);
 });
+
+
+/**
+ * Notification Route
+ */
+Route::get('/notification', [NotificationController::class, 'index']);

@@ -661,6 +661,7 @@ const Admin = {
     },
 
 
+    /* ---------------------------------- FILTER REQUEST ---------------------------------- */
     /**
      * Filter Ajax Request.
      *
@@ -719,8 +720,12 @@ const Admin = {
     },
 
 
+    /* ---------------------------------- NOTIFICATION REQUEST ---------------------------------- */
     /**
      * Mark Notification as read Ajax Request.
+     * 
+     * @param className
+     * @return {void}
      */
     ajaxMarkNotificationAsReadRequest: (className) => {
         $(document).on(IGrace.CLICK, `.${className}`, function (e) {

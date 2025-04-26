@@ -230,6 +230,9 @@ Common.ajaxClearSearchFilterRequest();
 
 
 /* ---------------------------------- NOTIFICATIONS ---------------------------------- */
+// Get Unread Notifications
+Common.eventGetNotificationsRequest();
+
 // Mark Notification as Read
 Admin.ajaxMarkNotificationAsReadRequest('mark-as-read-icon');
 

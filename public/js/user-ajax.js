@@ -146,6 +146,13 @@ Common.ajaxClearSearchFilterRequest();
 /* ---------------------------------- END SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */
 
 
+/* ---------------------------------- NOTIFICATIONS ---------------------------------- */
+// Get Unread Notifications
+Common.eventGetNotificationsRequest();
+
+/* ---------------------------------- END NOTIFICATIONS ---------------------------------- */
+
+
 /* ---------------------------------- PAGINATION ---------------------------------- */
 Common.ajaxPagination();
 

@@ -54,7 +54,7 @@
                                     <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>
 
                                     @if (is_null($notification->read_at))
-                                        <a href="{{route('mark_as_read', [ID => encrypt($notification->{ID})])}}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
+                                        <a href="{{route('mark_as_read', [ID => $notification->{ID}])}}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
                                             <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
                                         </a>
                                     @endif

@@ -346,7 +346,7 @@ const Common = {
             .reduce((formData, [attribute, value]) => {
                 const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
 
-                if (attribute.includes(`${IGrace.PASSWORD}`) || !value.toString().includes(',') || is_file_input) {
+                if (attribute.includes(`${IGrace.PASSWORD}`) || attribute.includes(`${IGrace.REVIEW}`) || !value.toString().includes(',') || is_file_input) {
                     formData.append(attribute, value);
                 }
 
@@ -1247,7 +1247,56 @@ const Common = {
 
 
     /* ---------------------------------- PAGINATION REQUEST ---------------------------------- */
+    /**
+     * Get Notifications Event Request.
+     * 
+     * @return {void}
+     */
+    eventGetNotificationsRequest: () => {
+        if (!(!!window.EventSource)) {
+            Common.somethingWentWrongError('Your browser does not support EventSource (SSE)!');
+            return;
+        }
 
+        const source = new EventSource('/notification');
+    
+        source.onmessage = (event) => {
+            try {
+                const 
+                    notification                = JSON.parse(event.data).notification,
+                    notifications_count_element = $('.notifications-count'),
+                    notifications_details_list  = $('.notifications-details');
+
+                const current_count = parseInt(notifications_count_element.text(), 10) || 0;
+                notifications_count_element.text(current_count).css('display', 'inline-block');
+        
+                // parseInt(notifications_count_element.text()) > 0 
+                //     ? notifications_count_element.text(parseInt(notifications_count_element.text())+1).css('display', 'inline-block') 
+                //     : notifications_count_element.css('display', 'none');
+
+                if ($(`li[id='notification${notification.id}']`).length) return;
+
+                notifications_details_list.append(`
+                    <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-grid gap-1 w-100 highlight-background">
+                        <p class="notifications-text mb-2">${notification.message}</p>
+                        <span class="notifications-timer text-muted">${notification.created_at}</span>
+
+                        <a href="${location.origin}/notifications/mark-as-read/${notification.id}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
+                            <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
+                        </a>
+                    </li>
+                `);
+            }
+            catch (error) {
+                console.error('Failed to parse SSE message: ', error);
+            }
+        };
+    
+        // source.onerror = (error) => console.error('SSE Error: ', error);
+    },
+
+
+    /* ---------------------------------- PAGINATION REQUEST ---------------------------------- */
     /**
      * Set up the pagination.
      *
