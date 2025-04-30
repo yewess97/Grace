@@ -1259,40 +1259,46 @@ const Common = {
         }
 
         const source = new EventSource('/notification');
+
+        const 
+            notifications_details_list  = $('.notifications-details'),
+            notifications_count_element = $('.notifications-count');
+            
+        const notifications_items = (list) => list.find('li:not(.no-notifications) .mark-as-read-icon');
+
+        const show_hide_notifications_count = (list) => notifications_items(list).length > 0 
+            ? notifications_count_element.text(notifications_items(list).length).css('display', 'inline-block') 
+            : notifications_count_element.css('display', 'none');
+
+        show_hide_notifications_count(notifications_details_list);
     
         source.onmessage = (event) => {
             try {
                 const 
                     notification                = JSON.parse(event.data).notification,
-                    notifications_count_element = $('.notifications-count'),
                     notifications_details_list  = $('.notifications-details');
 
-                const current_count = parseInt(notifications_count_element.text(), 10) || 0;
-                notifications_count_element.text(current_count).css('display', 'inline-block');
-        
-                // parseInt(notifications_count_element.text()) > 0 
-                //     ? notifications_count_element.text(parseInt(notifications_count_element.text())+1).css('display', 'inline-block') 
-                //     : notifications_count_element.css('display', 'none');
+                if (notifications_details_list.find('.no-notifications').length) notifications_details_list.empty();
 
                 if ($(`li[id='notification${notification.id}']`).length) return;
 
-                notifications_details_list.append(`
+                notifications_details_list.prepend(`
                     <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-grid gap-1 w-100 highlight-background">
                         <p class="notifications-text mb-2">${notification.message}</p>
                         <span class="notifications-timer text-muted">${notification.created_at}</span>
 
-                        <a href="${location.origin}/notifications/mark-as-read/${notification.id}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
+                        <a href="${location.origin}/${IGrace.ADMIN}/notifications/mark-as-read?id=${notification.id}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
                             <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
                         </a>
                     </li>
                 `);
+
+                show_hide_notifications_count(notifications_details_list);
             }
             catch (error) {
                 console.error('Failed to parse SSE message: ', error);
             }
         };
-    
-        // source.onerror = (error) => console.error('SSE Error: ', error);
     },
 
 

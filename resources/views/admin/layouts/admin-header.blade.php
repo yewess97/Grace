@@ -31,9 +31,7 @@
                     {{-- Notifications Icon --}}
                     <button type="button" role="button" title="Notifications" id="admin_notifications_list" class="notifications-icon dropdown-toggle bg-transparent border-0" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-controls="notifications_dropdown" data-mdb-toggle="dropdown">
                         <i class="fa-regular fa-bell fs-5"></i>
-                        @if(auth()->user()->unreadNotifications->count())
-                            <span class="notifications-count badge rounded-pill badge-notification bg-danger">{{auth()->user()->unreadNotifications->count()}}</span>
-                        @endif
+                        <span class="notifications-count badge rounded-pill badge-notification bg-danger">{{auth()->user()->unreadNotifications->count()}}</span>
                     </button>
 
                     {{-- Notifications List --}}

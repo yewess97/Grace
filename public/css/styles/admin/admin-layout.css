@@ -262,6 +262,7 @@
     color: var(--second-color);
 }
 
+.main-admin-body .main-header .main-header-admin-notifications-profile .admin-notifications > .notifications-icon .notifications-count,
 .main-admin-body .main-header .main-header-admin-notifications-profile .admin-notifications > .notifications-icon::after {
     display: none;
 }
