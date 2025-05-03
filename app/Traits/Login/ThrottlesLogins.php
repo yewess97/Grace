@@ -55,7 +55,7 @@ trait ThrottlesLogins
      * @param string $email
      * @return void
      */
-    final protected function clearLoginAttempts(string $email): void
+    final public function clearLoginAttempts(string $email): void
     {
         $this->limiter()->clear($this->throttleKey($email));
     }

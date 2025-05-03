@@ -116,7 +116,10 @@ class CartService
      */
     final public function deleteAllCarts(): int
     {
-        $delete_user_carts = Cart::query()->where(USER_ID, auth()->id())->get();
+        $delete_user_carts = Cart::query()->whereHasAuthUser()
+            ->cursor()
+            ->pluck(ID)
+            ->toArray();
 
         return Cart::destroy($delete_user_carts);
     }

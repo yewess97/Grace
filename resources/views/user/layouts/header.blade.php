@@ -250,11 +250,7 @@
                     </div>
 
                     {{-- Cart Menu --}}
-                    @include(CART_HEADER_CONTENT_PARTIAL, [
-                        USER_CART_ITEMS => $user_cart_items,
-                        TOTAL_COST      => $total_cost,
-                        TOTAL_ITEMS     => $total_items,
-                    ])
+                    @include(CART_HEADER_CONTENT_PARTIAL)
                 </article>
             </article>
         </div>

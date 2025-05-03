@@ -31,7 +31,7 @@ trait RememberMeExpiration
      */
     final protected function setRememberMeValue(): string
     {
-        return auth()->user()->{ID}.'|'.auth()->user()->{'remember_token'}.'|'.auth()->user()->{PASSWORD};
+        return auth()->user()?->{ID}.'|'.auth()->user()?->{'remember_token'}.'|'.auth()->user()?->{PASSWORD};
     }
 
     /**

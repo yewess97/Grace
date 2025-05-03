@@ -122,8 +122,8 @@ class DashboardService
             : $query;
 
         $users            = $apply_filter($users_with_orders)->fastPaginate(5);
-        $registered_users = $apply_filter($registered_users_by_country)->get();
-        $subcategories    = $apply_filter($subcategories_with_products_count)->get();
+        $registered_users = $apply_filter($registered_users_by_country)->cursor();
+        $subcategories    = $apply_filter($subcategories_with_products_count)->cursor();
 
         // Get the filtering error messages
         $filter_dashboard_error = static fn(string $attributeName) => formError(FILTER, DASHBOARD, $attributeName);

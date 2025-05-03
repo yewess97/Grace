@@ -1,4 +1,4 @@
-@extends(key(isAdminRoute() ? viewLayoutTitle(ADMIN) : viewLayoutTitle(USER_MODEL)))
+@extends(key((isAdminRoute() && auth()->user()?->isAdmin) ? viewLayoutTitle(ADMIN) : viewLayoutTitle(USER_MODEL)))
 
 @section('content')
 

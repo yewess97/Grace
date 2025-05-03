@@ -7,7 +7,6 @@ use Illuminate\Http\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -64,7 +63,7 @@ class Handler extends ExceptionHandler
      */
     final public function render($request, Throwable $exception): JsonResponse|Response|RedirectResponse
     {
-        if ($exception instanceof HttpExceptionInterface && !($request->ajax() || $request.is('/api.*'))) {
+        if ($exception instanceof HttpExceptionInterface && !($request->ajax() || $request->is('/api.*'))) {
             $status = $exception->getStatusCode();
 
             return response(view(ERROR_COMPONENT, [
@@ -84,7 +83,7 @@ class Handler extends ExceptionHandler
      * @param int $status
      * @return string
      */
-    protected function getErrorPageTitle(int $status): string
+    final protected function getErrorPageTitle(int $status): string
     {
         return match ($status) {
             400 => '400 Bad Request',
@@ -105,7 +104,7 @@ class Handler extends ExceptionHandler
      * @param int $status
      * @return string
      */
-    protected function getErrorTitle($status): string
+    final protected function getErrorTitle($status): string
     {
         return match ($status) {
             400 => 'Bad Request',
@@ -126,7 +125,7 @@ class Handler extends ExceptionHandler
      * @param int $status
      * @return string
      */
-    protected function getErrorMessage($status): string
+    final protected function getErrorMessage($status): string
     {
         return match ($status) {
             400 => "We're sorry but the request you made is invalid. Please check the URL and try again!",

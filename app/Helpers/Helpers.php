@@ -25,7 +25,6 @@ use Illuminate\Routing\Route as Routing;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
@@ -464,24 +463,23 @@ if (!function_exists(CART_MODEL.'Config')) {
      */
     function cartConfig(array $vars = []): array|string
     {
-        $user_cart_items = Cart::query()
+        $user_carts = Cart::query()
             ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
                 $product->select(PRODUCT_ITEM_ATTRIBUTES))
-            ->where(USER_ID, auth()->id())
-            ->fastPaginate(5);
+            ->whereHasAuthUser();
+
+        $total_items = $user_carts->sum(PRODUCT_QUANTITY);
+
+        $total_cost = $user_carts->cursor()
+            ->sum(fn(Cart $cartItem) => $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * $cartItem->{PRODUCT_QUANTITY});
+            
+        $user_cart_items = Route::currentRouteName() === CART_MODEL 
+            ? $user_carts->fastPaginate(5) 
+            : $user_carts->cursor();
 
         $user_cart_items->isEmpty()
-            ? Session::flash(EMPTY_CART)
-            : Session::forget(EMPTY_CART);
-
-        $total_cost = Cart::query()
-            ->where(USER_ID, auth()->id())
-            ->whereHas(PRODUCT_MODEL, fn(Builder $product) => $product->where(STATUS, 1))
-            ->with(PRODUCT_MODEL)
-            ->lazy()
-            ->sum(fn(Cart $cartItem) => $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * $cartItem->{PRODUCT_QUANTITY});
-
-        $total_items = $user_cart_items->sum(PRODUCT_QUANTITY);
+            ? session()->flash(EMPTY_CART)
+            : session()->forget(EMPTY_CART);
 
         $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
 
@@ -684,7 +682,6 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
             $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
         )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
 
-
         return viewProducts($products);
     }
 }
@@ -801,15 +798,15 @@ if (!function_exists('noResultsException')) {
      */
     function noResultsException(LengthAwarePaginator $model): void
     {
+        session()->forget('no_results');
+
         if ($model->isEmpty()) {
             if (request()?->ajax()) {
                 throw new NotFoundHttpException('no-results');
             }
 
-            Session::flash('no_results');
+            session()->flash('no_results');
         }
-
-        Session::forget('no_results');
     }
 }
 
@@ -1045,7 +1042,7 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
             : array_map('intval', array_from($requested_selected_ids));
 
         $destroy = static function (array $ids) use ($model, $deleteImages, $selected_ids) {
-            $is_collection_trashed = $model::query()->whereIn(ID, $ids)->get()->every(fn($collection) => Cart::class ? false : $collection->trashed());
+            $is_collection_trashed = $model::query()->whereIn(ID, $ids)->cursor()->every(fn($collection) => Cart::class ? false : $collection->trashed());
 
             if (!$is_collection_trashed) {
                 return $model::destroy($ids);

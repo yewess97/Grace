@@ -39,7 +39,7 @@ trait LoginHelpers
 
         $response_with_redirect_to = static fn($redirection) => responseSuccess(AUTH_SUCCESS, ['redirect_to' => $redirection]);
 
-        return auth()->user()->isAdmin
+        return auth()->user()?->isAdmin
             ? $response_with_redirect_to(route(ADMIN_DASHBOARD_ROUTE))
             : $response_with_redirect_to(RouteServiceProvider::PRODUCTS_LIST);
     }

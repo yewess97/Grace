@@ -19,7 +19,7 @@ class UserBladeServiceProvider extends ServiceProvider
          *
          *  @return bool
          */
-        Blade::if(ADMIN, static fn() => auth()->user()->isAdmin);
+        Blade::if(ADMIN, static fn() => auth()->user()?->isAdmin);
 
         /**
          * Check if the old price is neither equal to zero nor to the new price of the product.

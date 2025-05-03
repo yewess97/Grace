@@ -31,7 +31,7 @@
                     {{-- Notifications Icon --}}
                     <button type="button" role="button" title="Notifications" id="admin_notifications_list" class="notifications-icon dropdown-toggle bg-transparent border-0" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-controls="notifications_dropdown" data-mdb-toggle="dropdown">
                         <i class="fa-regular fa-bell fs-5"></i>
-                        <span class="notifications-count badge rounded-pill badge-notification bg-danger">{{auth()->user()->unreadNotifications->count()}}</span>
+                        <span class="notifications-count badge rounded-pill badge-notification bg-danger">{{auth()->user()?->unreadNotifications->count()}}</span>
                     </button>
 
                     {{-- Notifications List --}}
@@ -46,7 +46,7 @@
                         </div>
                         {{-- Notifications Details --}}
                         <ul role="list" class="notifications-details border-top">
-                            @forelse (auth()->user()->notifications as $notification)
+                            @forelse (auth()->user()?->notifications as $notification)
                                 <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-grid gap-1 w-100 {{$notification->read_at ? '' : 'highlight-background'}}">
                                     <p class="notifications-text mb-2">{{$notification->data['message']}}</p>
                                     <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>
@@ -68,7 +68,7 @@
 
                 {{-- Profile --}}
                 <div class="admin-profile dropdown">
-                    <button type="button" role="button" title="{{ auth()->user()->{FULL_NAME} }}" id="admin_heading_menu" class="admin-name dropdown-toggle fs-6 fw-500 text-black bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">@userFullName()</button>
+                    <button type="button" role="button" title="{{ auth()->user()?->{FULL_NAME} }}" id="admin_heading_menu" class="admin-name dropdown-toggle fs-6 fw-500 text-black bg-transparent border-0" data-mdb-toggle="dropdown" aria-expanded="false">@userFullName()</button>
                     <ul role="list" class="dropdown-menu" aria-labelledby="admin_heading_menu">
                         <li role="listitem">
                             <a href="{{route(PROFILE)}}" role="link" class="dropdown-item d-block">My {{ucfirst(PROFILE)}}</a>

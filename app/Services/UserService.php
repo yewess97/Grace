@@ -22,7 +22,7 @@ class UserService
     {
         $user               = User::profileData();
         $user_orders        = $user->{ORDERS_TABLE}()->fastPaginate(5);
-        $user_profile_title = auth()->user()->{FULL_NAME}.' - '.ucfirst(PROFILE);
+        $user_profile_title = auth()->user()?->{FULL_NAME}.' - '.ucfirst(PROFILE);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($user_orders, USER_PROFILE_PAGINATION, USER_ORDERS, compact(USER_MODEL))

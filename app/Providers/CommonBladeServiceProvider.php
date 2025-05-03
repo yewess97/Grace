@@ -20,7 +20,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('userFullName', static fn() => "<?php echo auth()->user()->{FULL_NAME} ?>");
+        Blade::directive('userFullName', static fn() => "<?php echo auth()->user()?->{FULL_NAME} ?>");
 
         /**
          * Format the product price.

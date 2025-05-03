@@ -22,27 +22,26 @@ class CheckoutController extends Controller
      */
     final public function index(): Application|Factory|View|RedirectResponse|JsonResponse
     {
-        $user_cart_items = Cart::query()->where(USER_ID, auth()->id())->lazy();
+        $user_cart_items = cartConfig()[USER_CART_ITEMS];
 
-        if ($user_cart_items->collect()->isEmpty()) {
+        if ($user_cart_items->isEmpty()) {
             return to_route('home')->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
 
+        // Check if a product is unavailable, then delete it from the cart when proceeding to checkout
         $user_cart_items->each(fn(Cart $cart_item) =>
             !Product::query()->whereId($cart_item->{PRODUCT_MODEL}->{ID})
                 ->whereStatus(1)
                 ->exists()
             && $cart_item->delete()
         );
-
-
-        $total_cost      = cartConfig()[TOTAL_COST];
+        
         $user_addresses  = auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES]);
 
         $add_order_error = static fn(string $attributeName) => formError(ADD, ORDER_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($user_addresses, CHECKOUT_USER_ADDRESSES_PAGINATION, USER_ADDRESSES)
-            : view(USER_CHECKOUT_VIEW, compact(USER_CART_ITEMS, TOTAL_COST, USER_ADDRESSES, ADD_ORDER_ERROR));
+            : view(USER_CHECKOUT_VIEW, compact(USER_CART_ITEMS, USER_ADDRESSES, ADD_ORDER_ERROR));
     }
 }

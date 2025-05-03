@@ -22,7 +22,6 @@ use Throwable;
 
 class AdminController extends Controller
 {
-    private array $id_name;
     private string|null $condition;
 
     /**
@@ -30,9 +29,8 @@ class AdminController extends Controller
      *
      * @return void
      */
-    final public function __construct(private readonly DashboardService $dashboardService)
+    final public function __construct(private readonly DashboardService $dashboardService, private array $id_name = [ID, NAME])
     {
-        $this->id_name   = [ID, NAME];
         $this->condition = request()?->input(CONDITION);
     }
 

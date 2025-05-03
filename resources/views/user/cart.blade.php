@@ -6,7 +6,7 @@
     <main role="main" class="cart-main py-6">
         <div class="container">
             <div id="cart_main" class="row justify-content-center align-items-center">
-                @if (Session::has(EMPTY_CART))
+                @if (Session()->has(EMPTY_CART))
                     <div class="col">
                         <div class="empty-cart d-grid place-items-center gap-5">
                             <h2 class="empty-cart-title d-grid place-items-center gap-3 fs-1 fw-600">

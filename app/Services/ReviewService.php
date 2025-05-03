@@ -61,16 +61,16 @@ class ReviewService
             throw new ModelNotFoundException('This '.PRODUCT_MODEL.' is currently out of stock!');
         }
 
-        $order_purchased = Order::query()->where(USER_ID, auth()->id())
+        $order_purchased = Order::query()->whereHasAuthUser()
             ->whereHas(ORDER_ITEMS, function ($orderItem) use ($available_product) {
                 $orderItem->where(PRODUCT_NAME, $available_product->{NAME});
             });
 
-        if ($order_purchased->get()->isEmpty()) {
+        if ($order_purchased->cursor()->isEmpty()) {
             throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
         }
 
-        $order_completed = $order_purchased->whereStatus(4)->get();
+        $order_completed = $order_purchased->whereStatus(4)->cursor();
 
         if ($order_completed->isEmpty()) {
             throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');

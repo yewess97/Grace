@@ -126,7 +126,7 @@ class CategoryService
         // Used lazy() to improve memory efficiency when handling large datasets
         $related_collection_items = $model::query()->whereHas(CATEGORIES_TABLE, static function ($query) use ($categories_ids) {
             $query->whereIn(ID, $categories_ids)->onlyTrashed();
-        })->with(CATEGORIES_TABLE)->lazy();
+        })->with(CATEGORIES_TABLE)->cursor();
 
         $related_collection_items->each(function (Model|stdClass $related_collection_item) use ($categories_ids, $model) {
             // Reduced database queries by using pluck(ID)

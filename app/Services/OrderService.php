@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,10 +46,6 @@ class OrderService {
             $user_cart_items  = cartConfig()[USER_CART_ITEMS];
             $order_total_cost = cartConfig()[TOTAL_COST];
 
-            if ($user_cart_items->isEmpty()) {
-                return to_route('home')->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')->setStatusCode(Response::HTTP_BAD_REQUEST);
-            }
-
             $order = Order::query()->create([
                 TRACKING_NUM => 'GR'.random_int(11111, 99999),
                 NUM_ITEMS    => $user_cart_items->sum(PRODUCT_QUANTITY),
@@ -62,7 +59,7 @@ class OrderService {
 
             DB::commit();
 
-            Mail::to(auth()->user()->{EMAIL})->send(new OrderMail($order));
+            Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
             sendNotificationToAdmins(new NewOrderPlaced($order));
 
@@ -161,11 +158,11 @@ class OrderService {
     /**
      * Create an order item for specified cart items.
      *
-     * @param LengthAwarePaginator $cartItems
+     * @param LazyCollection $cartItems
      * @param Order $order
      * @return void
      */
-    private function createOrderItems(LengthAwarePaginator $cartItems, Order $order): void
+    private function createOrderItems(LazyCollection $cartItems, Order $order): void
     {
         $cartItems->each(static function ($cart_item) use (&$order) {
             $product_total_price = $cart_item->{PRODUCT_QUANTITY} * $cart_item->{PRODUCT_MODEL}->{NEW_PRICE};

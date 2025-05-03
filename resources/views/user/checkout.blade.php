@@ -49,7 +49,7 @@
                                     </li>
                                     <li role="listitem">
                                         <span>{{ucfirst(EMAIL)}}:</span>
-                                        <span class="ms-3 fw-500">{{ auth()->user()->{EMAIL} }}</span>
+                                        <span class="ms-3 fw-500">{{ auth()->user()?->{EMAIL} }}</span>
                                     </li>
                                 </ul>
                             </article>

@@ -61,7 +61,7 @@ class AddressService {
     final public function getUserAddressesData(): Application|Factory|View|RedirectResponse|JsonResponse
     {
         try {
-            $user_id = auth()->check() && !auth()->user()->isAdmin
+            $user_id = auth()->check() && !auth()->user()?->isAdmin
                 ? auth()->id()
                 : decrypt(request()?->input(ID));
         }

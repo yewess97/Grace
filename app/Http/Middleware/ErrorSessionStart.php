@@ -7,9 +7,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Illuminate\Session\Middleware\StartSession;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class Admin
+class ErrorSessionStart
 {
     /**
      * Handle an incoming request.
@@ -20,12 +21,12 @@ class Admin
      */
     final public function handle(Request $request, Closure $next): JsonResponse|Response|RedirectResponse
     {
-        if (auth()->check()) {
-            if (auth()->user()?->isAdmin) return $next($request);
-            
-            abort(HttpResponse::HTTP_FORBIDDEN);
-        }
+        $response = $next($request);
 
-        abort(HttpResponse::HTTP_UNAUTHORIZED);
+        if ($response->exception instanceof HttpExceptionInterface) {
+            return app(StartSession::class)->handle($request, fn ($req) => $next($req));
+        }
+    
+        return $response;
     }
 }

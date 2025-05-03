@@ -67,7 +67,7 @@ class Product extends Model
                 ->with([
                     PRODUCTS_TABLE => static fn(BelongsToMany $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES)
                 ])
-            ->get()
+            ->cursor()
             ->pluck(PRODUCTS_TABLE)
             ->flatten()
             ->reject(fn(self $product) => $product->{ID} === $this->{ID})
@@ -138,7 +138,7 @@ class Product extends Model
      * @param array $filterRequestValues
      * @return LengthAwarePaginator
      */
-    final public static function sort(array $filterRequestValues):LengthAwarePaginator
+    final public static function sort(array $filterRequestValues): LengthAwarePaginator
     {
         [$sort_value] = $filterRequestValues;
 
