@@ -8,7 +8,7 @@
             <div class="modal-body pb-0">
                 {{$add_address_error(USER_ID)}}
 
-                <form action="{{route(CREATE_UPDATE_ADDRESS, ADD)}}" method="post" role="form" id="add_address_form" class="grace-form" data-main="{{route(ADMIN_USER_ADDRESSES_ROUTE)}}">
+                <form action="{{route(CREATE_UPDATE_ADDRESS, ADD)}}" method="post" role="form" id="add_address_form" class="grace-form" data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID)])}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
                         <input type="hidden" name="add_address_user_id" id="add_address_user_id" value="{{request()?->input(ID)}}">

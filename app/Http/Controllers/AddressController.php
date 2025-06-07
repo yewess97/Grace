@@ -37,14 +37,16 @@ class AddressController extends Controller
      * Store or Update an address.
      *
      * @param string $operation
-     * @return Response
+     * @return JsonResponse
      * @throws ValidationException
      */
-    final public function storeOrUpdate(string $operation): Response
+    final public function storeOrUpdate(string $operation): JsonResponse
     {
-        $this->addressService->createOrUpdateAddress($operation);
+        [$address, $last_page] = $this->addressService->createOrUpdateAddress($operation);
 
-        return responseSuccess();
+        $row = view(ADDRESS_ROW_PARTIAL, compact(ADDRESS_MODEL))->render();
+
+        return responseWithData(compact(ADDRESS_MODEL, ROW, LAST_PAGE));
     }
 
     /**

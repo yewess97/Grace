@@ -4,7 +4,6 @@
     $current_item = adminCurrentUrl($url, ['current-item', 'active'])
 @endphp
 
-
 @if($submenu)
     @props(['all_table', 'column_name'])
 
@@ -14,7 +13,7 @@
                 <i class="{{$icon}} nav-menu-item-icon"></i>
                 <span class="nav-menu-item-title" data-mdb-slim="false">{{ucfirst($url)}}</span>
             </div>
-            <i class="fas fa-angle-down nav-menu-item-rotate-icon {{adminCurrentUrl($url, 'rotate-180')}}"></i>
+            <i class="fas fa-angle-down nav-menu-item-rotate-icon {{adminCurrentUrl($url, ['rotate-180'])}}"></i>
         </a>
         <ul role="list" id="nav_menu_item_{{$url}}_submenu" class="nav-submenu-list row gap-3 box-content {{str_contains(url()->current(), ADMIN."/$url") ? 'show' : 'collapse'}}">
             @foreach ((object) $all_table as $table)

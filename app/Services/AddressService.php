@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\AddressRequest;
 use App\Models\Address;
 use App\Models\User;
+use App\Notifications\NewAdminActionTaken;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -20,10 +21,10 @@ class AddressService {
      * Store or Update an address.
      *
      * @param string $operation
-     * @return Address
+     * @return array
      * @throws ValidationException
      */
-    final public function createOrUpdateAddress(string $operation): Address
+    final public function createOrUpdateAddress(string $operation): array
     {
         $address_request = new AddressRequest($operation, ADDRESS_MODEL, ADDRESS_FILLABLE_ATTRIBUTES);
 
@@ -38,7 +39,7 @@ class AddressService {
 
         [$address1_value, $address2_value, $city_value, $state_value, $country_value, $postal_code_value, $user_id_value] = $address_request->dataValues();
 
-        return Address::query()->updateOrCreate(
+        $address = Address::query()->updateOrCreate(
             [ID => $address_id],
             [
                 $address1    => $address1_value,
@@ -50,6 +51,10 @@ class AddressService {
                 $user_id     => $user_id_value,
             ]
         );
+
+        sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
+
+        return [$address, getLastPage(new Address())];
     }
 
     /**
@@ -92,7 +97,7 @@ class AddressService {
      */
     final public function deleteAddress(Address $address): bool
     {
-        return customDelete($address);
+        return customDelete($address, ADDRESS1);
     }
 
     /**
@@ -114,7 +119,7 @@ class AddressService {
      */
     final public function restoreAddress(Address $address): bool
     {
-        return restore($address);
+        return restore($address, ADDRESS1);
     }
 
     /**
@@ -125,6 +130,6 @@ class AddressService {
      */
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
-        return restore($addresses, true);
+        return restore($addresses);
     }
 }

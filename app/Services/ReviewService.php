@@ -113,7 +113,7 @@ class ReviewService
      */
     final public function deleteReview(Review $review): bool
     {
-        return customDelete($review);
+        return customDelete($review, TITLE);
     }
 
     /**
@@ -135,7 +135,7 @@ class ReviewService
      */
     final public function restoreReview(Review $review): bool
     {
-        return restore($review);
+        return restore($review, TITLE);
     }
 
     /**
@@ -146,6 +146,6 @@ class ReviewService
      */
     final public function restoreMultipleReviews(Review $reviews): bool
     {
-        return restore($reviews, true);
+        return restore($reviews);
     }
 }

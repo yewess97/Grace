@@ -328,7 +328,6 @@
 }
 
 .main-admin-body .main-header .main-header-admin-notifications-profile .notifications-list ul.notifications-details li.notification-item .new-notification-circle {
-    right: var(--eight-pixels);
     width: var(--ten-pixels);
     height: var(--ten-pixels);
 }

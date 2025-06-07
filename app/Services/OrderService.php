@@ -6,19 +6,18 @@ use App\Http\Requests\OrderRequest;
 use App\Mail\OrderMail;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewOrderPlaced;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class OrderService {
@@ -108,7 +107,13 @@ class OrderService {
 
         [$status_value] = $order_request->dataValues();
 
-        return Order::query()->whereId($order_id)->update([STATUS => $status_value]);
+        $order = Order::query()->findOrFail($order_id, [ID, TRACKING_NUM, STATUS]);
+
+        $update_order = $order->update([STATUS => $status_value]);
+
+        sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
+
+        return $update_order;
     }
 
     /**
@@ -119,7 +124,7 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        return customDelete($order);
+        return customDelete($order, TRACKING_NUM);
     }
 
     /**
@@ -141,7 +146,7 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        return restore($order);
+        return restore($order, TRACKING_NUM);
     }
 
     /**
@@ -152,7 +157,7 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        return restore($orders, true);
+        return restore($orders);
     }
 
     /**

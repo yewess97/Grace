@@ -11,6 +11,7 @@ use App\Models\ProductSize;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
 use App\Models\User;
+use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewUserRegistered;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -97,11 +98,11 @@ if (!function_exists('guestControllerRoutes')) {
     function guestControllerRoutes(string $controller, string $url): RouteRegistrar
     {
         $url_kebab     = kebabAll($url);
-        $post_callback = capitalizeAllFromSecondWord($url);
+        $post_method_callback = capitalizeAllFromSecondWord($url);
 
-        return Route::controller($controller)->group(function () use ($url, $url_kebab, $post_callback) {
+        return Route::controller($controller)->group(function () use ($url, $url_kebab, $post_method_callback) {
             Route::get('/'.$url_kebab, 'index')->name($url);
-            Route::post('/'.$url_kebab, $post_callback)->name($url.'_'.USER_MODEL);
+            Route::post('/'.$url_kebab, $post_method_callback)->name($url.'_'.USER_MODEL);
         });
     }
 }
@@ -197,18 +198,16 @@ if (!function_exists('is'.ucfirst(ADMIN).'Route')) {
 
 if (!function_exists('adminCurrentUrl')) {
     /**
-     * Get the admin current url.
+     * Add class(es) to the current admin URL.
      *
-     * @param $url
-     * @param $action
-     * @return array|string
+     * @param string $url
+     * @param array $classes
+     * @return string
      */
-    function adminCurrentUrl($url, $action): array|string
+    function adminCurrentUrl(string $url, array $classes): string
     {
-        return str(url()->current())->whenContains(ADMIN."/$url", function () use ($action) {
-            return is_array($action)
-                ? implode(' ', $action)
-                : $action;
+        return str(url()->current())->whenContains(ADMIN."/$url", function () use ($classes) {
+            return implode(' ', $classes);
         });
     }
 }
@@ -978,32 +977,20 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
 
             $attributes = array_merge($attributes, [ROLE => (int) $role_value]);
 
-            return User::query()->updateOrCreate(
+            $user = User::query()->updateOrCreate(
                 [ID => $user_id], $attributes
             );
+
+            sendNotificationToAdmins(new NewAdminActionTaken([$user, $user->{FULL_NAME}], $operation), true);
+
+            return $user;
         }
 
-        $create_user = User::query()->create($attributes);
+        $user = User::query()->create($attributes);
 
-        if ($operation === REGISTER) {
-            sendNotificationToAdmins(new NewUserRegistered($create_user));
+        sendNotificationToAdmins(new NewUserRegistered($user));
 
-            /*
-            $admins_ids = User::where(ROLE, 1)->pluck(ID)->toArray();
-
-            Notification::create([
-                ID => str()->uuid(),
-                'type' => NewUserRegistered::class,
-                'notifiable_type' => User::class,
-                'notifiable_id' => json_encode($admins_ids),
-                'data' => [
-                    'message' => "A new ".USER_MODEL." *".capitalizeAll($create_user->{FULL_NAME})."* has ".REGISTER."ed",
-                ],
-            ]);
-            */
-        }
-
-        return $create_user;
+        return $user;
     }
 }
 
@@ -1028,33 +1015,42 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
      * Delete a specified record or all/some records of a model.
      *
      * @param Model|stdClass $model
-     * @param bool $isMultiple
+     * @param string|null $modelAttribute
      * @param bool $deleteImages
      * @return bool
      * @throws NotFoundHttpException
      */
-    function customDelete(Model|stdClass $model, bool $deleteImages = false): bool
+    function customDelete(Model|stdClass $model, ?string $modelAttribute = null, bool $deleteImages = false): bool
     {
         $requested_selected_ids = request()?->input('selected_'.pluralize(ID));
 
-        $selected_ids = is_null($requested_selected_ids)
-            ? []
-            : array_map('intval', array_from($requested_selected_ids));
+        $selected_ids = $requested_selected_ids
+            ? array_map('intval', array_from($requested_selected_ids))
+            : [];
 
-        $destroy = static function (array $ids) use ($model, $deleteImages, $selected_ids) {
+        $destroy = static function (array $ids) use ($model, $modelAttribute, $deleteImages, $selected_ids) {
             $is_collection_trashed = $model::query()->whereIn(ID, $ids)->cursor()->every(fn($collection) => Cart::class ? false : $collection->trashed());
 
             if (!$is_collection_trashed) {
-                return $model::destroy($ids);
+                $destroyed_ids = $model::destroy($ids);
+
+                // In order not to check about trashed() for every id in the controller
+                sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], REMOVE, !empty($selected_ids)), true);
+
+                return $destroyed_ids;
             }
 
             if ($deleteImages) {
                 deleteImages($model, $selected_ids);
             }
 
-            return is_null($selected_ids)
+            $force_deleted_ids = empty($selected_ids)
                 ? $model->forceDelete()
                 : $model::query()->whereIn(ID, $ids)->forceDelete();
+
+            sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], DELETE, !empty($selected_ids)), true);
+
+            return $force_deleted_ids;
         };
 
         return empty($selected_ids)
@@ -1069,7 +1065,6 @@ if (!function_exists(DELETE.'Images')) {
      * Delete the image(s) of a specified record or all/some records of a model.
      *
      * @param Model|stdClass $model
-     * @param bool $isMultiple
      * @param array $selectedIds
      * @return bool
      * @throws NotFoundHttpException
@@ -1200,18 +1195,22 @@ if (!function_exists(RESTORE)) {
      * Restore a specified record or all/some records of a model.
      *
      * @param Model|stdClass $model
-     * @param bool $isMultiple
+     * @param string|null $modelAttribute
      * @return bool
      */
-    function restore(Model|stdClass $model, bool $isMultiple = false): bool
+    function restore(Model|stdClass $model, ?string $modelAttribute = null): bool
     {
-        $selected_ids = $isMultiple
-            ? array_map('intval', array_from(request()?->input('selected_'.pluralize(ID))))
+        $requested_selected_ids = request()?->input('selected_'.pluralize(ID));
+
+        $selected_ids = $requested_selected_ids
+            ? array_map('intval', array_from($requested_selected_ids))
             : [];
 
-        return $isMultiple
-            ? $model::query()->whereIn(ID, $selected_ids)->restore()
-            : $model->restore();
+        sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], RESTORE, !empty($selected_ids)), true);
+
+        return empty($selected_ids)
+            ? $model->restore()
+            : $model::query()->whereIn(ID, $selected_ids)->restore();
     }
 }
 
@@ -1221,11 +1220,14 @@ if (!function_exists(function: 'sendNotificationToAdmins')) {
      * Send a notification to all admins.
      *
      * @param NotificationInstance $notification
+     * @param bool $exceptAuthAdmin
      * @return void
      */
-    function sendNotificationToAdmins(NotificationInstance $notification): void
+    function sendNotificationToAdmins(NotificationInstance $notification, bool $exceptAuthAdmin = false): void
     {
-        $admins = User::where(ROLE, 1)->get([ID, ROLE]);
+        $admins = User::where(ROLE, 1)
+            ->when($exceptAuthAdmin, static fn(Builder $user) => $user->whereNot(ID, auth()->id()))
+            ->get([ID, ROLE]);
 
         Notification::send($admins, $notification);
     }

@@ -36,6 +36,8 @@
 
                     {{-- Notifications List --}}
                     <div id="notifications_dropdown" class="notifications-list dropdown-menu border rounded-3" aria-labelledby="admin_notifications_list">
+                        {{-- Notification Sound --}}
+                        <audio id="notification_sound" src="{{asset('sounds/grace-notification-sound.mp3')}}" preload="auto"></audio>
                         {{-- Notifications Title --}}
                         <div class="notifications-title row justify-content-between align-items-center px-3 py-2">
                             <h2 class="notifications-title-text col fs-6 fw-600 text-white">Notifications</h2>
@@ -47,14 +49,24 @@
                         {{-- Notifications Details --}}
                         <ul role="list" class="notifications-details border-top">
                             @forelse (auth()->user()?->notifications as $notification)
-                                <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-grid gap-1 w-100 {{$notification->read_at ? '' : 'highlight-background'}}">
-                                    <p class="notifications-text mb-2">{{$notification->data['message']}}</p>
-                                    <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>
+                                <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-flex align-items-center w-100 {{$notification->read_at ? '' : 'highlight-background'}}">
+                                    <div class="d-grid gap-2">
+                                        <p class="notifications-text mb-2">{{$notification->data['message']}}</p>
+                                        <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>
+                                    </div>
 
                                     @if (is_null($notification->read_at))
                                         <a href="{{route('mark_as_read', [ID => $notification->{ID}])}}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
-                                            <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
+                                            <span class="new-notification-circle d-inline-block rounded-pill bg-info"></span>
                                         </a>
+                                    @else
+                                        <form action="{{route(DELETE.'_notification', [ID => $notification->{ID}])}}" method="post" role="form" class="delete-notification-form">
+                                            @csrf
+                                            @method(strtoupper(DELETE))
+                                            <button type="submit" role="button" title="Delete Notification" data-tooltip="tooltip" data-mdb-placement="top" class="fs-6 bg-transparent text-danger border-0">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
                                     @endif
                                 </li>
                             @empty

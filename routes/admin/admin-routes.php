@@ -60,6 +60,7 @@ generalControllerRoutes(OrderController::class, ORDER_MODEL);
 Route::controller(NotificationController::class)->prefix('/notifications')->group(function () {
     Route::post('/mark-as-read', 'markAsRead')->name('mark_as_read');
     Route::post('/mark-all-as-read', 'markAllAsRead')->name('mark_all_as_read');
+    Route::delete('/delete-notification', DESTROY)->name(DELETE.'_notification');
 });
 
 

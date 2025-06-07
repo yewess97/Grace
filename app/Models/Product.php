@@ -136,9 +136,9 @@ class Product extends Model
      * Sort the products.
      *
      * @param array $filterRequestValues
-     * @return LengthAwarePaginator
+     * @return LengthAwarePaginator|Builder
      */
-    final public static function sort(array $filterRequestValues): LengthAwarePaginator
+    final public static function sort(array $filterRequestValues): LengthAwarePaginator|Builder
     {
         [$sort_value] = $filterRequestValues;
 

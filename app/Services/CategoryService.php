@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
+use App\Notifications\NewAdminActionTaken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -50,6 +51,8 @@ class CategoryService
             ]
         );
 
+        sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
+
         return [$category, getLastPage(new Category())];
     }
 
@@ -66,7 +69,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, (new Subcategory()));
         $this->deleteRelatedCollectionItems($category, (new Product()));
 
-        return customDelete($category, true);
+        return customDelete($category, NAME, true);
     }
 
     /**
@@ -82,7 +85,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
         $this->deleteRelatedCollectionItems($categories, (new Product()));
 
-        return customDelete($categories, true);
+        return customDelete($categories, null, true);
     }
 
     /**
@@ -93,7 +96,7 @@ class CategoryService
      */
     final public function restoreCategory(Category $category): bool
     {
-        return restore($category);
+        return restore($category, NAME);
     }
 
     /**
@@ -104,7 +107,7 @@ class CategoryService
      */
     final public function restoreMultipleCategories(Category $categories): bool
     {
-        return restore($categories, true);
+        return restore($categories);
     }
 
     /**

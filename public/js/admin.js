@@ -274,7 +274,7 @@ $(document).on(IGrace.CLICK, (e) => {
 
     // Toggle the (active) class on the nav menu list item and rotate the icon
     if (target.is(`.${nav_menu_item}, .${nav_menu_item}-icon-title, .${nav_menu_item}-icon, .${nav_menu_item}-title, .${nav_menu_item_rotate_icon}`) && !target.is(`.${nav_menu}.close .${nav_menu_item}-icon`)) {
-        const target_parent = target.parents(`.${nav_menu_list_item}`).addClass('active');
+        const target_parent = target.parents(`.${nav_menu_list_item}:not(.current-item)`).toggleClass('active');
         target_parent.find(`.${nav_menu_item_rotate_icon}`).toggleClass('rotate-180');
     }
 

@@ -33,5 +33,9 @@
 @else
     <link rel="stylesheet" type="text/css" href="{{asset('css/user-style.css')}}">
 @endif
-<link rel="shortcut icon" type="image/x-icon" sizes="16x16" href="{{imageSource('favicon.png')}}">
+<link rel="icon" type="image/x-icon" sizes="32x32" href="{{imageSource('favicon.png')}}">
 <link rel="icon" type="image/x-icon" sizes="16x16" href="{{imageSource('favicon.png')}}">
+<link rel="shortcut icon" type="image/x-icon" sizes="32x32" href="{{imageSource('favicon.png')}}">
+<link rel="shortcut icon" type="image/x-icon" sizes="16x16" href="{{imageSource('favicon.png')}}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{imageSource('favicon.png')}}">
+<link rel="manifest" href="{{imageSource('favicon.png')}}">

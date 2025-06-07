@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\SubcategoryRequest;
 use App\Models\Subcategory;
+use App\Notifications\NewAdminActionTaken;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -44,6 +45,8 @@ class SubcategoryService
 
         createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
+        sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
+
         return [$subcategory, getLastPage(new Subcategory())];
     }
 
@@ -57,7 +60,7 @@ class SubcategoryService
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        return customDelete($subcategory, true);
+        return customDelete($subcategory, NAME, true);
     }
 
     /**
@@ -70,7 +73,7 @@ class SubcategoryService
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        return customDelete($subcategories, true);
+        return customDelete($subcategories, null, true);
     }
 
     /**
@@ -81,7 +84,7 @@ class SubcategoryService
      */
     final public function restoreSubcategory(Subcategory $subcategory): bool
     {
-        return restore($subcategory);
+        return restore($subcategory, NAME);
     }
 
     /**
@@ -92,6 +95,6 @@ class SubcategoryService
      */
     final public function restoreMultipleSubcategories(Subcategory $subcategories): bool
     {
-        return restore($subcategories, true);
+        return restore($subcategories);
     }
 }

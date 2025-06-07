@@ -393,10 +393,9 @@ const Admin = {
             const
                 target               = $(this),
                 route                = target.attr('action'),
+                main_page            = target.data('main'),
                 [action, collection] = form.split('_'),
                 form_data            = Common.filteredFormData(this);
-
-            let main_page = target.data('main');
 
             // FormData() accepts only POST method
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
@@ -412,21 +411,12 @@ const Admin = {
 
                     const data_actions = {
                         true: () => {
-                            let url = main_page;
-
-                            const actions = {
-                                [IGrace.ADD]: () => {
-                                    $("tbody").append(data[IGrace.ROW]);
-                                    url += `?page=${data['last_page']}`;
-                                },
-                                default: () => $(`#${IGrace.ROW}_${data[collection][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
-                            };
-
-                            (actions[action] || actions.default)();
-
-                            $.get(url)
-                                .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
-                                .fail(Common.somethingWentWrongError);
+                            Common.updateTableRows({
+                                data:       data,
+                                mainPage:   main_page,
+                                collection: collection,
+                                action:     action,
+                            });
                         },
                         false: () => main_page = IGrace.ADMIN,
                     };
@@ -752,6 +742,24 @@ const Admin = {
                     notification_item.find('.mark-as-read-icon').remove();
                 })
                 .fail(Common.somethingWentWrongError);
+        });
+    },
+
+    /**
+     * Delete Notification Ajax Request
+     */
+    ajaxDeleteNotificationRequest: () => {
+        $(document).on(IGrace.CLICK, '.delete-notification-form', function (e) {
+            e.preventDefault();
+
+            const route = $(this).attr('action');
+
+            $.ajax({
+                url: route,
+                method: IGrace.DELETE.toUpperCase(),
+                success: (data) => $(`#notification${data[IGrace.ID]}`).remove(),
+                error: () => Common.somethingWentWrongError(),
+            });
         });
     },
 }

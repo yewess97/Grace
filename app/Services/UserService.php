@@ -49,7 +49,7 @@ class UserService
      */
     final public function deleteUser(User $user): bool
     {
-        return customDelete($user);
+        return customDelete($user, FULL_NAME);
     }
 
     /**
@@ -71,7 +71,7 @@ class UserService
      */
     final public function restoreUser(User $user): bool
     {
-        return restore($user);
+        return restore($user, FULL_NAME);
     }
 
     /**
@@ -82,7 +82,7 @@ class UserService
      */
     final public function restoreMultipleUsers(User $users): bool
     {
-        return restore($users, true);
+        return restore($users);
     }
 }
 

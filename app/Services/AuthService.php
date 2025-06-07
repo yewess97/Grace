@@ -33,10 +33,12 @@ class AuthService {
      */
     final public function registerUser(): void
     {
+        /**
+         * @var mixed $user
+         */
         $user = storeOrUpdateUser(REGISTER);
 
-        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-        auth()->login($user);
+        auth()->guard()->login($user);
     }
 
     /**

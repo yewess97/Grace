@@ -235,6 +235,7 @@ const User = {
             const
                 target        = $(this),
                 route         = target.attr('action'),
+                main_page     = target.data('main'),
                 action        = form.split('_')[0],
                 collection    = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
                 form_data     = Common.filteredFormData(this),
@@ -279,6 +280,13 @@ const User = {
                     Common.arrangeTableRows();
                     $(IGrace.MODAL(IGrace.USER)).modal('hide');
                     form_reset(target, action);
+
+                    Common.updateTableRows({
+                        data:       data,
+                        mainPage:   main_page,
+                        collection: collection,
+                        action:     action,
+                    });
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },

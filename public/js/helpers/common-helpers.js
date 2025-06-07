@@ -471,10 +471,26 @@ const Common = {
     /**
      * Update the table rows after deletion/restoration.
      *
-     * @param ids
+     * @param args
      * @return {void}
      */
-    updateTableRows: (ids) => {
+    updateTableRows: (args) => {
+        const { ids, data, mainPage, collection, action } = args;
+
+        const actions = {
+            [IGrace.ADD]: () => {
+                $("tbody").append(data[IGrace.ROW]);
+                mainPage += `?page=${data['last_page']}`;
+            },
+            default: () => $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
+        };
+
+        (actions[action] || actions.default)();
+
+        $.get(mainPage)
+            .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
+            .fail(Common.somethingWentWrongError);
+
         $('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false});
 
         $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
@@ -529,7 +545,7 @@ const Common = {
 
         if (!country_elements.length) return;
 
-        $.getJSON('https://restcountries.com/v3.1/all')
+        $.getJSON('https://restcountries.com/v3.1/all?fields=name')
             .done((countries) => {
                 const countries_options = countries
                     .map((country) => country.name.common)
@@ -908,8 +924,8 @@ const Common = {
             method: IGrace.DELETE.toUpperCase(),
             success: () => {
                 isMultiple
-                    ? Common.updateTableRows(selectedIds)
-                    : Common.updateTableRows([collectionId]);
+                    ? Common.updateTableRows({ids: selectedIds})
+                    : Common.updateTableRows({ids: [collectionId]});
 
                 Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
             },
@@ -1126,7 +1142,7 @@ const Common = {
                 url: restore_route,
                 method: IGrace.PUT,
                 success: () => {
-                    Common.updateTableRows([collection_id]);
+                    Common.updateTableRows({ids: [collection_id]});
 
                     Common.successMessage(IGrace.RESTORED(), restore_success_message)
                 },
@@ -1165,7 +1181,7 @@ const Common = {
                 url: `${restore_all_route}?selected_ids=${selected_rows}`,
                 method: IGrace.PUT,
                 success: () => {
-                    Common.updateTableRows(selected_rows);
+                    Common.updateTableRows({ids: selected_rows});
 
                     Common.successMessage(IGrace.RESTORED(), restore_multi_success_message);
                 },
@@ -1276,24 +1292,31 @@ const Common = {
             try {
                 const 
                     notification                = JSON.parse(event.data).notification,
-                    notifications_details_list  = $('.notifications-details');
+                    notifications_details_list  = $('.notifications-details'),
+                    notification_sound          = $('#notification_sound');
 
                 if (notifications_details_list.find('.no-notifications').length) notifications_details_list.empty();
 
                 if ($(`li[id='notification${notification.id}']`).length) return;
 
                 notifications_details_list.prepend(`
-                    <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-grid gap-1 w-100 highlight-background">
-                        <p class="notifications-text mb-2">${notification.message}</p>
-                        <span class="notifications-timer text-muted">${notification.created_at}</span>
+                    <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-flex align-items-center w-100 highlight-background">
+                        <div class="d-grid gap-2"
+                            <p class="notifications-text mb-2">${notification.message}</p>
+                            <span class="notifications-timer text-muted">${notification.created_at}</span>
+                        </div>
 
                         <a href="${location.origin}/${IGrace.ADMIN}/notifications/mark-as-read?id=${notification.id}" role="link" title="Mark as read" class="notifications-link mark-as-read-icon">
-                            <span class="new-notification-circle position-absolute top-50 translate-middle rounded-pill bg-info"></span>
+                            <span class="new-notification-circle d-inline-block rounded-pill bg-info"></span>
                         </a>
                     </li>
                 `);
 
                 show_hide_notifications_count(notifications_details_list);
+
+                if (notification_sound.length) {       
+                    notification_sound.trigger('play');
+                }
             }
             catch (error) {
                 console.error('Failed to parse SSE message: ', error);

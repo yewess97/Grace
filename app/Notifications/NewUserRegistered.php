@@ -2,9 +2,9 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
 
 class NewUserRegistered extends Notification implements ShouldQueue
@@ -16,7 +16,7 @@ class NewUserRegistered extends Notification implements ShouldQueue
      *
      * @return void
      */
-    final public function __construct(protected Model $user) {}
+    final public function __construct(protected User $user) {}
 
     /**
      * Get the notification's delivery channels.

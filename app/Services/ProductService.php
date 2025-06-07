@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Notifications\NewAdminActionTaken;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -132,6 +133,7 @@ class ProductService
         // Product Related Subcategories
         createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
+        sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
         return [$product, getLastPage(new Product())];
     }
@@ -146,7 +148,7 @@ class ProductService
      */
     final public function deleteProduct(Product $product): bool
     {
-        return customDelete($product, true);
+        return customDelete($product, NAME, true);
     }
 
     /**
@@ -159,7 +161,7 @@ class ProductService
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        return customDelete($products, true);
+        return customDelete($products, null, true);
     }
 
     /**
@@ -170,7 +172,7 @@ class ProductService
      */
     final public function restoreProduct(Product $product): bool
     {
-        return restore($product);
+        return restore($product, NAME);
     }
 
     /**
@@ -181,6 +183,6 @@ class ProductService
      */
     final public function restoreMultipleProducts(Product $products): bool
     {
-        return restore($products, true);
+        return restore($products);
     }
 }

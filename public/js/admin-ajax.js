@@ -239,6 +239,9 @@ Admin.ajaxMarkNotificationAsReadRequest('mark-as-read-icon');
 // Mark All Notifications as Read
 Admin.ajaxMarkNotificationAsReadRequest('mark-all-as-read');
 
+// Delete a Notification
+Admin.ajaxDeleteNotificationRequest();
+
 /* ---------------------------------- END NOTIFICATIONS ---------------------------------- */
 
 
