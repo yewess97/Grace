@@ -3,7 +3,7 @@
 @section('main')
 
     {{-- Navigation Menu --}}
-    @include(adminLayout('navbar'))
+    @include(adminLayout('navbar'), ['responsive' => false])
 
 
     {{-- Main Admin Body --}}

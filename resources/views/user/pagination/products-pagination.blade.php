@@ -6,7 +6,7 @@
     @else
         @foreach ($products as $product)
             <li role="listitem" class="product-item col position-relative">
-                @include(PRODUCT_ITEM_COMPONENT, [PRODUCT_MODEL => $product])
+                <x-product-item :product="$product"/>
             </li>
         @endforeach
     @endif

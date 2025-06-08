@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 
 class NotificationController extends Controller
 {
@@ -61,15 +60,15 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read.
      *
-     * @return Response
+     * @return JsonResponse
      */
-    final public function markAllAsRead(): Response
+    final public function markAllAsRead(): JsonResponse
     {
-        auth()->user()
-            ->unreadNotifications
-            ->markAsRead();
+        $unread_notifications = auth()->user()->unreadNotifications;
+        
+        $unread_notifications->markAsRead();
 
-        return responseSuccess();
+        return responseSuccess(null, [pluralize(ID) => $unread_notifications->pluck(ID)->toArray()]);
     }
 
     /**

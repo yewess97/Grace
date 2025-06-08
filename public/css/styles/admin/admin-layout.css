@@ -10,10 +10,6 @@
     color: var(--light-gray-color);
 }
 
-.nav-menu .nav-menu-content {
-    gap: var(--forty-pixels);
-}
-
 .nav-menu .nav-menu-toggle {
     top: var(--fifty-pixels);
     right: calc(var(--eleven-pixels) * -1);

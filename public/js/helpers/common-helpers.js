@@ -386,7 +386,7 @@ const Common = {
      *
      * @return {void}
      */
-    imageConfig: () => $.each(($('img')), (_, image) =>
+    imageConfig: () => $.each(($('img:not(.loading-spinner)')), (_, image) =>
         $(image).addClass('img-fluid h-100')
             .css('mix-blend-mode', 'multiply')
             .attr('loading', 'lazy')
@@ -477,23 +477,26 @@ const Common = {
     updateTableRows: (args) => {
         const { ids, data, mainPage, collection, action } = args;
 
-        const actions = {
-            [IGrace.ADD]: () => {
-                $("tbody").append(data[IGrace.ROW]);
-                mainPage += `?page=${data['last_page']}`;
-            },
-            default: () => $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
-        };
+        if (ids) {
+            $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
+        }
+        else {
+            const actions = {
+                [IGrace.ADD]: () => {
+                    $("tbody").append(data[IGrace.ROW]);
+                    mainPage += `?page=${data['last_page']}`;
+                },
+                default: () => $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
+            };
 
-        (actions[action] || actions.default)();
+            (actions[action] || actions.default)();
 
-        $.get(mainPage)
-            .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
-            .fail(Common.somethingWentWrongError);
+            $.get(mainPage)
+                .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
+                .fail(Common.somethingWentWrongError);
+        }
 
         $('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false});
-
-        $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
     },
 
 

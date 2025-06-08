@@ -10,7 +10,7 @@
                     <!----======= Left Side =======---->
                     <section class="left-side col">
                         <div class="box-content border rounded">
-                            <form action="{{route($auth_action === REGISTER ? REGISTER_USER : LOGIN_USER)}}" method="post" role="form" id="{{$auth_action}}_form" class="grace-form auth-form row">
+                            <form action="{{route($auth_action === REGISTER ? REGISTER_USER : LOGIN_USER)}}" method="post" role="form" id="{{$auth_action}}_form" class="grace-form auth-form row" data-loading_spinner="{{imageSource('loading2.png')}}">
                                 @csrf
                                 {{-- Form Header --}}
                                 <article class="grace-form-header row col-12 text-center">
@@ -84,7 +84,9 @@
 
                                     {{-- Submit Button --}}
                                     <div class="form-group">
-                                        <button type="submit" role="button" title="{{ucfirst($auth_action)}}" class="btn btn-block {{$auth_action}}-btn">{{ucfirst($auth_action)}}</button>
+                                        <button type="submit" role="button" title="{{ucfirst($auth_action)}}" class="btn {{$auth_action}}-btn d-flex justify-content-center align-items-center gap-2 w-100">
+                                            <span>{{ucfirst($auth_action)}}</span>
+                                        </button>
                                     </div>
                                 </article>
 

@@ -793,11 +793,9 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
  * Components.
  */
 define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component('home-'.PRODUCT_MODEL.'-left-side'));
-define("PRODUCT_ITEM_COMPONENT",           component(PRODUCT_MODEL.'-item'));
 define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES)));
 define("ORDER_DETAILS_COMPONENT",          component(kebabAll(ORDER_DETAILS)));
 define("REVIEWS_COMPONENT",                component(REVIEWS_TABLE));
-define("NOTIFICATIONS_COMPONENT",          component('notifications'));
 define("PAGINATION_COMPONENT",             component('pagination-template'));
 define("ERROR_COMPONENT",                  component('error'));
 

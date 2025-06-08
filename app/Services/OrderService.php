@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class OrderService {
@@ -25,7 +26,7 @@ class OrderService {
      * Store an order.
      *
      * @return RedirectResponse|int
-     * @throws ValidationException|Throwable|RandomException
+     * @throws ValidationException|RandomException|Throwable
      */
     final public function createOrder(): RedirectResponse|int
     {
@@ -44,6 +45,12 @@ class OrderService {
 
             $user_cart_items  = cartConfig()[USER_CART_ITEMS];
             $order_total_cost = cartConfig()[TOTAL_COST];
+
+            if ($user_cart_items->isEmpty()) {
+                throw ValidationException::withMessages([
+                    'You have already placed this '.ORDER_MODEL.'. <br> Please check your '.CART_MODEL.' or add some '.PRODUCTS_TABLE.' to it.',
+                ])->status(Response::HTTP_BAD_REQUEST);
+            }
 
             $order = Order::query()->create([
                 TRACKING_NUM => 'GR'.random_int(11111, 99999),

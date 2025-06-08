@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Random\RandomException;
 use Throwable;
 
 class OrderController extends Controller
@@ -38,7 +39,7 @@ class OrderController extends Controller
      * Store an order.
      *
      * @return Response|RedirectResponse
-     * @throws ValidationException|Throwable
+     * @throws ValidationException|RandomException|Throwable
      */
     final public function store(): Response|RedirectResponse
     {

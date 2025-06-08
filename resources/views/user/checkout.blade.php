@@ -5,7 +5,7 @@
     {{-- Checkout Main --}}
     <section role="main" class="checkout-main">
         <div class="main-sides">
-            <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12">
+            <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12" data-loading_spinner="{{imageSource('loading2.png')}}">
                 @csrf
                 <input type="hidden" name="add_order_status" value="1">
                 <input type="hidden" name="add_order_address_id" id="order_address_id">
@@ -138,7 +138,9 @@
                         </article>
                         {{-- Place Order Button --}}
                         <article class="d-grid place-items-center">
-                            <button type="submit" role="button" title="Place {{ucfirst(ORDER_MODEL)}}" id="place_order_btn" class="btn w-75 mt-3">Place {{ucfirst(ORDER_MODEL)}}</button>
+                            <button type="submit" role="button" title="Place {{ucfirst(ORDER_MODEL)}}" id="place_order_btn" class="btn d-flex justify-content-center align-items-center gap-2 w-75 mt-3">
+                                <span>Place {{ucfirst(ORDER_MODEL)}}</span>
+                            </button>
                         </article>
                     </div>
                 </aside>

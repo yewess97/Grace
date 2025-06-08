@@ -9,14 +9,7 @@
                 </div>
 
                 {{-- Header Nav Menu Content --}}
-                <nav role="navigation" id="admin_header_nav_menu" class="nav-menu responsive-nav-menu position-fixed top-0 h-100 overflow-auto" aria-label="{{ucfirst(USER_MODEL)}} navigation">
-                    <div class="container h-100">
-                        <div class="nav-menu-content d-flex flex-column h-100">
-                            {{-- Nav Menu Layout --}}
-                            @include(ADMIN_NAV_MENU_LAYOUT_PARTIAL, ['responsive' => true])
-                        </div>
-                    </div>
-                </nav>
+                @include(adminLayout('navbar'), ['responsive' => true])
             </article>
 
             {{-- Header Main Title --}}

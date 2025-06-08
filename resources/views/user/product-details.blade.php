@@ -12,7 +12,7 @@
                 <!----======= Home Right Side =======---->
                 <section class="right-side product-right-side col-lg-9 d-flex flex-column gap-4 ps-lg-3">
                     {{-- Product Images and Info --}}
-                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form">
+                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
                         @csrf
                         <div class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
                             <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
@@ -132,7 +132,7 @@
                                     <ul role="list" class="owl-stage products-content">
                                         @foreach ($product->{RELATED_PRODUCTS} as $related_product)
                                             <li role="listitem" class="owl-item product-item position-relative p-0">
-                                                @include(PRODUCT_ITEM_COMPONENT, [PRODUCT_MODEL => $related_product])
+                                                <x-product-item :product="$related_product"/>
                                             </li>
                                         @endforeach
                                     </ul>

@@ -172,6 +172,27 @@ const User = {
     },
 
 
+    /**
+     * Display a loading spinner.
+     * 
+     * @param target
+     * @param element
+     * @param {boolean} isDisabled
+     * @return {void}
+     */
+    loadingSpinner: (target, element, isDisabled = false) => {
+        isDisabled && element.prop('disabled', true);
+
+        element.prepend($('<img>', {
+            src: target.data('loading_spinner'),
+            alt: 'Loading',
+            class: 'img-fluid loading-spinner',
+            width: 30,
+            height: 30,
+        }));
+    },
+
+
 
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
     ajaxAuthRequest: (authAction) => {
@@ -179,14 +200,15 @@ const User = {
             e.preventDefault();
 
             const
-                target    = $(this),
-                route     = target.attr('action'),
-                form_data = Common.filteredFormData(this);
+                target        = $(this),
+                route         = target.attr('action'),
+                form_data     = Common.filteredFormData(this);
 
             $.ajax({
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
+                beforeSend: () => User.loadingSpinner(target, $(`.${IGrace.LOGIN}-btn`), true),
                 success: (data) => {
                     let success_message;
 
@@ -233,12 +255,13 @@ const User = {
             e.preventDefault();
 
             const
-                target        = $(this),
-                route         = target.attr('action'),
-                main_page     = target.data('main'),
-                action        = form.split('_')[0],
-                collection    = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
-                form_data     = Common.filteredFormData(this),
+                target             = $(this),
+                route              = target.attr('action'),
+                main_page          = target.data('main'),
+                action             = form.split('_')[0],
+                collection         = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
+                place_order_button = $(`#place_${IGrace.ORDER}_btn`),
+                form_data          = Common.filteredFormData(this),
 
                 form_reset = (target, action) => {
                     target.trigger('reset');
@@ -260,6 +283,7 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
+                beforeSend: () => User.loadingSpinner(target, place_order_button, true),
                 success: (data) => {
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
                         return location.href = data['redirect_to'];
@@ -267,6 +291,10 @@ const User = {
 
                     if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
+
+                        place_order_button.prop('disabled', false)
+                            .find('img')
+                            .remove();
 
                         return Common.successMessage(IGrace.SUCCESS, success_message, collection);
                     }
@@ -483,9 +511,10 @@ const User = {
             e.preventDefault();
 
             const
-                target    = $(this),
-                route     = target.attr('action'),
-                form_data = Common.filteredFormData(this);
+                target        = $(this),
+                route         = target.attr('action'),
+                cart_button   = target.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-lg-btn`),
+                form_data     = Common.filteredFormData(this);
 
             // FormData() accepts only POST method
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
@@ -521,6 +550,14 @@ const User = {
                 contentType: action === IGrace.ADD
                     ? false
                     : 'application/json',
+                beforeSend: () => {
+                    cart_button.find('i')
+                        .remove().end()
+                        .find('img')
+                        .remove();
+                        
+                    User.loadingSpinner(target, cart_button);
+                },
                 success: (data) => {
                     let success_message = action === IGrace.ADD
                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.CART}`
@@ -533,6 +570,14 @@ const User = {
                             .find('.selected-items').empty().end()
                             .find('.placeholder').removeAttr('hidden');
                     });
+
+                    cart_button.find('img')
+                        .remove().end()
+                        .prepend($('<i>', {
+                            class: 'ti ti-shopping-cart',
+                        }));
+
+                    $(IGrace.ERROR_ELEMENT(action)).empty();
 
                     User.updateCartContent(data);
 

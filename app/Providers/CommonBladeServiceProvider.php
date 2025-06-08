@@ -64,7 +64,7 @@ class CommonBladeServiceProvider extends ServiceProvider
             $title = array_from($btnName)[0];
 
             if (str_contains($title, strtoupper(CART_MODEL))) {
-                return "<?php echo \"<div class='add-cart'><div class='form-group'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn add-cart-btn d-flex justify-content-center align-items-center gap-2 rounded-1'><i class='ti ti-shopping-cart'></i><span>\".capitalizeAll($title).\"</span></button></div></div>\" ?>";
+                return "<?php echo \"<div class='add-cart'><div class='form-group'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'><i class='ti ti-shopping-cart'></i><span>\".capitalizeAll($title).\"</span></button></div></div>\" ?>";
             }
 
             return "<?php echo \"<div class='modal-footer p-2'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn'>\".capitalizeAll($title).\"</button></div>\" ?>";

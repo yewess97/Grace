@@ -348,7 +348,8 @@ const Admin = {
 
         $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())}`).aksFileUpload(thumb_images_options);
 
-        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())} .aks-file-upload-content`).addClass(IGrace.CLASS(`${IGrace.PLURALIZE(thumb_image.replace('#', ''))}-content`));
+        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())} .aks-file-upload-content`)
+            .addClass(IGrace.CLASS(`${IGrace.PLURALIZE(thumb_image.replace('#', ''))}-content`));
 
         $(thumb_image).attr('accept', '.png, .jpg, .jpeg');
     },
@@ -393,9 +394,10 @@ const Admin = {
             const
                 target               = $(this),
                 route                = target.attr('action'),
-                main_page            = target.data('main'),
                 [action, collection] = form.split('_'),
                 form_data            = Common.filteredFormData(this);
+
+            let main_page = target.data('main');
 
             // FormData() accepts only POST method
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
@@ -577,7 +579,8 @@ const Admin = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.OLD_PRICE}`).val(product[`${IGrace.OLD_PRICE}`]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.NEW_PRICE}`).val(product[`${IGrace.NEW_PRICE}`]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.QUANTITY}`).val(product[`${IGrace.QUANTITY}`]);
-                    status.find('option').removeAttr('selected')
+                    status.find('option')
+                        .removeAttr('selected')
                         .filter((_, productStatus) => +productStatus.value === +product[IGrace.STATUS])
                         .attr('selected', true);
 
@@ -611,7 +614,8 @@ const Admin = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.FIRST_NAME()}`).val(user[IGrace.FIRST_NAME()]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.LAST_NAME()}`).val(user[IGrace.LAST_NAME()]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.EMAIL}`).val(user[IGrace.EMAIL]);
-                    role.find('option').removeAttr('selected')
+                    role.find('option')
+                        .removeAttr('selected')
                         .filter((_, userRole) => +userRole.value === +user[IGrace.ROLE])
                         .attr('selected', true);
 
@@ -640,7 +644,8 @@ const Admin = {
                     const order = data[IGrace.ORDER];
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.ORDER))}`).val(order[IGrace.ID]);
-                    status.find('option').removeAttr('selected')
+                    status.find('option')
+                        .removeAttr('selected')
                         .filter((_, orderStatus) => +orderStatus.value === +order[IGrace.STATUS])
                         .attr('selected', true);
 
@@ -723,12 +728,24 @@ const Admin = {
 
             const route = $(this).attr('href');
 
+            const delete_notification_template = (id) => 
+                $(`#notification${id}`).append(`
+                    <form action="${location.origin}/${IGrace.ADMIN}/notifications/${IGrace.DELETE}-notification?id=${id}" method="post" role="form" class="delete-notification-form">
+                        <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" role="button" title="Delete Notification" data-tooltip="tooltip" data-mdb-placement="top" class="fs-6 bg-transparent text-danger border-0">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                    </form>
+                `);
+
             $.post(route)
                 .done((data) => {
                     if (className.includes('all')) {
                         $('.notifications-count').css('display', 'none');
                         $('.notification-item').removeClass('highlight-background');
                         $('.mark-as-read-icon').remove();
+                        $.each((data[IGrace.PLURALIZE(IGrace.ID)]), (_, id) => delete_notification_template(id));
                         return;
                     }
 
@@ -738,8 +755,12 @@ const Admin = {
                         ? $('.notifications-count').text($('.notifications-count').text() - 1)
                         : $('.notifications-count').css('display', 'none');
                         
-                    notification_item.removeClass('highlight-background');
-                    notification_item.find('.mark-as-read-icon').remove();
+                    notification_item.removeClass('highlight-background')
+                        .end()
+                        .find('.mark-as-read-icon')
+                        .remove();
+
+                    delete_notification_template(data[IGrace.ID]);
                 })
                 .fail(Common.somethingWentWrongError);
         });

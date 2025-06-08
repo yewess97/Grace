@@ -39,10 +39,6 @@
         left: 0;
     }
 
-    .nav-menu .nav-menu-content {
-        gap: var(--ten-pixels);
-    }
-
     .nav-menu .nav-menu-content .nav-menu-header .nav-menu-close {
         font-size: var(--twenty-pixels);
         background: var(--main-color);
