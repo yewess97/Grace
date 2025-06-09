@@ -53,10 +53,10 @@ class LoginController extends Controller
      * Redirect the user to the social provider authentication page.
      * 
      * @param string $provider
-     * @return RedirectResponse
+     * @return JsonResponse
      * @throws InvalidArgumentException|RuntimeException
      */
-    final public function redirectToProvider($provider): RedirectResponse
+    final public function redirectToProvider($provider): JsonResponse
     {
         return $this->authService->redirectToSocialProvider($provider);
     }
@@ -65,10 +65,9 @@ class LoginController extends Controller
      * Handle the callback from the social provider after authentication.
      *
      * @param string $provider
-     * @return JsonResponse
-     * @throws RuntimeException
+     * @return RedirectResponse
      */
-    final public function handleProviderCallback($provider): JsonResponse
+    final public function handleProviderCallback($provider): RedirectResponse
     {
         return $this->authService->handleSocialProviderCallback($provider);
     }

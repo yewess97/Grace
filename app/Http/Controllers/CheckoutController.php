@@ -25,7 +25,9 @@ class CheckoutController extends Controller
         $user_cart_items = cartConfig()[USER_CART_ITEMS];
 
         if ($user_cart_items->isEmpty()) {
-            return to_route('home')->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return to_route('home')
+                ->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')
+                ->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
 
         // Check if a product is unavailable, then delete it from the cart when proceeding to checkout

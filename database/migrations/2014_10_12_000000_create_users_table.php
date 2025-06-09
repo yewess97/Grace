@@ -22,6 +22,8 @@ return new class extends Migration
             $table->timestamp(EMAIL.'_verified_at');
             $table->string(PASSWORD);
             $table->boolean(ROLE)->default(0); // 0 --> user (customer), 1 --> admin
+            $login_social_providers = LOGIN_SOCIAL_PROVIDERS;
+            array_walk($login_social_providers, static fn($provider) => $table->string(collectionId($provider))->nullable());
             $table->timestamp(LAST_SEEN)->nullable();
             $table->rememberToken();
             $table->timestamps();

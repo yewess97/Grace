@@ -190,11 +190,7 @@ define("LOGOUT",   'logout');
 /**
  * Login Social Providers
  */
-define("LOGIN_SOCIAL_PROVIDERS", [
-    'google',
-    'facebook',
-    'microsoft',
-]);
+define("LOGIN_SOCIAL_PROVIDERS", explode(',', env("LOGIN_SOCIAL_PROVIDERS")));
 
 /**
  * Password Management Operations.
@@ -476,6 +472,7 @@ define("USER_ATTRIBUTES", [
     EMAIL,
     PASSWORD,
     ROLE,
+    ...array_map(static fn($provider) => collectionId($provider), LOGIN_SOCIAL_PROVIDERS),
 ]);
 
 /**

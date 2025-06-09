@@ -20,7 +20,7 @@ class BlueprintServiceProvider extends ServiceProvider
          * @param string|null $model
          * @return void
          */
-        Blueprint::macro(NAME.ucfirst(SLUG), function (?string $model = null) {
+        Blueprint::macro('nameSlug', function (?string $model = null) {
             $this->string(NAME, isset($model) && $model === PRODUCT_MODEL ? 300 : null)->index();
 
             $this->string(SLUG)->unique();
@@ -31,7 +31,7 @@ class BlueprintServiceProvider extends ServiceProvider
          *
          * @return void
          */
-        Blueprint::macro(PRODUCT_MODEL.ucfirst(SIZE).ucfirst(QUANTITY), function () {
+        Blueprint::macro('productSizeQuantity', function () {
             $this->unsignedTinyInteger(PRODUCT_SIZE)->default(3); // 1 --> S, 2 --> M, 3 --> L, 4 --> XL, 5 --> XXL
             $this->unsignedInteger(PRODUCT_QUANTITY)->default(1);
         });

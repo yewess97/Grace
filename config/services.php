@@ -7,7 +7,7 @@ $socialite_defaults = array_combine(
     array_map(static fn($provider) => [
         'client_id'     => env(strtoupper($provider).'_CLIENT_ID'),
         'client_secret' => env(strtoupper($provider).'_CLIENT_SECRET'),
-        'redirect'      => env(strtoupper($provider).'_REDIRECT_URI'),
+        'redirect'      => env("APP_URL")."/login/callback/{$provider}",
     ],
     $login_social_providers)
 );

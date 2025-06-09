@@ -20,7 +20,9 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('userFullName', static fn() => "<?php echo auth()->user()?->{FULL_NAME} ?>");
+        Blade::directive('userFullName', static fn() => 
+            "<?php echo auth()->user()?->{FULL_NAME} ?>"
+        );
 
         /**
          * Format the product price.
@@ -28,12 +30,13 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $price
          * @return string
          */
-        Blade::directive('priceFormat', static fn(string $price) => "<?php echo 'EGP '.number_format($price, 2); ?>");
+        Blade::directive('priceFormat', static fn(string $price) => 
+            "<?php echo 'EGP '.number_format($price, 2); ?>"
+        );
 
         /**
          * Modal Close Button.
-         *
-         * @param string $price
+         * 
          * @return string
          */
         Blade::directive('modalCloseBtn', static fn() =>
@@ -43,7 +46,7 @@ class CommonBladeServiceProvider extends ServiceProvider
         /**
          * Menu Close Button.
          *
-         * @param string $price
+         * @param string $ariaControls
          * @return string
          */
         Blade::directive('menuCloseBtn', static function (string $ariaControls) {
@@ -63,7 +66,7 @@ class CommonBladeServiceProvider extends ServiceProvider
         Blade::directive('submitButton', static function (string $btnName) {
             $title = array_from($btnName)[0];
 
-            if (str_contains($title, strtoupper(CART_MODEL))) {
+            if (str_contains(constant($title), CART_MODEL)) {
                 return "<?php echo \"<div class='add-cart'><div class='form-group'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'><i class='ti ti-shopping-cart'></i><span>\".capitalizeAll($title).\"</span></button></div></div>\" ?>";
             }
 
@@ -71,17 +74,24 @@ class CommonBladeServiceProvider extends ServiceProvider
         });
 
         /**
-         * Make the back button.
+         * Back Button to a specified route or to the previous page.
          *
          * @param string $title
          * @return string
          */
-        Blade::directive('backTo', static function (string $backArgs) {
-            $title = array_from($backArgs)[0];
-            $route = array_from($backArgs)[1] ?? null;
+        Blade::directive('backTo', static fn(string $backArgs) =>
+            "<?php
+                \$title        = [$backArgs][0];
+                \$route        = [$backArgs][1] ?? null;
+                \$query_params = [$backArgs][2] ?? null;
 
-            return "<?php echo \"<div class='back-btn'><a href=\".isset($route) ? route($route) : route($title).\" type='button' role='link' title='Back to \".ucfirst($title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst($title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\" ?>";
-        });
+                \$url = isset(\$route)
+                    ? route(\$route, \$query_params)
+                    : (Route::has(\$title) ? route(\$title) : url()->previous());
+
+                echo \"<div class='back-btn'><a href='\$url' type='button' role='link' title='Back to \".ucfirst(\$title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst(\$title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
+            ?>"
+        );
 
         /**
          * Search Form.
@@ -91,9 +101,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          */
         Blade::directive('search', static function (string $searchArgs) {
             $table      = array_from($searchArgs)[0];
-            $filtration = in_array(constant($table), [SEARCH_ADDRESSES, SEARCH_ORDERS, SEARCH_REVIEWS], true)
-                ? array_from($searchArgs)[1]
-                : null;
+            $filtration = array_from($searchArgs)[1] ?? null;
 
             return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll(str($table)->ltrim(ADMIN)->value()).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle cursor-pointer' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
         });
@@ -188,7 +196,7 @@ class CommonBladeServiceProvider extends ServiceProvider
         });
 
         /**
-         * Check Row.
+         * Check Row Checkbox.
          *
          * @param string $id
          * @return string
@@ -202,7 +210,9 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('loopIteration', static fn() => "<?php echo \"<td class='row-num'><p></p></td>\" ?>");
+        Blade::directive('loopIteration', static fn() => 
+            "<?php echo \"<td class='row-num'><p></p></td>\" ?>"
+        );
 
         /**
          * No Results Found.

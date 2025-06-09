@@ -215,7 +215,7 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => User.loadingSpinner(target, $(`.${IGrace.LOGIN}-btn`), true),
+                beforeSend: () => User.loadingSpinner(target, target.find(`.${IGrace.LOGIN}-btn`), true),
                 success: (data) => {
                     let success_message;
 

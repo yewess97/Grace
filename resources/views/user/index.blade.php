@@ -7,7 +7,7 @@
         <div class="container">
             <div class="main-sides row col-12">
                 @if (session()->has('checkoutError'))
-                    @sessionerror('checkoutError')
+                    @sessionError('checkoutError')
                 @endif
                 <!----======= Left Side =======---->
                 @include(HOME_PRODUCT_LEFT_SIDE_COMPONENT)

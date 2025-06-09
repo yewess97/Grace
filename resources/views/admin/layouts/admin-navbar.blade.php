@@ -1,4 +1,8 @@
-<nav role="navigation" @if($responsive) id="admin_header_nav_menu" @endif @class(['nav-menu position-fixed top-0 h-100', 'responsive-nav-menu overflow-auto' => $responsive, 'default-nav-menu start-0' => !$responsive]) aria-label="{{ucfirst(ADMIN)}} navigation">
+<nav role="navigation" @if($responsive) id="admin_header_nav_menu" @endif @class([
+        'nav-menu position-fixed top-0 h-100',
+        'responsive-nav-menu overflow-auto' => $responsive,
+        'default-nav-menu start-0' => !$responsive,
+    ]) aria-label="{{ucfirst(ADMIN)}} navigation">
     <div class="container h-100">
         <div class="nav-menu-content d-flex flex-column justify-content-between h-100">
             @if (!$responsive)
@@ -9,7 +13,10 @@
             @endif
 
             {{-- Nav Menu Header --}}
-            <header role="banner" @class(['nav-menu-header', 'd-flex justify-content-between align-items-center' => $responsive])>
+            <header role="banner" @class([
+                    'nav-menu-header',
+                    'd-flex justify-content-between align-items-center' => $responsive,
+                ])>
                 <a href="{{route('home')}}" role="link" class="d-flex align-items-center gap-3">
                     <i class="fa-solid fa-shop nav-menu-header-icon fs-5"></i>
                     <h2 role="heading" class="nav-menu-header-title fs-8 fw-600">{{config('app.name')}} Store</h2>
@@ -43,7 +50,10 @@
 
             {{-- Nav Menu Footer --}}
             <footer role="contentinfo" class="py-3">
-                <div @class(['nav-menu-footer px-3 cursor-pointer', 'mx-2' => $responsive])>
+                <div @class([
+                        'nav-menu-footer px-3 cursor-pointer',
+                        'mx-2' => $responsive,
+                    ])>
                     <form action="{{route(LOGOUT)}}" method="post" role="form" class="logout-form w-100">
                         @csrf
                         <button type="submit" role="button" title="{{ucfirst(LOGOUT)}}" class="d-flex align-items-center w-100 text-start bg-transparent border-0">

@@ -7,6 +7,9 @@
         <div class="container">
             <div class="row justify-content-center align-items-center">
                 <div class="main-sides row col-12 justify-content-center align-items-center">
+                    @if (session()->has(LOGIN.'SocialError'))
+                        @sessionError(LOGIN.'SocialError')
+                    @endif
                     <!----======= Left Side =======---->
                     <section class="left-side col">
                         <div class="box-content border rounded">
@@ -101,12 +104,20 @@
                                         <h1 class="title d-flex align-items-center mb-3">
                                             <span>{{strtoupper('or '.LOGIN.' with')}}</span>
                                         </h1>
-                                        <div class="social-login row justify-content-center align-items-center gap-3">
+                                        <div class="social-login row row-cols-1 row-cols-md-2 justify-content-center align-items-center">
                                             @foreach (LOGIN_SOCIAL_PROVIDERS as $provider)
-                                                <a href="{{route('social_login', $provider)}}" title="{{ucfirst(LOGIN)}} using {{ucfirst($provider)}} Account" class="social-login-provider {{$loop->last ? 'col-12' : 'col'}} position-relative d-flex justify-content-center align-items-center gap-2 rounded-1">
-                                                    <img src="{{imageSource("socialite/$provider-login.png")}}" alt="{{ucfirst($provider)}} Logo" class="social-login-icon" width="18">
-                                                    <span class="fw-500">{{ucfirst($provider)}}</span>
-                                                </a>
+                                                <div @class([
+                                                        (count(LOGIN_SOCIAL_PROVIDERS) % 2 === 1 && $loop->last) 
+                                                            ? 'w-100 py-2' 
+                                                            : 'py-1',
+                                                        'ps-0 pe-2' => $loop->iteration % 2 === 1 && !$loop->last,
+                                                        'pe-0 ps-2' => $loop->iteration % 2 === 0,
+                                                    ])>
+                                                    <a href="{{route('social_login', $provider)}}" title="{{ucfirst(LOGIN)}} using {{ucfirst($provider)}} Account" class="social-login-provider {{(count(LOGIN_SOCIAL_PROVIDERS) % 2 === 1 && $loop->last) ? 'col-12' : 'col'}} position-relative d-flex justify-content-center align-items-center gap-2 rounded-1">
+                                                        <img src="{{imageSource("socialite/$provider-login.png")}}" alt="{{ucfirst($provider)}} Logo" class="social-login-icon" width="18">
+                                                        <span class="fw-500">{{ucfirst($provider)}}</span>
+                                                    </a>
+                                                </div>
                                             @endforeach
                                         </div>
                                     </article>

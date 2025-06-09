@@ -19,7 +19,9 @@ class DBServiceProvider extends ServiceProvider
          * 
          * @return Builder
          */
-        Builder::macro('whereHasAuthUser', fn() => $this->whereHas(USER_MODEL, fn(Builder $user) => $user->whereId(auth()->id())));
+        Builder::macro('whereHasAuthUser', fn() => 
+            $this->whereHas(USER_MODEL, fn(Builder $user) => $user->whereId(auth()->id()))
+        );
 
         /**
          * Dates Filter.
@@ -27,14 +29,18 @@ class DBServiceProvider extends ServiceProvider
          * @param array $dates
          * @return Builder
          */
-        Builder::macro('filterByDates', fn(array $dates) => $this->whereBetween(DATES[0], $dates));
+        Builder::macro('filterByDates', fn(array $dates) => 
+            $this->whereBetween(DATES[0], $dates)
+        );
 
         /**
          * Sum Total Cost.
          *
          * @return Builder
          */
-        Builder::macro('allTotalCost', fn() => $this->sum(TOTAL_COST));
+        Builder::macro('allTotalCost', fn() => 
+            $this->sum(TOTAL_COST)
+        );
 
         /**
          * Statistics of orders in the last 24 hours.
@@ -56,6 +62,9 @@ class DBServiceProvider extends ServiceProvider
         /**
          * Search.
          *
+         * @param string $searchValue
+         * @param array $columns
+         * @param array $relations
          * @return Builder
          */
         Builder::macro('search', function ($searchValue, $columns = [], $relations = []) {

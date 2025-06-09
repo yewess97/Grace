@@ -17,7 +17,7 @@
                 <section class="left-side col-12 col-lg-7">
                     <div class="box-content border rounded">
                         @if(isAdminRoute())
-                            @backTo(ORDERS_TABLE, ADMIN_ORDERS_ROUTE)
+                            @backTo(ORDERS_TABLE, ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}])
                         @endif
                         {{-- Order Details Info --}}
                         <div class="order-details-info-wrapper px-4 px-lg-5 py-4">

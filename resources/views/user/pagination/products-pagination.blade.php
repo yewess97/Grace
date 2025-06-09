@@ -1,4 +1,8 @@
-<ul role="list" class="@if (!str(Route::currentRouteName())->exactly('home')) box-content px-0 rounded-start @endif products-content row {{session()->has('no_results') ? 'justify-content-center' : 'row-cols-1 row-cols-md-4'}}">
+<ul role="list" @class([
+        'products-content',
+        'box-content px-0 rounded-start' => !str(Route::currentRouteName())->exactly('home'),
+        session()->has('no_results') ? 'justify-content-center' : 'row-cols-1 row-cols-md-4',
+    ])>
     @if (session()->has('no_results'))
         <li role="listitem" class="col">
             <img src="{{imageSource('no-results.png')}}" alt="No Results Found">

@@ -91,11 +91,9 @@ class OrderService {
             ])
             ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM));
 
-        if (is_null($order)) {
-            return back();
-        }
-
-        return showView(ORDER_DETAILS_COMPONENT, getOrderDetails($order));
+        return is_null($order) 
+            ? back() 
+            : showView(ORDER_DETAILS_COMPONENT, getOrderDetails($order));
     }
 
     /**

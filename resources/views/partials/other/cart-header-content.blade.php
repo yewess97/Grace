@@ -1,4 +1,7 @@
-<div id="user_cart_dropdown" @class(['cart-menu dropdown-menu border rounded-3', 'd-none' => Route::currentRouteName() === CART_MODEL]) aria-labelledby="user_cart_menu">
+<div id="user_cart_dropdown" @class([
+        'cart-menu dropdown-menu border rounded-3',
+        'd-none' => Route::currentRouteName() === CART_MODEL,
+    ]) aria-labelledby="user_cart_menu">
     @if (session()->has(EMPTY_CART))
         {{-- Cart Empty --}}
         <div class="cart-empty d-grid place-items-center gap-1">

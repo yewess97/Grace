@@ -89,10 +89,10 @@ class AuthService {
      * Redirect the user to the social provider authentication page.
      *
      * @param string $provider
-     * @return RedirectResponse
+     * @return JsonResponse
      * @throws InvalidArgumentException|RuntimeException
      */
-    final public function redirectToSocialProvider($provider): RedirectResponse
+    final public function redirectToSocialProvider($provider): JsonResponse
     {
         if (!in_array($provider, LOGIN_SOCIAL_PROVIDERS)) {
             throw new InvalidArgumentException("The provider *$provider* is not supported");
@@ -110,22 +110,23 @@ class AuthService {
             throw new RuntimeException("The redirect URL for the provider *$provider* is missing");
         }
 
-        return Socialite::driver($provider)->redirect();
+        return responseWithData(['redirect_to' => Socialite::driver($provider)->redirect()->getTargetUrl()]);
     }
 
     /**
      * Handle the callback from the social provider after authentication.
      * 
      * @param string $provider
-     * @return JsonResponse
-     * @throws RuntimeException
+     * @return RedirectResponse
      */
-    final public function handleSocialProviderCallback($provider): JsonResponse
+    final public function handleSocialProviderCallback($provider): RedirectResponse
     {
         $social_user = Socialite::driver($provider)->user();
 
         if (!$social_user) {
-            throw new RuntimeException("Failed to authenticate with the provider *$provider*");
+            return to_route(LOGIN)
+                ->with(LOGIN.'SocialError', "Failed to authenticate with the provider *$provider*")
+                ->setStatusCode(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $social_id = collectionId($provider);
@@ -138,22 +139,23 @@ class AuthService {
             /**  @var mixed $user */
             auth()->guard()->login($user);
 
-            return responseWithData(['redirect_to' => redirect()->intended()]);
+            return redirect()->intended();
         }
 
         $new_or_current_user = User::updateOrCreate(
             [EMAIL => $social_user->getEmail()],
             [
-                NAME  => $social_user->getName(),
+                FIRST_NAME  => str($social_user->getName())->before(' ')->value(),
+                LAST_NAME   => str($social_user->getName())->after(' ')->value(),
                 PASSWORD => bcrypt(Str::random(16)), // Temporary password
-                ROLE => 1,
+                ROLE => 0, // Default role
                 $social_id => $social_user->getId(),
             ]
         );
 
         auth()->guard()->login($new_or_current_user);
 
-        return responseWithData(['redirect_to' => redirect()->intended()]);
+        return redirect()->intended();
     }
 
     /**

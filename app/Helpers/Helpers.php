@@ -584,7 +584,7 @@ if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
 
         $order_details = [
             "Bought at" => "<span class='fw-500'>".dates($order, 0)."</span>",
-            "Number of Products" => "<span class='fw-500'>".$order->{NUM_ITEMS}.' '.ucfirst(PRODUCTS_TABLE)."</span>",
+            "Number of ".ucfirst(PRODUCTS_TABLE) => "<span class='fw-500'>".$order->{NUM_ITEMS}.' '.ucfirst(PRODUCTS_TABLE)."</span>",
             ucfirst(STATUS) => "<span class='badge badge-".orderStatus($order, 'badge')." rounded-pill p-2'>".orderStatus($order)."</span>",
         ];
 

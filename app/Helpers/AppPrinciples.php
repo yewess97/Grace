@@ -11,6 +11,7 @@ if (!function_exists('array_from')) {
     function array_from(string $string): array
     {
         $string = str_replace(['[', ']', '"', "'"], '', $string);
+        
         return array_map('trim', explode(',', $string));
     }
 }
