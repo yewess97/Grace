@@ -22,11 +22,11 @@
 }
 
 .fs-9 {
-    font-size: var(--thirty-pixels) !important;
+    font-size: var(--twenty-pixels) !important;
 }
 
 .fs-10 {
-    font-size: var(--twenty-pixels) !important;
+    font-size: var(--thirty-pixels) !important;
 }
 
 .fw-500 {
@@ -35,6 +35,11 @@
 
 .fw-600 {
     font-weight: 600 !important;
+}
+
+/* --------- Colors --------- */
+.text-main {
+    color: var(--main-color) !important;
 }
 
 /* --------- Cursors --------- */

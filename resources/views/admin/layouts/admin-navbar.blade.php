@@ -3,7 +3,7 @@
         <div class="nav-menu-content d-flex flex-column justify-content-between h-100">
             @if (!$responsive)
                 {{-- Nav Menu Open/CLose Icon --}}
-                <span class="nav-menu-toggle position-absolute d-flex justify-content-center align-items-center p-2 rounded-circle" aria-label="Close or Open the navigation menu">
+                <span class="nav-menu-toggle position-absolute d-flex justify-content-center align-items-center p-2 fs-9 rounded-circle cursor-pointer" aria-label="Close or Open the navigation menu">
                     <i class="fa-solid fa-angle-right nav-menu-toggle-icon"></i>
                 </span>
             @endif
@@ -12,7 +12,7 @@
             <header role="banner" @class(['nav-menu-header', 'd-flex justify-content-between align-items-center' => $responsive])>
                 <a href="{{route('home')}}" role="link" class="d-flex align-items-center gap-3">
                     <i class="fa-solid fa-shop nav-menu-header-icon fs-5"></i>
-                    <h2 role="heading" class="nav-menu-header-title fw-600">{{config('app.name')}} Store</h2>
+                    <h2 role="heading" class="nav-menu-header-title fs-8 fw-600">{{config('app.name')}} Store</h2>
                 </a>
 
                 @if ($responsive)
@@ -43,7 +43,7 @@
 
             {{-- Nav Menu Footer --}}
             <footer role="contentinfo" class="py-3">
-                <div @class(['nav-menu-footer px-3', 'mx-2' => $responsive])>
+                <div @class(['nav-menu-footer px-3 cursor-pointer', 'mx-2' => $responsive])>
                     <form action="{{route(LOGOUT)}}" method="post" role="form" class="logout-form w-100">
                         @csrf
                         <button type="submit" role="button" title="{{ucfirst(LOGOUT)}}" class="d-flex align-items-center w-100 text-start bg-transparent border-0">

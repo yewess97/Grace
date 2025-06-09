@@ -10,14 +10,15 @@
         "guzzlehttp/guzzle": "^7.9.3",
         "hedii/artisan-log-cleaner": "^5.0.0",
         "laravel/framework": "^9.52.20",
+        "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
         "fakerphp/faker": "^1.24.1",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^6.4.0",
         "phpunit/phpunit": "^9.6.23",
-        "roave/security-advisories": "dev-latest",
         "spatie/laravel-ignition": "^1.7.0"
     },
     "autoload": {

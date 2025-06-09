@@ -16,7 +16,6 @@
     padding: var(--twelve-pixels) var(--thirty-pixels);
     border: var(--two-pixels) solid var(--main-color);
     background-color: transparent;
-    color: var(--main-color);
 }
 
 .log-reg-main .log-reg-right .log-reg-title a::before {
@@ -38,8 +37,4 @@
 
 .log-reg-main .log-reg-right .log-reg-terms-privacy p:nth-child(2) {
     margin-top: var(--five-pixels);
-}
-
-.log-reg-main .log-reg-right .log-reg-terms-privacy a {
-    color: var(--main-color);
 }

@@ -36,7 +36,7 @@
                 <div class="rate d-flex flex-row-reverse justify-content-end align-items-center">
                     @for ($i = 5; $i >= 1; $i--)
                         <input type="radio" role="radio" name="add_review_rating" id="add_review_rating{{$i}}" value="{{$i}}">
-                        <label for="add_review_rating{{$i}}" class="position-relative fs-4">☆</label>
+                        <label for="add_review_rating{{$i}}" class="position-relative fs-4 text-main cursor-pointer">☆</label>
                     @endfor
                 </div>
                 <input type="hidden" name="add_review_rating">

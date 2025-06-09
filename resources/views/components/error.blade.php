@@ -15,7 +15,7 @@
                                 <h1 class="error-code mb-3">{{$error_status}}</h1>
                                 <div class="error-status text-center">
                                     <p class="mb-3 fs-2 fw-600">Oops!</p>
-                                    <p class="fw-500">{{$error_title}}</p>
+                                    <p class="fs-9 fw-500">{{$error_title}}</p>
                                 </div>
                             </article>
                         </div>

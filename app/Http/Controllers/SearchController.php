@@ -157,7 +157,7 @@ class SearchController extends Controller
      */
     final public function searchUsers(?string $type = null): JsonResponse
     {
-        $filter_users_attribute = array(Arr::last(USER_ATTRIBUTES));
+        $filter_users_attribute = [Arr::last(USER_ATTRIBUTES)];
 
         $users = User::query()->when($type === FILTER, static function ($user) use ($filter_users_attribute) {
             $filter_users_request = new UserRequest(FILTER, USERS_TABLE, $filter_users_attribute);

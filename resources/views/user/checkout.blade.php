@@ -73,10 +73,10 @@
                                     <h2 class="shipping-payment-title fs-5">Payment Method</h2>
                                     {{-- Shipping Payment Selection --}}
                                     <div class="select-payment mt-3 ps-4 pe-5 py-5 rounded">
-                                        <label for="add_order_payment_method" class="payment-method-label position-relative d-flex align-items-center">
+                                        <label for="add_order_payment_method" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
                                             <span class="fw-500">Cash on Delivery</span>
                                             <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method" class="position-absolute" checked="checked" value="cash on delivery" aria-required="true">
-                                            <span class="custom-check position-absolute top-0 start-0" aria-labelledby="add_order_payment_method"></span>
+                                            <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method"></span>
                                         </label>
                                     </div>
                                 </div>

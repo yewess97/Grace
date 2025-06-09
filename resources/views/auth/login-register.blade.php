@@ -70,8 +70,8 @@
                                     </div>
 
                                     @if($auth_action === LOGIN)
-                                        {{-- Remember Me --}}
-                                        <div class="login-user-remember col-12 mb-2">
+                                        <div class="login-user-actions col-12 d-flex justify-content-between align-items-center mb-2">
+                                            {{-- Remember Me --}}
                                             <div class="form-group">
                                                 <label for="remember" class="remember-check position-relative d-flex align-items-center user-select-none">
                                                     <input type="checkbox" role="checkbox" name="remember" id="remember" aria-labelledby="remember_me" @checked(old('remember'))>
@@ -79,6 +79,11 @@
                                                     <span id="remember_me" class="remember-title text-capitalize">Remember me</span>
                                                 </label>
                                             </div>
+                                            
+                                            {{-- Forgot Password --}}
+                                            <a href="{{route(FORGOT_PASSWORD)}}" role="link" class="fw-500 text-main">
+                                                {{capitalizeFirst(FORGOT_PASSWORD)}}?
+                                            </a>
                                         </div>
                                     @endif
 
@@ -91,11 +96,19 @@
                                 </article>
 
                                 @if($auth_action === LOGIN)
-                                    {{-- Form Footer --}}
+                                    {{-- Social Login --}}
                                     <article class="grace-form-footer col-12 text-center">
-                                        <a href="{{route(FORGOT_PASSWORD)}}" role="link" class="fw-500">
-                                            {{capitalizeFirst(FORGOT_PASSWORD)}}?
-                                        </a>
+                                        <h1 class="title d-flex align-items-center mb-3">
+                                            <span>{{strtoupper('or '.LOGIN.' with')}}</span>
+                                        </h1>
+                                        <div class="social-login row justify-content-center align-items-center gap-3">
+                                            @foreach (LOGIN_SOCIAL_PROVIDERS as $provider)
+                                                <a href="{{route('social_login', $provider)}}" title="{{ucfirst(LOGIN)}} using {{ucfirst($provider)}} Account" class="social-login-provider {{$loop->last ? 'col-12' : 'col'}} position-relative d-flex justify-content-center align-items-center gap-2 rounded-1">
+                                                    <img src="{{imageSource("socialite/$provider-login.png")}}" alt="{{ucfirst($provider)}} Logo" class="social-login-icon" width="18">
+                                                    <span class="fw-500">{{ucfirst($provider)}}</span>
+                                                </a>
+                                            @endforeach
+                                        </div>
                                     </article>
                                 @endif
                             </form>
@@ -104,13 +117,13 @@
 
                     <!----======= Right Side =======---->
                     <section class="log-reg-right row col">
-                        <div class="log-reg-title row w-100 text-center">
+                        <div class="log-reg-title row w-100 text-center text-main">
                             <h6 class="fs-6 fw-600">{{$auth_action === REGISTER ? "Already" : "Don't"}} have an account?</h6>
                             <a href="{{route($auth_action === REGISTER ? LOGIN_USER : REGISTER_USER)}}" type="button" role="link" title="{{$auth_action === REGISTER ? ucfirst(LOGIN) : "Create Account"}}" class="position-relative w-100 fw-500 lh-sm rounded overflow-hidden">
                                 {{$auth_action === REGISTER ? ucfirst(LOGIN) : "Create Account"}}
                             </a>
                         </div>
-                        <div class="log-reg-terms-privacy fs-7">
+                        <div class="log-reg-terms-privacy fs-7 text-main">
                             <p>
                                 <span><sup>*</sup></span>
                                 <a href="javascript:;" role="link" class="fw-500">Terms and Conditions</a>

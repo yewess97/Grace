@@ -20,7 +20,7 @@
                 @php $category_name = str($category->{NAME})->lower()->replace(' ', '_') @endphp
 
                 <li role="listitem" class="filter-item d-flex justify-content-between align-items-center">
-                    <label for="filter_products_categories_{{$category->id}}" class="filter-check position-relative d-flex justify-content-center align-items-center user-select-none">
+                    <label for="filter_products_categories_{{$category->id}}" class="filter-check position-relative d-flex justify-content-center align-items-center user-select-none cursor-pointer">
                         <input type="checkbox" role="checkbox" name="filter_products_categories[]" id="filter_products_categories_{{$category->id}}" class="filter-checkbox" multiple="multiple" value="{{$category->id}}" aria-labelledby="filter_categories_{{$category_name}}">
                         <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_categories_{{$category_name}}"></span>
                         <span id="filter_categories_{{$category_name}}" class="filter-name text-capitalize">
@@ -94,7 +94,7 @@
                         <input type="number" title="Minimum price" name="filter_products_min_price" id="min_price" class="input-min w-100 p-0 text-center border" value="{{ $products_prices->{MIN_PRICE} }}">
                     </label>
                 </div>
-                <span class="separator d-flex justify-content-center align-items-center fs-10">-</span>
+                <span class="separator d-flex justify-content-center align-items-center fs-9">-</span>
                 <div class="price-input d-flex align-items-center w-100">
                     <span>Max</span>
                     <label for="max_price" class="w-100">

@@ -37,7 +37,6 @@
 
 .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .card .custom-check {
     left: var(--fourteen-pixels);
-    cursor: pointer;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
 }
@@ -54,7 +53,6 @@
 
 .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-payment-method .select-payment .payment-method-label {
     padding-left: var(--thirty-pixels);
-    cursor: pointer;
 }
 
 .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-payment-method .select-payment .payment-method-label span:first-child {

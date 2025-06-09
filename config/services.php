@@ -1,6 +1,18 @@
 <?php
 
-return [
+$login_social_providers = explode(',', env('LOGIN_SOCIAL_PROVIDERS'));
+
+$socialite_defaults = array_combine(
+    $login_social_providers,
+    array_map(static fn($provider) => [
+        'client_id'     => env(strtoupper($provider).'_CLIENT_ID'),
+        'client_secret' => env(strtoupper($provider).'_CLIENT_SECRET'),
+        'redirect'      => env(strtoupper($provider).'_REDIRECT_URI'),
+    ],
+    $login_social_providers)
+);
+
+return array_merge([
 
     /*
     |--------------------------------------------------------------------------
@@ -31,4 +43,4 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-];
+], $socialite_defaults);

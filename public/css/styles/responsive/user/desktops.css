@@ -39,6 +39,13 @@
 
     /* ------------============== End Home & Products ==============------------ */
 
+    /* ------------============== Login ==============------------ */
+    .log-reg-main .auth-form .login-user-actions {
+        font-size: var(--thirteen-pixels);
+    }
+
+    /* ------------============== End Login ==============------------ */
+
     /* ------------============== Checkout ==============------------ */
     .checkout-main .left-side .shipping-payment {
         padding-inline: var(--forty-eight-pixels) !important;

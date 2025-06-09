@@ -13,17 +13,6 @@ class UserRequest extends FormRequest
     protected array $filter_users_attribute;
     protected bool $is_single_attribute, $is_subset;
 
-// اعمل حتى الـ progress bar في beforeSend في ajax
-
-// وشوف حركة تغيير شكل الماوس
-
-
-
-
-
-
-
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -32,7 +21,7 @@ class UserRequest extends FormRequest
      */
     final public function rules(?string $id = null): array
     {
-        $this->filter_users_attribute = array(Arr::last(USER_ATTRIBUTES));
+        $this->filter_users_attribute = [Arr::last(USER_ATTRIBUTES)];
 
         // Check if $this->modelAttributes has exactly one element
         $this->is_single_attribute = count($this->modelAttributes) === 1;

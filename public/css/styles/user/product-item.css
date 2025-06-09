@@ -91,9 +91,8 @@
     background-color: var(--light-gray-color);
 }
 
-.product-quick-view-modal .modal-body .product-quick-view-info .product-availability span:last-child {
-    margin-left: var(--twelve-pixels);
-    color: var(--main-color);
+.product-quick-view-modal .modal-body .product-quick-view-info .product-info-availability span:last-child {
+    margin-left: var(--ten-pixels);
 }
 
 /*********************************************************************/
@@ -125,10 +124,6 @@
     margin-left: var(--five-pixels);
     color: var(--mute-color);
     white-space: nowrap;
-}
-
-.product-info-status span:last-child {
-    color: var(--main-color);
 }
 
 .quantity-btn,

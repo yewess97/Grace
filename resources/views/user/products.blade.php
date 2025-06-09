@@ -66,8 +66,8 @@
                             <div class="d-flex justify-content-between align-items-center gap-4">
                                 {{-- Products View --}}
                                 <article class="products-view d-flex align-items-center gap-3 fs-8">
-                                    <i class="ti ti-layout-grid3 grid" data-grid-view="4"></i>
-                                    <i class="ti ti-layout-list-thumb grid" data-grid-view="1"></i>
+                                    <i class="ti ti-layout-grid3 grid cursor-pointer" data-grid-view="4"></i>
+                                    <i class="ti ti-layout-list-thumb grid cursor-pointer" data-grid-view="1"></i>
                                 </article>
                                 {{-- Products Sort --}}
                                 <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_sort_form" class="filter-products-sort-form grace-form d-flex justify-content-end" data-no_results="{{imageSource('no-results.png')}}">

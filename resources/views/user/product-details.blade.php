@@ -28,7 +28,7 @@
                                         <div class="owl-stage-outer">
                                             <ul role="list" class="owl-stage">
                                                 @foreach ($product->{THUMB_IMAGES} as $thumb_image)
-                                                    <li role="listitem" class="product-thumb-image owl-item">
+                                                    <li role="listitem" class="product-thumb-image owl-item cursor-pointer">
                                                         <img src="{{imageSource($thumb_image, THUMB_IMAGE)}}" alt="{{ $product->{NAME} }}">
                                                     </li>
                                                 @endforeach
@@ -44,7 +44,7 @@
                                 {{-- Product Availability --}}
                                 <h2 class="product-availability fw-600">
                                     <span>Availability:</span>
-                                    <span>{{$product->{STATUS} === 0 ? 'Empty From Stock' : 'In Stock'}}</span>
+                                    <span class="ms-3 text-main">{{$product->{STATUS} === 0 ? 'Empty From Stock' : 'In Stock'}}</span>
                                 </h2>
                                 {{-- Product Price --}}
                                 <div class="product-price d-flex align-items-center">

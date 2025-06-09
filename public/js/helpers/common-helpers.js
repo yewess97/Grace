@@ -589,8 +589,8 @@ const Common = {
             margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT)
                 ? 'mt-2 mb-1'
                 : 'mt-3',
-            hide_error_element = (error_element) =>
-                $(error_element).empty()
+            hide_error_element = (errorElement) =>
+                $(errorElement).empty()
                 .parent()
                 .removeClass(`${show_error_class} ${margin}`);
 

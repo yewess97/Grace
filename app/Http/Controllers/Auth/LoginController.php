@@ -8,8 +8,11 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
+use RuntimeException;
 use Throwable;
 
 class LoginController extends Controller
@@ -44,5 +47,29 @@ class LoginController extends Controller
     final public function login(): JsonResponse|Response
     {
         return $this->authService->loginUser();
+    }
+
+    /**
+     * Redirect the user to the social provider authentication page.
+     * 
+     * @param string $provider
+     * @return RedirectResponse
+     * @throws InvalidArgumentException|RuntimeException
+     */
+    final public function redirectToProvider($provider): RedirectResponse
+    {
+        return $this->authService->redirectToSocialProvider($provider);
+    }
+
+    /**
+     * Handle the callback from the social provider after authentication.
+     *
+     * @param string $provider
+     * @return JsonResponse
+     * @throws RuntimeException
+     */
+    final public function handleProviderCallback($provider): JsonResponse
+    {
+        return $this->authService->handleSocialProviderCallback($provider);
     }
 }

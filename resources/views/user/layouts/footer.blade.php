@@ -70,7 +70,7 @@
 
                     <ul role="list" class="footer-menu row gap-3 d-lg-flex mt-4 collapse" id="footer_menu_{{CONTACT_US}}_list">
                         <li role="listitem" class="d-flex align-items-center gap-2">
-                            <div role="img" class="contact-icon fs-10" aria-label="{{ADDRESS_MODEL}}">
+                            <div role="img" class="contact-icon fs-9" aria-label="{{ADDRESS_MODEL}}">
                                 <i class="ti ti-location-pin"></i>
                             </div>
                             <div class="contact-info">
@@ -78,7 +78,7 @@
                             </div>
                         </li>
                         <li role="listitem" class="d-flex align-items-center gap-2">
-                            <div role="img" class="contact-icon fs-10" aria-label="Whatsapp">
+                            <div role="img" class="contact-icon fs-9" aria-label="Whatsapp">
                                 <i class="fa-brands fa-whatsapp"></i>
                             </div>
                             <div class="contact-info">
@@ -86,7 +86,7 @@
                             </div>
                         </li>
                         <li role="listitem" class="d-flex align-items-center gap-2">
-                            <div role="img" class="contact-icon fs-10" aria-label="{{EMAIL}}">
+                            <div role="img" class="contact-icon fs-9" aria-label="{{EMAIL}}">
                                 <i class="fa-regular fa-envelope"></i>
                             </div>
                             <div class="contact-info">

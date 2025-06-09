@@ -25,7 +25,7 @@
                     <span class="badge badge-{{orderStatus($order, 'badge')}} rounded-pill d-inline p-2">{{orderStatus($order)}}</span>
                 </td>
                 <td>
-                    <a href="{{route(ORDER_DETAILS, [TRACKING_NUM => $order->{TRACKING_NUM}])}}" role="link" class="fw-500 text-decoration-underline">View Details</a>
+                    <a href="{{route(ORDER_DETAILS, [TRACKING_NUM => $order->{TRACKING_NUM}])}}" role="link" class="fw-500 text-main text-decoration-underline">View Details</a>
                 </td>
             </tr>
         @empty

@@ -69,7 +69,7 @@ class CartController extends Controller
         $compact_vars = $this->cartService->getCartData();
 
         return is_array($delete_cart)
-            ? responseSuccess($delete_cart[0], $compact_vars)
+            ? responseWithData(['status' => $delete_cart[0], $compact_vars])
             : responseWithData($compact_vars);
     }
 

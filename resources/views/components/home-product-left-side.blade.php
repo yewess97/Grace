@@ -10,7 +10,7 @@
                 @include(TOP_BOTTOM_WEARS_PARTIAL, ['wear_type' => 'top_wear'])
 
                 <li role="menuitem" class="dropdown-item">
-                    <div class="top-wear-dropdown-image position-relative img-hover-effect">
+                    <div class="top-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
                         <img src="{{imageSource('site_banners/banner1.png')}}" alt="Banner 1">
                     </div>
                 </li>
@@ -33,7 +33,7 @@
                     </ul>
                     <ul role="list" class="d-flex align-items-center">
                         <li role="listitem" class="dropdown-item dropdown-item-image pe-2">
-                            <div class="bottom-wear-dropdown-image position-relative img-hover-effect">
+                            <div class="bottom-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
                                 <img src="{{imageSource('site_banners/banner2.png')}}" alt="Banner 2">
                             </div>
                         </li>
@@ -127,7 +127,7 @@
                                     <p>{{ $customer_review->{REVIEW_MODEL} }}</p>
                                 </div>
                                 <div class="customer-name">
-                                    <h6 class="fw-500 lh-1">{{capitalizeAll($customer_review->{NAME})}}</h6>
+                                    <h6 class="name fw-500 lh-1 text-main">{{capitalizeAll($customer_review->{NAME})}}</h6>
                                     <p class="mt-3 fs-7 lh-1">
                                         Reviewed on the {{ $customer_review->{PRODUCT_MODEL} }} {{ucfirst(PRODUCT_MODEL)}}
                                     </p>

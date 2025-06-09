@@ -75,12 +75,10 @@
 
 .home-product-main .left-side ul.categories-menu li.category-item ul.dropdown-content li.dropdown-item .top-wear-dropdown-image {
     height: calc(var(--sixty-four-pixels) + var(--sixty-four-pixels) + var(--thirty-two-pixels));
-    cursor: pointer;
 }
 
 .home-product-main .left-side ul.categories-menu li.category-item ul.dropdown-content li.dropdown-item .bottom-wear-dropdown-image {
     height: calc(var(--forty-pixels) + var(--forty-pixels) + var(--fifteen-pixels));
-    cursor: pointer;
 }
 
 .home-product-main .left-side ul.categories-menu li.category-item ul.dropdown-content li.dropdown-item .bottom-wear-dropdown-image > img {
@@ -152,9 +150,8 @@
     line-height: var(--twenty-five-pixels);
 }
 
-.home-product-main .left-side .customers-reviews > .customers-reviews-content .customers-reviews-carousel .customer-name > h6 {
+.home-product-main .left-side .customers-reviews > .customers-reviews-content .customers-reviews-carousel .customer-name > .name {
     margin-top: var(--ten-pixels);
-    color: var(--main-color);
 }
 
 .home-product-main .left-side .customers-reviews > .customers-reviews-content .customers-reviews-carousel .owl-dots {
@@ -245,7 +242,6 @@
 .home-product-main .home-right-side .home-partners .partners-carousel .partner .partner-img {
     width: 80%;
     opacity: 0.5;
-    cursor: pointer;
 }
 
 .home-product-main .home-right-side .home-partners .partners-carousel .partner-img:hover {
@@ -265,10 +261,6 @@
 
 .home-product-main .product-right-side .product-imgs-info .product-images :is(.product-main-image, .product-thumb-images-carousel .product-thumb-image) {
     background-color: var(--light-gray-color);
-}
-
-.home-product-main .product-right-side .product-imgs-info .product-images .product-thumb-images-carousel .product-thumb-image {
-    cursor: pointer;
 }
 
 .home-product-main .product-right-side .product-imgs-info .product-images .product-thumb-images-carousel .product-thumb-image > img {
@@ -310,11 +302,6 @@
     gap: var(--twenty-pixels);
 }
 
-.home-product-main .product-right-side .product-imgs-info .product-info .product-availability span:last-child {
-    margin-left: var(--fifteen-pixels);
-    color: var(--main-color);
-}
-
 .home-product-main .product-right-side .product-imgs-info .product-info .product-price {
     gap: var(--five-pixels);
 }
@@ -344,8 +331,7 @@
     color: var(--black-color);
 }
 
-.home-product-main .product-right-side .product-details-reviews .product-details-reviews-title:hover,
-.home-product-main .product-right-side .product-details-reviews .product-details-reviews-title.active {
+.home-product-main .product-right-side .product-details-reviews :is(.product-details-reviews-title.active, .product-details-reviews-title:hover)  {
     border-color: transparent;
     color: var(--main-color);
 }

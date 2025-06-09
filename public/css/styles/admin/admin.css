@@ -5,11 +5,6 @@
     padding-right: var(--fifteen-pixels);
 }
 
-.dashboard-main .left-side .dashboard-filter-by-date input#admin_select_date {
-    padding: var(--eight-pixels) var(--fifteen-pixels);
-    cursor: pointer;
-}
-
 .dashboard-main .left-side ul.orders-metrics {
     padding-block: var(--twenty-five-pixels) var(--twenty-pixels);
 }

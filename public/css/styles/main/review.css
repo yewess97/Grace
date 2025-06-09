@@ -11,11 +11,6 @@
     gap: var(--three-pixels);
 }
 
-.review-form .review-body .rate label {
-    color: var(--main-color);
-    cursor: pointer;
-}
-
 .review-form .review-body .rate label::before {
     content: "\2605";
     position: absolute;

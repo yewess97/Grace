@@ -77,9 +77,10 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('backTo', static function (string $backArgs) {
-            [$title, $route] = array_from($backArgs);
+            $title = array_from($backArgs)[0];
+            $route = array_from($backArgs)[1] ?? null;
 
-            return "<?php echo \"<div class='back-btn'><a href=\".route($route).\" type='button' role='link' title='Back to \".ucfirst($title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst($title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\" ?>";
+            return "<?php echo \"<div class='back-btn'><a href=\".isset($route) ? route($route) : route($title).\" type='button' role='link' title='Back to \".ucfirst($title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst($title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\" ?>";
         });
 
         /**

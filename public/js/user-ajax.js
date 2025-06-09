@@ -19,6 +19,9 @@ User.ajaxAuthRequest(IGrace.REGISTER);
 // Login
 User.ajaxAuthRequest(IGrace.LOGIN);
 
+// Social Login
+User.ajaxSocialAuthRequest();
+
 // Forgot Password
 User.ajaxAuthRequest(IGrace.FORGOT_PASSWORD());
 

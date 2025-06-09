@@ -54,7 +54,7 @@ class NotificationController extends Controller
             ->first([ID, 'read_at'])
             ?->markAsRead();
 
-        return responseSuccess(null, [ID => request()?->input(ID)]);
+        return responseWithData([ID => request()?->input(ID)]);
     }
 
     /**
@@ -68,7 +68,7 @@ class NotificationController extends Controller
         
         $unread_notifications->markAsRead();
 
-        return responseSuccess(null, [pluralize(ID) => $unread_notifications->pluck(ID)->toArray()]);
+        return responseWithData([pluralize(ID) => $unread_notifications->pluck(ID)->toArray()]);
     }
 
     /**
@@ -83,6 +83,6 @@ class NotificationController extends Controller
             ->whereId(request()?->input(ID))
             ->delete();
             
-        return responseSuccess(null, [ID => request()?->input(ID)]);
+        return responseWithData([ID => request()?->input(ID)]);
     }
 }

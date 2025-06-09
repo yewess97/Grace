@@ -1005,7 +1005,7 @@ if (!function_exists('getData')) {
      */
     function getData(Model|stdClass $model, array $desiredData): object
     {
-        return $model::query()->findOrFail($model->{ID}, [ID, ...$desiredData]);
+        return $model::query()->findOrFail($model->getKey(), [ID, ...$desiredData]);
     }
 }
 

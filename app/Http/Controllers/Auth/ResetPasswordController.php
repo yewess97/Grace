@@ -49,6 +49,6 @@ class ResetPasswordController extends Controller
 
         return !$reset_password
             ? responseError(RESET_PASSWORD.'_failed')
-            : responseSuccess(RESET_PASSWORD.'_success');
+            : responseWithData(['status' => RESET_PASSWORD.'_success']);
     }
 }

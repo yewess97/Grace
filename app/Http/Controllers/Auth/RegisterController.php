@@ -46,6 +46,6 @@ class RegisterController extends Controller
     {
         $this->authService->registerUser();
 
-        return responseSuccess(AUTH_SUCCESS, ['redirect_to' => RouteServiceProvider::PRODUCTS_LIST]);
+        return responseWithData(['status' => AUTH_SUCCESS, 'redirect_to' => RouteServiceProvider::PRODUCTS_LIST]);
     }
 }

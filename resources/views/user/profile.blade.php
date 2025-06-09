@@ -14,22 +14,22 @@
                     <ul role="list" class="profile-account-details box-content row col-12 py-4 border rounded">
                         {{-- My Account --}}
                         <li role="listitem" class="my-account col-6">
-                            <article class="my-account-title">
+                            <article class="my-account-title mb-3">
                                 <h6 class="fs-8 fw-600">My Account</h6>
                             </article>
                             <article class="my-account-addresses">
-                                <a href="{{route(USER_ADDRESSES, [ID => encrypt($user->{ID})])}}" role="link">View My {{ucfirst(ADDRESSES_TABLE)}}</a>
+                                <a href="{{route(USER_ADDRESSES, [ID => encrypt($user->{ID})])}}" role="link" class="text-main">View My {{ucfirst(ADDRESSES_TABLE)}}</a>
                             </article>
                             <article class="my-account-logout">
                                 <form action="{{route(LOGOUT)}}" method="post" role="form">
                                     @csrf
-                                    <button type="submit" role="button" title="{{ucfirst(LOGOUT)}}" class="logout bg-transparent border-0">{{ucfirst(LOGOUT)}}</button>
+                                    <button type="submit" role="button" title="{{ucfirst(LOGOUT)}}" class="logout border-0 bg-transparent text-main">{{ucfirst(LOGOUT)}}</button>
                                 </form>
                             </article>
                         </li>
                         {{-- Account Details --}}
                         <li role="listitem" class="account-details col-6">
-                            <article class="account-details-title">
+                            <article class="account-details-title mb-3">
                                 <h6 class="fs-8 fw-600">Account Details</h6>
                             </article>
                             <article class="account-details-table table-responsive">
@@ -65,7 +65,7 @@
                 </section>
 
                 <!----======= Bottom Side =======---->
-                <section class="bottom-side row col-12">
+                <section class="bottom-side row col-12 gap-3">
                     {{-- Profile Order History Title --}}
                     <h6 class="profile-order-history-title fs-8 fw-600">{{ucfirst(ORDERS_TABLE)}} History</h6>
                     {{-- Profile Order History Table --}}

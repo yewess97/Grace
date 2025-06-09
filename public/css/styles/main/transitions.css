@@ -12,6 +12,7 @@ input[type="checkbox"] + .custom-check,
 .navbar .nav-content .navbar-nav li.nav-item a > span::before,
 .footer .footer-top ul.footer-list li.footer-item ul.footer-menu li > a::before,
 .footer .footer-bottom .scroll-to-top,
+.grace-form .grace-form-footer .social-login a::before,
 .products-search .search-form .search-products-btn,
 .clear-search-btn {
     -webkit-transition: var(--trans-300);

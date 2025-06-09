@@ -8,8 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Exceptions\BadRequestException;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class ReviewController extends Controller
@@ -39,7 +39,7 @@ class ReviewController extends Controller
      *
      * @param string $operation
      * @return Response
-     * @throws AuthenticationException|ModelNotFoundException|BadRequestException|ValidationException
+     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException
      */
     final public function storeOrUpdate(string $operation): Response
     {

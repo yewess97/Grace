@@ -100,7 +100,7 @@ const User = {
     confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
             title: `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
-            html: `<p style="font-size: var(--eighteen-pixels)">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti ti-face-smile"></i></p>`,
+            html: `<p class="fs-8">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti ti-face-smile"></i></p>`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             confirmButtonText: `Go to ${IGrace.LOGIN} page`,
@@ -181,7 +181,7 @@ const User = {
      * @return {void}
      */
     loadingSpinner: (target, element, isDisabled = false) => {
-        isDisabled && element.prop('disabled', true);
+        if (isDisabled) element.prop('disabled', true);
 
         element.prepend($('<img>', {
             src: target.data('loading_spinner'),
@@ -195,14 +195,21 @@ const User = {
 
 
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
+
+    /**
+     * Auth Ajax Request.
+     * 
+     * @param authAction
+     * @return {void}
+     */
     ajaxAuthRequest: (authAction) => {
         $(document).on(IGrace.SUBMIT, `#${authAction}_form`, function (e) {
             e.preventDefault();
 
             const
-                target        = $(this),
-                route         = target.attr('action'),
-                form_data     = Common.filteredFormData(this);
+                target    = $(this),
+                route     = target.attr('action'),
+                form_data = Common.filteredFormData(this);
 
             $.ajax({
                 url: route,
@@ -244,6 +251,30 @@ const User = {
 
                     Common.somethingWentWrongError();
                 },
+            });
+        });
+    },
+
+    /**
+     * Social Auth Ajax Request.
+     * 
+     * @return {void}
+     */
+    ajaxSocialAuthRequest: () => {
+        $(document).on(IGrace.CLICK, `.social-${IGrace.LOGIN}-provider`, function (e) {
+            e.preventDefault();
+
+            const
+                target = $(this),
+                route  = target.attr('href');
+
+            $.ajax({
+                url: route,
+                method: IGrace.GET,
+                success: (data) => location.href = data['redirect_to'],
+                error: (err) => IGrace.IS_IN_ARRAY([400, 500], err.status) 
+                    ? Common.somethingWentWrongError(Common.responseJsonError(err, true)) 
+                    : Common.somethingWentWrongError(),
             });
         });
     },
@@ -293,7 +324,7 @@ const User = {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
 
                         place_order_button.prop('disabled', false)
-                            .find('img')
+                            .find('.loading-spinner')
                             .remove();
 
                         return Common.successMessage(IGrace.SUCCESS, success_message, collection);
@@ -418,9 +449,40 @@ const User = {
                 target            = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
                 route             = target.data('route'),
                 main_image        = target.data(IGrace.MAIN_IMAGE()),
-                product_old_price = $(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`),
                 quick_view_modal  = $(`#${IGrace.PRODUCT}_quick_view_modal`);
+            
+            // Reset the quick view modal
+            quick_view_modal.find('form').trigger('reset');
 
+            // Clear all dynamic content
+            quick_view_modal.find('input[type="hidden"]').val('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).empty();
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('');
+
+            // Reset select2 or multi-select
+            quick_view_modal.find('select[multiple]').val(null).trigger('change');
+
+            // Clear any previous form error messages
+            quick_view_modal.find(`.${IGrace.ADD}-${IGrace.ERROR}`).html('');
+
+            // Reset product quantity input
+            quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).val(1).removeAttr('max');
+
+            // Reset the add to cart button
+            if (quick_view_modal.find('.loading-spinner').length) {
+                quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-lg-btn`)
+                    .find('.loading-spinner')
+                    .remove().end()
+                    .prepend($('<i>', {
+                        class: 'ti ti-shopping-cart',
+                    }));
+            }
+
+            // Get the product data via AJAX
             $.get(`${route}?quick_view=true`)
                 .done((data) => {
                     const product = data[IGrace.PRODUCT];
@@ -432,12 +494,12 @@ const User = {
                     }));
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html(product[IGrace.NAME]);
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
-                    product_old_price.html(
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html(
                         product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
                             ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
                             : ''
                     );
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.STATUS} span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
                     Common.showMultiSelectData({
                         userType:          IGrace.USER,
@@ -553,7 +615,7 @@ const User = {
                 beforeSend: () => {
                     cart_button.find('i')
                         .remove().end()
-                        .find('img')
+                        .find('.loading-spinner')
                         .remove();
                         
                     User.loadingSpinner(target, cart_button);
@@ -571,7 +633,7 @@ const User = {
                             .find('.placeholder').removeAttr('hidden');
                     });
 
-                    cart_button.find('img')
+                    cart_button.find('.loading-spinner')
                         .remove().end()
                         .prepend($('<i>', {
                             class: 'ti ti-shopping-cart',
@@ -593,7 +655,7 @@ const User = {
                     }
 
                     if (err.status === 422) {
-                        return Common.errorMessage(IGrace.CLASS(action), Common.responseJsonError(err));
+                        return Common.errorMessage(action, Common.responseJsonError(err));
                     }
 
                     Common.somethingWentWrongError();

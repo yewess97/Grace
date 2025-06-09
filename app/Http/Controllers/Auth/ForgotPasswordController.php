@@ -47,6 +47,6 @@ class ForgotPasswordController extends Controller
 
         return !$forgot_password
             ? responseError(FORGOT_PASSWORD.'_failed')
-            : responseSuccess("sent_".EMAIL);
+            : responseWithData(['status' => 'sent_'.EMAIL]);
     }
 }

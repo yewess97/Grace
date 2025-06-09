@@ -9,8 +9,9 @@ use App\Models\Review;
 use App\Notifications\NewReviewAdded;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Exceptions\BadRequestException;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class ReviewService
@@ -35,7 +36,7 @@ class ReviewService
      *
      * @param string $operation
      * @return Review
-     * @throws AuthenticationException|ModelNotFoundException|BadRequestException|ValidationException
+     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException
      */
     final public function createOrUpdateReview(string $operation): Review
     {
@@ -67,13 +68,13 @@ class ReviewService
             });
 
         if ($order_purchased->cursor()->isEmpty()) {
-            throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
         }
 
         $order_completed = $order_purchased->whereStatus(4)->cursor();
 
         if ($order_completed->isEmpty()) {
-            throw new BadRequestException('To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
 
         $review = Review::query()->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {

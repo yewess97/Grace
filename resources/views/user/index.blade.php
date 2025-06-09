@@ -93,7 +93,7 @@
                                     <div class="owl-stage">
                                         @foreach (Storage::files('public/images/partners') as $partner)
                                             <div class="owl-item partner">
-                                                <div class="partner-img mt-2">
+                                                <div class="partner-img mt-2 cursor-pointer">
                                                     <img src="{{asset(Storage::url($partner))}}" alt="Our Partner">
                                                 </div>
                                             </div>

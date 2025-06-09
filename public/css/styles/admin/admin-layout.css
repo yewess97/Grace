@@ -15,19 +15,13 @@
     right: calc(var(--eleven-pixels) * -1);
     width: var(--twenty-four-pixels);
     height: var(--twenty-four-pixels);
-    font-size: var(--twenty-pixels);
     background-color: var(--second-color);
-    cursor: pointer;
     -ms-transform: rotate(180deg);
     transform: rotate(180deg);
 }
 
 .nav-menu .nav-menu-header {
     padding-inline: var(--ten-pixels);
-}
-
-.nav-menu .nav-menu-header .nav-menu-header-title {
-    font-size: var(--eighteen-pixels);
 }
 
 .nav-menu .nav-menu-main {
@@ -70,8 +64,6 @@
 
 .nav-menu .nav-menu-main ul.nav-menu-list li.nav-menu-list-item ul.nav-submenu-list {
     padding-block: var(--twenty-pixels) var(--five-pixels);
-    font-size: var(--thirteen-pixels);
-    background: transparent;
 }
 
 .nav-menu .nav-menu-main ul.nav-menu-list li.nav-menu-list-item ul.nav-submenu-list li.nav-submenu-list-item {
@@ -96,7 +88,6 @@
     padding-block: var(--twenty-pixels);
     border-radius: var(--ten-pixels);
     background-color: #2b2849;
-    cursor: pointer;
 }
 
 .nav-menu .nav-menu-footer .logout-form .nav-menu-item-title {

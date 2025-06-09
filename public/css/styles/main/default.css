@@ -18,6 +18,7 @@ body {
     font: 400 var(--fourteen-pixels)/1 'Poppins', system-ui, sans-serif;
     background: var(--white-color);
     color: var(--body-text-color);
+    cursor: url('../../../storage/images/grace-cursor.cur'), auto;
 }
 
 main {

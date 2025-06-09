@@ -188,6 +188,15 @@ define("LOGIN",    'login');
 define("LOGOUT",   'logout');
 
 /**
+ * Login Social Providers
+ */
+define("LOGIN_SOCIAL_PROVIDERS", [
+    'google',
+    'facebook',
+    'microsoft',
+]);
+
+/**
  * Password Management Operations.
  */
 define("FORGOT_PASSWORD", 'forgot_'.PASSWORD);

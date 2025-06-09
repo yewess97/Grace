@@ -15,7 +15,7 @@
             </div>
             <i class="fas fa-angle-down nav-menu-item-rotate-icon {{adminCurrentUrl($url, ['rotate-180'])}}"></i>
         </a>
-        <ul role="list" id="nav_menu_item_{{$url}}_submenu" class="nav-submenu-list row gap-3 box-content {{str_contains(url()->current(), ADMIN."/$url") ? 'show' : 'collapse'}}">
+        <ul role="list" id="nav_menu_item_{{$url}}_submenu" class="nav-submenu-list box-content row gap-3 fs-7 bg-transparent {{str_contains(url()->current(), ADMIN."/$url") ? 'show' : 'collapse'}}">
             @foreach ((object) $all_table as $table)
                 <li role="listitem" class="nav-submenu-list-item {{str(Request::query($column_name))->whenContains($table->{$column_name}, fn() => 'active')}}">
                     <a href="{{str_contains(Request::query($column_name), $table->{$column_name}) ? 'javascript:;' : route($route_name, [$column_name => $table->{$column_name}])}}" role="link" class="nav-submenu-item d-flex align-items-center">

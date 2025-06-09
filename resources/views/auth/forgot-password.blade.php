@@ -8,7 +8,7 @@
             <div class="row col-12 justify-content-center align-items-center">
                 <section class="col-12 col-lg-4 col-md-7">
                     <div class="box-content border rounded">
-                        @backTo(LOGIN, LOGIN)
+                        @backTo(LOGIN)
                         <form action="{{route(FORGOT_PASSWORD_USER)}}" method="post" role="form" id="forgot_password_form" class="grace-form auth-form row mt-2">
                             @csrf
                             {{-- Form Header --}}
@@ -37,7 +37,7 @@
 
                             {{-- Form Footer --}}
                             <article class="grace-form-footer col-12 text-center">
-                                <a href="{{route(LOGIN)}}" role="link" class="fw-500">Cancel</a>
+                                <a href="{{route(LOGIN)}}" role="link" class="fw-500 text-main">Cancel</a>
                             </article>
                         </form>
                     </div>

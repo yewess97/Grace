@@ -13,12 +13,14 @@ use Carbon\Carbon;
 use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Laravel\Socialite\Facades\Socialite;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -33,9 +35,7 @@ class AuthService {
      */
     final public function registerUser(): void
     {
-        /**
-         * @var mixed $user
-         */
+        /**  @var mixed $user */
         $user = storeOrUpdateUser(REGISTER);
 
         auth()->guard()->login($user);
@@ -83,6 +83,77 @@ class AuthService {
         $this->incrementLoginAttempts($email_value);
 
         return $this->sendFailedLoginResponse();
+    }
+
+    /**
+     * Redirect the user to the social provider authentication page.
+     *
+     * @param string $provider
+     * @return RedirectResponse
+     * @throws InvalidArgumentException|RuntimeException
+     */
+    final public function redirectToSocialProvider($provider): RedirectResponse
+    {
+        if (!in_array($provider, LOGIN_SOCIAL_PROVIDERS)) {
+            throw new InvalidArgumentException("The provider *$provider* is not supported");
+        }
+
+        if (!config("services.$provider")) {
+            throw new RuntimeException("The provider *$provider* is not configured properly");
+        }
+
+        if (!config("services.$provider.client_id") || !config("services.$provider.client_secret")) {
+            throw new RuntimeException("The client ID or client secret for the provider *$provider* is missing");
+        }
+
+        if (!config("services.$provider.redirect")) {
+            throw new RuntimeException("The redirect URL for the provider *$provider* is missing");
+        }
+
+        return Socialite::driver($provider)->redirect();
+    }
+
+    /**
+     * Handle the callback from the social provider after authentication.
+     * 
+     * @param string $provider
+     * @return JsonResponse
+     * @throws RuntimeException
+     */
+    final public function handleSocialProviderCallback($provider): JsonResponse
+    {
+        $social_user = Socialite::driver($provider)->user();
+
+        if (!$social_user) {
+            throw new RuntimeException("Failed to authenticate with the provider *$provider*");
+        }
+
+        $social_id = collectionId($provider);
+
+        $user = User::query()
+            ->where($social_id, $social_user->getId())
+            ->first(USER_SELECTED_ATTRIBUTES);
+
+        if ($user) {
+            /**  @var mixed $user */
+            auth()->guard()->login($user);
+
+            return responseWithData(['redirect_to' => redirect()->intended()]);
+        }
+
+        $new_or_current_user = User::updateOrCreate(
+            [EMAIL => $social_user->getEmail()],
+            [
+                NAME  => $social_user->getName(),
+                PASSWORD => bcrypt(Str::random(16)), // Temporary password
+                ROLE => 1,
+                $social_id => $social_user->getId(),
+            ]
+        );
+
+        auth()->guard()->login($new_or_current_user);
+
+        return responseWithData(['redirect_to' => redirect()->intended()]);
     }
 
     /**

@@ -51,7 +51,6 @@
 .products-main .left-side .box-filter ul.filter-content li.filter-item > .filter-check {
     padding-left: var(--twenty-five-pixels);
     color: var(--black-color);
-    cursor: pointer;
 }
 
 .products-main .left-side .box-filter ul.filter-content li.filter-item > .filter-check > input[type="checkbox"]:checked ~ .filter-name {
@@ -147,7 +146,6 @@
 
 .products-main .right-side .products-view-sort .products-view > i.grid {
     color: var(--black-color);
-    cursor: pointer;
 }
 
 .products-main .right-side .products-view-sort .products-view > i.grid:hover {

@@ -11,16 +11,8 @@
     gap: var(--thirty-pixels);
 }
 
-.profile-main .top-side ul.profile-account-details :is(li.my-account > .my-account-title, li.account-details > .account-details-title) {
-    margin-bottom: var(--fifteen-pixels);
-}
-
 .profile-main .top-side ul.profile-account-details li.my-account .my-account-addresses {
     margin-bottom: var(--seven-pixels);
-}
-
-.profile-main .top-side ul.profile-account-details li.my-account :is(.my-account-addresses > a, .logout) {
-    color: var(--main-color);
 }
 
 .profile-main .top-side ul.profile-account-details li.account-details .account-details-table > table tr > td {
@@ -38,14 +30,6 @@
 
 
 /* -----------------================== Bottom Side ==================----------------- */
-.profile-main .bottom-side {
-    gap: var(--fifteen-pixels);
-}
-
 .profile-main .bottom-side .profile-order-history-title {
     border-bottom: var(--two-pixels) solid var(--black-color);
-}
-
-.profile-main .bottom-side .profile-order-history-table a {
-    color: var(--main-color);
 }

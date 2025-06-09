@@ -203,7 +203,7 @@
                 <article class="header-user-account col-lg-5 dropdown">
                     {{-- Account --}}
                     <div role="button" id="user_account_menu" class="header-user-account-content row align-items-center dropdown-toggle" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-controls="user_account_dropdown" data-mdb-toggle="dropdown">
-                        <i class="fa-solid fa-user user-icon col-2 d-grid place-items-center me-3 fs-10 border rounded-circle"></i>
+                        <i class="fa-solid fa-user user-icon col-2 d-grid place-items-center me-3 fs-9 border rounded-circle"></i>
                         <div class="header-user-title row col gap-1">
                             <p class="fs-6 fw-500 text-black">My Account</p>
                             @guest()
@@ -239,7 +239,7 @@
                 <article class="header-user-cart col-lg-4 dropdown">
                     {{-- Cart --}}
                     <div role="button" id="user_cart_menu" class="header-user-cart-content row align-items-center dropdown-toggle" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-controls="user_cart_dropdown" data-mdb-toggle="dropdown">
-                        <div class="cart-icon col-2 position-relative d-grid place-items-center me-3 fs-10 border rounded-circle">
+                        <div class="cart-icon col-2 position-relative d-grid place-items-center me-3 fs-9 border rounded-circle">
                             <i class="fa-solid fa-bag-shopping"></i>
                             <span class="cart-total-items position-absolute top-0 end-0 d-flex justify-content-center align-items-center rounded-circle text-white">{{$total_items}}</span>
                         </div>

@@ -24,9 +24,9 @@
                                 </div>
                             </div>
                             {{-- Product Quick View Status --}}
-                            <h2 class="product-info-status fw-600">
+                            <h2 class="product-info-availability fw-600">
                                 <span>Availability:</span>
-                                <span class="ms-2"></span>
+                                <span class="text-main"></span>
                             </h2>
                             {{-- Product Quick View Short Description --}}
                             <p class="product-info-short-description fs-7 text-muted"></p>
