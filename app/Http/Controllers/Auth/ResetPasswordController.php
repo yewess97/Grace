@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Throwable;
@@ -25,16 +26,18 @@ class ResetPasswordController extends Controller
     /**
      * Display the reset password form.
      *
-     * @return Application|Factory|View
+     * @return RedirectResponse|Application|Factory|View
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View
+    final public function index(): RedirectResponse|Application|Factory|View
     {
         $token                     = request()?->input(TOKEN);
         $email                     = request()?->input(EMAIL);
         $reset_password_user_error = static fn(string $attributeName) => formError(RESET_PASSWORD, USER_MODEL, $attributeName);
 
-        return showView(RESET_PASSWORD_VIEW, compact(RESET_PASSWORD_USER_ERROR, TOKEN, EMAIL));
+        return auth()->check() 
+            ? to_route('home') 
+            : showView(RESET_PASSWORD_VIEW, compact(RESET_PASSWORD_USER_ERROR, TOKEN, EMAIL));
     }
 
     /**

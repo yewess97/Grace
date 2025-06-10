@@ -9,6 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -25,15 +26,17 @@ class RegisterController extends Controller
     /**
      * Display the registration form.
      *
-     * @return Application|Factory|View
+     * @return RedirectResponse|Application|Factory|View
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View
+    final public function index(): RedirectResponse|Application|Factory|View
     {
         $auth_action         = REGISTER;
         $register_user_error = static fn(string $attributeName) => formError(REGISTER, USER_MODEL, $attributeName);
 
-        return showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, REGISTER_USER_ERROR));
+        return auth()->check() 
+            ? to_route('home') 
+            : showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, REGISTER_USER_ERROR));
     }
 
     /**

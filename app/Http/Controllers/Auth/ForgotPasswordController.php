@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Throwable;
@@ -25,14 +26,16 @@ class ForgotPasswordController extends Controller
     /**
      * Display the forgot password form.
      *
-     * @return Application|Factory|View
+     * @return RedirectResponse|Application|Factory|View
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View
+    final public function index(): RedirectResponse|Application|Factory|View
     {
         $forgot_password_user_error = static fn(string $attributeName) => formError(FORGOT_PASSWORD, USER_MODEL, $attributeName);
 
-        return showView(FORGOT_PASSWORD_VIEW, compact(FORGOT_PASSWORD_USER_ERROR));
+        return auth()->check() 
+            ? to_route('home') 
+            : showView(FORGOT_PASSWORD_VIEW, compact(FORGOT_PASSWORD_USER_ERROR));
     }
 
     /**

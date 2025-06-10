@@ -27,15 +27,17 @@ class LoginController extends Controller
     /**
      * Display the login form.
      *
-     * @return Application|Factory|View
+     * @return RedirectResponse|Application|Factory|View
      * @throws Throwable
      */
-    final public function index(): Application|Factory|View
+    final public function index(): RedirectResponse|Application|Factory|View
     {
         $auth_action      = LOGIN;
         $login_user_error = static fn(string $attributeName) => formError(LOGIN, USER_MODEL, $attributeName);
 
-        return showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, LOGIN_USER_ERROR));
+        return auth()->check() 
+            ? to_route('home') 
+            : showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, LOGIN_USER_ERROR));
     }
 
     /**
