@@ -6,6 +6,10 @@
     <main role="main" class="order-details-main {{isAdminRoute() ? 'main-body' : 'py-6'}}">
         <div class="container">
             <div class="main-sides row col-12">
+                @if (session()->has('orderPlaced'))
+                    @customSession("orderPlaced", "success", "check")
+                @endif
+
                 @unless(isAdminRoute())
                     <div class="d-flex align-items-baseline gap-3 mb-lg-3">
                         @backTo(PROFILE)

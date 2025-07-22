@@ -38,14 +38,14 @@ class OrderController extends Controller
     /**
      * Store an order.
      *
-     * @return Response|RedirectResponse
-     * @throws ValidationException|RandomException|Throwable
+     * @return Response|RedirectResponse|JsonResponse
+     * @throws ValidationException|RandomException|Throwable|\Exception
      */
-    final public function store(): Response|RedirectResponse
+    final public function store(): Response|RedirectResponse|JsonResponse
     {
         $create_order = $this->orderService->createOrder();
 
-        return $create_order instanceof RedirectResponse
+        return $create_order instanceof RedirectResponse || $create_order instanceof JsonResponse
             ? $create_order
             : responseSuccess();
     }

@@ -56,7 +56,7 @@ generalControllerRoutes(AddressController::class, ADDRESS_MODEL);
  */
 Route::controller(OrderController::class)->group(function () {
     Route::get('/'.ORDER_MODEL, capitalizeAllFromSecondWord(ORDER_DETAILS))->name(ORDER_DETAILS);
-    Route::post('/'.kebabAll(CREATE_ORDER), 'store')->name(CREATE_ORDER);
+    Route::match(['get', 'post'], '/'.kebabAll(CREATE_ORDER), 'store')->name(CREATE_ORDER);
 });
 
 

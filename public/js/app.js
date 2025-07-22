@@ -150,9 +150,9 @@ $(document).ready(() => {
          * When adding a new order,
          * set the value of the address input with the value of the address radio automatically
          */
-        if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.ORDER)}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}"]:radio`)) {
+        if (target.is(`input[name="${IGrace.ADD_COLLECTION(IGrace.ORDER)}_payment_method"]:radio`)) {
             target.closest(`#${IGrace.ADD_COLLECTION(IGrace.ORDER)}_form`)
-                .find(`#${IGrace.ORDER}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`)
+                .find(`#${IGrace.ORDER}_payment_method`)
                 .val(`${target.val()},`);
         }
 

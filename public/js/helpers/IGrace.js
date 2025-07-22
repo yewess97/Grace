@@ -140,7 +140,6 @@ const IGrace = {
     TOTAL_ITEMS       : 'total_items',
     TOTAL_COST        : 'total_cost',
     ROW               : 'row',
-    HEADER_ROW        : 'header_row',
     CONDITION         : 'condition',
 
     MAIN_IMAGE              : () => `main_${IGrace.IMAGE}`,

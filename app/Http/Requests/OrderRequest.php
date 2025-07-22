@@ -20,6 +20,7 @@ class OrderRequest extends FormRequest
     {
         $rules = [
             $this->dataKeyOf(STATUS) => ['required', 'in:'.implode(',', array_values(ORDER_STATUS_ENUM))],
+            $this->dataKeyOf(PAYMENT_METHOD) => ['required', 'in:'.implode(',', array_values(PAYMENT_METHOD_ENUM))],
         ];
 
         if ($this->operation === ADD) {
@@ -39,6 +40,8 @@ class OrderRequest extends FormRequest
         $messages = [
             ...$this->requiredMessage($this->dataKeyOf(STATUS), ucfirst(STATUS)),
             "{$this->dataKeyOf(STATUS)}.in" => ucfirst(STATUS).' must be one of the following: { '.implode(', ', array_keys(ORDER_STATUS_ENUM)).' }',
+            ...$this->requiredMessage($this->dataKeyOf(PAYMENT_METHOD), capitalizeAll(PAYMENT_METHOD)),
+            "{$this->dataKeyOf(PAYMENT_METHOD)}.in" => capitalizeAll(PAYMENT_METHOD).' must be one of the following: { '.implode(', ', array_keys(PAYMENT_METHOD_ENUM)).' }',
         ];
 
         if ($this->operation === ADD) {

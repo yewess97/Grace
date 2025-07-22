@@ -226,7 +226,6 @@ define("ABOUT_US",             'about_us');
 define("CONTACT_US",           'contact_us');
 define("TRASHED",              'trashed');
 define("ROW",                  'row');
-define("HEADER_ROW",           'header_row');
 define("LAST_PAGE",            'last_page');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
@@ -274,6 +273,7 @@ define("DELETE_ALL_CARTS", DELETE.'_all_'.CARTS_TABLE);
  */
 define("CHECKOUT",                'checkout');
 define("CHECKOUT_USER_ADDRESSES", CHECKOUT.'_'.USER_ADDRESSES);
+define("CHECKOUT_PAYMENT", CHECKOUT.'_'.PAYMENT);
 
 /**
  * Order Standards.
@@ -281,6 +281,9 @@ define("CHECKOUT_USER_ADDRESSES", CHECKOUT.'_'.USER_ADDRESSES);
 define("USER_ORDERS",        USER_MODEL.'_'.ORDERS_TABLE);
 define("CREATE_ORDER",       CREATE.'_'.ORDER_MODEL);
 define("UPDATE_ORDER",       UPDATE.'_'.ORDER_MODEL);
+define("PAYMENT_METHOD",     PAYMENT.'_method');
+define("PAYMENT_ID",         collectionId(PAYMENT));
+define("PAYMENT_STATUS",     PAYMENT.'_'.STATUS);
 define("ORDER_DETAILS",      ORDER_MODEL.'_details');
 define("ORDER_PRODUCT_SIZE", ORDER_MODEL.'_'.PRODUCT_SIZE);
 define("ORDER_USER_NAME",    ORDER_MODEL.'_'.USER_MODEL.'_'.NAME);
@@ -442,6 +445,8 @@ define("ORDER_ATTRIBUTES", [
     NUM_ITEMS,
     TOTAL_COST,
     STATUS,
+    PAYMENT_METHOD,
+    PAYMENT_ID,
 ]);
 
 /**
@@ -959,6 +964,14 @@ define("SORT_PRODUCTS_ENUM", [
 define("USER_ROLE_ENUM", [
     'Customer'     => 0,
     ucfirst(ADMIN) => 1
+]);
+
+/**
+ * Payment Method Enum.
+ */
+define("PAYMENT_METHOD_ENUM", [
+    'Credit Card, Wallet, Bank Transfer' => 1,
+    'Cash On Delivery'                   => 2,
 ]);
 
 /**

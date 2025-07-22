@@ -10,9 +10,9 @@ $(document).ready(() => {
 
         const
             fields = {
-                add_contact_name:    $('#add_contact_name'),
-                add_contact_email:   $('#add_contact_email'),
-                add_contact_message: $('#add_contact_message'),
+                add_contact_name:    $(`#${IGrace.ADD_COLLECTION(`contact_${IGrace.NAME}`)}`),
+                add_contact_email:   $(`#${IGrace.ADD_COLLECTION(`contact_${IGrace.EMAIL}`)}`),
+                add_contact_message: $(`#${IGrace.ADD_COLLECTION('contact_message')}`),
             },
 
             regex = {

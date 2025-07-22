@@ -7,8 +7,8 @@
         <div class="container">
             <div class="row justify-content-center align-items-center">
                 <div class="main-sides row col-12 justify-content-center align-items-center">
-                    @if (session()->has(LOGIN.'SocialError'))
-                        @sessionError(LOGIN.'SocialError')
+                    @if (session()->has('loginSocialError'))
+                        @customSession("loginSocialError", "danger", "times")
                     @endif
                     <!----======= Left Side =======---->
                     <section class="left-side col">

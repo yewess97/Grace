@@ -129,7 +129,7 @@ const User = {
 
         $.each(($(`.${IGrace.CLASS(IGrace.CART_TOTAL_COST())}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
-        $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data[IGrace.HEADER_ROW]).html());
+        $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
 
         const cart_content_update_actions = {
             true: () => update_cart_main,
@@ -152,7 +152,7 @@ const User = {
      */
     checkoutAddressesConfig: () => {
         const
-            radio_inputs   = $('input[type=radio]'),
+            radio_inputs   = $(`input[name="${IGrace.ADD_COLLECTION(IGrace.ORDER)}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}"]:radio`),
             selected_value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
 
         if (selected_value) {
@@ -304,8 +304,11 @@ const User = {
 
             // Because of the pagination
             if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
-                const key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`;
-                form_data.set(key, sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`));
+                const 
+                    key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
+                    value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
+
+                form_data.set(key, value ? value : ''); // If the value is null, set it to an empty string
             }
 
             let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
@@ -316,8 +319,8 @@ const User = {
                 data: form_data,
                 beforeSend: () => User.loadingSpinner(target, place_order_button, true),
                 success: (data) => {
-                    if (data.status === `auth_${IGrace.SUCCESS}`) {
-                        return location.href = data['redirect_to'];
+                    if ($.inArray(data.status, [`auth_${IGrace.SUCCESS}`, 'stripe_session_created']) > -1) {
+                        return location.assign(data['redirect_to']);
                     }
 
                     if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
@@ -326,6 +329,9 @@ const User = {
                         place_order_button.prop('disabled', false)
                             .find('.loading-spinner')
                             .remove();
+
+                        $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))} ul`).empty();
+                        $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).addClass('d-none');
 
                         return Common.successMessage(IGrace.SUCCESS, success_message, collection);
                     }
@@ -369,6 +375,12 @@ const User = {
 
                     if (err.status === 422) {
                         if (!Common.responseJsonError(err)[`${IGrace.REVIEW}_exists`]) {
+                            place_order_button.prop('disabled', false)
+                                .find('.loading-spinner')
+                                .remove();
+
+                            $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).removeClass('d-none');
+
                             return Common.errorMessage(action, Common.responseJsonError(err));
                         }
 

@@ -11,9 +11,13 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -28,6 +32,8 @@ class DashboardService
      */
     final public function dashboardData(bool $isFilter = false): Application|Factory|View|JsonResponse|string
     {
+        $filter_dashboard_dates = [];
+
         if ($isFilter) {
             $filter_dashboard = new FilterByDatesRequest(FILTER, DASHBOARD, FILTER_BY_DATES_ATTRIBUTES);
 
@@ -36,94 +42,54 @@ class DashboardService
             $filter_dashboard_dates = $filter_dashboard->dataValues();
         }
 
-        // Get the orders' data
-        $orders_completed = Order::whereStatus(array_values(Arr::only(ORDER_STATUS_ENUM, ['Completed']))[0]);
-        $orders_shipped_delivered_completed = Order::query()->whereIn(STATUS, array_values(Arr::only(ORDER_STATUS_ENUM, ['Shipped', 'Delivered', 'Completed'])));
+        // Get Orders Metrics
+        $orders_metrics = $this->getOrdersMetrics($isFilter, $filter_dashboard_dates)[ORDERS_TABLE.'_metrics'];
 
-        $completed_orders = $orders_completed;
-        $shipped_delivered_completed_orders = $orders_shipped_delivered_completed;
+        // Get fulfilled orders for further use
+        $fulfilled_orders = $this->getOrdersMetrics($isFilter, $filter_dashboard_dates)['fulfilled_'.ORDERS_TABLE];
 
-        if ($isFilter) {
-            $completed_orders = $orders_completed->filterByDates($filter_dashboard_dates);
-            $shipped_delivered_completed_orders = $orders_shipped_delivered_completed->filterByDates($filter_dashboard_dates);
-        }
+        // Orders Statuses
+        $orders_statuses = $this->getOrdersStatusesData($isFilter, $filter_dashboard_dates);
 
-        // Orders Metrics
-        $orders_metrics = [
-            [
-                NAME           => 'Sales',
-                'icon'         => 'analytics',
-                'card_padding' => 'pe-lg-3',
-                TOTAL_COST     => $shipped_delivered_completed_orders->allTotalCost(),
-                'statistic'    => $shipped_delivered_completed_orders->statisticsInLast24Hours(),
-            ],
-            [
-                NAME           => 'Expenses',
-                'icon'         => 'bar_chart',
-                'card_padding' => 'px-lg-2',
-                TOTAL_COST     => ($isFilter ? Order::filterByDates($filter_dashboard_dates) : Order::query())->allTotalCost(),
-                'statistic'    => ($isFilter ? Order::filterByDates($filter_dashboard_dates) : Order::query())->statisticsInLast24Hours(),
-            ],
-            [
-                NAME           => 'Income',
-                'icon'         => 'stacked_line_chart',
-                'card_padding' => 'ps-lg-3',
-                TOTAL_COST     => $completed_orders->allTotalCost(),
-                'statistic'    => $completed_orders->statisticsInLast24Hours(),
-            ],
-        ];
-
-        $orders_metrics = object_from_array($orders_metrics);
-
-
-        // Orders Count
-        $orders_statuses = collect(ORDER_STATUS_ENUM)
-            ->map(function (int $value, string $status) use ($isFilter, &$filter_dashboard_dates) {
-                $orders = Order::whereStatus($value);
-
-                return (object)[
-                    'label'               => $status,
-                    STATUS                => $value,
-                    ORDERS_TABLE.'_count' => ($isFilter ? $orders->filterByDates($filter_dashboard_dates) : $orders)->count(),
-                ];
-            })->values();
-
-        // Reviews Count
-        $reviews_ratings = collect(REVIEW_RATING_ENUM)
-            ->map(function (int $value, string $rating) use ($isFilter, &$filter_dashboard_dates) {
-                $reviews = Review::query()->where(RATING, $value);
-
-                return (object)[
-                    RATING.'_count'        => count(explode("★", $rating)) - 1,
-                    RATING                 => $value,
-                    REVIEWS_TABLE.'_count' => $isFilter ? $reviews->filterByDates($filter_dashboard_dates)->count() : $reviews->count(),
-                ];
-            })->values();
-
+        // Reviews Ratings
+        $reviews_ratings = $this->getReviewsRatingsData($isFilter, $filter_dashboard_dates);
 
         // Get all users with the total orders (Shipped, Delivered, Completed) for each one
-        $users_with_orders = User::query()->select(USER_SELECTED_ATTRIBUTES)
-            ->with([ADDRESSES_TABLE => static fn(HasMany $address) => addressCountry($address)])
-            ->whereHas(ORDERS_TABLE, static fn() => $shipped_delivered_completed_orders)
-            ->withCount([ORDERS_TABLE => static fn() => $shipped_delivered_completed_orders]);
+        $users = $this->getCachedData(
+            $isFilter,
+            $filter_dashboard_dates,
+            USERS_TABLE.'_with_'.ORDERS_TABLE,
+            300,
+            User::query()
+                    ->select(USER_SELECTED_ATTRIBUTES)
+                    ->with([ADDRESSES_TABLE => static fn(HasMany $address) => addressCountry($address)])
+                    ->whereHas(ORDERS_TABLE, static fn() => $fulfilled_orders)
+                    ->withCount([ORDERS_TABLE => static fn() => $fulfilled_orders]),
+            5
+        );
 
         // Get the countries with the total users registered from each one
-        $registered_users_by_country = Address::query()->select(COUNTRY)
-            ->selectRaw('COUNT(DISTINCT '.USER_ID.') as '.USERS_TABLE.'_count')
-            ->groupBy(COUNTRY);
+        $registered_users = $this->getCachedData(
+            $isFilter,
+            $filter_dashboard_dates,
+            USERS_TABLE.'_by_'.COUNTRY,
+            3600,
+            Address::query()
+                    ->select(COUNTRY)
+                    ->selectRaw('COUNT(DISTINCT '.USER_ID.') as '.USERS_TABLE.'_count')
+                    ->groupBy(COUNTRY),
+        );
 
         // Get the subcategories with the total products in each one
-        $subcategories_with_products_count = Subcategory::query()->select(NAME)
-            ->withCount(PRODUCTS_TABLE);
-
-        // Apply filtering dynamically
-        $apply_filter = static fn($query) => $isFilter
-            ? $query->filterByDates($filter_dashboard_dates)
-            : $query;
-
-        $users            = $apply_filter($users_with_orders)->fastPaginate(5);
-        $registered_users = $apply_filter($registered_users_by_country)->cursor();
-        $subcategories    = $apply_filter($subcategories_with_products_count)->cursor();
+        $subcategories = $this->getCachedData(
+            $isFilter,
+            $filter_dashboard_dates,
+            SUBCATEGORIES_TABLE.'_with_'.PRODUCTS_TABLE,
+            1000,
+            Subcategory::query()
+                    ->select(NAME)
+                    ->withCount(PRODUCTS_TABLE),
+        );
 
         // Get the filtering error messages
         $filter_dashboard_error = static fn(string $attributeName) => formError(FILTER, DASHBOARD, $attributeName);
@@ -139,5 +105,178 @@ class DashboardService
         }
 
         return $view;
+    }
+
+    /**
+     * Get Orders Metrics.
+     *
+     * @param bool $isFilter
+     * @param array $filterDashboardDates
+     * @return array
+     */
+    private function getOrdersMetrics(bool $isFilter, array $filterDashboardDates): array
+    {
+        [$completed_orders, $fulfilled_orders] = collect([
+            ['Completed'],
+            ['Shipped', 'Delivered', 'Completed']
+        ])->map(static fn($status) => 
+            Order::whereIn(STATUS, array_values(Arr::only(ORDER_STATUS_ENUM, $status))
+        )
+        ->when($isFilter, fn($order) => $order->filterByDates($filterDashboardDates)));
+
+        // Metrics calculation
+        $metrics = [
+            'Sales' => [
+                'icon' => 'analytics',
+                'data' => $fulfilled_orders,
+                'padding' => 'pe-lg-3'
+            ],
+            'Expenses' => [
+                'icon' => 'bar_chart',
+                'data' => $this->applyFilter(
+                    Order::query(),
+                    $isFilter,
+                    $filterDashboardDates
+                ),
+                'padding' => 'px-lg-2'
+            ],
+            'Income' => [
+                'icon' => 'stacked_line_chart',
+                'data' => $completed_orders,
+                'padding' => 'ps-lg-3'
+            ]
+        ];
+
+        $orders_metrics = collect($metrics)->map(function ($metric, $name) {
+            $orders = $metric['data'];
+
+            return [
+                NAME => $name,
+                'icon' => $metric['icon'],
+                'card_padding' => $metric['padding'],
+                TOTAL_COST => cache()->remember(strtolower($name).'_total_cost', 300, static fn() =>
+                    $orders->allTotalCost()
+                ),
+                'statistic' => cache()->remember(strtolower($name).'_statistic', 300, static fn() =>
+                    $orders->statisticsInLast24Hours()
+                ),
+            ];
+        })
+        ->values()
+        ->all();
+
+        return [
+            ORDERS_TABLE.'_metrics'   => object_from_array($orders_metrics), 
+            'fulfilled_'.ORDERS_TABLE => $fulfilled_orders,
+        ];
+    }
+
+    /**
+     * Get Orders Statuses Data.
+     *
+     * @param bool $isFilter
+     * @param array $filterDashboardDates
+     * @return Collection
+     */
+    private function getOrdersStatusesData(bool $isFilter, array $filterDashboardDates): Collection
+    {
+        return collect(ORDER_STATUS_ENUM)
+            ->map(function (int $value, string $status) use ($isFilter, $filterDashboardDates) {
+                $cache_key = $this->allOrFilteredCacheKey($isFilter)."_{$status}_orders_count";
+                
+                return cache()->remember($cache_key, 300, function () use ($value, $status, $isFilter, $filterDashboardDates) {
+                    $orders = $this->applyFilter(Order::query()->whereStatus($value), $isFilter, $filterDashboardDates);
+                    
+                    return (object)[
+                        'label' => $status,
+                        STATUS  => $value,
+                        'count' => $orders->count(),
+                    ];
+                });
+            })
+            ->values();
+    }
+
+    /**
+     * Get Reviews Ratings Data.
+     *
+     * @param bool $isFilter
+     * @param array $filterDashboardDates
+     * @return Collection
+     */
+    private function getReviewsRatingsData(bool $isFilter, array $filterDashboardDates): Collection
+    {
+        return collect(REVIEW_RATING_ENUM)
+            ->map(function (int $value, string $rating) use ($isFilter, $filterDashboardDates) {
+                $stars = count(explode("★", $rating)) - 1;
+                $cache_key = $this->allOrFilteredCacheKey($isFilter)."_{$stars}star_reviews";
+
+                return cache()->remember($cache_key, 300, function () use ($value, $rating, $stars, $isFilter, $filterDashboardDates) {
+                    $reviews = $this->applyFilter(
+                        Review::query()->where(RATING, $value),
+                        $isFilter,
+                        $filterDashboardDates
+                    );
+
+                    return (object)[
+                        RATING.'_count'        => $stars,
+                        RATING                 => $value,
+                        REVIEWS_TABLE.'_count' => $reviews->count(),
+                    ];
+                });
+            })
+            ->values();
+    }
+
+    /**
+     * Get cached data .
+     *
+     * @param bool $isFilter
+     * @param array $filterDashboardDates
+     * @param string $type
+     * @param int $ttl
+     * @param Builder $query
+     * @param int|null $itemsNumber
+     * @return LengthAwarePaginator|EloquentCollection
+     */
+    private function getCachedData(bool $isFilter, array $filterDashboardDates, string $type, int $ttl, Builder $query, ?int $itemsNumber = null): LengthAwarePaginator|EloquentCollection
+    {
+        return cache()->remember(
+            $this->allOrFilteredCacheKey($isFilter)."_{$type}_dashboard",
+            $ttl,
+            function () use ($query, $isFilter, $filterDashboardDates, $itemsNumber) {
+                $query = $this->applyFilter($query, $isFilter, $filterDashboardDates);
+
+                return is_integer($itemsNumber) && $itemsNumber > 0
+                    ? $query->fastPaginate($itemsNumber)
+                    : $query->get();
+            }
+        );
+    }
+
+    /**
+     * Get the query or apply filter on it based on the request.
+     *
+     * @param Builder $query
+     * @param bool $isFilter
+     * @param array $filterDashboardDates
+     * @return Builder
+     */
+    private function applyFilter(Builder $query, bool $isFilter, array $filterDashboardDates): Builder
+    {
+        return $isFilter
+            ? $query->filterByDates($filterDashboardDates)
+            : $query;
+    }
+
+    /**
+     * Set the first part of the cache key based on whether the data is filtered or not.
+     *
+     * @param bool $isFilter
+     * @return string
+     */
+    private function allOrFilteredCacheKey(bool $isFilter): string
+    {
+        return $isFilter ? 'filtered' : 'all';
     }
 }

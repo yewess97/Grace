@@ -1,5 +1,5 @@
 <ul role="list" @class([
-        'products-content',
+        'products-content row',
         'box-content px-0 rounded-start' => !str(Route::currentRouteName())->exactly('home'),
         session()->has('no_results') ? 'justify-content-center' : 'row-cols-1 row-cols-md-4',
     ])>

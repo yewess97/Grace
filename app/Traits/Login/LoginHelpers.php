@@ -37,7 +37,7 @@ trait LoginHelpers
 
         $this->clearLoginAttempts($email);
 
-        $response_with_redirect_to = static fn($redirection) => responseWithData(['status' => AUTH_SUCCESS, 'redirect_to' => $redirection]);
+        $response_with_redirect_to = static fn($redirection) => responseWithData([STATUS => AUTH_SUCCESS, 'redirect_to' => $redirection]);
 
         return auth()->user()?->isAdmin
             ? $response_with_redirect_to(route(ADMIN_DASHBOARD_ROUTE))

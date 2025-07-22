@@ -47,13 +47,19 @@ class UserBladeServiceProvider extends ServiceProvider
         });
 
         /**
-         * Show the session error message.
+         * Show the session message.
          * 
-         * @param string $error
+         * @param string $sessionArgs
          * @return string
          */
-        Blade::directive('sessionError', static fn(string $error) => 
-            "<?php echo \"<div role='alert' class='alert alert-dismissible fade show alert-danger d-flex justify-content-between align-items-center pe-4' data-mdb-color='danger'><div class='error-message'><i class='fas fa-times-circle me-3'></i><span>\".session($error).\"</span></div><button type='button' role='button' title='Close Alert' class='btn-close position-relative p-0' data-mdb-dismiss='alert' aria-label='Close Alert'></button></div>\" ?>"
-        );
+        Blade::directive('customSession', static function (string $sessionArgs) {
+            [$message, $type, $icon_type] = array_from($sessionArgs);
+
+            $message_container_class = $type !== 'danger'
+                ? $type 
+                : 'error';
+
+            return "<?php echo \"<div role='alert' class='alert alert-dismissible fade show alert-$type d-flex justify-content-between align-items-center pe-4' data-mdb-color='$type'><div class='$message_container_class-message'><i class='fas fa-$icon_type-circle me-3'></i><span>\".session('$message').\"</span></div><button type='button' role='button' title='Close Alert' class='btn-close position-relative p-0' data-mdb-dismiss='alert' aria-label='Close Alert'></button></div>\" ?>";
+        });
     }
 }

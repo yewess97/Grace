@@ -98,16 +98,13 @@ class AuthService {
             throw new InvalidArgumentException("The provider *$provider* is not supported");
         }
 
-        if (!config("services.$provider")) {
+        if (!config("services.$provider") 
+            || !config("services.$provider.client_id")
+            || !config("services.$provider.client_secret")
+            || !config("services.$provider.redirect")
+        ) 
+        {
             throw new RuntimeException("The provider *$provider* is not configured properly");
-        }
-
-        if (!config("services.$provider.client_id") || !config("services.$provider.client_secret")) {
-            throw new RuntimeException("The client ID or client secret for the provider *$provider* is missing");
-        }
-
-        if (!config("services.$provider.redirect")) {
-            throw new RuntimeException("The redirect URL for the provider *$provider* is missing");
         }
 
         return responseWithData(['redirect_to' => Socialite::driver($provider)->redirect()->getTargetUrl()]);
@@ -125,7 +122,7 @@ class AuthService {
 
         if (!$social_user) {
             return to_route(LOGIN)
-                ->with(LOGIN.'SocialError', "Failed to authenticate with the provider *$provider*")
+                ->with('loginSocialError', "Failed to authenticate with the provider *$provider*")
                 ->setStatusCode(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 

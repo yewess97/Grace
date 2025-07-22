@@ -8,7 +8,7 @@
             <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12" data-loading_spinner="{{imageSource('loading2.png')}}">
                 @csrf
                 <input type="hidden" name="add_order_status" value="1">
-                <input type="hidden" name="add_order_address_id" id="order_address_id">
+                <input type="hidden" name="add_order_payment_method" id="order_payment_method">
                 <!----======= Left Side =======---->
                 <section class="left-side col-12 col-lg-7">
                     <div class="shipping-payment row gap-5 py-6">
@@ -18,7 +18,7 @@
                             <a href="{{route(PRODUCTS_LIST)}}" role="link" class="shipping-payment-logo">{{config('app.name')}} Store</a>
                             {{-- Shipping Payment Breadcrumb --}}
                             <nav role="navigation" class="nav-breadcrumb" aria-label="breadcrumb">
-                                <div class="container">
+                                <div class="container ms-0">
                                     <div class="row">
                                         <ol role="list" class="breadcrumb">
                                             <li role="listitem" class="breadcrumb-item fw-500">
@@ -34,8 +34,15 @@
                         </header>
                         {{-- Shipping Payment Main --}}
                         <main role="main" class="shipping-payment-main row col-12 gap-5 bg-white">
-                            {{$add_order_error(STATUS)}}
-                            {{$add_order_error(ADDRESS_ID)}}
+                            <div class="add-order-error row gap-2 d-none">
+                                {{$add_order_error(STATUS)}}
+                                {{$add_order_error(ADDRESS_ID)}}
+                                {{$add_order_error(PAYMENT_METHOD)}}
+                            </div>
+
+                            @if (session()->has('paymentFailed'))
+                                @customSession("paymentFailed", "danger", "times")
+                            @endif
 
                             {{-- Shipping Contact Information --}}
                             <article class="shipping-contact-info col-12">
@@ -68,18 +75,31 @@
                                     @include(CHECKOUT_USER_ADDRESSES_PAGINATION, [USER_ADDRESSES => $user_addresses])
                                 </article>
                                 {{-- Shipping Payment --}}
-                                <div class="shipping-payment-method mt-5 col-12">
+                                <article class="shipping-payment-method mt-5 col-12">
                                     {{-- Shipping Payment Title --}}
-                                    <h2 class="shipping-payment-title fs-5">Payment Method</h2>
+                                    <h2 class="shipping-payment-title fs-5">{{capitalizeAll(PAYMENT_METHOD)}}</h2>
                                     {{-- Shipping Payment Selection --}}
-                                    <div class="select-payment mt-3 ps-4 pe-5 py-5 rounded">
-                                        <label for="add_order_payment_method" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
-                                            <span class="fw-500">Cash on Delivery</span>
-                                            <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method" class="position-absolute" checked="checked" value="cash on delivery" aria-required="true">
-                                            <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method"></span>
-                                        </label>
+                                    <div class="select-payment row gap-4 mt-3 px-4 py-5 rounded">
+                                        {{-- Credit Card, Wallet, Bank Transfer --}}
+                                        <div class="credit-cards d-flex justify-content-between align-items-center">
+                                            <label for="add_order_payment_method_stripe" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
+                                                <span class="fw-500">Credit Card</span>
+                                                <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_stripe" class="position-absolute" value="1" aria-required="true">
+                                                <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_stripe"></span>
+                                            </label>
+                                            <img src="{{imageSource('credit-cards.png')}}" alt="Credit Cards Logo" width="65">
+                                        </div>
+                                        {{-- Cash On Delivery --}}
+                                        <div class="cod d-flex justify-content-between align-items-center">
+                                            <label for="add_order_payment_method_cod" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
+                                                <span class="fw-500">Cash on Delivery</span>
+                                                <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_cod" class="position-absolute" value="2" aria-required="true">
+                                                <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_cod"></span>
+                                            </label>
+                                            <img src="{{imageSource('cash-on-delivery.png')}}" alt="Cash on Delivery Logo" width="70">
+                                        </div>
                                     </div>
-                                </div>
+                                </article>
                             </article>
                         </main>
                     </div>

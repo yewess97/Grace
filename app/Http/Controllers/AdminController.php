@@ -53,8 +53,10 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View|JsonResponse
     {
-        $categories = Category::when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $categories = cache()->remember(CATEGORIES_TABLE, 1800, fn() => 
+            Category::when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
         $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
@@ -72,11 +74,15 @@ class AdminController extends Controller
      */
     final public function subcategories(): Application|Factory|View|JsonResponse
     {
-        $subcategories = Subcategory::with($this->relatedCategories())
-            ->when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $subcategories = cache()->remember(SUBCATEGORIES_TABLE, 1800, fn() =>
+            Subcategory::with($this->relatedCategories())
+                ->when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
-        $categories = Category::get($this->id_name);
+        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE, 1800, fn() => 
+            Category::get($this->id_name)
+        );
 
         $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
         $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
@@ -96,22 +102,28 @@ class AdminController extends Controller
     {
         $id_name_attributes = $this->id_name;
 
-        $products = Product::query()
-            ->withCount(SUBCATEGORIES_TABLE)
-            ->orderBy(SUBCATEGORIES_TABLE.'_count')
-            ->latest()
-            ->with([
-                ...$this->relatedCategories(),
-                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes)->withTrashed(),
-                THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
-            ])
-            ->when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $products = cache()->remember(PRODUCTS_TABLE, 500, fn() =>
+            Product::query()
+                ->withCount(SUBCATEGORIES_TABLE)
+                ->orderBy(SUBCATEGORIES_TABLE.'_count')
+                ->latest()
+                ->with([
+                    ...$this->relatedCategories(),
+                    SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes)->withTrashed(),
+                    THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                    SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
+                ])
+                ->when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
-        $categories    = Category::get($id_name_attributes);
-        $subcategories = Subcategory::get($id_name_attributes);
-        $sizes         = PRODUCT_SIZE_ENUM;
+        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+            Category::get($id_name_attributes)
+        );
+        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+            Subcategory::get($id_name_attributes)
+        );
+        $sizes = PRODUCT_SIZE_ENUM;
 
         $add_product_error    = static fn(string $attributeName) => formError(ADD, PRODUCT_MODEL, $attributeName);
         $update_product_error = static fn(string $attributeName) => formError(UPDATE, PRODUCT_MODEL, $attributeName);
@@ -129,8 +141,10 @@ class AdminController extends Controller
      */
     final public function users(): Application|Factory|View|JsonResponse
     {
-        $users = User::when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $users = cache()->remember(USERS_TABLE, 800, fn() =>
+            User::when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
         $roles = USER_ROLE_ENUM;
 
@@ -164,10 +178,12 @@ class AdminController extends Controller
 
         session()->push('last_valid_status', $status);
 
-        $orders = Order::query()->latest()
-            ->whereStatus($status)
-            ->when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $orders = cache()->remember(ORDERS_TABLE, 300, fn() =>
+            Order::query()->latest()
+                ->whereStatus($status)
+                ->when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
         $statuses     = ORDER_STATUS_ENUM;
         $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
@@ -202,13 +218,15 @@ class AdminController extends Controller
 
         session()->push('last_valid_rating', $rating);
 
-        $reviews = Review::with([
-                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
-                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
-            ])
-            ->where(RATING, $rating)
-            ->when($this->condition, static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $reviews = cache()->remember(REVIEWS_TABLE, 300, fn() =>
+            Review::with([
+                    PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
+                    USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
+                ])
+                ->where(RATING, $rating)
+                ->when($this->condition, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 

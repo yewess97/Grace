@@ -109,7 +109,7 @@
                                             <span class="order-analytic-icon {{strtolower($order_status->label)}}-icon material-symbols-rounded rounded-circle">{{orderStatus($order_status, 'icon')}}</span>
                                             <h3 class="fw-500">{{$order_status->label}} {{ucfirst(ORDERS_TABLE)}}</h3>
                                         </div>
-                                        <span class="fw-600">{{$order_status->orders_count}}</span>
+                                        <span class="fw-600">{{$order_status->count}}</span>
                                     </a>
                                 </li>
                             @endforeach

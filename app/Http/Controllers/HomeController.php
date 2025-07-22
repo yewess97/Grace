@@ -19,7 +19,7 @@ class HomeController extends Controller
      */
     final public function index(): Application|Factory|View|JsonResponse
     {
-        $products = Product::mostSelling();
+        $products = Product::query()->mostSelling();
 
         $services = [
             [
