@@ -970,8 +970,8 @@ define("USER_ROLE_ENUM", [
  * Payment Method Enum.
  */
 define("PAYMENT_METHOD_ENUM", [
-    'Credit Card, Wallet, Bank Transfer' => 1,
-    'Cash On Delivery'                   => 2,
+    'Credit Card'      => 1,
+    'Cash On Delivery' => 2,
 ]);
 
 /**

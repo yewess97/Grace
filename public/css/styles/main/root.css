@@ -69,4 +69,7 @@
     /* ----------- Transitions ----------- */
     --trans-300: all 300ms ease;
     --trans-500: all 500ms ease;
+
+    /* ----------- Smooth Scroll ----------- */
+    scroll-behavior: smooth;
 }

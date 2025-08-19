@@ -19,16 +19,20 @@ class ReviewService
     /**
      * Display the reviews.
      *
-     * @param int $productId
      * @return string
      * @throws Throwable
      */
-    final public function displayReviews(int $productId): string
+    final public function displayReviews(): string
     {
-        $product = Product::query()->findOrFail($productId, [ID])
-            ?->load(REVIEWS_TABLE);
+        // $product = cache()->remember(REVIEWS_TABLE, 900, static fn() =>
+        //     // Product::query()->findOrFail($productId, [ID])
+        //     //     ?->load(REVIEWS_TABLE)
 
-        return view(REVIEWS_COMPONENT, getReviews($product))->render();
+        //     Review::query()->where(PRODUCT_ID, request()?->input(PRODUCT_ID))
+        //         ->get()
+        // );
+
+        return view(REVIEWS_COMPONENT, getReviews(request()?->input(PRODUCT_ID)))->render();
     }
 
     /**

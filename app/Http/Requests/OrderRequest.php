@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Traits\FormRequestHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OrderRequest extends FormRequest
 {
@@ -20,11 +21,14 @@ class OrderRequest extends FormRequest
     {
         $rules = [
             $this->dataKeyOf(STATUS) => ['required', 'in:'.implode(',', array_values(ORDER_STATUS_ENUM))],
-            $this->dataKeyOf(PAYMENT_METHOD) => ['required', 'in:'.implode(',', array_values(PAYMENT_METHOD_ENUM))],
         ];
 
         if ($this->operation === ADD) {
-            $rules = [...$rules, ...$this->collectionIdValidation($this->address_id_validation)];
+            $rules = [
+                ...$rules, 
+                ...$this->collectionIdValidation($this->address_id_validation),
+                $this->dataKeyOf(PAYMENT_METHOD) => ['required', 'in:'.implode(',', array_values(PAYMENT_METHOD_ENUM))],
+            ];
         }
 
         return $rules;
@@ -40,12 +44,15 @@ class OrderRequest extends FormRequest
         $messages = [
             ...$this->requiredMessage($this->dataKeyOf(STATUS), ucfirst(STATUS)),
             "{$this->dataKeyOf(STATUS)}.in" => ucfirst(STATUS).' must be one of the following: { '.implode(', ', array_keys(ORDER_STATUS_ENUM)).' }',
-            ...$this->requiredMessage($this->dataKeyOf(PAYMENT_METHOD), capitalizeAll(PAYMENT_METHOD)),
-            "{$this->dataKeyOf(PAYMENT_METHOD)}.in" => capitalizeAll(PAYMENT_METHOD).' must be one of the following: { '.implode(', ', array_keys(PAYMENT_METHOD_ENUM)).' }',
         ];
 
         if ($this->operation === ADD) {
-            $messages = [...$messages, ...$this->collectionIdValidation($this->address_id_validation, true)];
+            $messages = [
+                ...$messages, 
+                ...$this->collectionIdValidation($this->address_id_validation, true),
+                ...$this->requiredMessage($this->dataKeyOf(PAYMENT_METHOD), capitalizeAll(PAYMENT_METHOD)),
+                "{$this->dataKeyOf(PAYMENT_METHOD)}.in" => capitalizeAll(PAYMENT_METHOD).' must be one of the following: { '.implode(', ', array_keys(PAYMENT_METHOD_ENUM)).' }',
+            ];
         }
 
         return $messages;

@@ -617,6 +617,7 @@ const Common = {
                             clearInterval(login_attempts_interval);
                             hide_error_element(attr_err);
                             login_btn.removeAttr('disabled');
+                            login_btn.find('.loading-spinner').remove();
                         },
                     };
 
@@ -1265,7 +1266,21 @@ const Common = {
     },
 
 
-    /* ---------------------------------- PAGINATION REQUEST ---------------------------------- */
+    /**
+     * Warn the user before leaving/refreshing the form
+     * 
+     * @returns {void}
+     */
+    warnBeforeLeaving: () =>
+        $(window).on("beforeunload", function (e) {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        }),
+
+
+    /* ---------------------------------- NOTIFICATIONS REQUEST ---------------------------------- */
     /**
      * Get Notifications Event Request.
      * 

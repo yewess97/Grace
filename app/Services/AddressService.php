@@ -52,6 +52,8 @@ class AddressService {
             ]
         );
 
+        cache()->forget(ADDRESSES_TABLE);
+
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
         return [$address, getLastPage(new Address())];
@@ -74,9 +76,11 @@ class AddressService {
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $user_addresses = Address::query()->where(USER_ID, $user_id)
-            ->when(request()?->input(CONDITION), static fn($query) => $query->onlyTrashed())
-            ->fastPaginate(16);
+        $user_addresses = cache()->remember(ADDRESSES_TABLE, 1800, static function () use ($user_id) { 
+            Address::query()->where(USER_ID, $user_id)
+                ->when(request()?->input(CONDITION), static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16);
+        });
 
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);
@@ -97,7 +101,9 @@ class AddressService {
      */
     final public function deleteAddress(Address $address): bool
     {
-        return customDelete($address, ADDRESS1);
+        cache()->forget(ADDRESSES_TABLE);
+
+        return customDelete($address, modelAttribute: ADDRESS1);
     }
 
     /**
@@ -108,6 +114,8 @@ class AddressService {
      */
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
+        cache()->forget(ADDRESSES_TABLE);
+
         return customDelete($addresses);
     }
 
@@ -119,6 +127,8 @@ class AddressService {
      */
     final public function restoreAddress(Address $address): bool
     {
+        cache()->forget(ADDRESSES_TABLE);
+
         return restore($address, ADDRESS1);
     }
 
@@ -130,6 +140,8 @@ class AddressService {
      */
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
+        cache()->forget(ADDRESSES_TABLE);
+        
         return restore($addresses);
     }
 }

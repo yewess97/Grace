@@ -205,7 +205,7 @@ const User = {
     ajaxAuthRequest: (authAction) => {
         $(document).on(IGrace.SUBMIT, `#${authAction}_form`, function (e) {
             e.preventDefault();
-
+            
             const
                 target    = $(this),
                 route     = target.attr('action'),
@@ -220,6 +220,7 @@ const User = {
                     let success_message;
 
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
+                        window.isFormDirty = false;
                         return location.href = data['redirect_to'];
                     }
 
@@ -232,6 +233,7 @@ const User = {
                     }
 
                     target.trigger('reset');
+                    window.isFormDirty = false;
                     $(IGrace.ERROR_ELEMENT(authAction)).empty();
 
                     return Common.successMessage(IGrace.SUCCESS, success_message, authAction);
@@ -246,6 +248,10 @@ const User = {
                     }
 
                     if (err.status === 422 || IGrace.IS_IN_ARRAY([`${IGrace.FORGOT_PASSWORD()}_failed`, `${IGrace.RESET_PASSWORD()}_failed`], err.status)) {
+                        target.find(`.${IGrace.LOGIN}-btn`).prop('disabled', false)
+                            .find('.loading-spinner')
+                            .remove();
+
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
 

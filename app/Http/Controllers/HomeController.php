@@ -19,7 +19,9 @@ class HomeController extends Controller
      */
     final public function index(): Application|Factory|View|JsonResponse
     {
-        $products = Product::query()->mostSelling();
+        $products = cache()->remember('home_'.PRODUCTS_TABLE, 500, static fn() => 
+            Product::query()->mostSelling()
+        );
 
         $services = [
             [

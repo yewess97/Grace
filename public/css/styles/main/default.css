@@ -9,10 +9,6 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
 body {
     min-height: 100dvh;
     font: 400 var(--fourteen-pixels)/1 'Poppins', system-ui, sans-serif;

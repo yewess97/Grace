@@ -178,7 +178,9 @@ class AdminController extends Controller
 
         session()->push('last_valid_status', $status);
 
-        $orders = cache()->remember(ORDERS_TABLE, 300, fn() =>
+        cache()->forget(ORDERS_TABLE);
+
+        $orders = cache()->remember(ORDERS_TABLE, 500, fn() =>
             Order::query()->latest()
                 ->whereStatus($status)
                 ->when($this->condition, static fn($query) => $query->onlyTrashed())
@@ -218,7 +220,9 @@ class AdminController extends Controller
 
         session()->push('last_valid_rating', $rating);
 
-        $reviews = cache()->remember(REVIEWS_TABLE, 300, fn() =>
+        cache()->forget(REVIEWS_TABLE);
+
+        $reviews = cache()->remember(REVIEWS_TABLE, 500, fn() =>
             Review::with([
                     PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
                     USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
@@ -230,7 +234,7 @@ class AdminController extends Controller
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 
-        $update_review_error = static fn(string $attributeName) => reviewData($attributeName, UPDATE);
+        $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($reviews, ADMIN_REVIEWS_PAGINATION, REVIEWS_TABLE)

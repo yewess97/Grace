@@ -20,8 +20,8 @@ class UserService
      */
     final public function getUserProfile(): Application|Factory|View|JsonResponse
     {
-        $user               = User::profileData();
-        $user_orders        = $user->{ORDERS_TABLE}()->fastPaginate(5);
+        $user               = cache()->remember(USER_MODEL, 1800, static fn() => User::profileData());
+        $user_orders        = cache()->remember(USER_ORDERS, 1800, static fn() => $user->{ORDERS_TABLE}()->fastPaginate(5));
         $user_profile_title = auth()->user()?->{FULL_NAME}.' - '.ucfirst(PROFILE);
 
         return request()?->ajax()

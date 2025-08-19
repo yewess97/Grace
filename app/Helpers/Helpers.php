@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductSize;
+use App\Models\Review;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
 use App\Models\User;
@@ -677,9 +678,11 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
-        $products = Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
-            $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
-        )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES);
+        $products = cache()->remember(PRODUCTS_TABLE, 500, static fn() =>
+            Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
+                $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
+            )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES) 
+        );
 
         return viewProducts($products);
     }
@@ -690,18 +693,26 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
     /**
      * Get the average rate or adding/updating error of a review.
      *
-     * @param mixed $data
+     * @param int|null $productId
      * @param string|null $operation
+     * @param string|null $attributeName
      * @return int|string|null
      */
-    function reviewData(mixed $data, ?string $operation = null): int|string|null
+    function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
     {
-        if ($data instanceof Model) {
-            return $data->{REVIEWS_TABLE}->avg(RATING) ?? '0';
+        // if ($data instanceof Model) {
+        //     return $data->{REVIEWS_TABLE}->avg(RATING) ?? '0';
+        // }
+
+        if ($productId) {
+            return cache()->remember(AVERAGE_RATE, 900, static fn() => 
+                Review::query()->where(PRODUCT_ID, $productId)
+                    ->avg(RATING) ?? '0'
+            );
         }
 
-        if ($operation) {
-            return formError($operation, REVIEW_MODEL, $data);
+        if ($operation && $attributeName) {
+            return formError($operation, REVIEW_MODEL, $attributeName);
         }
 
         return null;
@@ -713,16 +724,16 @@ if (!function_exists('get'.ucfirst(REVIEWS_TABLE))) {
     /**
      * Get the reviews of a specified product.
      *
-     * @param Model|stdClass $product
+     * @param int $productId
      * @return array
      */
-    function getReviews(Model|stdClass $product): array
+    function getReviews(int $productId): array
     {
-        $average_rate        = reviewData($product);
-        $add_review_error    = static fn(string $attributeName) => reviewData($attributeName, ADD);
-        $update_review_error = static fn(string $attributeName) => reviewData($attributeName, UPDATE);
+        $average_rate        = reviewData(productId: $productId);
+        $add_review_error    = static fn(string $attributeName) => reviewData(operation: ADD, attributeName: $attributeName);
+        $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
 
-        return compact(PRODUCT_MODEL, AVERAGE_RATE, ADD_REVIEW_ERROR, UPDATE_REVIEW_ERROR);
+        return compact(AVERAGE_RATE, ADD_REVIEW_ERROR, UPDATE_REVIEW_ERROR);
     }
 }
 

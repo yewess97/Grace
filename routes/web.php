@@ -52,7 +52,7 @@ Route::controller(ProductController::class)->prefix('/'.PRODUCTS_TABLE)->group(f
 /**
  * Reviews Route
  */
-Route::get('/'.REVIEWS_TABLE.'/{'.capitalizeAllFromSecondWord(PRODUCT_ID).'}', [ReviewController::class, 'index'])->name(REVIEWS_TABLE);
+Route::get('/'.REVIEWS_TABLE, [ReviewController::class, 'index'])->name(REVIEWS_TABLE);
 
 
 /**

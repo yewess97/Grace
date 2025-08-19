@@ -86,6 +86,8 @@ class OrderService {
 
             Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
+            cache()->forget(ORDERS_TABLE);
+
             sendNotificationToAdmins(new NewOrderPlaced($order));
 
             $destroy_cart_items = Cart::destroy($user_cart_items->pluck(ID)->toArray());
@@ -112,10 +114,14 @@ class OrderService {
      */
     final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
     {
-        $order = Order::query()->with([
-                ORDER_ITEMS => static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES),
+        cache()->forget(ORDER_DETAILS);
+
+        $order = cache()->remember(ORDER_DETAILS, 3600, fn() =>
+            Order::query()->with([
+                    ORDER_ITEMS => static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES),
             ])
-            ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM));
+                ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM))
+        );
 
         return is_null($order) 
             ? back() 
@@ -142,6 +148,9 @@ class OrderService {
 
         $update_order = $order->update([STATUS => $status_value]);
 
+        cache()->forget(ORDERS_TABLE);
+        cache()->forget(ORDER_DETAILS);
+
         sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
 
         return $update_order;
@@ -155,6 +164,8 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
+        cache()->forget(ORDERS_TABLE);
+
         return customDelete($order, TRACKING_NUM);
     }
 
@@ -166,6 +177,8 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
+        cache()->forget(ORDERS_TABLE);
+
         return customDelete($orders);
     }
 
@@ -177,6 +190,8 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
+        cache()->forget(ORDERS_TABLE);
+
         return restore($order, TRACKING_NUM);
     }
 
@@ -188,6 +203,8 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
+        cache()->forget(ORDERS_TABLE);
+
         return restore($orders);
     }
 

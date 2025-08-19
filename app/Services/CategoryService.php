@@ -51,6 +51,8 @@ class CategoryService
             ]
         );
 
+        cache()->forget(CATEGORIES_TABLE);
+
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
         return [$category, getLastPage(new Category())];
@@ -69,6 +71,8 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, (new Subcategory()));
         $this->deleteRelatedCollectionItems($category, (new Product()));
 
+        cache()->forget(CATEGORIES_TABLE);
+
         return customDelete($category, NAME, true);
     }
 
@@ -85,6 +89,8 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
         $this->deleteRelatedCollectionItems($categories, (new Product()));
 
+        cache()->forget(CATEGORIES_TABLE);
+
         return customDelete($categories, null, true);
     }
 
@@ -96,6 +102,8 @@ class CategoryService
      */
     final public function restoreCategory(Category $category): bool
     {
+        cache()->forget(CATEGORIES_TABLE);
+
         return restore($category, NAME);
     }
 
@@ -107,6 +115,8 @@ class CategoryService
      */
     final public function restoreMultipleCategories(Category $categories): bool
     {
+        cache()->forget(CATEGORIES_TABLE);
+
         return restore($categories);
     }
 
@@ -145,6 +155,8 @@ class CategoryService
             if ($model instanceof Product) {
                 $related_collection_item->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
             }
+
+            cache()->forget($model->getTable());
 
             return $related_collection_item->forceDelete();
         });

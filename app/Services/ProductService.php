@@ -29,12 +29,14 @@ class ProductService
      */
     final public function showProductDetails(string $productSlug): Application|Factory|View|array|string
     {
-        $product = Product::with([
-            REVIEWS_TABLE,
-            SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
-        ])
-            ->whereSlug($productSlug)
-            ->first();
+        $product = cache()->remember(PRODUCT_MODEL.".".$productSlug, 500, static fn() =>
+            Product::with([
+                REVIEWS_TABLE,
+                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
+            ])
+                ->whereSlug($productSlug)
+                ->first()
+        );
 
         if (is_null($product)) {
             throw new ModelNotFoundException("This ".PRODUCT_MODEL."is not found!");
@@ -45,10 +47,10 @@ class ProductService
         if (request()?->ajax()) {
             return request()?->input(QUICK_VIEW)
                 ? compact(PRODUCT_MODEL)
-                : view(REVIEWS_COMPONENT, getReviews($product))->render();
+                : view(REVIEWS_COMPONENT, getReviews($product->{ID}))->render();
         }
 
-        return showView(USER_PRODUCT_DETAILS_VIEW, getReviews($product) + compact(ADD_CART_PRODUCT_ERROR));
+        return showView(USER_PRODUCT_DETAILS_VIEW, getReviews($product->{ID}) + compact(PRODUCT_MODEL, ADD_CART_PRODUCT_ERROR));
     }
 
     /**
