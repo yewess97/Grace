@@ -70,7 +70,7 @@
                     <h6 class="profile-order-history-title fs-8 fw-600">{{ucfirst(ORDERS_TABLE)}} History</h6>
                     {{-- Profile Order History Table --}}
                     <div class="pagination-container search-table">
-                        @include(USER_PROFILE_PAGINATION, [USER_ORDERS => $user_orders])
+                        @include(PROFILE_ORDERS_PAGINATION, [USER_ORDERS => $user_orders])
                     </div>
                 </section>
             </div>

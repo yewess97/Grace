@@ -22,7 +22,7 @@
                                         <div class="form-group position-relative">
                                             <label for="filter_users_role" class="label-select position-absolute user-select-none pe-none"></label>
                                             <select name="filter_users_role" id="filter_users_role" class="form-select py-2">
-                                                <option disabled selected>{{ucfirst(FILTER)}} by {{ucfirst(ROLE)}}: </option>
+                                                <option disabled selected>{{ucfirst(FILTER)}} by {{ucfirst(ROLE)}} </option>
                                                 @foreach ($roles as $role => $value)
                                                     <option value="{{$value}}">{{pluralize($role)}}</option>
                                                 @endforeach
@@ -35,7 +35,7 @@
 
                             {{-- Clear Search/Filter Button --}}
                             <div class="d-grid place-items-center">
-                                @clearSearchFilter(route(ADMIN_USERS_ROUTE))
+                                @clearSearchFilter(route(ADMIN_USERS_ROUTE, [CONDITION => request()?->input(CONDITION)]))
                             </div>
                         </article>
 

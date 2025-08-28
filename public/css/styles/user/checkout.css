@@ -41,6 +41,10 @@
     transform: translateY(-50%);
 }
 
+.checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .card:has(input[type="radio"]:checked) {
+    animation: pulse 500ms linear;
+}
+
 .checkout-main .left-side .shipping-payment .shipping-payment-main .shipping-details .shipping-details-addresses .shipping-address .card ul.list-group li.list-group-item {
     overflow: hidden;
     text-overflow: ellipsis;

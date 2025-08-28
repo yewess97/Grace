@@ -156,7 +156,7 @@
     list-style: none;
 }
 
-.grace-form-error > ul.form-error li {
+.grace-form-error:not(:last-child) > ul.form-error li {
     margin-bottom: var(--ten-pixels);
 }
 

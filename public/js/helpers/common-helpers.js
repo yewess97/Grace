@@ -400,42 +400,51 @@ const Common = {
      */
     truncateText: () => {
         const
-            truncate      = $('.truncate p'),
-            truncate_text = '.truncate-text',
-            show_char     = 70;
+            truncate_elements = $('.truncate'),
+            show_char_num     = 70;
 
-        $.each((truncate), (_, truncateElement) => {
-            const data = $(truncateElement).html();
+        const buildTruncateContent = (data, textType) => `
+            <p class="truncate-text">
+                <span class="${textType}-text">${data}${textType.includes('short') ? '....' : ''}</span>
+                <span class="${textType} show-toggle cursor-pointer fw-600">
+                    Show ${textType.includes('short') ? 'More' : 'Less'}
+                </span>
+            </p>
+        `;
 
-            if (data.length > show_char) {
-                let content =
-                `
-                    <div class="truncate-text" style="display:block">
-                        ${data.substring(0, show_char)}
-                        <span>.... <a class="show-less fw-600">&nbsp;Show More</a></span>
-                    </div>
-                    <div class="truncate-text" style="display:none">
-                        ${data}
-                        <a class="show-less less fw-600 lh-sm">&nbsp; Show Less</a>
-                    </div>
-                `;
+        $.each((truncate_elements), (_, truncateElement) => {
+            const
+                truncate_element = $(truncateElement),
+                full_text        = truncate_element.text().trim(); // the text with no tags
 
-                $(truncateElement).html(content);
+            if (full_text.length > show_char_num) {
+                const short_text = full_text.substring(0, show_char_num);
+
+                // Store the full text in data attribute so to be able to retrieve it
+                truncate_element.data('full_text', full_text);
+
+                truncate_element.html(buildTruncateContent(short_text, 'short'));
+                truncate_element.find('.truncate-text').slideDown(180).fadeIn(180);
             }
         });
 
-        // Truncate the text if the (Show More) is clicked on
-        $(document).on(IGrace.CLICK, '.show-less', function (e) {
+        // Toggle the truncation
+        $(document).on(IGrace.CLICK, '.show-toggle', function (e) {
             e.preventDefault();
 
             const
-                closest_truncate_text = $(this).closest(truncate_text),
-                is_less               = $(this).hasClass('less');
+                truncate_element = $(this).closest('.truncate'),
+                truncate_text    = truncate_element.find('.truncate-text'),
+                full_text        = truncate_element.data('full_text'),
+                short_text       = full_text.substring(0, show_char_num);
 
-            closest_truncate_text.prev(truncate_text).toggle(is_less);
-            closest_truncate_text.slideToggle(is_less);
-            closest_truncate_text.toggle(!is_less);
-            closest_truncate_text.next(truncate_text).fadeToggle(!is_less);
+            truncate_text.slideUp(180).fadeOut(180, () => {
+                $(this).hasClass('short')
+                    ? truncate_element.html(buildTruncateContent(full_text, 'full'))
+                    : truncate_element.html(buildTruncateContent(short_text, 'short'));
+
+                truncate_text.slideDown(180).fadeIn(180);
+            });
         });
     },
 
@@ -475,7 +484,7 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (args) => {
-        const { ids, data, mainPage, collection, action } = args;
+        let { ids, data, mainPage, collection, action } = args;
 
         if (ids) {
             $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
@@ -589,12 +598,12 @@ const Common = {
             margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT)
                 ? 'mt-2 mb-1'
                 : 'mt-3',
-            hide_error_element = (errorElement) =>
+            hideErrorElement = (errorElement) =>
                 $(errorElement).empty()
                 .parent()
                 .removeClass(`${show_error_class} ${margin}`);
 
-        hide_error_element(error_element);
+        hideErrorElement(error_element);
 
         $.each((errors), (attr, msg) => {
             attr = attr.replace(/\.\d+$/, ''); // Remove the trailing if there is
@@ -615,7 +624,7 @@ const Common = {
                         true: () => $('#count_down').text(--seconds),
                         false: () => {
                             clearInterval(login_attempts_interval);
-                            hide_error_element(attr_err);
+                            hideErrorElement(attr_err);
                             login_btn.removeAttr('disabled');
                             login_btn.find('.loading-spinner').remove();
                         },
@@ -666,7 +675,7 @@ const Common = {
                 showConfirmButton: true,
             },
 
-            swal_message = () => Swal.fire({
+            swalMessage = () => Swal.fire({
                 ...properties,
                 html:              `${message} successfully!`,
                 showConfirmButton: false,
@@ -707,7 +716,7 @@ const Common = {
             }
 
             if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
-                swal_message();
+                swalMessage();
                 return setTimeout(() => User.ajaxUpdateReviewsContentRequest(extra), 1800);
             }
 
@@ -715,12 +724,12 @@ const Common = {
                 && message.includes(IGrace.UPDATED())
                 && extra.includes(IGrace.ADMIN))
             {
-                swal_message();
+                swalMessage();
                 return setTimeout(() => location.reload(), 1800);
             }
         }
 
-        swal_message();
+        swalMessage();
     },
 
 
@@ -1242,7 +1251,7 @@ const Common = {
                 filter_form         = $(`.${IGrace.FILTER}-form`),
                 clear_search_button = $(`.clear-${IGrace.SEARCH}-btn`),
                 dashboard_main      = `.${IGrace.DASHBOARD}-main`,
-                clear_form          = (form) => form.trigger('reset');
+                clearForm           = (form) => form.trigger('reset');
 
             $.get(route)
                 .done((data) => {
@@ -1255,8 +1264,8 @@ const Common = {
 
                     Common.searchFilterSuccessResponse(data);
 
-                    if (search_form.length) clear_form(search_form);
-                    if (filter_form.length) clear_form(filter_form);
+                    if (search_form.length) clearForm(search_form);
+                    if (filter_form.length) clearForm(filter_form);
                     if (clear_search_button.length) clear_search_button.css({'opacity': '0', 'visibility': 'hidden'});
 
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
@@ -1268,7 +1277,7 @@ const Common = {
 
     /**
      * Warn the user before leaving/refreshing the form
-     * 
+     *
      * @returns {void}
      */
     warnBeforeLeaving: () =>
@@ -1283,7 +1292,7 @@ const Common = {
     /* ---------------------------------- NOTIFICATIONS REQUEST ---------------------------------- */
     /**
      * Get Notifications Event Request.
-     * 
+     *
      * @return {void}
      */
     eventGetNotificationsRequest: () => {
@@ -1294,21 +1303,21 @@ const Common = {
 
         const source = new EventSource('/notification');
 
-        const 
+        const
             notifications_details_list  = $('.notifications-details'),
             notifications_count_element = $('.notifications-count');
-            
-        const notifications_items = (list) => list.find('li:not(.no-notifications) .mark-as-read-icon');
 
-        const show_hide_notifications_count = (list) => notifications_items(list).length > 0 
-            ? notifications_count_element.text(notifications_items(list).length).css('display', 'inline-block') 
+        const notificationsItems = (list) => list.find('li:not(.no-notifications) .mark-as-read-icon');
+
+        const showHideNotificationsCount = (list) => notificationsItems(list).length > 0
+            ? notifications_count_element.text(notificationsItems(list).length).css('display', 'inline-block')
             : notifications_count_element.css('display', 'none');
 
-        show_hide_notifications_count(notifications_details_list);
-    
+        showHideNotificationsCount(notifications_details_list);
+
         source.onmessage = (event) => {
             try {
-                const 
+                const
                     notification                = JSON.parse(event.data).notification,
                     notifications_details_list  = $('.notifications-details'),
                     notification_sound          = $('#notification_sound');
@@ -1330,9 +1339,9 @@ const Common = {
                     </li>
                 `);
 
-                show_hide_notifications_count(notifications_details_list);
+                showHideNotificationsCount(notifications_details_list);
 
-                if (notification_sound.length) {       
+                if (notification_sound.length) {
                     notification_sound.trigger('play');
                 }
             }
@@ -1376,6 +1385,8 @@ const Common = {
                     if (route.includes(IGrace.CHECKOUT)) {
                         User.checkoutAddressesConfig();
                     }
+
+                    window.isFormDirty = false;
                 })
                 .fail(Common.somethingWentWrongError);
         });

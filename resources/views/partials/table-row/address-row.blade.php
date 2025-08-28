@@ -1,11 +1,11 @@
 <tr id="row_{{$address->id}}">
     @checkRow($address->id)
     @loopIteration()
-    <td class="truncate">
-        <p>{{ $address->{ADDRESS1} }}</p>
+    <td class="truncate lh-lg">
+        {{ $address->{ADDRESS1} }}
     </td>
-    <td class="truncate">
-        <p><i>{{$address->{ADDRESS2} ?? 'No Address line 2'}}</i></p>
+    <td class="truncate lh-lg">
+        <i>{{$address->{ADDRESS2} ?? 'No Address line 2'}}</i>
     </td>
     <td>
         <p>{{ $address->{CITY} }}</p>

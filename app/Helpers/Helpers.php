@@ -214,6 +214,34 @@ if (!function_exists('adminCurrentUrl')) {
 }
 
 
+if (!function_exists('currentPage')) {
+    /**
+     * Get the current page number.
+     *
+     * @return int
+     */
+    function currentPage(): int
+    {
+        return request()?->input('page', 1);
+    }
+}
+
+
+if (!function_exists('paginationCacheKey')) {
+    /**
+     * Generate the pagination cache key.
+     *
+     * @param string $table
+     * @param string|null $condition
+     * @return string
+     */
+    function paginationCacheKey(string $table, string|null $condition): string
+    {
+        return $table.($condition ? '_trashed_' : '_main_').currentPage();
+    }
+}
+
+
 if (!function_exists('getLastPage')) {
     /**
      * Get the last page number.
@@ -269,8 +297,8 @@ if (!function_exists('viewLayout'.ucfirst(TITLE))) {
      */
     function viewLayoutTitle(string $role): array
     {
-        $layout = $role === ADMIN 
-            ? adminLayout('main') 
+        $layout = $role === ADMIN
+            ? adminLayout('main')
             : userLayout('main');
 
         $title = [
@@ -472,9 +500,9 @@ if (!function_exists(CART_MODEL.'Config')) {
 
         $total_cost = $user_carts->cursor()
             ->sum(fn(Cart $cartItem) => $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * $cartItem->{PRODUCT_QUANTITY});
-            
-        $user_cart_items = Route::currentRouteName() === CART_MODEL 
-            ? $user_carts->fastPaginate(5) 
+
+        $user_cart_items = Route::currentRouteName() === CART_MODEL
+            ? $user_carts->fastPaginate(5)
             : $user_carts->cursor();
 
         $user_cart_items->isEmpty()
@@ -678,10 +706,10 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
-        $products = cache()->remember(PRODUCTS_TABLE, 500, static fn() =>
+        $products = cache()->remember(PRODUCTS_TABLE.currentPage(), 500, static fn() =>
             Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
                 $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
-            )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES) 
+            )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
         );
 
         return viewProducts($products);
@@ -700,12 +728,8 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
      */
     function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
     {
-        // if ($data instanceof Model) {
-        //     return $data->{REVIEWS_TABLE}->avg(RATING) ?? '0';
-        // }
-
         if ($productId) {
-            return cache()->remember(AVERAGE_RATE, 900, static fn() => 
+            return cache()->remember(AVERAGE_RATE, 900, static fn() =>
                 Review::query()->where(PRODUCT_ID, $productId)
                     ->avg(RATING) ?? '0'
             );
@@ -879,11 +903,11 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
                 : throw new NotFoundHttpException('The targeted image is not found in the storage disk');
         }
 
-        $image_name = time().random_int(10, 100).'.png';
-        $image->storeAs($image_path, $image_name);
-        return $image_name;
+//        $image_name = time().random_int(10, 100).'.png';
+//        $image->storeAs($image_path, $image_name);
+//        return $image_name;
 
-//        return storeImageWithoutBackground($image, $image_path);
+        return storeImageWithoutBackground($image, $image_path);
     }
 }
 

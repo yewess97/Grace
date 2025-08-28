@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -37,8 +38,10 @@ class CheckoutController extends Controller
                 ->exists()
             && $cart_item->delete()
         );
-        
-        $user_addresses  = auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES]);
+
+        $user_addresses  = cache()->remember(USER_ADDRESSES.currentPage(), 1800, static fn():
+            LengthAwarePaginator => auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES])
+        );
 
         $add_order_error = static fn(string $attributeName) => formError(ADD, ORDER_MODEL, $attributeName);
 

@@ -45,7 +45,7 @@ class ProductController extends Controller
      */
     final public function show(string $productSlug): Application|Factory|View|array|string
     {
-        return $this->productService->showProductDetails($productSlug);
+        return $this->productService->getProductDetails($productSlug);
     }
 
     /**

@@ -85,7 +85,7 @@
                                             <label for="add_order_payment_method_stripe" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
                                                 <span class="fw-500">Credit Card</span>
                                                 <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_stripe" class="position-absolute" value="1" aria-required="true">
-                                                <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_stripe"></span>
+                                                <span role="radio" class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_stripe"></span>
                                             </label>
                                             <img src="{{imageSource('credit-cards.png')}}" alt="Credit Cards Logo" width="65">
                                         </div>
@@ -94,7 +94,7 @@
                                             <label for="add_order_payment_method_cod" class="payment-method-label position-relative d-flex align-items-center cursor-pointer">
                                                 <span class="fw-500">Cash on Delivery</span>
                                                 <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_cod" class="position-absolute" value="2" aria-required="true">
-                                                <span class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_cod"></span>
+                                                <span role="radio" class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_cod"></span>
                                             </label>
                                             <img src="{{imageSource('cash-on-delivery.png')}}" alt="Cash on Delivery Logo" width="70">
                                         </div>

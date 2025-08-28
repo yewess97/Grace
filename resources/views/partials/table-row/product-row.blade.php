@@ -2,18 +2,18 @@
     @checkRow($product->id)
     @loopIteration()
     <td>
-        <div class="truncate">
-            <p>{{ $product->{NAME} }}</p>
+        <div class="truncate lh-lg">
+            {{ $product->{NAME} }}
         </div>
     </td>
     <td>
-        <div class="truncate">
-            <p>{{ $product->{SHORT_DESCRIPTION} }}</p>
+        <div class="truncate lh-lg">
+            {{ $product->{SHORT_DESCRIPTION} }}
         </div>
     </td>
     <td>
-        <div class="truncate">
-            <p>{{ $product->{LONG_DESCRIPTION} }}</p>
+        <div class="truncate lh-lg">
+            {{ $product->{LONG_DESCRIPTION} }}
         </div>
     </td>
     <td>

@@ -17,21 +17,13 @@ use Throwable;
 class ReviewService
 {
     /**
-     * Display the reviews.
+     * Get the reviews.
      *
      * @return string
      * @throws Throwable
      */
-    final public function displayReviews(): string
+    final public function getReviews(): string
     {
-        // $product = cache()->remember(REVIEWS_TABLE, 900, static fn() =>
-        //     // Product::query()->findOrFail($productId, [ID])
-        //     //     ?->load(REVIEWS_TABLE)
-
-        //     Review::query()->where(PRODUCT_ID, request()?->input(PRODUCT_ID))
-        //         ->get()
-        // );
-
         return view(REVIEWS_COMPONENT, getReviews(request()?->input(PRODUCT_ID)))->render();
     }
 
@@ -45,7 +37,7 @@ class ReviewService
     final public function createOrUpdateReview(string $operation): Review
     {
         if (!auth()->check()) {
-            throw new AuthenticationException();
+            throw new AuthenticationException('You must be logged in to '.REVIEW_MODEL.' the '.PRODUCT_MODEL.'!');
         }
 
         $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);

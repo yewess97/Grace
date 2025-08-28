@@ -827,10 +827,10 @@ define("RESET_PASSWORD_EMAIL", email(RESET_PASSWORD));
 /**
  * Main Partials.
  */
-define("ADD_USER_ADDRESS_PARTIAL",      partial(ADD.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
-define("EDIT_USER_ADDRESS_PARTIAL",     partial(EDIT.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
-define("USER_ADDRESSES_PAGINATION",     partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
-define("REVIEW_RATING_PARTIAL",         partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
+define("ADD_USER_ADDRESS_PARTIAL",          partial(ADD.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
+define("EDIT_USER_ADDRESS_PARTIAL",         partial(EDIT.'-'.kebabAll(singularize(USER_ADDRESSES)), ADDRESSES_TABLE));
+define("USER_ADDRESSES_PAGINATION_PARTIAL", partial(kebabAll(USER_ADDRESSES.'_pagination'), ADDRESSES_TABLE));
+define("REVIEW_RATING_PARTIAL",             partial(kebabAll(REVIEW_RATING), REVIEWS_TABLE));
 
 /**
  * Collection Row Partials.
@@ -927,7 +927,7 @@ define("ADMIN_ORDERS_PAGINATION",            pagination(ORDERS_TABLE));
 define("ADMIN_USERS_PAGINATION",             pagination(USERS_TABLE));
 define("ADMIN_USER_ADDRESSES_PAGINATION",    pagination(kebabAll(USER_ADDRESSES)));
 define("ADMIN_REVIEWS_PAGINATION",           pagination(REVIEWS_TABLE));
-define("USER_PROFILE_PAGINATION",            pagination(PROFILE,                      true));
+define("PROFILE_ORDERS_PAGINATION",            pagination(PROFILE.'-'.ORDERS_TABLE,     true));
 define("USER_PRODUCTS_PAGINATION",           pagination(PRODUCTS_TABLE,               true));
 define("CART_PAGINATION",                    pagination(CART_MODEL,                   true));
 define("CHECKOUT_USER_ADDRESSES_PAGINATION", pagination(kebabAll(CHECKOUT_USER_ADDRESSES), true));

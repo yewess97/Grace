@@ -36,7 +36,7 @@
 
                     {{-- Addresses Table --}}
                     <div class="pagination-container search-table row gap-4">
-                        @include(USER_ADDRESSES_PAGINATION, [ADDRESSES_TABLE => $user_addresses])
+                        @include(USER_ADDRESSES_PAGINATION_PARTIAL, [ADDRESSES_TABLE => $user_addresses])
                     </div>
                 </section>
             </div>

@@ -12,9 +12,11 @@ Common.removeErrorsWhenEditModelHides(IGrace.USER);
 // A global flag (attached to window) so both files/modules share the same reference
 window.isFormDirty = false;
 
-/* ---------------------------------- AUTHENTICATION & AUTHORIZATION ---------------------------------- */
 // Track changes on any form input, including dynamic ones
 $(document).on("input change", "input, textarea, select", () => window.isFormDirty = true);
+
+
+/* ---------------------------------- AUTHENTICATION & AUTHORIZATION ---------------------------------- */
 
 // Register
 User.ajaxAuthRequest(IGrace.REGISTER);
@@ -153,7 +155,6 @@ Common.ajaxClearSearchFilterRequest();
 
 
 /* ---------------------------------- NOTIFICATIONS ---------------------------------- */
-// Get Unread Notifications
 Common.eventGetNotificationsRequest();
 
 /* ---------------------------------- END NOTIFICATIONS ---------------------------------- */
@@ -164,10 +165,6 @@ Common.ajaxPagination();
 
 /* ---------------------------------- END PAGINATION ---------------------------------- */
 
+
 // Warn the user before leaving/refreshing the form
-$(window).on("beforeunload", function (e) {
-    if (isFormDirty) {
-        e.preventDefault();
-        e.returnValue = "";
-    }
-});
+Common.warnBeforeLeaving();

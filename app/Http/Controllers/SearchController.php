@@ -37,17 +37,6 @@ class SearchController extends Controller
     }
 
     /**
-     * Filter the dashboard by dates.
-     *
-     * @return Application|Factory|View|JsonResponse|string
-     * @throws ValidationException|Throwable
-     */
-    final public function filterDashboard(): Application|Factory|View|JsonResponse|string
-    {
-        return $this->dashboardService->dashboardData(true);
-    }
-
-    /**
      * Search for specified category(ies).
      *
      * @return JsonResponse
@@ -102,53 +91,6 @@ class SearchController extends Controller
     }
 
     /**
-     * Filter the product(s).
-     *
-     * @return Application|Factory|View|JsonResponse
-     * @throws ValidationException|NotFoundHttpException|Throwable
-     */
-    final public function filterProducts(): Application|Factory|View|JsonResponse
-    {
-        $query_params = Arr::except(request()?->query(), ['page']);
-
-        if (!empty($query_params)) {
-            $products = Product::query()->select(PRODUCT_ITEM_ATTRIBUTES);
-
-            collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
-                $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
-                    is_array($collectionValue)
-                        ? $product->whereIn(SLUG, $collectionValue)
-                        : $product->where(SLUG, $collectionValue);
-                })
-            );
-
-            $products = $products->fastPaginate(16);
-
-            return viewProducts($products);
-        }
-
-        $filter_products_attributes = request()?->input(FILTER.'_'.PRODUCTS_TABLE.'_'.SORT)
-            ? [SORT]
-            : FILTER_PRODUCTS_ATTRIBUTES;
-
-        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, $filter_products_attributes);
-
-        validateAttributes($filter_products_request);
-
-        $filter_products_request_values = $filter_products_request->dataValues();
-
-        array_walk($filter_products_request_values, static fn(&$filterProductsRequestValue) =>
-            is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
-        );
-
-        $products = in_array(SORT, $filter_products_attributes, true)
-            ? Product::sort($filter_products_request_values)
-            : Product::filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request_values);
-
-        return viewProducts($products);
-    }
-
-    /**
      * Search for specified user(s).
      *
      * @param string|null $type
@@ -192,7 +134,7 @@ class SearchController extends Controller
 
         noResultsException($user_addresses);
 
-        return ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION, USER_ADDRESSES);
+        return ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION_PARTIAL, USER_ADDRESSES);
     }
 
     /**
@@ -247,5 +189,63 @@ class SearchController extends Controller
         noResultsException($reviews);
 
         return ajaxPaginationResponse($reviews, ADMIN_REVIEWS_PAGINATION, REVIEWS_TABLE);
+    }
+
+    /**
+     * Filter the dashboard by dates.
+     *
+     * @return Application|Factory|View|JsonResponse|string
+     * @throws ValidationException|Throwable
+     */
+    final public function filterDashboard(): Application|Factory|View|JsonResponse|string
+    {
+        return $this->dashboardService->dashboardData(true);
+    }
+
+    /**
+     * Filter the product(s).
+     *
+     * @return Application|Factory|View|JsonResponse
+     * @throws ValidationException|NotFoundHttpException|Throwable
+     */
+    final public function filterProducts(): Application|Factory|View|JsonResponse
+    {
+        $query_params = Arr::except(request()?->query(), ['page']);
+
+        if (!empty($query_params)) {
+            $products = Product::query()->select(PRODUCT_ITEM_ATTRIBUTES);
+
+            collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
+            $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
+                is_array($collectionValue)
+                    ? $product->whereIn(SLUG, $collectionValue)
+                    : $product->where(SLUG, $collectionValue);
+            })
+            );
+
+            $products = $products->fastPaginate(16);
+
+            return viewProducts($products);
+        }
+
+        $filter_products_attributes = request()?->input(FILTER.'_'.PRODUCTS_TABLE.'_'.SORT)
+            ? [SORT]
+            : FILTER_PRODUCTS_ATTRIBUTES;
+
+        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, $filter_products_attributes);
+
+        validateAttributes($filter_products_request);
+
+        $filter_products_request_values = $filter_products_request->dataValues();
+
+        array_walk($filter_products_request_values, static fn(&$filterProductsRequestValue) =>
+        is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
+        );
+
+        $products = in_array(SORT, $filter_products_attributes, true)
+            ? Product::sort($filter_products_request_values)
+            : Product::filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request_values);
+
+        return viewProducts($products);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -20,12 +21,14 @@ class UserService
      */
     final public function getUserProfile(): Application|Factory|View|JsonResponse
     {
-        $user               = cache()->remember(USER_MODEL, 1800, static fn() => User::profileData());
-        $user_orders        = cache()->remember(USER_ORDERS, 1800, static fn() => $user->{ORDERS_TABLE}()->fastPaginate(5));
         $user_profile_title = auth()->user()?->{FULL_NAME}.' - '.ucfirst(PROFILE);
+        $user               = cache()->remember(USER_MODEL, 1800, static fn() => User::profileData());
+        $user_orders        = cache()->remember(USER_ORDERS.currentPage(), 1800, static fn():
+            LengthAwarePaginator => $user->{ORDERS_TABLE}()->fastPaginate(5)
+        );
 
         return request()?->ajax()
-            ? ajaxPaginationResponse($user_orders, USER_PROFILE_PAGINATION, USER_ORDERS, compact(USER_MODEL))
+            ? ajaxPaginationResponse($user_orders, PROFILE_ORDERS_PAGINATION, USER_ORDERS, compact(USER_MODEL))
             : showView(USER_PROFILE_VIEW, compact(USER_MODEL, USER_ORDERS, USER_PROFILE_TITLE));
     }
 

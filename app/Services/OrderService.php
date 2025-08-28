@@ -26,6 +26,28 @@ use Throwable;
 
 class OrderService {
     /**
+     * Get the detailed data of a specified order.
+     *
+     * @return RedirectResponse|Application|Factory|View
+     * @throws Throwable
+     */
+    final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
+    {
+        cache()->forget(ORDER_DETAILS);
+
+        $order = cache()->remember(ORDER_DETAILS, 3600, fn() =>
+        Order::query()->with([
+            ORDER_ITEMS => static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES),
+        ])
+            ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM))
+        );
+
+        return is_null($order)
+            ? back()
+            : showView(ORDER_DETAILS_COMPONENT, getOrderDetails($order));
+    }
+
+    /**
      * Store an order.
      *
      * @return RedirectResponse|JsonResponse|int
@@ -64,7 +86,7 @@ class OrderService {
             }
 
             $stripe = new StripeClient(env('STRIPE_SECRET'));
-            
+
             if ((is_null($payment_status) || !$payment_status === 'succeeded') && (int) $payment_method_value === 1) {
                 return $this->stripePayment($stripe, $user_cart_items, $order_request->data());
             }
@@ -104,28 +126,6 @@ class OrderService {
 
             throw $exception;
         }
-    }
-
-    /**
-     * Get the detailed data of a specified order.
-     *
-     * @return RedirectResponse|Application|Factory|View
-     * @throws Throwable
-     */
-    final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
-    {
-        cache()->forget(ORDER_DETAILS);
-
-        $order = cache()->remember(ORDER_DETAILS, 3600, fn() =>
-            Order::query()->with([
-                    ORDER_ITEMS => static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES),
-            ])
-                ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM))
-        );
-
-        return is_null($order) 
-            ? back() 
-            : showView(ORDER_DETAILS_COMPONENT, getOrderDetails($order));
     }
 
     /**
@@ -240,7 +240,7 @@ class OrderService {
 
     /**
      * Process the Stripe checkout session.
-     * 
+     *
      * @param StripeClient $stripe
      * @param array $lineItems
      * @param mixed|null $otherArgs

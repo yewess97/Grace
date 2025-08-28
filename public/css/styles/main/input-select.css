@@ -29,7 +29,7 @@ input[type="radio"] + .custom-check {
     background-color: var(--white-color);
 }
 
-input[type="radio"]:checked ~ .custom-check::after {
+input[type="radio"]:checked + .custom-check::after {
     content: "";
     position: absolute;
     inset: var(--four-pixels) auto auto 4px;

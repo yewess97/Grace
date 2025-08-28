@@ -41,8 +41,3 @@
 .text-main {
     color: var(--main-color) !important;
 }
-
-/* --------- Cursors --------- */
-.cursor-pointer {
-    cursor: pointer !important;
-}

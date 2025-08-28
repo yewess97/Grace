@@ -43,7 +43,7 @@
                                         </button>
                                         {{-- Clear Search/Filter Button --}}
                                         <div class="col-12 col-md-4 mt-3 mt-md-0 text-center">
-                                            @clearSearchFilter(route(ADMIN_ORDERS_ROUTE, [STATUS => $order_status]))
+                                            @clearSearchFilter(route(ADMIN_ORDERS_ROUTE, [STATUS => $order_status, CONDITION => request()?->input(CONDITION)]))
                                         </div>
                                     </div>
                                 </div>

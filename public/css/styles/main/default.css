@@ -42,8 +42,10 @@ a:hover,
 a,
 a:hover,
 select,
-button {
-    cursor: pointer;
+button,
+[role="button"],
+.cursor-pointer {
+    cursor: url('../../../storage/images/grace-hand-cursor.cur'), pointer !important;
 }
 
 :is(a, button, input, select):focus {
@@ -88,6 +90,18 @@ ul {
     font-size: var(--fourteen-pixels);
     font-weight: 400;
     line-height: normal;
+}
+
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: fade-scale-out 500ms ease-out both;
+}
+
+::view-transition-new(root) {
+    animation: fade-scale-in 500ms ease-in both;
 }
 
 ::selection {

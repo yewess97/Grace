@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -29,7 +30,7 @@ class AdminController extends Controller
      *
      * @return void
      */
-    final public function __construct(private readonly DashboardService $dashboardService, private array $id_name = [ID, NAME])
+    final public function __construct(private readonly DashboardService $dashboardService, private readonly array $id_name = [ID, NAME])
     {
         $this->condition = request()?->input(CONDITION);
     }
@@ -53,8 +54,10 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View|JsonResponse
     {
-        $categories = cache()->remember(CATEGORIES_TABLE, 1800, fn() => 
-            Category::when($this->condition, static fn($query) => $query->onlyTrashed())
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $categories = cache()->remember(paginationCacheKey(CATEGORIES_TABLE, $this->condition), 1800, fn():
+            LengthAwarePaginator => Category::when($this->condition, static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -74,13 +77,15 @@ class AdminController extends Controller
      */
     final public function subcategories(): Application|Factory|View|JsonResponse
     {
-        $subcategories = cache()->remember(SUBCATEGORIES_TABLE, 1800, fn() =>
-            Subcategory::with($this->relatedCategories())
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $subcategories = cache()->remember(paginationCacheKey(SUBCATEGORIES_TABLE, $this->condition), 1800, fn():
+            LengthAwarePaginator => Subcategory::with($this->relatedCategories())
                 ->when($this->condition, static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
-        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE, 1800, fn() => 
+        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE, 1800, fn() =>
             Category::get($this->id_name)
         );
 
@@ -102,8 +107,10 @@ class AdminController extends Controller
     {
         $id_name_attributes = $this->id_name;
 
-        $products = cache()->remember(PRODUCTS_TABLE, 500, fn() =>
-            Product::query()
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $products = cache()->remember(paginationCacheKey(PRODUCTS_TABLE, $this->condition), 500, fn():
+            LengthAwarePaginator => Product::query()
                 ->withCount(SUBCATEGORIES_TABLE)
                 ->orderBy(SUBCATEGORIES_TABLE.'_count')
                 ->latest()
@@ -141,8 +148,10 @@ class AdminController extends Controller
      */
     final public function users(): Application|Factory|View|JsonResponse
     {
-        $users = cache()->remember(USERS_TABLE, 800, fn() =>
-            User::when($this->condition, static fn($query) => $query->onlyTrashed())
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $users = cache()->remember(paginationCacheKey(USERS_TABLE, $this->condition), 800, fn():
+            LengthAwarePaginator => User::when($this->condition, static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -180,8 +189,10 @@ class AdminController extends Controller
 
         cache()->forget(ORDERS_TABLE);
 
-        $orders = cache()->remember(ORDERS_TABLE, 500, fn() =>
-            Order::query()->latest()
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $orders = cache()->remember(paginationCacheKey(ORDERS_TABLE, $this->condition), 500, fn():
+            LengthAwarePaginator => Order::query()->latest()
                 ->whereStatus($status)
                 ->when($this->condition, static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
@@ -222,8 +233,10 @@ class AdminController extends Controller
 
         cache()->forget(REVIEWS_TABLE);
 
-        $reviews = cache()->remember(REVIEWS_TABLE, 500, fn() =>
-            Review::with([
+        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
+        // Here, we specify the return type for the closure.
+        $reviews = cache()->remember(paginationCacheKey(REVIEWS_TABLE, $this->condition), 500, fn():
+            LengthAwarePaginator => Review::with([
                     PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
                     USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
                 ])

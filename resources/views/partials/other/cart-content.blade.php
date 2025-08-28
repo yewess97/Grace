@@ -18,8 +18,8 @@
                 {{-- Cart Product Image & Info--}}
                 <article class="cart-product-img-info row col-12">
                     {{-- Cart Product Image --}}
-                    <a href="{{route(PRODUCT_DETAILS, $cart_item->{PRODUCT_MODEL}->{SLUG})}}" role="link" class="cart-product-img col-4 h-fit-content">
-                        <img src="{{imageSource($cart_item->{PRODUCT_MODEL}, MAIN_IMAGE)}}" alt="{{ $cart_item->{PRODUCT_MODEL}->{NAME} }}" class="h-auto">
+                    <a href="{{route(PRODUCT_DETAILS, $cart_item->{PRODUCT_MODEL}->{SLUG})}}" role="link" class="cart-product-img col-4">
+                        <img src="{{imageSource($cart_item->{PRODUCT_MODEL}, MAIN_IMAGE)}}" alt="{{ $cart_item->{PRODUCT_MODEL}->{NAME} }}">
                     </a>
 
                     {{-- Cart Product Info --}}

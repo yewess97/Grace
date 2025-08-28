@@ -6,9 +6,14 @@ import { IGrace, Common, Admin } from './helpers/admin-helpers.js';
 // Ajax Setup
 Common.ajaxSetup();
 
-
 // Remove the errors when the edit modal is closed/hidden
 Common.removeErrorsWhenEditModelHides(IGrace.ADMIN);
+
+// A global flag (attached to window) so both files/modules share the same reference
+window.isFormDirty = false;
+
+// Track changes on any form input, including dynamic ones
+$(document).on("input change", "input, textarea, select", () => window.isFormDirty = true);
 
 
 /* ---------------------------------- CATEGORIES ---------------------------------- */
@@ -230,6 +235,7 @@ Common.ajaxClearSearchFilterRequest();
 
 
 /* ---------------------------------- NOTIFICATIONS ---------------------------------- */
+
 // Get Unread Notifications
 Common.eventGetNotificationsRequest();
 
@@ -249,3 +255,7 @@ Admin.ajaxDeleteNotificationRequest();
 Common.ajaxPagination();
 
 /* ---------------------------------- END PAGINATION ---------------------------------- */
+
+
+// Warn the user before leaving/refreshing the form
+Common.warnBeforeLeaving();

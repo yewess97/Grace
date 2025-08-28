@@ -5,10 +5,6 @@
     padding-right: var(--fifteen-pixels);
 }
 
-.dashboard-main .left-side ul.orders-metrics {
-    padding-block: var(--twenty-five-pixels) var(--twenty-pixels);
-}
-
 .dashboard-main .left-side ul.orders-metrics li.order-metric > .metric-card .total-metrics-info .metrics-icon {
     width: fit-content;
     padding: var(--ten-pixels);
@@ -32,15 +28,7 @@
     font-size: var(--fifteen-pixels);
 }
 
-.dashboard-main .left-side :is(.users-countries-analytics, .recent-customers-orders) {
-    padding-top: var(--thirty-five-pixels);
-}
-
-.dashboard-main .left-side .users-countries-analytics .users-countries-geo-map {
-    padding-block: var(--twenty-pixels);
-}
-
-.dashboard-main .left-side .recent-customers-orders .customers-orders-table {
+.dashboard-main .left-side :is(.users-countries-analytics .users-countries-geo-map, .recent-customers-orders .customers-orders-table) {
     padding-top: var(--twenty-pixels);
 }
 

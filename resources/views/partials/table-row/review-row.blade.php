@@ -4,14 +4,14 @@
     <td>
         <p>{{ $review->{TITLE} }}</p>
     </td>
-    <td>
-        <p class="truncate">{{ $review->{BODY_TEXT} }}</p>
+    <td class="truncate lh-lg">
+        {{ $review->{BODY_TEXT} }}
     </td>
     <td class="review-rating">
         @include(REVIEW_RATING_PARTIAL, [RATING => $review->{RATING}])
     </td>
-    <td class="truncate">
-        <p>{{ $review->{PRODUCT_MODEL}->{NAME} }}</p>
+    <td class="truncate lh-lg">
+        {{ $review->{PRODUCT_MODEL}->{NAME} }}
     </td>
     <td>
         <p>{{ $review->{USER_MODEL}->{FULL_NAME} }}</p>

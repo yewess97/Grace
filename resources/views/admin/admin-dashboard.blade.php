@@ -7,7 +7,7 @@
         <div class="container">
             <div class="row">
                 <!----======= Left Side =======---->
-                <section class="left-side row col-9">
+                <section class="left-side col-9">
                     {{-- Filter By Date Form --}}
                     <article class="row col-12">
                         <form action="{{route(FILTER_DASHBOARD)}}" method="post" role="form" id="filter_dashboard_form" class="grace-form filter-form" data-no_results="{{imageSource('no-results.png')}}">
@@ -41,7 +41,7 @@
                     </article>
 
                     {{-- Orders Metrics --}}
-                    <ul class="orders-metrics row row-cols-3 align-items-center gap-3 gap-lg-0">
+                    <ul class="orders-metrics row row-cols-3 align-items-center gap-3 gap-lg-0 pt-5">
                         @foreach ($orders_metrics as $order_metric)
                             <li class="order-metric col {{$order_metric->card_padding}}">
                                 <div class="metric-card d-flex justify-content-between align-items-center">
@@ -65,7 +65,7 @@
                     </ul>
 
                     {{-- Users Countries Analytics --}}
-                    <article class="users-countries-analytics">
+                    <article class="users-countries-analytics pt-5">
                         {{-- Users Countries Geo Map Title --}}
                         <h2 class="fs-6 fw-600"># Registered {{ucfirst(USERS_TABLE)}} Places</h2>
                         {{-- Users Countries Geo Map Chart --}}
@@ -74,7 +74,7 @@
                         </div>
                     </article>
                     {{-- Recent Customers Orders --}}
-                    <article class="recent-customers-orders row col-12">
+                    <article class="recent-customers-orders col-12 pt-5">
                         {{-- Recent Customers Orders Title --}}
                         <h2 class="fs-6 fw-600"># {{ucfirst(ORDERS_TABLE)}} for Each Customer</h2>
 
@@ -86,7 +86,7 @@
                 </section>
 
                 <!----======= Right Side =======---->
-                <aside class="right-side row col-3" role="region">
+                <aside class="right-side col-3" role="region">
                     {{-- Subcategories Products Analytics --}}
                     <article class="subcategories-products-analytics">
                         {{-- Subcategories Products Analytics Title --}}

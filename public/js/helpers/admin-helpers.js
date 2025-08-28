@@ -407,6 +407,7 @@ const Admin = {
                 method: IGrace.POST,
                 data: form_data,
                 success: (data) => {
+                    window.isFormDirty = false;
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
                     target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
@@ -477,6 +478,8 @@ const Admin = {
                         imageSrc:   banner_image,
                     });
 
+                    window.isFormDirty = false;
+
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.CATEGORY, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -516,6 +519,8 @@ const Admin = {
                         collectionName:    IGrace.SUBCATEGORY,
                         relatedCollection: IGrace.RELATED_CATEGORY(),
                     });
+
+                    window.isFormDirty = false;
 
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.SUBCATEGORY, true)).modal('show');
                 })
@@ -584,6 +589,8 @@ const Admin = {
                         .filter((_, productStatus) => +productStatus.value === +product[IGrace.STATUS])
                         .attr('selected', true);
 
+                    window.isFormDirty = false;
+
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.PRODUCT, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -619,6 +626,8 @@ const Admin = {
                         .filter((_, userRole) => +userRole.value === +user[IGrace.ROLE])
                         .attr('selected', true);
 
+                    window.isFormDirty = false;
+
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.USER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -648,6 +657,8 @@ const Admin = {
                         .removeAttr('selected')
                         .filter((_, orderStatus) => +orderStatus.value === +order[IGrace.STATUS])
                         .attr('selected', true);
+
+                    window.isFormDirty = false;
 
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER, true)).modal('show');
                 })
@@ -697,6 +708,8 @@ const Admin = {
 
                     (actions[collection] || actions.default)();
 
+                    window.isFormDirty = false;
+
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
                 },
                 error: (err) => {
@@ -718,7 +731,7 @@ const Admin = {
     /* ---------------------------------- NOTIFICATION REQUEST ---------------------------------- */
     /**
      * Mark Notification as read Ajax Request.
-     * 
+     *
      * @param className
      * @return {void}
      */
@@ -728,7 +741,7 @@ const Admin = {
 
             const route = $(this).attr('href');
 
-            const delete_notification_template = (id) => 
+            const deleteNotificationTemplate = (id) =>
                 $(`#notification${id}`).append(`
                     <form action="${location.origin}/${IGrace.ADMIN}/notifications/${IGrace.DELETE}-notification?id=${id}" method="post" role="form" class="delete-notification-form">
                         <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
@@ -745,22 +758,22 @@ const Admin = {
                         $('.notifications-count').css('display', 'none');
                         $('.notification-item').removeClass('highlight-background');
                         $('.mark-as-read-icon').remove();
-                        $.each((data[IGrace.PLURALIZE(IGrace.ID)]), (_, id) => delete_notification_template(id));
+                        $.each((data[IGrace.PLURALIZE(IGrace.ID)]), (_, id) => deleteNotificationTemplate(id));
                         return;
                     }
 
                     const notification_item = $(`#notification${data[IGrace.ID]}`);
 
-                    $('.notifications-count').text() > 1 
+                    $('.notifications-count').text() > 1
                         ? $('.notifications-count').text($('.notifications-count').text() - 1)
                         : $('.notifications-count').css('display', 'none');
-                        
+
                     notification_item.removeClass('highlight-background')
                         .end()
                         .find('.mark-as-read-icon')
                         .remove();
 
-                    delete_notification_template(data[IGrace.ID]);
+                    deleteNotificationTemplate(data[IGrace.ID]);
                 })
                 .fail(Common.somethingWentWrongError);
         });

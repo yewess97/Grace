@@ -174,7 +174,7 @@ const User = {
 
     /**
      * Display a loading spinner.
-     * 
+     *
      * @param target
      * @param element
      * @param {boolean} isDisabled
@@ -198,14 +198,14 @@ const User = {
 
     /**
      * Auth Ajax Request.
-     * 
+     *
      * @param authAction
      * @return {void}
      */
     ajaxAuthRequest: (authAction) => {
         $(document).on(IGrace.SUBMIT, `#${authAction}_form`, function (e) {
             e.preventDefault();
-            
+
             const
                 target    = $(this),
                 route     = target.attr('action'),
@@ -263,7 +263,7 @@ const User = {
 
     /**
      * Social Auth Ajax Request.
-     * 
+     *
      * @return {void}
      */
     ajaxSocialAuthRequest: () => {
@@ -278,8 +278,8 @@ const User = {
                 url: route,
                 method: IGrace.GET,
                 success: (data) => location.href = data['redirect_to'],
-                error: (err) => IGrace.IS_IN_ARRAY([400, 500], err.status) 
-                    ? Common.somethingWentWrongError(Common.responseJsonError(err, true)) 
+                error: (err) => IGrace.IS_IN_ARRAY([400, 500], err.status)
+                    ? Common.somethingWentWrongError(Common.responseJsonError(err, true))
                     : Common.somethingWentWrongError(),
             });
         });
@@ -300,8 +300,9 @@ const User = {
                 place_order_button = $(`#place_${IGrace.ORDER}_btn`),
                 form_data          = Common.filteredFormData(this),
 
-                form_reset = (target, action) => {
+                formReset = (target, action) => {
                     target.trigger('reset');
+                    window.isFormDirty = false;
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                 };
 
@@ -310,7 +311,7 @@ const User = {
 
             // Because of the pagination
             if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
-                const 
+                const
                     key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
                     value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
 
@@ -326,6 +327,8 @@ const User = {
                 beforeSend: () => User.loadingSpinner(target, place_order_button, true),
                 success: (data) => {
                     if ($.inArray(data.status, [`auth_${IGrace.SUCCESS}`, 'stripe_session_created']) > -1) {
+                        window.isFormDirty = false;
+
                         return location.assign(data['redirect_to']);
                     }
 
@@ -336,6 +339,8 @@ const User = {
                             .find('.loading-spinner')
                             .remove();
 
+                        window.isFormDirty = false;
+
                         $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))} ul`).empty();
                         $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).addClass('d-none');
 
@@ -345,12 +350,14 @@ const User = {
                     if (collection === IGrace.CAPITALIZE(IGrace.REVIEW)) {
                         const reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW));
 
+                        window.isFormDirty = false;
+
                         return Common.successMessage(IGrace.SUCCESS, success_message, reviews_route);
                     }
 
                     Common.arrangeTableRows();
                     $(IGrace.MODAL(IGrace.USER)).modal('hide');
-                    form_reset(target, action);
+                    formReset(target, action);
 
                     Common.updateTableRows({
                         data:       data,
@@ -398,7 +405,7 @@ const User = {
 
                         $(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"][type="hidden"]`).val('');
 
-                        return form_reset(target, action);
+                        return formReset(target, action);
                     }
 
                     if (err.status === 429 && $(`.${IGrace.LOGIN}-btn`).length) {
@@ -442,8 +449,12 @@ const User = {
                                     Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () =>
                                         User.updateCartContent(data));
 
+                                    window.isFormDirty = false;
+
                                     return Common.successMessage(data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
                                 }
+
+                                window.isFormDirty = false;
 
                                 Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
                             },
@@ -468,7 +479,7 @@ const User = {
                 route             = target.data('route'),
                 main_image        = target.data(IGrace.MAIN_IMAGE()),
                 quick_view_modal  = $(`#${IGrace.PRODUCT}_quick_view_modal`);
-            
+
             // Reset the quick view modal
             quick_view_modal.find('form').trigger('reset');
 
@@ -601,11 +612,11 @@ const User = {
 
             const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((_, cartProduct) => {
                 const
-                    cart_product_value_of = (value) => $(cartProduct).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
+                    cartProductValueOf = (value) => $(cartProduct).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
 
-                    product_id       = cart_product_value_of(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
-                    product_size     = cart_product_value_of(IGrace.PRODUCT_SIZE()),
-                    product_quantity = cart_product_value_of(`${IGrace.PRODUCT_QUANTITY()}_${product_id}`);
+                    product_id       = cartProductValueOf(IGrace.COLLECTION_ID(IGrace.PRODUCT)),
+                    product_size     = cartProductValueOf(IGrace.PRODUCT_SIZE()),
+                    product_quantity = cartProductValueOf(`${IGrace.PRODUCT_QUANTITY()}_${product_id}`);
 
                 if ((product_id !== 0 && !isNaN(product_id)) && (!isNaN(product_size)) && (product_quantity !== 0 && !isNaN(product_quantity))) {
                     return {
@@ -635,7 +646,7 @@ const User = {
                         .remove().end()
                         .find('.loading-spinner')
                         .remove();
-                        
+
                     User.loadingSpinner(target, cart_button);
                 },
                 success: (data) => {
@@ -657,6 +668,7 @@ const User = {
                             class: 'ti ti-shopping-cart',
                         }));
 
+                    window.isFormDirty = false;
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
                     User.updateCartContent(data);

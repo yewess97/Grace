@@ -16,6 +16,34 @@ use Throwable;
 class CartService
 {
     /**
+     * Get the cart data for the cart partials.
+     *
+     * @param array $otherVars
+     * @return array
+     * @throws Throwable
+     */
+    final public function getCartData(array $otherVars = []): array
+    {
+        $user_cart_items  = cartConfig()[USER_CART_ITEMS];
+        $total_cost       = cartConfig()[TOTAL_COST];
+        $total_items      = cartConfig()[TOTAL_ITEMS];
+        $row_compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
+        $row_view = $total_items === 0
+            ? USER_CART_VIEW
+            : CART_CONTENT_PARTIAL;
+
+        $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
+        $row        = view($row_view, $row_compact_vars)->render();
+
+        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, 'header_row', ROW);
+
+        return [
+            ...$compact_vars,
+            ...$otherVars,
+        ];
+    }
+
+    /**
      * Store or Update a cart.
      *
      * @param string $operation
@@ -58,34 +86,6 @@ class CartService
         ];
 
         return $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
-    }
-
-    /**
-     * Get the cart data for the cart partials.
-     *
-     * @param array $otherVars
-     * @return array
-     * @throws Throwable
-     */
-    final public function getCartData(array $otherVars = []): array
-    {
-        $user_cart_items  = cartConfig()[USER_CART_ITEMS];
-        $total_cost       = cartConfig()[TOTAL_COST];
-        $total_items      = cartConfig()[TOTAL_ITEMS];
-        $row_compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
-        $row_view = $total_items === 0
-            ? USER_CART_VIEW
-            : CART_CONTENT_PARTIAL;
-
-        $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
-        $row        = view($row_view, $row_compact_vars)->render();
-
-        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, 'header_row', ROW);
-
-        return [
-            ...$compact_vars,
-            ...$otherVars,
-        ];
     }
 
     /**

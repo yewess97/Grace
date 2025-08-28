@@ -38,7 +38,7 @@ class AddressController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException
+     * @throws ValidationException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {

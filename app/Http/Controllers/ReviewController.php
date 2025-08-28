@@ -31,7 +31,7 @@ class ReviewController extends Controller
      */
     final public function index(int $productId): string
     {
-        return $this->reviewService->displayReviews($productId);
+        return $this->reviewService->getReviews($productId);
     }
 
     /**

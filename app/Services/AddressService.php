@@ -18,6 +18,42 @@ use Throwable;
 
 class AddressService {
     /**
+     * Get the detailed data of a specified user's addresses.
+     *
+     * @return Application|Factory|View|RedirectResponse|JsonResponse
+     * @throws Throwable
+     */
+    final public function getUserAddressesData(): Application|Factory|View|RedirectResponse|JsonResponse
+    {
+        try {
+            $user_id = auth()->check() && !auth()->user()?->isAdmin
+                ? auth()->id()
+                : decrypt(request()?->input(ID));
+        }
+        catch (DecryptException $ex) {
+            abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
+        }
+
+        $trashed = request()?->input(CONDITION);
+
+        $user_addresses = cache()->remember(paginationCacheKey(ADDRESSES_TABLE, $trashed), 1800, static function () use ($user_id, $trashed) {
+            return Address::query()->where(USER_ID, $user_id)
+                ->when($trashed, static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16);
+        });
+
+        $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
+        $role                 = isAdminRoute(true);
+
+        $add_address_error    = static fn(string $attributeName) => formError(ADD, ADDRESS_MODEL, $attributeName);
+        $update_address_error = static fn(string $attributeName) => formError(UPDATE, ADDRESS_MODEL, $attributeName);
+
+        return request()?->ajax()
+            ? ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION_PARTIAL, USER_ADDRESSES)
+            : showView(USER_ADDRESSES_COMPONENT, compact(USER_ID, USER_ADDRESSES, USER_ADDRESSES_TITLE, ROLE, ADD_ADDRESS_ERROR, UPDATE_ADDRESS_ERROR));
+    }
+
+    /**
      * Store or Update an address.
      *
      * @param string $operation
@@ -53,44 +89,11 @@ class AddressService {
         );
 
         cache()->forget(ADDRESSES_TABLE);
+        cache()->forget(USER_ADDRESSES);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
         return [$address, getLastPage(new Address())];
-    }
-
-    /**
-     * Get the detailed data of a specified user's addresses.
-     *
-     * @return Application|Factory|View|RedirectResponse|JsonResponse
-     * @throws Throwable
-     */
-    final public function getUserAddressesData(): Application|Factory|View|RedirectResponse|JsonResponse
-    {
-        try {
-            $user_id = auth()->check() && !auth()->user()?->isAdmin
-                ? auth()->id()
-                : decrypt(request()?->input(ID));
-        }
-        catch (DecryptException $ex) {
-            abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
-        }
-
-        $user_addresses = cache()->remember(ADDRESSES_TABLE, 1800, static function () use ($user_id) { 
-            Address::query()->where(USER_ID, $user_id)
-                ->when(request()?->input(CONDITION), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16);
-        });
-
-        $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
-        $role                 = isAdminRoute(true);
-
-        $add_address_error    = static fn(string $attributeName) => formError(ADD, ADDRESS_MODEL, $attributeName);
-        $update_address_error = static fn(string $attributeName) => formError(UPDATE, ADDRESS_MODEL, $attributeName);
-
-        return request()?->ajax()
-            ? ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION, USER_ADDRESSES)
-            : showView(USER_ADDRESSES_COMPONENT, compact(USER_ID, USER_ADDRESSES, USER_ADDRESSES_TITLE, ROLE, ADD_ADDRESS_ERROR, UPDATE_ADDRESS_ERROR));
     }
 
     /**
@@ -141,7 +144,7 @@ class AddressService {
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
         cache()->forget(ADDRESSES_TABLE);
-        
+
         return restore($addresses);
     }
 }

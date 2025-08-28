@@ -106,6 +106,7 @@ $(document).ready(() => {
 
     /* ---------=========== End Handle Price Filter ============--------- */
 
+
     // Change the products main view
     if (products_main_view.length) {
         User.changeProductsView();
@@ -328,9 +329,9 @@ $(document).ready(() => {
         // Remove the product from the cart
         if (target.hasClass(`${IGrace.CLASS(IGrace.CART_PRODUCT())}-remove`)) {
             cart_product_remove_form.attr('action', target.data('route')).submit();
-            let cart_product_info = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
-            cart_product_info(IGrace.PRODUCT_SIZE());
-            cart_product_info(IGrace.PRODUCT_QUANTITY());
+            let cartProductInfo = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
+            cartProductInfo(IGrace.PRODUCT_SIZE());
+            cartProductInfo(IGrace.PRODUCT_QUANTITY());
         }
 
         // Show or hide the review form
@@ -396,6 +397,9 @@ $(document).ready(() => {
 
     // Get the countries
     Common.ajaxGetCountries();
+
+    // Truncate the text that has more than 70 characters
+    Common.truncateText();
 
     // Configure the checkout addresses
     User.checkoutAddressesConfig();

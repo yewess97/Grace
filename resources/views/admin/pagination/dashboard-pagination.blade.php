@@ -1,4 +1,4 @@
-<div class="main-table admin-table table-responsive h-fit-content">
+<div class="main-table admin-table table-responsive">
     <table role="table" class="table align-middle mb-0 fs-7 bg-white">
         <thead class="text-center bg-light">
         <tr>

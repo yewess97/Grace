@@ -60,12 +60,12 @@ class DashboardService
             $filter_dashboard_dates,
             USERS_TABLE.'_with_'.ORDERS_TABLE,
             300,
+            5,
             User::query()
                     ->select(USER_SELECTED_ATTRIBUTES)
                     ->with([ADDRESSES_TABLE => static fn(HasMany $address) => addressCountry($address)])
                     ->whereHas(ORDERS_TABLE, static fn() => $fulfilled_orders)
                     ->withCount([ORDERS_TABLE => static fn() => $fulfilled_orders]),
-            5
         );
 
         // Get the countries with the total users registered from each one
@@ -74,10 +74,11 @@ class DashboardService
             $filter_dashboard_dates,
             USERS_TABLE.'_by_'.COUNTRY,
             3600,
+            0,
             Address::query()
                     ->select(COUNTRY)
                     ->selectRaw('COUNT(DISTINCT '.USER_ID.') as '.USERS_TABLE.'_count')
-                    ->groupBy(COUNTRY),
+                    ->groupBy([COUNTRY]),
         );
 
         // Get the subcategories with the total products in each one
@@ -86,6 +87,7 @@ class DashboardService
             $filter_dashboard_dates,
             SUBCATEGORIES_TABLE.'_with_'.PRODUCTS_TABLE,
             1000,
+            0,
             Subcategory::query()
                     ->select(NAME)
                     ->withCount(PRODUCTS_TABLE),
@@ -119,7 +121,7 @@ class DashboardService
         [$completed_orders, $fulfilled_orders] = collect([
             ['Completed'],
             ['Shipped', 'Delivered', 'Completed']
-        ])->map(static fn($status) => 
+        ])->map(static fn($status) =>
             Order::whereIn(STATUS, array_values(Arr::only(ORDER_STATUS_ENUM, $status))
         )
         ->when($isFilter, fn($order) => $order->filterByDates($filterDashboardDates)));
@@ -151,22 +153,20 @@ class DashboardService
             $orders = $metric['data'];
 
             return [
-                NAME => $name,
-                'icon' => $metric['icon'],
+                NAME           => $name,
+                'icon'         => $metric['icon'],
                 'card_padding' => $metric['padding'],
-                TOTAL_COST => cache()->remember(strtolower($name).'_total_cost', 300, static fn() =>
-                    $orders->allTotalCost()
-                ),
-                'statistic' => cache()->remember(strtolower($name).'_statistic', 300, static fn() =>
-                    $orders->statisticsInLast24Hours()
-                ),
+                TOTAL_COST     => cache()->remember(strtolower($name).'_total_cost', 300, static fn() =>
+                    $orders->allTotalCost()),
+                'statistic'    => cache()->remember(strtolower($name).'_statistic', 300, static fn() =>
+                    $orders->statisticsInLast24Hours()),
             ];
         })
         ->values()
         ->all();
 
         return [
-            ORDERS_TABLE.'_metrics'   => object_from_array($orders_metrics), 
+            ORDERS_TABLE.'_metrics'   => object_from_array($orders_metrics),
             'fulfilled_'.ORDERS_TABLE => $fulfilled_orders,
         ];
     }
@@ -183,10 +183,10 @@ class DashboardService
         return collect(ORDER_STATUS_ENUM)
             ->map(function (int $value, string $status) use ($isFilter, $filterDashboardDates) {
                 $cache_key = $this->allOrFilteredCacheKey($isFilter)."_{$status}_orders_count";
-                
+
                 return cache()->remember($cache_key, 300, function () use ($value, $status, $isFilter, $filterDashboardDates) {
                     $orders = $this->applyFilter(Order::query()->whereStatus($value), $isFilter, $filterDashboardDates);
-                    
+
                     return (object)[
                         'label' => $status,
                         STATUS  => $value,
@@ -229,26 +229,26 @@ class DashboardService
     }
 
     /**
-     * Get cached data .
+     * Get cached data.
      *
      * @param bool $isFilter
      * @param array $filterDashboardDates
      * @param string $type
      * @param int $ttl
+     * @param int $paginationItemsNumber
      * @param Builder $query
-     * @param int|null $itemsNumber
      * @return LengthAwarePaginator|EloquentCollection
      */
-    private function getCachedData(bool $isFilter, array $filterDashboardDates, string $type, int $ttl, Builder $query, ?int $itemsNumber = null): LengthAwarePaginator|EloquentCollection
+    private function getCachedData(bool $isFilter, array $filterDashboardDates, string $type, int $ttl, int $paginationItemsNumber, Builder $query): LengthAwarePaginator|EloquentCollection
     {
         return cache()->remember(
-            $this->allOrFilteredCacheKey($isFilter)."_{$type}_dashboard",
+            $this->allOrFilteredCacheKey($isFilter)."_{$type}_dashboard".currentPage(),
             $ttl,
-            function () use ($query, $isFilter, $filterDashboardDates, $itemsNumber) {
+            function () use ($query, $isFilter, $filterDashboardDates, $paginationItemsNumber) {
                 $query = $this->applyFilter($query, $isFilter, $filterDashboardDates);
 
-                return is_integer($itemsNumber) && $itemsNumber > 0
-                    ? $query->fastPaginate($itemsNumber)
+                return is_int($paginationItemsNumber) && $paginationItemsNumber > 0
+                    ? $query->fastPaginate($paginationItemsNumber)
                     : $query->get();
             }
         );
