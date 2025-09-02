@@ -39,7 +39,7 @@ class CheckoutController extends Controller
             && $cart_item->delete()
         );
 
-        $user_addresses  = cache()->remember(USER_ADDRESSES.currentPage(), 1800, static fn():
+        $user_addresses  = cache()->remember(paginationCacheKey(USER_ADDRESSES.auth()->id()), 1800, static fn():
             LengthAwarePaginator => auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES])
         );
 

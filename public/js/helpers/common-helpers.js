@@ -806,7 +806,7 @@ const Common = {
      * @return {void}
      */
     paginationResponse: (element, data) => {
-        element.fadeOut(100, function () {
+        element.fadeOut(100, () => {
             element.html(data['html']).fadeIn(100);
 
             Common.truncateText();

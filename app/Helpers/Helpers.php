@@ -214,30 +214,38 @@ if (!function_exists('adminCurrentUrl')) {
 }
 
 
-if (!function_exists('currentPage')) {
-    /**
-     * Get the current page number.
-     *
-     * @return int
-     */
-    function currentPage(): int
-    {
-        return request()?->input('page', 1);
-    }
-}
-
-
 if (!function_exists('paginationCacheKey')) {
     /**
      * Generate the pagination cache key.
      *
-     * @param string $table
+     * @param string $key
      * @param string|null $condition
      * @return string
      */
-    function paginationCacheKey(string $table, string|null $condition): string
+    function paginationCacheKey(string $key, ?string $condition = null): string
     {
-        return $table.($condition ? '_trashed_' : '_main_').currentPage();
+        return $key.($condition ? '_trashed_' : '_main_').currentPageRequest();
+    }
+}
+
+
+if (!function_exists('forgetCacheFor')) {
+    /**
+     * Forget the cache.
+     *
+     * @param string $key
+     * @param string|int|null $additionalSuffix
+     * @return bool
+     */
+    function forgetCacheFor(string $key, string|int|null $additionalSuffix = null): bool
+    {
+        $all_constants = get_defined_constants(true)['user'] ?? [];
+
+        $key_const_name = array_search($key, $all_constants, true);
+
+        return str_contains($key_const_name, 'TABLE')
+            ? cache()->forget(paginationCacheKey($key, trashedConditionRequest()).($additionalSuffix ?: ''))
+            : cache()->forget(paginationCacheKey($key));
     }
 }
 
@@ -492,8 +500,7 @@ if (!function_exists(CART_MODEL.'Config')) {
     function cartConfig(array $vars = []): array|string
     {
         $user_carts = Cart::query()
-            ->with(PRODUCT_MODEL, fn(BelongsTo $product) =>
-                $product->select(PRODUCT_ITEM_ATTRIBUTES))
+            ->with(PRODUCT_MODEL)
             ->whereHasAuthUser();
 
         $total_items = $user_carts->sum(PRODUCT_QUANTITY);
@@ -672,7 +679,7 @@ if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
      *
      * @param LengthAwarePaginator $products
      * @return Application|Factory|View|JsonResponse
-     * @throws NotFoundHttpException|Throwable
+     * @throws Throwable
      */
     function viewProducts(LengthAwarePaginator $products): Application|Factory|View|JsonResponse
     {
@@ -706,10 +713,11 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
-        $products = cache()->remember(PRODUCTS_TABLE.currentPage(), 500, static fn() =>
+        $products = cache()->remember(PRODUCTS_TABLE. currentPageRequest(), 500, static fn() =>
             Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
                 $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
-            )->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
+            )
+                ->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
         );
 
         return viewProducts($products);
@@ -729,7 +737,7 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
     function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
     {
         if ($productId) {
-            return cache()->remember(AVERAGE_RATE, 900, static fn() =>
+            return cache()->remember(AVERAGE_RATE, 1800, static fn() =>
                 Review::query()->where(PRODUCT_ID, $productId)
                     ->avg(RATING) ?? '0'
             );
@@ -1016,12 +1024,17 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
                 [ID => $user_id], $attributes
             );
 
+            forgetCacheFor(USERS_TABLE);
+            cache()->forget(USER_MODEL);
+
             sendNotificationToAdmins(new NewAdminActionTaken([$user, $user->{FULL_NAME}], $operation), true);
 
             return $user;
         }
 
         $user = User::query()->create($attributes);
+
+        cache()->forget(USERS_TABLE);
 
         sendNotificationToAdmins(new NewUserRegistered($user));
 
@@ -1057,10 +1070,8 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
      */
     function customDelete(Model|stdClass $model, ?string $modelAttribute = null, bool $deleteImages = false): bool
     {
-        $requested_selected_ids = request()?->input('selected_'.pluralize(ID));
-
-        $selected_ids = $requested_selected_ids
-            ? array_map('intval', array_from($requested_selected_ids))
+        $selected_ids = selectedIdsRequest()
+            ? array_map('intval', array_from(selectedIdsRequest()))
             : [];
 
         $destroy = static function (array $ids) use ($model, $modelAttribute, $deleteImages, $selected_ids) {
@@ -1235,10 +1246,8 @@ if (!function_exists(RESTORE)) {
      */
     function restore(Model|stdClass $model, ?string $modelAttribute = null): bool
     {
-        $requested_selected_ids = request()?->input('selected_'.pluralize(ID));
-
-        $selected_ids = $requested_selected_ids
-            ? array_map('intval', array_from($requested_selected_ids))
+        $selected_ids = selectedIdsRequest()
+            ? array_map('intval', array_from(selectedIdsRequest()))
             : [];
 
         sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], RESTORE, !empty($selected_ids)), true);

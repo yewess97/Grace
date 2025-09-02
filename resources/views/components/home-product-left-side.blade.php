@@ -73,8 +73,8 @@
     <article class="new-products">
         <ul role="list" class="new-products-content box-content rounded-start">
             {{-- New Products Title --}}
-            <li role="listitem" class="box-title">
-                <h2 class="fs-6 fw-500 border-bottom">
+            <li role="listitem" class="box-title mb-3 border-bottom">
+                <h2 class="fs-6 fw-500">
                     <span class="position-relative">{{capitalizeAll(NEW_PRODUCTS)}}</span>
                 </h2>
             </li>
@@ -110,8 +110,8 @@
     <article class="customers-reviews">
         <div class="customers-reviews-content box-content rounded-start">
              {{-- Customers Reviews Title --}}
-            <article class="box-title">
-                <h2 class="fs-6 fw-500 border-bottom">
+            <article class="box-title mb-3 border-bottom">
+                <h2 class="fs-6 fw-500">
                     <span class="position-relative">{{capitalizeAll(CUSTOMERS_REVIEWS)}}</span>
                 </h2>
             </article>

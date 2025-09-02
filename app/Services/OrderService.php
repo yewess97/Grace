@@ -20,6 +20,7 @@ use Illuminate\Support\LazyCollection;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Stripe\Checkout\Session;
+use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -33,12 +34,10 @@ class OrderService {
      */
     final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
     {
-        cache()->forget(ORDER_DETAILS);
-
         $order = cache()->remember(ORDER_DETAILS, 3600, fn() =>
-        Order::query()->with([
-            ORDER_ITEMS => static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES),
-        ])
+            Order::query()->with(
+                ORDER_ITEMS, static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES)
+            )
             ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM))
         );
 
@@ -108,7 +107,9 @@ class OrderService {
 
             Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
-            cache()->forget(ORDERS_TABLE);
+            forgetCacheFor(ORDERS_TABLE, $status_value);
+            forgetCacheFor(USER_ORDERS);
+            cache()->forget(ORDER_DETAILS);
 
             sendNotificationToAdmins(new NewOrderPlaced($order));
 
@@ -148,7 +149,8 @@ class OrderService {
 
         $update_order = $order->update([STATUS => $status_value]);
 
-        cache()->forget(ORDERS_TABLE);
+        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(USER_ORDERS);
         cache()->forget(ORDER_DETAILS);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
@@ -164,7 +166,8 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        cache()->forget(ORDERS_TABLE);
+        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(USER_ORDERS);
 
         return customDelete($order, TRACKING_NUM);
     }
@@ -177,7 +180,8 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        cache()->forget(ORDERS_TABLE);
+        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(USER_ORDERS);
 
         return customDelete($orders);
     }
@@ -190,7 +194,8 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        cache()->forget(ORDERS_TABLE);
+        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(USER_ORDERS);
 
         return restore($order, TRACKING_NUM);
     }
@@ -203,7 +208,8 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        cache()->forget(ORDERS_TABLE);
+        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(USER_ORDERS);
 
         return restore($orders);
     }
@@ -215,6 +221,7 @@ class OrderService {
      * @param LazyCollection $userCartItems
      * @param array $orderData
      * @return JsonResponse
+     * @throws ApiErrorException
      */
     private function stripePayment(StripeClient $stripe, LazyCollection $userCartItems, array $orderData): JsonResponse
     {
@@ -245,6 +252,7 @@ class OrderService {
      * @param array $lineItems
      * @param mixed|null $otherArgs
      * @return Session
+     * @throws ApiErrorException
      */
     private function stripeCheckout(StripeClient $stripe, array $lineItems, mixed $otherArgs = null): Session
     {

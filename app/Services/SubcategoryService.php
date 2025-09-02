@@ -45,7 +45,7 @@ class SubcategoryService
 
         createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
-        cache()->forget(SUBCATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
 
@@ -62,7 +62,7 @@ class SubcategoryService
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        cache()->forget(SUBCATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
 
         return customDelete($subcategory, NAME, true);
     }
@@ -77,9 +77,9 @@ class SubcategoryService
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        cache()->forget(SUBCATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
 
-        return customDelete($subcategories, null, true);
+        return customDelete(model: $subcategories, deleteImages: true);
     }
 
     /**
@@ -90,7 +90,7 @@ class SubcategoryService
      */
     final public function restoreSubcategory(Subcategory $subcategory): bool
     {
-        cache()->forget(SUBCATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
 
         return restore($subcategory, NAME);
     }
@@ -103,8 +103,8 @@ class SubcategoryService
      */
     final public function restoreMultipleSubcategories(Subcategory $subcategories): bool
     {
-        cache()->forget(SUBCATEGORIES_TABLE);
-        
+        forgetCacheFor(SUBCATEGORIES_TABLE);
+
         return restore($subcategories);
     }
 }

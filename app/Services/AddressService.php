@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -34,13 +35,11 @@ class AddressService {
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $trashed = request()?->input(CONDITION);
-
-        $user_addresses = cache()->remember(paginationCacheKey(ADDRESSES_TABLE, $trashed), 1800, static function () use ($user_id, $trashed) {
-            return Address::query()->where(USER_ID, $user_id)
-                ->when($trashed, static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16);
-        });
+        $user_addresses = cache()->remember(paginationCacheKey(ADDRESSES_TABLE, trashedConditionRequest()), 1800, fn():
+        LengthAwarePaginator => Address::query()->where(USER_ID, $user_id)
+                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+                ->fastPaginate(16)
+        );
 
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);
@@ -88,8 +87,8 @@ class AddressService {
             ]
         );
 
-        cache()->forget(ADDRESSES_TABLE);
-        cache()->forget(USER_ADDRESSES);
+        forgetCacheFor(ADDRESSES_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
@@ -104,7 +103,8 @@ class AddressService {
      */
     final public function deleteAddress(Address $address): bool
     {
-        cache()->forget(ADDRESSES_TABLE);
+        forgetCacheFor(ADDRESSES_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
 
         return customDelete($address, modelAttribute: ADDRESS1);
     }
@@ -117,7 +117,8 @@ class AddressService {
      */
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
-        cache()->forget(ADDRESSES_TABLE);
+        forgetCacheFor(ADDRESSES_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
 
         return customDelete($addresses);
     }
@@ -130,7 +131,8 @@ class AddressService {
      */
     final public function restoreAddress(Address $address): bool
     {
-        cache()->forget(ADDRESSES_TABLE);
+        forgetCacheFor(ADDRESSES_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
 
         return restore($address, ADDRESS1);
     }
@@ -143,7 +145,8 @@ class AddressService {
      */
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
-        cache()->forget(ADDRESSES_TABLE);
+        forgetCacheFor(ADDRESSES_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
 
         return restore($addresses);
     }

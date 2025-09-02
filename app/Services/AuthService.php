@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Traits\Login\LoginHelpers;
 use App\Traits\Login\RememberMeExpiration;
 use App\Traits\Login\ThrottlesLogins;
-use Cache;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -94,15 +93,15 @@ class AuthService {
      */
     final public function redirectToSocialProvider($provider): JsonResponse
     {
-        if (!in_array($provider, LOGIN_SOCIAL_PROVIDERS)) {
+        if (!in_array($provider, LOGIN_SOCIAL_PROVIDERS, true)) {
             throw new InvalidArgumentException("The provider *$provider* is not supported");
         }
 
-        if (!config("services.$provider") 
+        if (!config("services.$provider")
             || !config("services.$provider.client_id")
             || !config("services.$provider.client_secret")
             || !config("services.$provider.redirect")
-        ) 
+        )
         {
             throw new RuntimeException("The provider *$provider* is not configured properly");
         }
@@ -112,7 +111,7 @@ class AuthService {
 
     /**
      * Handle the callback from the social provider after authentication.
-     * 
+     *
      * @param string $provider
      * @return RedirectResponse
      */
@@ -159,6 +158,7 @@ class AuthService {
      * Logout the user.
      *
      * @return null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     final public function logoutUser(): null
     {
@@ -170,7 +170,7 @@ class AuthService {
             $user->{'remember_token'} = null;
             $user->save();
 
-            Cache::delete('is_online_'.$user->{ID});
+            cache()->delete('is_online_'.$user->{ID});
         }
 
         return request()?->session()

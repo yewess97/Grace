@@ -16,4 +16,4 @@
 </div>
 
 {{-- User Addresses Pagination --}}
-<div class="table-pagination col-12 pt-4">@pagination($user_addresses, isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES)</div>
+<div class="table-pagination col-12 pt-4">@pagination($user_addresses, (isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES))</div>

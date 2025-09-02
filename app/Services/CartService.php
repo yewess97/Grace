@@ -7,7 +7,6 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -181,16 +180,18 @@ class CartService
             ->whereIn($productId, $products_ids)
             ->whereIn(PRODUCT_SIZE, $products_sizes_values)
             ->get([ID, PRODUCT_ID, ...CART_COMMON_ATTRIBUTES])
-            ->load([PRODUCT_MODEL => fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES)]);
+            ->load(PRODUCT_MODEL);
 
 
         if ($cart_items->count() !== count($products_quantities_values)) {
             throw new ModelNotFoundException('The number of the '.PRODUCTS_TABLE.' in the '.CART_MODEL.' is not equal to the number of the received quantities!');
         }
 
-        return $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {
+        $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {
             $cartItem->update([PRODUCT_QUANTITY => +$products_quantities_values[$key]]);
         });
+
+        return $cart_items;
     }
 
     /**
@@ -273,6 +274,7 @@ class CartService
 
             if ($first_found_cart_item) {
                 $first_found_cart_item->{PRODUCT_QUANTITY} += $productQuantityValue;
+
                 return $first_found_cart_item->save();
             }
 

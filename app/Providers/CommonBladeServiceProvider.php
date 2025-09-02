@@ -20,7 +20,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('userFullName', static fn() => 
+        Blade::directive('userFullName', static fn() =>
             "<?php echo auth()->user()?->{FULL_NAME} ?>"
         );
 
@@ -30,13 +30,13 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $price
          * @return string
          */
-        Blade::directive('priceFormat', static fn(string $price) => 
+        Blade::directive('priceFormat', static fn(string $price) =>
             "<?php echo 'EGP '.number_format($price, 2); ?>"
         );
 
         /**
          * Modal Close Button.
-         * 
+         *
          * @return string
          */
         Blade::directive('modalCloseBtn', static fn() =>
@@ -152,7 +152,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$trashed_main_button = \"<a href=\".route(\$route, [...request()?->input(), CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
 
-                if (request()?->input(CONDITION)) {
+                if (trashedConditionRequest()) {
                     \$button_text = DELETE;
 
                     \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$status_title.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
@@ -162,7 +162,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$status_title.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
 
-                if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && request()?->input(CONDITION) !== TRASHED) {
+                if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && trashedConditionRequest() !== TRASHED) {
                     \$add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button>\";
                 }
 
@@ -210,7 +210,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @return string
          */
-        Blade::directive('loopIteration', static fn() => 
+        Blade::directive('loopIteration', static fn() =>
             "<?php echo \"<td class='row-num'><p></p></td>\" ?>"
         );
 
@@ -227,7 +227,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? ++$colspan
                 : $colspan += 3;
 
-            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? request()?->input(CONDITION) ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
+            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? trashedConditionRequest() ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
 
             return $message_label."<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>\$message</td></tr>\" ?>";
         });
@@ -241,7 +241,16 @@ class CommonBladeServiceProvider extends ServiceProvider
         Blade::directive('pagination', static function (string $paginationArgs) {
             [$collection, $route] = array_from($paginationArgs);
 
-            return "<?php echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route, [ID => request()?->input(ID), STATUS => request()?->input(STATUS), RATING => request()?->input(RATING)])]) ?>";
+            return "<?php
+                \$queryParams = [
+                    ID             => request()?->input(ID),
+                    STATUS         => request()?->input(STATUS),
+                    RATING         => request()?->input(RATING),
+                    'search_value' => request()?->input('search_value')
+                ];
+
+                echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route, \$queryParams)]);
+            ?>";
         });
     }
 }

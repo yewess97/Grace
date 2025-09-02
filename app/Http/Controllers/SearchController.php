@@ -18,7 +18,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -85,9 +85,7 @@ class SearchController extends Controller
                 ])
             ?->fastPaginate(16);
 
-        noResultsException($products);
-
-        return viewProducts($products);
+        return viewProducts($products, $this->search_value);
     }
 
     /**
@@ -99,10 +97,8 @@ class SearchController extends Controller
      */
     final public function searchUsers(?string $type = null): JsonResponse
     {
-        $filter_users_attribute = [Arr::last(USER_ATTRIBUTES)];
-
-        $users = User::query()->when($type === FILTER, static function ($user) use ($filter_users_attribute) {
-            $filter_users_request = new UserRequest(FILTER, USERS_TABLE, $filter_users_attribute);
+        $users = User::query()->when($type === FILTER, static function ($user) {
+            $filter_users_request = new UserRequest(FILTER, USERS_TABLE, [ROLE]);
 
             validateAttributes($filter_users_request);
 
@@ -150,7 +146,7 @@ class SearchController extends Controller
         $orders = Order::query()->latest()
             ->whereStatus($status);
 
-        $orders->when($type === FILTER, function ($order) {
+        $orders->when($type === FILTER, static function ($order) {
             $filter_orders = new FilterByDatesRequest(FILTER, ORDERS_TABLE, FILTER_BY_DATES_ATTRIBUTES);
 
             validateAttributes($filter_orders);
@@ -210,17 +206,17 @@ class SearchController extends Controller
      */
     final public function filterProducts(): Application|Factory|View|JsonResponse
     {
-        $query_params = Arr::except(request()?->query(), ['page']);
+        $query_params = request()?->except('page');
 
         if (!empty($query_params)) {
             $products = Product::query()->select(PRODUCT_ITEM_ATTRIBUTES);
 
             collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
-            $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
-                is_array($collectionValue)
-                    ? $product->whereIn(SLUG, $collectionValue)
-                    : $product->where(SLUG, $collectionValue);
-            })
+                $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
+                    is_array($collectionValue)
+                        ? $product->whereIn(SLUG, $collectionValue)
+                        : $product->where(SLUG, $collectionValue);
+                })
             );
 
             $products = $products->fastPaginate(16);
@@ -239,7 +235,7 @@ class SearchController extends Controller
         $filter_products_request_values = $filter_products_request->dataValues();
 
         array_walk($filter_products_request_values, static fn(&$filterProductsRequestValue) =>
-        is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
+            is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
         );
 
         $products = in_array(SORT, $filter_products_attributes, true)

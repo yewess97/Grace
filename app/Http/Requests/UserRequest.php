@@ -21,7 +21,7 @@ class UserRequest extends FormRequest
      */
     final public function rules(?string $id = null): array
     {
-        $this->filter_users_attribute = [Arr::last(USER_ATTRIBUTES)];
+        $this->filter_users_attribute = [ROLE];
 
         // Check if $this->modelAttributes has exactly one element
         $this->is_single_attribute = count($this->modelAttributes) === 1;

@@ -97,6 +97,9 @@ class ReviewService
             ]
         );
 
+        forgetCacheFor(REVIEWS_TABLE, $rating_value);
+        cache()->forget(AVERAGE_RATE);
+
         sendNotificationToAdmins(new NewReviewAdded($review));
 
         return $review;
@@ -110,6 +113,9 @@ class ReviewService
      */
     final public function deleteReview(Review $review): bool
     {
+        forgetCacheFor(REVIEWS_TABLE, $rating_value);
+        cache()->forget(AVERAGE_RATE);
+
         return customDelete($review, TITLE);
     }
 
@@ -121,6 +127,9 @@ class ReviewService
      */
     final public function deleteMultipleReviews(Review $reviews): bool
     {
+        forgetCacheFor(REVIEWS_TABLE, $rating_value);
+        cache()->forget(AVERAGE_RATE);
+
         return customDelete($reviews);
     }
 
@@ -132,6 +141,9 @@ class ReviewService
      */
     final public function restoreReview(Review $review): bool
     {
+        forgetCacheFor(REVIEWS_TABLE, $rating_value);
+        cache()->forget(AVERAGE_RATE);
+
         return restore($review, TITLE);
     }
 
@@ -143,6 +155,9 @@ class ReviewService
      */
     final public function restoreMultipleReviews(Review $reviews): bool
     {
+        forgetCacheFor(REVIEWS_TABLE, $rating_value);
+        cache()->forget(AVERAGE_RATE);
+
         return restore($reviews);
     }
 }

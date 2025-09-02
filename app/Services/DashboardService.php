@@ -242,7 +242,7 @@ class DashboardService
     private function getCachedData(bool $isFilter, array $filterDashboardDates, string $type, int $ttl, int $paginationItemsNumber, Builder $query): LengthAwarePaginator|EloquentCollection
     {
         return cache()->remember(
-            $this->allOrFilteredCacheKey($isFilter)."_{$type}_dashboard".currentPage(),
+            $this->allOrFilteredCacheKey($isFilter)."_{$type}_dashboard". currentPageRequest(),
             $ttl,
             function () use ($query, $isFilter, $filterDashboardDates, $paginationItemsNumber) {
                 $query = $this->applyFilter($query, $isFilter, $filterDashboardDates);

@@ -1,4 +1,3 @@
-/* --------- Boxes --------- */
 .box-content {
     padding: var(--fifteen-pixels);
     background-color: var(--white-color);
@@ -8,12 +7,8 @@
     box-shadow: 0 0 var(--ten-pixels) #00000008;
 }
 
-.box-content .box-title {
-    padding-bottom: var(--fifteen-pixels);
-}
-
 .box-content .box-title > h2 > span {
-    padding-bottom: var(--four-pixels);
+    padding-bottom: var(--two-pixels);
 }
 
 .box-content .box-title > h2 > span::after {
@@ -22,4 +17,13 @@
     inset: auto auto 0 0;
     height: 0.13rem;
     background-color: var(--main-color);
+}
+
+.box-content .box-title > a {
+    font-weight: 500;
+    color: var(--main-color);
+}
+
+.box-content .box-title > a:hover {
+    font-weight: 600;
 }

@@ -23,7 +23,7 @@ class UserService
     {
         $user_profile_title = auth()->user()?->{FULL_NAME}.' - '.ucfirst(PROFILE);
         $user               = cache()->remember(USER_MODEL, 1800, static fn() => User::profileData());
-        $user_orders        = cache()->remember(USER_ORDERS.currentPage(), 1800, static fn():
+        $user_orders        = cache()->remember(paginationCacheKey(USER_ORDERS), 1800, static fn():
             LengthAwarePaginator => $user->{ORDERS_TABLE}()->fastPaginate(5)
         );
 
@@ -52,6 +52,11 @@ class UserService
      */
     final public function deleteUser(User $user): bool
     {
+        forgetCacheFor(USERS_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCacheFor(USER_ORDERS);
+        cache()->forget(USER_MODEL);
+
         return customDelete($user, FULL_NAME);
     }
 
@@ -63,6 +68,11 @@ class UserService
      */
     final public function deleteMultipleUsers(User $users): bool
     {
+        forgetCacheFor(USERS_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCacheFor(USER_ORDERS);
+        cache()->forget(USER_MODEL);
+
         return customDelete($users);
     }
 
@@ -74,6 +84,11 @@ class UserService
      */
     final public function restoreUser(User $user): bool
     {
+        forgetCacheFor(USERS_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCacheFor(USER_ORDERS);
+        cache()->forget(USER_MODEL);
+
         return restore($user, FULL_NAME);
     }
 
@@ -85,6 +100,11 @@ class UserService
      */
     final public function restoreMultipleUsers(User $users): bool
     {
+        forgetCacheFor(USERS_TABLE);
+        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCacheFor(USER_ORDERS);
+        cache()->forget(USER_MODEL);
+
         return restore($users);
     }
 }

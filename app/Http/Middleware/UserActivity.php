@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
-use Cache;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +23,7 @@ class UserActivity
     {
         if (auth()->check()) {
             $expire_time = Carbon::now()->addMinutes(5);
-            Cache::put('is_online_'.auth()->id(), true, $expire_time);
+            cache()->put('is_online_'.auth()->id(), true, $expire_time);
 
             User::whereId(auth()->id())->update([LAST_SEEN => Carbon::now()]);
         }

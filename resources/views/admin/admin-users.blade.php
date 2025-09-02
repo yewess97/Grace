@@ -35,7 +35,7 @@
 
                             {{-- Clear Search/Filter Button --}}
                             <div class="d-grid place-items-center">
-                                @clearSearchFilter(route(ADMIN_USERS_ROUTE, [CONDITION => request()?->input(CONDITION)]))
+                                @clearSearchFilter(route(ADMIN_USERS_ROUTE, [CONDITION => trashedConditionRequest()]))
                             </div>
                         </article>
 

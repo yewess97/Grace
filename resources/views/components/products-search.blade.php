@@ -1,7 +1,7 @@
 <form action="{{route(SEARCH_PRODUCTS)}}" method="post" role="form" class="search-form position-relative" data-no_results="{{imageSource('no-results.png')}}">
     @csrf
     {{-- Search Input --}}
-    <label for="search_products" class="w-100">
+    <label for="user_search_products" class="w-100">
         <input type="search" name="search_value" id="user_search_products" class="w-100 rounded-start" placeholder="Search our products...." required="required">
     </label>
     {{-- Search Button --}}

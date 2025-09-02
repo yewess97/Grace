@@ -29,7 +29,7 @@ class ProductService
      */
     final public function getProductDetails(string $productSlug): Application|Factory|View|array|string
     {
-        $product = cache()->remember(PRODUCT_MODEL.".".$productSlug, 500, static fn() =>
+        $product = cache()->remember(PRODUCT_MODEL."_".$productSlug, 500, static fn() =>
             Product::with([
                 REVIEWS_TABLE,
                 SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
@@ -135,6 +135,9 @@ class ProductService
         // Product Related Subcategories
         createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
+        forgetCacheFor(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
         return [$product, getLastPage(new Product())];
@@ -150,6 +153,9 @@ class ProductService
      */
     final public function deleteProduct(Product $product): bool
     {
+        forgetCacheFor(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+
         return customDelete($product, NAME, true);
     }
 
@@ -163,7 +169,10 @@ class ProductService
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        return customDelete($products, null, true);
+        forgetCacheFor(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+
+        return customDelete(model: $products, deleteImages: true);
     }
 
     /**
@@ -174,6 +183,9 @@ class ProductService
      */
     final public function restoreProduct(Product $product): bool
     {
+        forgetCacheFor(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+
         return restore($product, NAME);
     }
 
@@ -185,6 +197,9 @@ class ProductService
      */
     final public function restoreMultipleProducts(Product $products): bool
     {
+        forgetCacheFor(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+
         return restore($products);
     }
 }

@@ -31,14 +31,17 @@
                     {{-- Products --}}
                     <article class="home-products">
                         <div class="box-content rounded-start">
-                            {{-- Products Title --}}
-                            <article class="box-title">
-                                <h2 class="fs-5 fw-600 text-uppercase border-bottom">
+                            {{-- Products Title & Link --}}
+                            <article class="box-title d-flex justify-content-between align-items-center mb-3 border-bottom">
+                                {{-- Products Title --}}
+                                <h2 class="fs-5 fw-600 text-uppercase">
                                     <span class="position-relative">Most Selling</span>
                                 </h2>
+                                {{-- Products Link --}}
+                                <a href="{{route(PRODUCTS_LIST)}}" role="link" class="text-decoration-underline">All {{ucfirst(PRODUCTS_TABLE)}}</a>
                             </article>
                             {{-- Products Container --}}
-                            <article class="products-container pagination-container pt-3">
+                            <article class="products-container pagination-container">
                                 @include(USER_PRODUCTS_PAGINATION, [PRODUCTS_TABLE => $products])
                             </article>
                         </div>
@@ -57,8 +60,8 @@
                     <article class="home-services">
                         <div class="box-content rounded-start">
                              {{-- Our Services Title --}}
-                            <article class="box-title">
-                                <h2 class="fs-5 fw-600 text-uppercase border-bottom">
+                            <article class="box-title mb-3 border-bottom">
+                                <h2 class="fs-5 fw-600 text-uppercase">
                                     <span class="position-relative">Our services</span>
                                 </h2>
                             </article>
@@ -82,8 +85,8 @@
                     <article class="home-partners">
                         <div class="box-content rounded-start">
                              {{-- Our Partners Title --}}
-                            <article class="box-title">
-                                <h2 class="fs-5 fw-600 text-uppercase border-bottom">
+                            <article class="box-title mb-3 border-bottom">
+                                <h2 class="fs-5 fw-600 text-uppercase">
                                     <span class="position-relative">Our partners</span>
                                 </h2>
                             </article>

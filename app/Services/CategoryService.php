@@ -51,7 +51,7 @@ class CategoryService
             ]
         );
 
-        cache()->forget(CATEGORIES_TABLE);
+        forgetCacheFor(CATEGORIES_TABLE);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
@@ -71,7 +71,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, (new Subcategory()));
         $this->deleteRelatedCollectionItems($category, (new Product()));
 
-        cache()->forget(CATEGORIES_TABLE);
+        forgetCacheFor(CATEGORIES_TABLE);
 
         return customDelete($category, NAME, true);
     }
@@ -89,9 +89,9 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
         $this->deleteRelatedCollectionItems($categories, (new Product()));
 
-        cache()->forget(CATEGORIES_TABLE);
+        forgetCacheFor(CATEGORIES_TABLE);
 
-        return customDelete($categories, null, true);
+        return customDelete(model: $categories, deleteImages: true);
     }
 
     /**
@@ -102,7 +102,7 @@ class CategoryService
      */
     final public function restoreCategory(Category $category): bool
     {
-        cache()->forget(CATEGORIES_TABLE);
+        forgetCacheFor(CATEGORIES_TABLE);
 
         return restore($category, NAME);
     }
@@ -115,7 +115,7 @@ class CategoryService
      */
     final public function restoreMultipleCategories(Category $categories): bool
     {
-        cache()->forget(CATEGORIES_TABLE);
+        forgetCacheFor(CATEGORIES_TABLE);
 
         return restore($categories);
     }
@@ -129,10 +129,8 @@ class CategoryService
      */
     private function deleteRelatedCollectionItems(Category $category, Model|stdClass $model): void
     {
-        $selected_ids = request()?->input('selected_'.pluralize(ID));
-
-        $categories_ids = $selected_ids
-            ? array_map('intval', array_from($selected_ids))
+        $categories_ids = selectedIdsRequest()
+            ? array_map('intval', array_from(selectedIdsRequest()))
             : [$category->{ID}];
 
         // Get all related collection items once
@@ -156,7 +154,7 @@ class CategoryService
                 $related_collection_item->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
             }
 
-            cache()->forget($model->getTable());
+            forgetCacheFor($model->getTable());
 
             return $related_collection_item->forceDelete();
         });
