@@ -200,13 +200,13 @@ class AdminController extends Controller
         $filter_orders_error = static fn(string $attributeName) => formError(FILTER, ORDERS_TABLE, $attributeName);
 
         $orders_pagination_route = match (Route::currentRouteName()) {
-            SEARCH_ORDERS => SEARCH_ORDERS.",$status",
+            SEARCH_ORDERS => SEARCH_ORDERS,
             default       => ADMIN_ORDERS_ROUTE,
         };
 
         return request()?->ajax()
-            ? ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, ['orders_pagination_route' => $orders_pagination_route])
-            : view(ADMIN_ORDERS_VIEW, compact(ORDERS_TABLE, pluralize(STATUS), ORDERS_TITLE, ORDER_MODEL.'_'.STATUS, UPDATE_ORDER_ERROR, FILTER_ORDERS_ERROR, 'orders_pagination_route'));
+            ? ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, [ORDERS_PAGINATION_ROUTE => $orders_pagination_route])
+            : view(ADMIN_ORDERS_VIEW, compact(ORDERS_TABLE, pluralize(STATUS), ORDERS_TITLE, ORDER_MODEL.'_'.STATUS, UPDATE_ORDER_ERROR, FILTER_ORDERS_ERROR, ORDERS_PAGINATION_ROUTE));
     }
 
     /**

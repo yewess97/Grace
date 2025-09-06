@@ -11,10 +11,10 @@
                     <div class="search-filter-action-buttons row col-12 justify-content-between align-items-center">
                         <article class="search-filter row col-12 col-md-10 align-items-center gap-4">
                             {{-- Orders Search --}}
-                            @search(SEARCH_ORDERS, $order_status)
+                            @search(SEARCH_ORDERS, [STATUS => $order_status])
 
                             {{-- Orders Filter by Date --}}
-                            <form action="{{route(SEARCH_ORDERS, [$order_status, FILTER])}}" method="post" role="form" id="filter_orders_form" class="grace-form filter-form col-12 col-md-6" data-no_results="{{imageSource('no-results.png')}}">
+                            <form action="{{route(SEARCH_ORDERS, [STATUS => $order_status, 'type' => FILTER])}}" method="post" role="form" id="filter_orders_form" class="grace-form filter-form col-12 col-md-6" data-no_results="{{imageSource('no-results.png')}}">
                                 @csrf
                                 <div class="grace-form-body row">
                                     <div class="filter-orders-dates row col-12">

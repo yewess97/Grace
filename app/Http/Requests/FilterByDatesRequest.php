@@ -32,7 +32,7 @@ class FilterByDatesRequest extends FormRequest
         return [
             ...$this->requiredMessage($this->dataKeyOf(START_DATE), capitalizeAll(START_DATE)),
             "{$this->dataKeyOf(START_DATE)}.date" => 'This field must be a date',
-            "{$this->dataKeyOf(START_DATE)}.after_or_equal" => 'Start date must begin from 2022-06-24 or later',
+            "{$this->dataKeyOf(START_DATE)}.after_or_equal" => 'Start date must begin from 2022-06-25 or later',
             ...$this->requiredMessage($this->dataKeyOf(END_DATE), capitalizeAll(END_DATE)),
             "{$this->dataKeyOf(END_DATE)}.date" => 'This field must be a date',
             "{$this->dataKeyOf(END_DATE)}.before_or_equal" => 'End date must be from '.now()->toDateString().' or earlier',

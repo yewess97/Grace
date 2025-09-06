@@ -27,7 +27,7 @@
     top: 10%;
 }
 
-.grace-form .grace-form-body .form-control:focus + label.form-label {
+.grace-form .grace-form-body .form-control:focus ~ label.form-label {
     color: var(--main-color);
 }
 
@@ -89,7 +89,6 @@
 .grace-form .grace-form-body .remember-check {
     padding-left: var(--twenty-five-pixels);
     color: var(--black-color);
-    cursor: pointer;
 }
 
 .grace-form .grace-form-body .remember-check > input[type="checkbox"]:checked ~ .remember-title {

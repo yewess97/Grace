@@ -33,19 +33,22 @@ p {
 }
 
 a,
-a:hover,
-:is(a, button):focus {
-    text-decoration: none;
-    color: inherit;
+input:not([type="text"], [type="email"], [type="password"], [type="number"], [type="search"]),
+select,
+button,
+[role="button"],
+.custom-check,
+.form-select,
+.cursor-pointer,
+.filter-multi-select :where(.viewbar .placeholder, .dropdown-item :is(.custom-control, .custom-control-input, .custom-control-label)) {
+    cursor: url('../../../storage/images/grace-hand-cursor.cur'), pointer !important;
 }
 
 a,
 a:hover,
-select,
-button,
-[role="button"],
-.cursor-pointer {
-    cursor: url('../../../storage/images/grace-hand-cursor.cur'), pointer !important;
+:is(a, button):focus {
+    text-decoration: none;
+    color: inherit;
 }
 
 :is(a, button, input, select):focus {
@@ -149,11 +152,14 @@ ul {
 .placeholder {
     background-color: transparent !important;
     opacity: 1 !important;
-    cursor: pointer !important;
 }
 
-.highlight-background {
+.bg-highlight {
     background-color: lightyellow !important;
+}
+
+.bg-danger-highlight {
+    background-color: #ffc3c369 !important;
 }
 
 /* --------- Offers --------- */

@@ -82,8 +82,8 @@
                                         </div>
                                         {{$add_cart_product_error(PRODUCT_QUANTITY)}}
                                     </div>
+                                    {{-- Add To Cart Button --}}
                                     @if ($product->{STATUS} === 1)
-                                        {{-- Add To Cart Button --}}
                                         @submitButton(ADD_TO_CART)
                                     @endif
                                 </div>

@@ -108,39 +108,10 @@ User.ajaxDeleteRequest(IGrace.REVIEW);
 /* ---------------------------------- END REVIEWS ---------------------------------- */
 
 
-/* ---------------------------------- FILTER ---------------------------------- */
-$(document).on(IGrace.SUBMIT, `#${IGrace.FILTER_PRODUCTS()}_form, #${IGrace.FILTER_PRODUCTS_SORT()}_form`, function (e) {
-    e.preventDefault();
+/* ---------------------------------- FILTER PRODUCTS ---------------------------------- */
+User.ajaxFilterProductsRequest();
 
-    const
-        target             = $(this),
-        route              = target.attr('action'),
-        action             = target.attr(IGrace.ID).split('_')[0],
-        filtered_form_data = Common.filteredFormData(this),
-        no_results_img_src = target.data('no_results'),
-
-        /**
-         * Make sure the same key has the same value in the form data object,
-         * (i.e., key: value or key: [value1, value2, ...]).
-         */
-        form_data = [...filtered_form_data].reduce((formData, [key, value]) => ({
-            ...formData,
-            [key]: formData[key]
-                ? [].concat(formData[key], value)
-                : value
-        }), {});
-
-    // Save the form data in the sessionStorage to be used in the pagination request later on.
-    sessionStorage.setItem(IGrace.FILTER_PRODUCTS(), JSON.stringify(form_data));
-
-    User.ajaxFilterProductsRequest({
-        route:             route,
-        action:            action,
-        noResultsImageSrc: no_results_img_src,
-    });
-});
-
-/* ---------------------------------- END FILTER ---------------------------------- */
+/* ---------------------------------- END FILTER PRODUCTS ---------------------------------- */
 
 
 /* ---------------------------------- SEARCH & CLEAR SEARCH/FILTER ---------------------------------- */

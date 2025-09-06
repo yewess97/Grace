@@ -76,13 +76,13 @@
                                         <div class="login-user-actions col-12 d-flex justify-content-between align-items-center mb-2">
                                             {{-- Remember Me --}}
                                             <div class="form-group">
-                                                <label for="remember" class="remember-check position-relative d-flex align-items-center user-select-none">
+                                                <label for="remember" class="remember-check position-relative d-flex align-items-center user-select-none cursor-pointer">
                                                     <input type="checkbox" role="checkbox" name="remember" id="remember" aria-labelledby="remember_me" @checked(old('remember'))>
                                                     <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="remember_me"></span>
                                                     <span id="remember_me" class="remember-title text-capitalize">Remember me</span>
                                                 </label>
                                             </div>
-                                            
+
                                             {{-- Forgot Password --}}
                                             <a href="{{route(FORGOT_PASSWORD)}}" role="link" class="fw-500 text-main">
                                                 {{capitalizeFirst(FORGOT_PASSWORD)}}?
@@ -107,8 +107,8 @@
                                         <div class="social-login row row-cols-1 row-cols-md-2 justify-content-center align-items-center">
                                             @foreach (LOGIN_SOCIAL_PROVIDERS as $provider)
                                                 <div @class([
-                                                        (count(LOGIN_SOCIAL_PROVIDERS) % 2 === 1 && $loop->last) 
-                                                            ? 'w-100 py-2' 
+                                                        (count(LOGIN_SOCIAL_PROVIDERS) % 2 === 1 && $loop->last)
+                                                            ? 'w-100 py-2'
                                                             : 'py-1',
                                                         'ps-0 pe-2' => $loop->iteration % 2 === 1 && !$loop->last,
                                                         'pe-0 ps-2' => $loop->iteration % 2 === 0,

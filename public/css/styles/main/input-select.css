@@ -18,7 +18,6 @@ input[type="radio"] {
     height: 0;
     opacity: 0;
     visibility: hidden;
-    cursor: pointer;
 }
 
 input[type="radio"] + .custom-check {
@@ -48,7 +47,6 @@ input[type="checkbox"] {
     height: 0;
     opacity: 0;
     visibility: hidden;
-    cursor: pointer;
 }
 
 input[type="checkbox"] + .custom-check {
@@ -58,7 +56,6 @@ input[type="checkbox"] + .custom-check {
     border: var(--gray-border);
     border-radius: var(--four-pixels);
     background-color: var(--white-color);
-    cursor: pointer;
 }
 
 :is(input[type="checkbox"]:checked, input[type="checkbox"]:indeterminate) ~ .custom-check::after {
@@ -168,10 +165,6 @@ input[type="checkbox"] + .custom-check {
     font-weight: bold;
     border: 0;
     background-color: transparent;
-}
-
-.filter-multi-select :where(.viewbar, .dropdown-item :is(.custom-control, .custom-control-input, .custom-control-label)) {
-    cursor: pointer;
 }
 
 /* --------- Common between Checkboxes & Multi Selects --------- */

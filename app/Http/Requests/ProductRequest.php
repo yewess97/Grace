@@ -20,19 +20,13 @@ class ProductRequest extends FormRequest
     final public function rules(?string $id = null): array
     {
         if ($this->operation === FILTER) {
-            if (in_array(SORT, $this->modelAttributes, true)) {
-                return [
-                    $this->dataKeyOf(SORT) =>
-                        ['required', 'string', 'in:'.implode(',', array_values(SORT_PRODUCTS_ENUM))],
-                ];
-            }
-
             return [
                 ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, CATEGORIES_TABLE),
                 ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, SUBCATEGORIES_TABLE),
                 ...$this->multipleSelectionValidation(SIZES, 5, PRODUCT_SIZES_TABLE),
                 ...$this->numberValidation(MIN_PRICE, 'numeric'),
                 ...$this->numberValidation(MAX_PRICE, 'numeric'),
+                $this->dataKeyOf(SORT) => ['nullable', 'string', 'in:'.implode(',', array_values(SORT_PRODUCTS_ENUM))],
             ];
         }
 
@@ -72,20 +66,14 @@ class ProductRequest extends FormRequest
         $name_desc_regex_rules = 'characters, numbers, and some symbols';
 
         if ($this->operation === FILTER) {
-            if (in_array(SORT, $this->modelAttributes, true)) {
-                return [
-                    ...$this->requiredMessage($this->dataKeyOf(SORT), $cap_sort),
-                    "{$this->dataKeyOf(SORT)}.string" => "$cap_sort must be a text",
-                    "{$this->dataKeyOf(SORT)}.in"     => "$cap_sort must be one of the following: ".implode(', ', array_values(SORT_PRODUCTS_ENUM)),
-                ];
-            }
-
             return [
                 ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, null, $cap_categories, true),
                 ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, null, $cap_subcategories, true),
                 ...$this->multipleSelectionValidation(SIZES, 5, null, $cap_sizes, true),
                 ...$this->numberValidation(MIN_PRICE, 'numeric', true),
                 ...$this->numberValidation(MAX_PRICE, 'numeric', true),
+                "{$this->dataKeyOf(SORT)}.string" => "$cap_sort must be a text",
+                "{$this->dataKeyOf(SORT)}.in"     => "$cap_sort must be one of the following: ".implode(', ', array_values(SORT_PRODUCTS_ENUM)),
             ];
         }
 
@@ -157,5 +145,4 @@ class ProductRequest extends FormRequest
             ],
         ];
     }
-
 }

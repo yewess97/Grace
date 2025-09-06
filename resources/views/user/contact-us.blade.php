@@ -8,11 +8,11 @@
             <div class="row">
                 {{-- Contact Us --}}
                 <div class="col">
-                    <div class="box-content d-grid place-items-center gap-4 py-4 rounded-5">
+                    <div class="box-content d-grid place-items-center gap-5 py-4 rounded-5">
                         {{-- Contact Us Title --}}
-                        <article class="box-title">
-                            <h2 class="fs-9 fw-600 text-center">{{capitalizeAll(CONTACT_US)}}</h2>
-                            <p class="mt-2 text-center">
+                        <article class="box-title text-center">
+                            <h2 class="fs-9 fw-600">{{capitalizeAll(CONTACT_US)}}</h2>
+                            <p class="mt-2">
                                 We are here to help and answer any question you might have. Also
                                 you can contact us by phone or email. <br> We look forward to hearing from you.
                             </p>

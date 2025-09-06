@@ -193,11 +193,9 @@ const User = {
     },
 
 
-
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
-
     /**
-     * Auth Ajax Request.
+     * Auth ajax request.
      *
      * @param authAction
      * @return {void}
@@ -262,7 +260,7 @@ const User = {
     },
 
     /**
-     * Social Auth Ajax Request.
+     * Social Auth ajax request.
      *
      * @return {void}
      */
@@ -287,6 +285,12 @@ const User = {
 
 
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
+    /**
+     * Create or Update a collection.
+     *
+     * @param form
+     * @return {void}
+     */
     ajaxCreateOrUpdateRequest: (form) => {
         $(document).on(IGrace.SUBMIT, `#${form}_form`, function (e) {
             e.preventDefault();
@@ -420,6 +424,12 @@ const User = {
 
 
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
+    /**
+     * Delete Item ajax request.
+     *
+     * @param collection
+     * @return {void}
+     */
     ajaxDeleteRequest: (collection) => {
         $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.DELETE_COLLECTION(collection))}-form`, function (e) {
             e.preventDefault();
@@ -470,6 +480,11 @@ const User = {
 
 
     /* ---------------------------------- GET PRODUCT DATA REQUEST ---------------------------------- */
+    /**
+     * Get a product's data when quick view it.
+     *
+     * @return {void}
+     */
     ajaxGetProductDataRequest: () => {
         $(document).on(IGrace.CLICK, '.quick-view-btn', function (e) {
             e.preventDefault();
@@ -547,56 +562,13 @@ const User = {
     },
 
 
-    /* ---------------------------------- FILTER PRODUCTS REQUEST ---------------------------------- */
-    ajaxFilterProductsRequest: (args) => {
-        const { route, action, noResultsImageSrc } = args;
-
-        const
-            stored_filters = JSON.parse(sessionStorage.getItem(IGrace.FILTER_PRODUCTS())) || {},
-
-            /**
-             * Check if value is an array, if not, wrap it inside [value],
-             * then append each value (single or multiple) separately to FormData.
-             */
-            form_data = Object.entries(stored_filters).reduce((formData, [attribute, value]) => {
-                $.each(($.isArray(value) ? value : [value]), (_, val) => formData.append(attribute, val));
-
-                return formData;
-            }, new FormData());
-
-        $.ajax({
-            url: route,
-            method: IGrace.POST,
-            data: form_data,
-            success: (data) => {
-                $(IGrace.ERROR_ELEMENT(action)).empty()
-                    .parent()
-                    .removeClass(`show-${IGrace.ERROR} mt-3`);
-
-                Common.paginationResponse($('.pagination-container'), data);
-
-                User.ajaxGetProductDataRequest();
-            },
-            error: (err) => {
-                if (Common.responseJsonError(err, true) === 'no-results') {
-                    return Common.searchFilterErrorResponse(noResultsImageSrc);
-                }
-
-                if (err.status === 422) {
-                    $(IGrace.ERROR_ELEMENT(action)).removeClass('text-danger')
-                        .addClass('alert fade show alert-danger fw-500')
-                        .attr('data-mdb-color', 'danger');
-
-                    return Common.errorMessage(action, Common.responseJsonError(err));
-                }
-
-                Common.somethingWentWrongError();
-            },
-        });
-    },
-
-
     /* ---------------------------------- CREATE OR UPDATE CART REQUEST ---------------------------------- */
+    /**
+     * Create or Update Cart Items ajax request.
+     *
+     * @param action
+     * @return {void}
+     */
     ajaxCreateOrUpdateCartRequest: (action) => {
         $(document).on(IGrace.SUBMIT, `.${action}-${IGrace.CART}-form`, function (e) {
             e.preventDefault();
@@ -696,6 +668,11 @@ const User = {
 
 
     /* ---------------------------------- DELETE ALL USER'S CARTS REQUEST ---------------------------------- */
+    /**
+     * Delete All Cart Items ajax request.
+     *
+     * @return {void}
+     */
     ajaxDeleteAllCartsRequest: () => {
         $(document).on(IGrace.CLICK, `#clear_${IGrace.CART}`, function (e) {
             e.preventDefault();
@@ -725,6 +702,12 @@ const User = {
 
 
     /* ---------------------------------- UPDATE REVIEWS CONTENT REQUEST ---------------------------------- */
+    /**
+     * Update Reviews' Container ajax request.
+     *
+     * @param reviewsRoute
+     * @return {void}
+     */
     ajaxUpdateReviewsContentRequest: (reviewsRoute) => {
         $.ajax({
             url: reviewsRoute,
@@ -751,6 +734,119 @@ const User = {
                     <div class="form-notch-trailing"></div>
                 `)
         );
+    },
+
+
+    /* ---------------------------------- FILTER PRODUCTS REQUEST ---------------------------------- */
+    /**
+     * Get Filtered Products ajax request.
+     *
+     * @param args
+     * @return {void}
+     */
+    ajaxFilterProducts: (args) => {
+        const { route, action, noResultsImageSrc } = args;
+
+        const
+            stored_filters = JSON.parse(sessionStorage.getItem(IGrace.FILTER_PRODUCTS())) || {},
+
+        /**
+         * Check if value is an array, if not, wrap it inside [value],
+         * then append each value (single or multiple) separately to FormData.
+         */
+        form_data = Object.entries(stored_filters).reduce((formData, [attribute, value]) => {
+            $.each(($.isArray(value) ? value : [value]), (_, val) => formData.append(attribute, val));
+
+            return formData;
+        }, new FormData());
+
+        // Get a fresh CSRF token for this new request
+        form_data.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+        $.ajax({
+            url: route,
+            method: IGrace.POST,
+            data: form_data,
+            success: (data) => {
+                $(IGrace.ERROR_ELEMENT(action)).empty()
+                    .parent()
+                    .removeClass(`show-${IGrace.ERROR} mt-3`);
+
+                Common.paginationResponse($('.pagination-container'), data);
+
+                User.ajaxGetProductDataRequest();
+            },
+            error: (err) => {
+                if (Common.responseJsonError(err, true) === 'no-results') {
+                    return Common.searchFilterErrorResponse(noResultsImageSrc);
+                }
+
+                if (err.status === 422) {
+                    $(IGrace.ERROR_ELEMENT(action)).removeClass('text-danger')
+                        .addClass('alert fade show alert-danger fw-500')
+                        .attr('data-mdb-color', 'danger');
+
+                    return Common.errorMessage(action, Common.responseJsonError(err));
+                }
+
+                Common.somethingWentWrongError();
+            },
+        });
+    },
+
+    /**
+     * Get Filtered Products ajax request,
+     * when submitting the filter form.
+     *
+     * @return {void}
+     */
+    ajaxFilterProductsRequest: () => {
+        $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER_PRODUCTS()}_form`, function (e) {
+            e.preventDefault();
+
+            const
+                target             = $(this),
+                route              = target.attr('action'),
+                url_params         = new URLSearchParams(location.search),
+                action             = target.attr(IGrace.ID).split('_')[0],
+                filtered_form_data = Common.filteredFormData(this),
+                no_results_img_src = target.data('no_results'),
+                is_filter_products = route.includes(`${IGrace.FILTER}-${IGrace.PLURALIZE(IGrace.PRODUCT)}`),
+
+                /**
+                 * If the url has query parameters, append them to the route,
+                 * otherwise, use the route as is.
+                 */
+                url = is_filter_products
+                    ? `${route.split('?')[0]}?${$.param(Object.fromEntries(url_params.entries()))}`
+                    : route,
+
+                /**
+                 * Make sure the same key has the same value in the form data object,
+                 * (i.e., key: value or key: [value1, value2, ...]).
+                 */
+                form_data = [...filtered_form_data].reduce((formData, [key, value]) => ({
+                    ...formData,
+                    [key]: formData[key]
+                        ? [].concat(formData[key], value)
+                        : value
+                }), {}),
+
+                // List of form field names that contain security tokens and should never be stored
+                security_fields = ['_token', 'csrf_token', 'authenticity_token'];
+
+            // CRITICAL: Remove security fields before saving
+            $.each((security_fields), (_, field) => delete form_data[field]);
+
+            // Save the form data in the sessionStorage to be used in the pagination request later on.
+            sessionStorage.setItem(IGrace.FILTER_PRODUCTS(), JSON.stringify(form_data));
+
+            User.ajaxFilterProducts({
+                route:             url,
+                action:            action,
+                noResultsImageSrc: no_results_img_src,
+            });
+        });
     },
 }
 

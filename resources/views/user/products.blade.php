@@ -70,9 +70,9 @@
                                     <i class="ti ti-layout-list-thumb grid cursor-pointer" data-grid-view="1"></i>
                                 </article>
                                 {{-- Products Sort --}}
-                                <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_sort_form" class="filter-products-sort-form grace-form d-flex justify-content-end" data-no_results="{{imageSource('no-results.png')}}">
-                                    @csrf
-                                    <div class="grace-form-body">
+{{--                                <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_sort_form" class="filter-products-sort-form grace-form d-flex justify-content-end" data-no_results="{{imageSource('no-results.png')}}">--}}
+{{--                                    @csrf--}}
+{{--                                    <div class="grace-form-body">--}}
                                         <div class="form-group position-relative d-flex align-items-center gap-3">
                                             <label for="filter_products_sort" class="fw-600">{{ucfirst(SORT)}} By</label>
                                             <select name="filter_products_sort" id="filter_products_sort" class="form-select col py-2">
@@ -82,8 +82,8 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
-                                </form>
+{{--                                    </div>--}}
+{{--                                </form>--}}
                             </div>
                         </div>
                     </div>

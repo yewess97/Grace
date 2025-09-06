@@ -46,6 +46,7 @@ class SubcategoryService
         createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
         forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
 
@@ -91,6 +92,7 @@ class SubcategoryService
     final public function restoreSubcategory(Subcategory $subcategory): bool
     {
         forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         return restore($subcategory, NAME);
     }
@@ -104,6 +106,7 @@ class SubcategoryService
     final public function restoreMultipleSubcategories(Subcategory $subcategories): bool
     {
         forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         return restore($subcategories);
     }

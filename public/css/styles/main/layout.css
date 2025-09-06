@@ -35,10 +35,6 @@
     color: var(--black-color);
 }
 
-.header .header-user :is(.header-user-account-content:hover, .header-user-cart-content:hover) {
-    cursor: pointer;
-}
-
 .header .header-user :is(.header-user-account-content:hover .user-icon, .header-user-cart-content:hover .cart-icon) {
     background-color: var(--second-color);
 }

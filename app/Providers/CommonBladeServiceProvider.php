@@ -100,10 +100,23 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('search', static function (string $searchArgs) {
-            $table      = array_from($searchArgs)[0];
-            $filtration = array_from($searchArgs)[1] ?? null;
+            return "<?php
+                \$__table        = [$searchArgs][0];
+                \$__query_params = [$searchArgs][1] ?? null;
 
-            return "<?php echo \"<form action='\".route($table, $filtration).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".($table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\"><div class='grace-form-body row col-12'><div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'><input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'><label for='search' class='form-label'>\".capitalizeAll(str($table)->ltrim(ADMIN)->value()).\"...</label><i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle cursor-pointer' data-route=\".route($table, $filtration).\"></i></div></div></form>\" ?>";
+                echo
+                \"
+                    <form action='\".route(\$__table, \$__query_params).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".(\$__table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\">
+                        <div class='grace-form-body row col-12'>
+                            <div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'>
+                                <input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'>
+                                <label for='search' class='form-label'>\".capitalizeAll(str(\$__table)->ltrim(ADMIN)->value()).\"...</label>
+                                <i id='clear_search' class='fa-solid fa-xmark clear-search-btn position-absolute top-50 fs-7 text-center rounded-circle cursor-pointer' data-route=\".route(\$__table, \$__query_params).\"></i>
+                            </div>
+                        </div>
+                    </form>
+                \";
+            ?>";
         });
 
         /**
@@ -239,17 +252,13 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('pagination', static function (string $paginationArgs) {
-            [$collection, $route] = array_from($paginationArgs);
-
             return "<?php
-                \$queryParams = [
-                    ID             => request()?->input(ID),
-                    STATUS         => request()?->input(STATUS),
-                    RATING         => request()?->input(RATING),
-                    'search_value' => request()?->input('search_value')
-                ];
+                [\$__collection, \$__route] = [$paginationArgs];
 
-                echo with($collection)->links(PAGINATION_COMPONENT, ['route' => route($route, \$queryParams)]);
+                \$__query_params = \Illuminate\Support\Arr::except(request()?->query(), ['_token', 'page']);
+
+//                echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, request()?->except(['_token', 'page']))]);
+                echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, \$__query_params)]);
             ?>";
         });
     }

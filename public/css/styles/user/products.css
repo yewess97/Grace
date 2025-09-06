@@ -97,7 +97,6 @@
     width: 100%;
     height: var(--five-pixels);
     background-color: var(--second-color);
-    cursor: pointer;
 }
 
 .products-main .left-side .box-filter  div.filter-content .filter-range-content .price-range > label > input[type="range"]::-webkit-slider-thumb {
@@ -113,7 +112,6 @@
     -moz-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
     -o-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
     box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
-    cursor: pointer;
     pointer-events: auto;
     -webkit-appearance: none;
 }
@@ -131,7 +129,6 @@
     -moz-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
     -o-box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
     box-shadow: 0 0 var(--six-pixels) rgba(0, 0, 0, 0.05);
-    cursor: pointer;
     pointer-events: auto;
     -webkit-appearance: none;
 }

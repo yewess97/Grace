@@ -18,6 +18,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -85,7 +86,7 @@ class SearchController extends Controller
                 ])
             ?->fastPaginate(16);
 
-        return viewProducts($products, $this->search_value);
+        return viewProducts($products);
     }
 
     /**
@@ -136,13 +137,14 @@ class SearchController extends Controller
     /**
      * Search or Filter for specified order(s).
      *
-     * @param int $status
-     * @param string|null $type
      * @return JsonResponse
      * @throws ValidationException|NotFoundHttpException|Throwable
      */
-    final public function searchOrders(int $status, ?string $type = null): JsonResponse
+    final public function searchOrders(): JsonResponse
     {
+        $status = request()?->input(STATUS);
+        $type   = request()?->input('type');
+
         $orders = Order::query()->latest()
             ->whereStatus($status);
 
@@ -159,9 +161,14 @@ class SearchController extends Controller
 
         $orders = $orders->fastPaginate(16);
 
+        $orders_pagination_route = match (Route::currentRouteName()) {
+            SEARCH_ORDERS => SEARCH_ORDERS,
+            default       => ADMIN_ORDERS_ROUTE,
+        };
+
         noResultsException($orders);
 
-        return ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE);
+        return ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, [ORDERS_PAGINATION_ROUTE => $orders_pagination_route]);
     }
 
     /**
@@ -206,41 +213,33 @@ class SearchController extends Controller
      */
     final public function filterProducts(): Application|Factory|View|JsonResponse
     {
-        $query_params = request()?->except('page');
+        $products     = Product::query();
+        $query_params = Arr::except(request()?->query(), ['page']);
 
         if (!empty($query_params)) {
-            $products = Product::query()->select(PRODUCT_ITEM_ATTRIBUTES);
-
             collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
                 $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
-                    is_array($collectionValue)
-                        ? $product->whereIn(SLUG, $collectionValue)
-                        : $product->where(SLUG, $collectionValue);
-                })
+                        is_array($collectionValue)
+                            ? $product->whereIn(SLUG, $collectionValue)
+                            : $product->where(SLUG, $collectionValue);
+                    })
             );
+        }
 
-            $products = $products->fastPaginate(16);
+        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, FILTER_PRODUCTS_ATTRIBUTES);
+
+        if (empty($filter_products_request->data())) {
+            $products = $products->select(PRODUCT_ITEM_ATTRIBUTES)
+                ->fastPaginate(1);
 
             return viewProducts($products);
         }
 
-        $filter_products_attributes = request()?->input(FILTER.'_'.PRODUCTS_TABLE.'_'.SORT)
-            ? [SORT]
-            : FILTER_PRODUCTS_ATTRIBUTES;
-
-        $filter_products_request = new ProductRequest(FILTER, PRODUCTS_TABLE, $filter_products_attributes);
-
         validateAttributes($filter_products_request);
 
-        $filter_products_request_values = $filter_products_request->dataValues();
+        session()->forget(FILTER_PRODUCTS);
 
-        array_walk($filter_products_request_values, static fn(&$filterProductsRequestValue) =>
-            is_array($filterProductsRequestValue) ? array_pop($filterProductsRequestValue) : null
-        );
-
-        $products = in_array(SORT, $filter_products_attributes, true)
-            ? Product::sort($filter_products_request_values)
-            : Product::filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request_values);
+        $products = $products->filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request->dataValues());
 
         return viewProducts($products);
     }

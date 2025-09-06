@@ -136,7 +136,7 @@ class ProductService
         createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
         forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
@@ -154,7 +154,7 @@ class ProductService
     final public function deleteProduct(Product $product): bool
     {
         forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return customDelete($product, NAME, true);
     }
@@ -170,7 +170,7 @@ class ProductService
     final public function deleteMultipleProducts(Product $products): bool
     {
         forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return customDelete(model: $products, deleteImages: true);
     }
@@ -184,7 +184,7 @@ class ProductService
     final public function restoreProduct(Product $product): bool
     {
         forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return restore($product, NAME);
     }
@@ -198,7 +198,7 @@ class ProductService
     final public function restoreMultipleProducts(Product $products): bool
     {
         forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$productSlug);
+        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return restore($products);
     }

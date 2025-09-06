@@ -20,7 +20,7 @@
                 @php $category_name = str($category->{NAME})->lower()->replace(' ', '_') @endphp
 
                 <li role="listitem" class="filter-item d-flex justify-content-between align-items-center">
-                    <label for="filter_products_categories_{{$category->id}}" class="filter-check position-relative d-flex justify-content-center align-items-center user-select-none cursor-pointer">
+                    <label for="filter_products_categories_{{$category->id}}" class="filter-check position-relative d-flex align-items-center user-select-none cursor-pointer">
                         <input type="checkbox" role="checkbox" name="filter_products_categories[]" id="filter_products_categories_{{$category->id}}" class="filter-checkbox" multiple="multiple" value="{{$category->id}}" aria-labelledby="filter_categories_{{$category_name}}">
                         <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_categories_{{$category_name}}"></span>
                         <span id="filter_categories_{{$category_name}}" class="filter-name text-capitalize">
@@ -117,6 +117,9 @@
             </article>
         </div>
     </article>
+
+    {{-- Filter By Sort --}}
+    <input type="hidden" name="filter_products_sort" id="filter_products_sort">
 
     {{-- Filter Button --}}
     <article class="box-filter">

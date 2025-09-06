@@ -29,7 +29,7 @@ Common.imageConfig();
 // Truncate the text that has more than 70 characters
 Common.truncateText();
 
-/* ---------=========== Change Action ===========--------- */
+/* ---------=========== Change (Input) Action ===========--------- */
 $(document).on(IGrace.INPUT, (e) => {
     const target = $(e.target);
 
@@ -65,7 +65,7 @@ $(document).on(IGrace.INPUT, (e) => {
     });
 });
 
-/* ---------=========== End Change Action ===========--------- */
+/* ---------=========== End Change (Input) Action ===========--------- */
 
 
 /* ---------=========== Keyup Action ===========--------- */

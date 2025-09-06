@@ -34,8 +34,8 @@ class OrderService {
      */
     final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
     {
-        $order = cache()->remember(ORDER_DETAILS, 3600, fn() =>
-            Order::query()->with(
+        $order = cache()->remember(ORDER_DETAILS, 3600, fn():
+            Order => Order::query()->with(
                 ORDER_ITEMS, static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES)
             )
             ->firstWhere(TRACKING_NUM, request()?->input(TRACKING_NUM))
@@ -166,7 +166,7 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
         forgetCacheFor(USER_ORDERS);
 
         return customDelete($order, TRACKING_NUM);
@@ -180,7 +180,7 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
         forgetCacheFor(USER_ORDERS);
 
         return customDelete($orders);
@@ -194,7 +194,7 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
         forgetCacheFor(USER_ORDERS);
 
         return restore($order, TRACKING_NUM);
@@ -208,7 +208,7 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $status_value);
+        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
         forgetCacheFor(USER_ORDERS);
 
         return restore($orders);

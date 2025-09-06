@@ -16,4 +16,4 @@
 </div>
 
 {{-- Orders Pagination --}}
-<div class="table-pagination col-12 pt-4">@pagination($orders, ADMIN_ORDERS_ROUTE)</div>
+<div class="table-pagination col-12 pt-4">@pagination($orders, $orders_pagination_route)</div>

@@ -79,92 +79,99 @@ class Product extends Model
      * Get the most selling products.
      *
      * @param Builder $query
-     * @return LengthAwarePaginator
+     * @param int $minSales
+     * @return Builder
      */
-    final public function scopeMostSelling(Builder $query): LengthAwarePaginator
+    final public function scopeMostSelling(Builder $query, int $minSales = 20): Builder
     {
-        $product_item_attributes = array_map(static fn($attr) => PRODUCTS_TABLE.".$attr", PRODUCT_ITEM_ATTRIBUTES);
+        $product_item_attributes = array_map(static fn($attribute) => PRODUCTS_TABLE.".$attribute", PRODUCT_ITEM_ATTRIBUTES);
 
-        return $query->join(ORDER_ITEMS_TABLE, ORDER_ITEMS_TABLE.'.'.PRODUCT_NAME, '=', $product_item_attributes[1])
+        return $query->join(
+            ORDER_ITEMS_TABLE,
+            ORDER_ITEMS_TABLE.'.'.PRODUCT_NAME,
+            '=',
+            $product_item_attributes[1])
             ->select([
                 ...$product_item_attributes,
                 DB::raw('SUM('.ORDER_ITEMS_TABLE.'.'.PRODUCT_QUANTITY.') AS total_sales')
             ])
-            ->groupBy([...$product_item_attributes])
-            ->havingRaw('total_sales > 20')
-            ->orderByDesc('total_sales')
-            ->fastPaginate(16);
-    }
-
-    /**
-     * Filter the products.
-     *
-     * @param array $filterAttributes
-     * @param array $filterRequestValues
-     * @return LengthAwarePaginator
-     */
-    final public static function filter(array $filterAttributes, array $filterRequestValues): LengthAwarePaginator
-    {
-        [$categories, $subcategories, $sizes] = $filterAttributes;
-
-        [$categories_ids_values, $subcategories_ids_values, $sizes_values, $min_price_value, $max_price_value] = $filterRequestValues;
-
-        $products = self::query()->select(PRODUCT_ITEM_ATTRIBUTES);
-
-        $filter_related_collection = static function (string $relatedCollection, array $collectionValues, bool $isSize = false) use ($products) {
-            $products->when(!empty($collectionValues), function (Builder $product) use ($relatedCollection, $collectionValues, $isSize) {
-                $product->whereHas($relatedCollection, function (Builder $query) use ($collectionValues, $isSize) {
-                    $query->whereIn($isSize ? SIZE : ID, $collectionValues);
-                });
-            });
-        };
-
-        $filter_related_collection($categories, $categories_ids_values);
-
-        $filter_related_collection($subcategories, $subcategories_ids_values);
-
-        $filter_related_collection($sizes, $sizes_values, true);
-
-        $products->when(isset($min_price_value, $max_price_value), function (Builder $product) use ($min_price_value, $max_price_value) {
-            $product->whereBetween(NEW_PRICE, [$min_price_value, $max_price_value]);
-        });
-
-        return $products->fastPaginate(16);
+            ->groupBy($product_item_attributes)
+            ->having('total_sales', '>', $minSales)
+            ->orderByDesc('total_sales');
     }
 
     /**
      * Sort the products.
      *
-     * @param array $filterRequestValues
+     * @param Builder $query
+     * @param string|null $sort_value
      * @return LengthAwarePaginator|Builder
      */
-    final public static function sort(array $filterRequestValues): LengthAwarePaginator|Builder
+    final public function scopeSort(Builder $query, ?string $sort_value = null): LengthAwarePaginator|Builder
     {
-        [$sort_value] = $filterRequestValues;
+        if (!is_null($sort_value)) {
+            if ($sort_value === 'best-selling') {
+                return $query->mostSelling()
+                    ->fastPaginate(1);
+            }
 
-        $products = self::query();
+            if ($sort_value === 'title-ascending') {
+                return $query->orderBy(NAME);
+            }
 
-        if ($sort_value === 'best-selling') {
-            return $products->mostSelling();
+            if ($sort_value === 'title-descending') {
+                return $query->orderByDesc(NAME);
+            }
+
+            if ($sort_value === 'price-ascending') {
+                return $query->orderBy(NEW_PRICE);
+            }
+
+            if ($sort_value === 'price-descending') {
+                return $query->orderByDesc(NEW_PRICE);
+            }
         }
 
-        if ($sort_value === 'title-ascending') {
-            $products->orderBy(NAME);
-        }
+        return $query;
+    }
 
-        if ($sort_value === 'title-descending') {
-            $products->orderByDesc(NAME);
-        }
+    /**
+     * Filter the products.
+     *
+     * @param Builder $query
+     * @param array $filterAttributes
+     * @param array $filterRequestValues
+     * @return LengthAwarePaginator
+     */
+    final public function scopeFilter(Builder $query, array $filterAttributes, array $filterRequestValues): LengthAwarePaginator
+    {
+        $filter_related_collection = static function (string $relatedCollection, array $collectionValues) use ($query) {
+            $query->when(!empty($collectionValues), function (Builder $product) use ($relatedCollection, $collectionValues) {
+                $product->whereHas($relatedCollection, function (Builder $query) use ($relatedCollection, $collectionValues) {
+                    $query->whereIn(str_contains($relatedCollection, SIZE) ? SIZE : ID, $collectionValues);
+                });
+            });
+        };
 
-        if ($sort_value === 'price-ascending') {
-            $products->orderBy(NEW_PRICE);
-        }
+        [$categories, $subcategories, $sizes] = $filterAttributes;
 
-        if ($sort_value === 'price-descending') {
-            $products->orderByDesc(NEW_PRICE);
-        }
+        [$categories_ids_values, $subcategories_ids_values, $sizes_values, $min_price_value, $max_price_value, $sort_value] = array_map(static fn($value) =>
+            is_array($value) ? array_filter($value) : $value,
+            $filterRequestValues
+        );
 
-        return $products->select(PRODUCT_ITEM_ATTRIBUTES)->fastPaginate(16);
+        $filter_related_collection($categories,    $categories_ids_values);
+        $filter_related_collection($subcategories, $subcategories_ids_values);
+        $filter_related_collection($sizes,         $sizes_values);
+
+        $query->when(is_numeric($min_price_value) && is_numeric($max_price_value), function (Builder $product) use ($min_price_value, $max_price_value) {
+            $product->whereBetween(NEW_PRICE, [(double) $min_price_value, (double) $max_price_value]);
+        });
+
+        $query->sort($sort_value);
+
+        return $query->select(PRODUCT_ITEM_ATTRIBUTES)
+            ->fastPaginate(1);
     }
 
 

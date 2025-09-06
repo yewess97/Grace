@@ -52,6 +52,8 @@ class CategoryService
         );
 
         forgetCacheFor(CATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
@@ -103,6 +105,8 @@ class CategoryService
     final public function restoreCategory(Category $category): bool
     {
         forgetCacheFor(CATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         return restore($category, NAME);
     }
@@ -116,6 +120,8 @@ class CategoryService
     final public function restoreMultipleCategories(Category $categories): bool
     {
         forgetCacheFor(CATEGORIES_TABLE);
+        forgetCacheFor(SUBCATEGORIES_TABLE);
+        forgetCacheFor(PRODUCTS_TABLE);
 
         return restore($categories);
     }

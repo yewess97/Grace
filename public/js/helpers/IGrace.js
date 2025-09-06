@@ -4,7 +4,6 @@
 const IGrace = {
 
     /*################################### Actions & Request Methods ###################################*/
-
     /**
      * Request Methods.
      */
@@ -142,20 +141,23 @@ const IGrace = {
     ROW               : 'row',
     CONDITION         : 'condition',
 
+    /**
+     * Common Attributes Methods.
+     */
     MAIN_IMAGE              : () => `main_${IGrace.IMAGE}`,
     BANNER_IMAGE            : () => `banner_${IGrace.IMAGE}`,
     THUMB_IMAGE             : () => `thumb_${IGrace.IMAGE}`,
     PRODUCT_SIZE            : () => `${IGrace.PRODUCT}_${IGrace.SIZE}`,
     PRODUCT_SIZE_QUICK_VIEW : () => `${IGrace.PRODUCT_SIZE()}_quick_view`,
     PRODUCT_QUANTITY        : () => `${IGrace.PRODUCT}_${IGrace.QUANTITY}`,
-    FILTER_PRODUCTS         : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`,
-    FILTER_PRODUCTS_SORT    : () => `${IGrace.FILTER_PRODUCTS()}_sort`,
     FIRST_NAME              : () => `first_${IGrace.NAME}`,
     LAST_NAME               : () => `last_${IGrace.NAME}`,
     ADDRESS1                : () => `${IGrace.ADDRESS}_1`,
     ADDRESS2                : () => `${IGrace.ADDRESS}_2`,
     CART_TOTAL_ITEMS        : () => `${IGrace.CART}_${IGrace.TOTAL_ITEMS}`,
     CART_TOTAL_COST         : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
+    FILTER_PRODUCTS         : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`,
+    FILTER_PRODUCTS_SORT    : () => `${IGrace.FILTER_PRODUCTS()}_sort`,
 
     /*################################### End Common Attributes ###################################*/
 

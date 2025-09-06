@@ -21,6 +21,7 @@ class HomeController extends Controller
     {
         $products = cache()->remember('home_'.PRODUCTS_TABLE. currentPageRequest(), 500, static fn() =>
             Product::query()->mostSelling()
+                ->fastPaginate(16)
         );
 
         $services = [

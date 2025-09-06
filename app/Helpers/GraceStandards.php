@@ -256,6 +256,7 @@ define("PRODUCT_SIZE_QUICK_VIEW",     PRODUCT_SIZE.'_'.QUICK_VIEW);
 define("PRODUCT_QUANTITY_QUICK_VIEW", PRODUCT_QUANTITY.'_'.QUICK_VIEW);
 define("PRODUCTS_PRICES",             PRODUCTS_TABLE.'_'.pluralize(PRICE));
 define("PRODUCTS_PAGINATION_ROUTE",   PRODUCTS_TABLE.'_pagination_route');
+define("ORDERS_PAGINATION_ROUTE",     ORDERS_TABLE.'_pagination_route');
 define("SORT",                        'sort');
 define("MIN_PRICE",                   'min_'.PRICE);
 define("MAX_PRICE",                   'max_'.PRICE);
@@ -407,6 +408,7 @@ define("FILTER_PRODUCTS_ATTRIBUTES", [
     SIZES,
     MIN_PRICE,
     MAX_PRICE,
+    SORT,
 ]);
 
 /**
@@ -903,7 +905,7 @@ define("USER_EDIT_REVIEW_MODAL",        modal(EDIT, REVIEW_MODEL, true));
 define("SEARCH_CATEGORIES",     searchableTable(CATEGORIES_TABLE));
 define("SEARCH_SUBCATEGORIES",  searchableTable(SUBCATEGORIES_TABLE));
 define("SEARCH_PRODUCTS",       searchableTable(PRODUCTS_TABLE));
-define("ADMIN_SEARCH_PRODUCTS", searchableTable(PRODUCTS_TABLE, false, ADMIN));
+define("ADMIN_SEARCH_PRODUCTS", searchableTable(table: PRODUCTS_TABLE, role: ADMIN));
 define("SEARCH_ORDERS",         searchableTable(ORDERS_TABLE));
 define("SEARCH_USERS",          searchableTable(USERS_TABLE));
 define("SEARCH_ADDRESSES",      searchableTable(ADDRESSES_TABLE));

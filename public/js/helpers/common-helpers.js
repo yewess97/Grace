@@ -36,7 +36,21 @@ const Common = {
 
 
     /**
-     * Configure the rows checking settings.
+     * Check if the url has parameters.
+     *
+     * @returns {string}
+     */
+    urlParams: () => {
+        const params = new URLSearchParams(location.search);
+
+        return params.size !== 0
+            ? '&'
+            : '?';
+    },
+
+
+    /**
+     * Configure the "rows checking" settings.
      *
      * @param target
      * @return {void}
@@ -73,7 +87,7 @@ const Common = {
 
 
     /**
-     * Configure the form multiselect settings.
+     * Configure the "form multiselect" settings.
      *
      * @param actionCollection
      * @param relation
@@ -309,7 +323,7 @@ const Common = {
 
 
     /**
-     * Configure the form select settings.
+     * Configure the "form select" settings.
      *
      * @return {void}
      */
@@ -478,7 +492,8 @@ const Common = {
 
 
     /**
-     * Update the table rows after deletion/restoration.
+     * Update the table rows after
+     * add, delete, restore, or pagination.
      *
      * @param args
      * @return {void}
@@ -510,6 +525,20 @@ const Common = {
 
 
     /**
+     * Warn the user before leaving/refreshing the form
+     *
+     * @returns {void}
+     */
+    warnBeforeLeaving: () =>
+        $(window).on("beforeunload", function (e) {
+            if (isFormDirty) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        }),
+
+
+    /**
      * Scroll to the top of the page.
      *
      * @return {void}
@@ -528,9 +557,8 @@ const Common = {
 
 
     /*================================== Concerned With AJAX Requests ==================================*/
-
     /**
-     * Set up ajax request with csrf token and other settings.
+     * Set up the ajax request.
      *
      * @return {void}
      */
@@ -845,9 +873,8 @@ const Common = {
 
 
     /* ---------------------------------- EDIT REQUEST ---------------------------------- */
-
     /**
-     * Edit Address Ajax Request.
+     * Edit Address ajax request.
      *
      * @return {void}
      */
@@ -880,9 +907,8 @@ const Common = {
         });
     },
 
-
     /**
-     * Edit review ajax request
+     * Edit Review ajax request.
      *
      * @return {void}
      */
@@ -922,9 +948,8 @@ const Common = {
 
 
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
-
     /**
-     * Ajax request to delete a single or multiple items.
+     * Delete a Single or Multiple Items ajax request.
      *
      * @param options
      * @return {object}
@@ -944,7 +969,6 @@ const Common = {
             },
         };
     },
-
 
     /**
      * Show a force delete confirmation message before deletion.
@@ -1000,7 +1024,6 @@ const Common = {
             });
     },
 
-
     /**
      * Handle the errors when deleting.
      *
@@ -1024,9 +1047,8 @@ const Common = {
             : Common.somethingWentWrongError();
     },
 
-
     /**
-     * Delete Ajax Request.
+     * Delete Item ajax request.
      *
      * @param collection
      * @return {void}
@@ -1074,9 +1096,8 @@ const Common = {
         });
     },
 
-
     /**
-     * Delete multiple items Ajax Request.
+     * Delete Multiple Items ajax request.
      *
      * @param collection
      * @return {void}
@@ -1131,9 +1152,8 @@ const Common = {
 
 
     /* ---------------------------------- RESTORE REQUEST ---------------------------------- */
-
     /**
-     * Restore Ajax Request.
+     * Restore Item ajax request.
      *
      * @param collection
      * @return {void}
@@ -1165,7 +1185,7 @@ const Common = {
     },
 
     /**
-     * Restore multiple items Ajax Request.
+     * Restore Multiple Items ajax request.
      *
      * @param collection
      * @return {void}
@@ -1204,10 +1224,9 @@ const Common = {
     },
 
 
-    /* ---------------------------------- SEARCH & FILTER REQUEST ---------------------------------- */
-
+    /* ---------------------------------- SEARCH & FILTER REQUESTS ---------------------------------- */
     /**
-     * Search Ajax Request.
+     * Search ajax request.
      *
      * @return {void}
      */
@@ -1224,7 +1243,7 @@ const Common = {
 
             if (target.is(`#${IGrace.USER}_${IGrace.SEARCH}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) return;
 
-            $.get(`${route}?search_value=${search_value}`)
+            $.get(`${route}${Common.urlParams()}search_value=${search_value}`)
                 .done((data) => Common.searchFilterSuccessResponse(data))
                 .fail((err) =>
                     Common.responseJsonError(err, true) === 'no-results'
@@ -1234,9 +1253,8 @@ const Common = {
         });
     },
 
-
     /**
-     * Clear Search/Filter Ajax Request.
+     * Clear Search/Filter ajax request.
      *
      * @return {void}
      */
@@ -1275,23 +1293,9 @@ const Common = {
     },
 
 
-    /**
-     * Warn the user before leaving/refreshing the form
-     *
-     * @returns {void}
-     */
-    warnBeforeLeaving: () =>
-        $(window).on("beforeunload", function (e) {
-            if (isFormDirty) {
-                e.preventDefault();
-                e.returnValue = "";
-            }
-        }),
-
-
     /* ---------------------------------- NOTIFICATIONS REQUEST ---------------------------------- */
     /**
-     * Get Notifications Event Request.
+     * Get Notifications event request.
      *
      * @return {void}
      */
@@ -1327,7 +1331,7 @@ const Common = {
                 if ($(`li[id='notification${notification.id}']`).length) return;
 
                 notifications_details_list.prepend(`
-                    <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-flex align-items-center w-100 highlight-background">
+                    <li role="listitem" id="notification${notification.id}" class="notification-item position-relative d-flex align-items-center w-100 bg-highlight">
                         <div class="d-grid gap-2"
                             <p class="notifications-text mb-2">${notification.message}</p>
                             <span class="notifications-timer text-muted">${notification.created_at}</span>
@@ -1363,19 +1367,13 @@ const Common = {
             e.preventDefault();
 
             const
-                target           = $(this),
-                route            = target.data('route'),
-                page             = target.attr('href').split('page=')[1],
-                page_query_param = `page=${page}`;
+                target = $(this),
+                route  = target.data('route'),
+                page   = target.attr('href').split('page=')[1],
+                url    = `${route}${Common.urlParams()}page=${page}`;
 
-            let url = `${route}?${page_query_param}`;
-
-            if (route.includes('?')) {
-                url = `${route}&${page_query_param}`;
-            }
-
-            if (route.includes(IGrace.FILTER)) {
-                return User.ajaxFilterProductsRequest({route: url});
+            if (route.includes(`${IGrace.FILTER}-${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) {
+                return User.ajaxFilterProducts({route: url});
             }
 
             $.get(url)

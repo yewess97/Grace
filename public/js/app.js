@@ -9,8 +9,8 @@ $(document).ready(() => {
     /* ========================================= Global Variables ========================================= */
     const products_main_view = $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`);
 
-    /* ========================================= End Global Variables ========================================= */
 
+    /* ========================================= Functions & Events ========================================= */
 
     // Load the preloader
     $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
@@ -38,7 +38,7 @@ $(document).ready(() => {
         partners_display_items_count          = 4,
         related_products_display_items_count  = 4;
 
-    // Adjust the display items count according to the screen size
+    // Adjust the display items count based on the screen size
     if ($(window).width() >= 320 && $(window).width() < 768) {
         partners_display_items_count         = 2;
         related_products_display_items_count = 2;
@@ -138,13 +138,16 @@ $(document).ready(() => {
     }
 
 
-    /* ---------=========== Change Action ============--------- */
+    /* ---------=========== Change (Input) Action ============--------- */
     $(document).on(IGrace.INPUT, (e) => {
         const target = $(e.target);
 
-        // Submit the products sort form when the sort select is changed
+        // Submit the "filter products form" when the "sort select" is changed
         if (target.is(`select#${IGrace.FILTER_PRODUCTS_SORT()}`)) {
-            target.closest(`form#${IGrace.FILTER_PRODUCTS_SORT()}_form`).submit();
+            $(`form#${IGrace.FILTER_PRODUCTS()}_form`).find(`input#${IGrace.FILTER_PRODUCTS_SORT()}`)
+                .val(target.val())
+                .end()
+                .submit();
         }
 
         /**
@@ -168,7 +171,7 @@ $(document).ready(() => {
         }
     });
 
-    /* ---------=========== End Change Action ============--------- */
+    /* ---------=========== End Change (Input) Action ============--------- */
 
 
     /* ---------=========== Mutation Observer Action ===========--------- */

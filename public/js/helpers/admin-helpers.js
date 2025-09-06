@@ -6,7 +6,6 @@ import { IGrace, Common } from "./common-helpers.js";
 const Admin = {
 
     /* ---------------------------------- NAVBAR SETTINGS ---------------------------------- */
-
     /**
      * Save/Set the value of the (closedMenu) key as an array.
      *
@@ -69,7 +68,6 @@ const Admin = {
 
 
     /* ---------------------------------- GOOGLE CHARTS ---------------------------------- */
-
     /**
      * Get the chart data.
      *
@@ -206,9 +204,7 @@ const Admin = {
     },
 
 
-
     /* ---------------------------------- IMAGES SETTINGS ---------------------------------- */
-
     /**
      * Empty the image error.
      *
@@ -255,12 +251,48 @@ const Admin = {
 
         image = image.replace('#', '');
 
-        $(`${image_container} .aks-file-upload-content`).addClass(IGrace.CLASS(`${image}-content`));
+        $(`${image_container} .aks-file-upload-content`).addClass(IGrace.CLASS(`${image}-content`))
+            .children()
+            .addClass('cursor-pointer');
 
         $(`#${image}`).attr({
             'name':   image,
             'accept': '.png, .jpg, .jpeg',
         });
+    },
+
+
+    /**
+     * Configure the product thumbnail images input settings.
+     *
+     * @param action
+     * @return {void}
+     */
+    setThumbImages: (action) => {
+        const thumb_image = `#${action}_${IGrace.PRODUCT}_${IGrace.THUMB_IMAGE()}`;
+
+        const thumb_images_options = {
+            label:         'Choose Thumbnail Images', // label text
+            input:         thumb_image, // input selector
+            dragDrop:      false,       // drag & drop upload
+            multiple:      true,        // multiple file upload
+            fileType:      ['png', 'jpg', 'jpeg'], // allowed file formats
+            fileTypeError: 'Allowed thumbnail images formats are png, jpg, jpeg', // allowed file formats error
+            maxSize:       '2 MB', // maximum uploaded file size
+            maxSizeError:  'There is a thumbnail image exceeds allowed size, Max size is', // maximum uploaded file size error
+            maxFile:       10, // maximum number of uploaded files
+            maxFileError:  'Thumbnail images number exceeds upload limit, Max limit is', // maximum number of uploaded files error
+
+        };
+
+        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())}`).aksFileUpload(thumb_images_options);
+
+        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())} .aks-file-upload-content`)
+            .addClass(IGrace.CLASS(`${IGrace.PLURALIZE(thumb_image.replace('#', ''))}-content`))
+            .children()
+            .addClass('cursor-pointer');
+
+        $(thumb_image).attr('accept', '.png, .jpg, .jpeg');
     },
 
 
@@ -324,38 +356,6 @@ const Admin = {
 
 
     /**
-     * Configure the product thumbnail images input settings.
-     *
-     * @param action
-     * @return {void}
-     */
-    setThumbImages: (action) => {
-        const thumb_image = `#${action}_${IGrace.PRODUCT}_${IGrace.THUMB_IMAGE()}`;
-
-        const thumb_images_options = {
-            label:         'Choose Thumbnail Images', // label text
-            input:         thumb_image, // input selector
-            dragDrop:      false,       // drag & drop upload
-            multiple:      true,        // multiple file upload
-            fileType:      ['png', 'jpg', 'jpeg'], // allowed file formats
-            fileTypeError: 'Allowed thumbnail images formats are png, jpg, jpeg', // allowed file formats error
-            maxSize:       '2 MB', // maximum uploaded file size
-            maxSizeError:  'There is a thumbnail image exceeds allowed size, Max size is', // maximum uploaded file size error
-            maxFile:       10, // maximum number of uploaded files
-            maxFileError:  'Thumbnail images number exceeds upload limit, Max limit is', // maximum number of uploaded files error
-
-        };
-
-        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())}`).aksFileUpload(thumb_images_options);
-
-        $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())} .aks-file-upload-content`)
-            .addClass(IGrace.CLASS(`${IGrace.PLURALIZE(thumb_image.replace('#', ''))}-content`));
-
-        $(thumb_image).attr('accept', '.png, .jpg, .jpeg');
-    },
-
-
-    /**
      * Show or Hide the image preview when adding/updating a collection.
      *
      * @param args
@@ -387,6 +387,12 @@ const Admin = {
 
 
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
+    /**
+     * Create or Update a collection.
+     *
+     * @param form
+     * @return {void}
+     */
     ajaxCreateOrUpdateRequest: (form) => {
         $(document).on(IGrace.SUBMIT, `#${form}_form`, function (e) {
             e.preventDefault();
@@ -445,9 +451,8 @@ const Admin = {
 
 
     /* ---------------------------------- EDIT REQUEST ---------------------------------- */
-
     /**
-     * Edit Category Ajax Request.
+     * Edit Category ajax request.
      *
      * @return {void}
      */
@@ -489,7 +494,7 @@ const Admin = {
     },
 
     /**
-     * Edit Subcategory Ajax Request.
+     * Edit Subcategory ajax request.
      *
      * @return {void}
      */
@@ -531,7 +536,7 @@ const Admin = {
     },
 
     /**
-     * Edit Product Ajax Request.
+     * Edit Product ajax request.
      *
      * @return {void}
      */
@@ -600,7 +605,7 @@ const Admin = {
     },
 
     /**
-     * Edit User Ajax Request.
+     * Edit User ajax request.
      *
      * @return {void}
      */
@@ -635,7 +640,7 @@ const Admin = {
     },
 
     /**
-     * Edit Order Ajax Request.
+     * Edit Order ajax request.
      *
      * @return {void}
      */
@@ -669,7 +674,7 @@ const Admin = {
 
     /* ---------------------------------- FILTER REQUEST ---------------------------------- */
     /**
-     * Filter Ajax Request.
+     * Filter ajax request.
      *
      * @param args
      * @return {void}
@@ -730,7 +735,7 @@ const Admin = {
 
     /* ---------------------------------- NOTIFICATION REQUEST ---------------------------------- */
     /**
-     * Mark Notification as read Ajax Request.
+     * Mark Notification as read ajax request.
      *
      * @param className
      * @return {void}
@@ -754,19 +759,21 @@ const Admin = {
 
             $.post(route)
                 .done((data) => {
+                    const
+                        notification_count = $('.notifications-count'),
+                        notification_item  = $(`#notification${data[IGrace.ID]}`);
+
                     if (className.includes('all')) {
-                        $('.notifications-count').css('display', 'none');
-                        $('.notification-item').removeClass('highlight-background');
+                        notification_count.css('display', 'none');
+                        notification_item.removeClass('highlight-background');
                         $('.mark-as-read-icon').remove();
                         $.each((data[IGrace.PLURALIZE(IGrace.ID)]), (_, id) => deleteNotificationTemplate(id));
                         return;
                     }
 
-                    const notification_item = $(`#notification${data[IGrace.ID]}`);
-
-                    $('.notifications-count').text() > 1
-                        ? $('.notifications-count').text($('.notifications-count').text() - 1)
-                        : $('.notifications-count').css('display', 'none');
+                    notification_count.text() > 1
+                        ? notification_count.text(notification_count.text() - 1)
+                        : notification_count.css('display', 'none');
 
                     notification_item.removeClass('highlight-background')
                         .end()
@@ -780,10 +787,12 @@ const Admin = {
     },
 
     /**
-     * Delete Notification Ajax Request
+     * Delete Notification ajax request
+     *
+     * @return {void}
      */
     ajaxDeleteNotificationRequest: () => {
-        $(document).on(IGrace.CLICK, '.delete-notification-form', function (e) {
+        $(document).on(IGrace.CLICK, `.${IGrace.DELETE}-notification-form`, function (e) {
             e.preventDefault();
 
             const route = $(this).attr('action');

@@ -126,8 +126,7 @@
     white-space: nowrap;
 }
 
-.quantity-btn,
-.cart-quantity-btn {
+.quantity-btn {
     width: var(--thirty-pixels);
     height: var(--thirty-pixels);
     font-size: var(--twenty-two-pixels);
@@ -135,11 +134,9 @@
     background-color: var(--white-color);
     color: var(--black-color) !important;
     box-shadow: none;
-    cursor: pointer;
 }
 
-.quantity-btn:hover,
-.cart-quantity-btn:hover {
+.quantity-btn:hover {
     color: var(--white-color) !important;
 }
 
