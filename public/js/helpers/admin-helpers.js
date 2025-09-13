@@ -1,6 +1,6 @@
 'use strict';
 
-import { IGrace, Common } from "./common-helpers.js";
+import {Common, IGrace} from "./common-helpers.js";
 
 
 const Admin = {
@@ -690,13 +690,35 @@ const Admin = {
                 filter_form = eventType === IGrace.CHANGE
                     ? target.parents(`#${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_form`)
                     : target,
-                route              = filter_form.attr('action'),
                 form_data          = new FormData(filter_form[0]),
                 dashboard_main     = `.${IGrace.DASHBOARD}-main`,
-                no_results_img_src = filter_form.data('no_results');
+                no_results_img_src = filter_form.data('no_results'),
+                update_route = (route, form_data) => {
+                    return function(params) {
+                        if (typeof params === 'string') params = [params];
+
+                        const query = params
+                            .map((param) => `${param}=${encodeURIComponent(form_data.get(param))}`)
+                            .join('&');
+
+                        return `${route}${Common.routeParamsSeperator(route)}${query}`;
+                    };
+                },
+
+                add_params = update_route(filter_form.attr('action'), form_data);
+
+            let url = filter_form.attr('action');
+
+            if (collection.includes(IGrace.USER)) {
+                url = add_params(`${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.USER)}_${IGrace.ROLE}`);
+            }
+
+            if (collection.includes(IGrace.ORDER)) {
+                url = add_params([`${IGrace.FILTER_ORDERS()}_start_date`, `${IGrace.FILTER_ORDERS()}_end_date`]);
+            }
 
             $.ajax({
-                url: route,
+                url: url,
                 method: IGrace.POST,
                 data: form_data,
                 success: (data) => {
@@ -765,7 +787,7 @@ const Admin = {
 
                     if (className.includes('all')) {
                         notification_count.css('display', 'none');
-                        notification_item.removeClass('highlight-background');
+                        notification_item.removeClass('bg-highlight');
                         $('.mark-as-read-icon').remove();
                         $.each((data[IGrace.PLURALIZE(IGrace.ID)]), (_, id) => deleteNotificationTemplate(id));
                         return;
@@ -775,7 +797,7 @@ const Admin = {
                         ? notification_count.text(notification_count.text() - 1)
                         : notification_count.css('display', 'none');
 
-                    notification_item.removeClass('highlight-background')
+                    notification_item.removeClass('bg-highlight')
                         .end()
                         .find('.mark-as-read-icon')
                         .remove();

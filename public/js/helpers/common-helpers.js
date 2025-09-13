@@ -36,17 +36,15 @@ const Common = {
 
 
     /**
-     * Check if the url has parameters.
+     * Check if the route has parameters.
      *
+     * @param route
      * @returns {string}
      */
-    urlParams: () => {
-        const params = new URLSearchParams(location.search);
-
-        return params.size !== 0
+    routeParamsSeperator: (route) =>
+        route.includes('?')
             ? '&'
-            : '?';
-    },
+            : '?',
 
 
     /**
@@ -743,7 +741,7 @@ const Common = {
                     });
             }
 
-            if (extra.includes(IGrace.PLURALIZE(IGrace.REVIEW))) {
+            if (extra.includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
                 swalMessage();
                 return setTimeout(() => User.ajaxUpdateReviewsContentRequest(extra), 1800);
             }
@@ -1243,7 +1241,7 @@ const Common = {
 
             if (target.is(`#${IGrace.USER}_${IGrace.SEARCH}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) return;
 
-            $.get(`${route}${Common.urlParams()}search_value=${search_value}`)
+            $.get(`${route}${Common.routeParamsSeperator(route)}search_value=${search_value}`)
                 .done((data) => Common.searchFilterSuccessResponse(data))
                 .fail((err) =>
                     Common.responseJsonError(err, true) === 'no-results'
@@ -1370,7 +1368,7 @@ const Common = {
                 target = $(this),
                 route  = target.data('route'),
                 page   = target.attr('href').split('page=')[1],
-                url    = `${route}${Common.urlParams()}page=${page}`;
+                url    = `${route}${Common.routeParamsSeperator(route)}page=${page}`;
 
             if (route.includes(`${IGrace.FILTER}-${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) {
                 return User.ajaxFilterProducts({route: url});

@@ -144,7 +144,7 @@ $(document).ready(() => {
 
         // Submit the "filter products form" when the "sort select" is changed
         if (target.is(`select#${IGrace.FILTER_PRODUCTS_SORT()}`)) {
-            $(`form#${IGrace.FILTER_PRODUCTS()}_form`).find(`input#${IGrace.FILTER_PRODUCTS_SORT()}`)
+            $(`form#${IGrace.FILTER_PRODUCTS_FORM()}`).find(`input#${IGrace.FILTER_PRODUCTS_SORT()}`)
                 .val(target.val())
                 .end()
                 .submit();

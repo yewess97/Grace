@@ -144,9 +144,9 @@ const IGrace = {
     /**
      * Common Attributes Methods.
      */
-    MAIN_IMAGE              : () => `main_${IGrace.IMAGE}`,
-    BANNER_IMAGE            : () => `banner_${IGrace.IMAGE}`,
-    THUMB_IMAGE             : () => `thumb_${IGrace.IMAGE}`,
+    MAIN_IMAGE              : () => IGrace.IMAGE_TYPE('main'),
+    BANNER_IMAGE            : () => IGrace.IMAGE_TYPE('banner'),
+    THUMB_IMAGE             : () => IGrace.IMAGE_TYPE('thumb'),
     PRODUCT_SIZE            : () => `${IGrace.PRODUCT}_${IGrace.SIZE}`,
     PRODUCT_SIZE_QUICK_VIEW : () => `${IGrace.PRODUCT_SIZE()}_quick_view`,
     PRODUCT_QUANTITY        : () => `${IGrace.PRODUCT}_${IGrace.QUANTITY}`,
@@ -158,6 +158,8 @@ const IGrace = {
     CART_TOTAL_COST         : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
     FILTER_PRODUCTS         : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`,
     FILTER_PRODUCTS_SORT    : () => `${IGrace.FILTER_PRODUCTS()}_sort`,
+    FILTER_PRODUCTS_FORM    : () => `${IGrace.FILTER_PRODUCTS()}_form`,
+    FILTER_ORDERS           : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.ORDER)}`,
 
     /*################################### End Common Attributes ###################################*/
 
@@ -250,6 +252,14 @@ const IGrace = {
 
         return word;
     },
+
+    /**
+     * Get the image type.
+     *
+     * @param type
+     * @return {string}
+     */
+    IMAGE_TYPE: (type) => `${type}_${IGrace.IMAGE}`,
 
     /**
      * Convert an element to be an id.

@@ -7,20 +7,20 @@
     "require": {
         "php": "^8.2.0",
         "aaronfrancis/fast-paginate": "^1.1.1",
-        "guzzlehttp/guzzle": "^7.9.3",
+        "guzzlehttp/guzzle": "^7.10.0",
         "hedii/artisan-log-cleaner": "^5.0.0",
         "laravel/framework": "^9.52.20",
-        "laravel/socialite": "^5.21",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
-        "predis/predis": "^3.0.1",
-        "stripe/stripe-php": "^17.4"
+        "predis/predis": "^3.2.0",
+        "stripe/stripe-php": "^17.6.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
         "fakerphp/faker": "^1.24.1",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^6.4.0",
-        "phpunit/phpunit": "^9.6.23",
+        "phpunit/phpunit": "^9.6.26",
         "spatie/laravel-ignition": "^1.7.0"
     },
     "autoload": {

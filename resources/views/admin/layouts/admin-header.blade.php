@@ -42,7 +42,7 @@
                         {{-- Notifications Details --}}
                         <ul role="list" class="notifications-details border-top">
                             @forelse (auth()->user()?->notifications as $notification)
-                                <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-flex align-items-center w-100 {{$notification->read_at ? '' : 'highlight-background'}}">
+                                <li role="listitem" id="notification{{ $notification->{ID} }}" class="notification-item position-relative d-flex align-items-center w-100 {{$notification->read_at ? '' : 'bg-highlight'}}">
                                     <div class="d-grid gap-2">
                                         <p class="notifications-text mb-2">{{$notification->data['message']}}</p>
                                         <span class="notifications-timer text-muted">{{\Carbon\Carbon::parse($notification->{DATES[0]})->diffForHumans()}}</span>

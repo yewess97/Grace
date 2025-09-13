@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route,
 
 
 /**
- * Home Route
+ * Home Routes
  */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/home', static fn() => to_route('home'));

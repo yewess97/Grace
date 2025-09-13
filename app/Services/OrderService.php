@@ -107,8 +107,8 @@ class OrderService {
 
             Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
-            forgetCacheFor(ORDERS_TABLE, $status_value);
-            forgetCacheFor(USER_ORDERS);
+            forgetCache(ORDERS_TABLE, $status_value);
+            forgetCache(USER_ORDERS);
             cache()->forget(ORDER_DETAILS);
 
             sendNotificationToAdmins(new NewOrderPlaced($order));
@@ -149,8 +149,8 @@ class OrderService {
 
         $update_order = $order->update([STATUS => $status_value]);
 
-        forgetCacheFor(ORDERS_TABLE, $status_value);
-        forgetCacheFor(USER_ORDERS);
+        forgetCache(ORDERS_TABLE, $status_value);
+        forgetCache(USER_ORDERS);
         cache()->forget(ORDER_DETAILS);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
@@ -166,8 +166,8 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
-        forgetCacheFor(USER_ORDERS);
+        forgetCache(ORDERS_TABLE, $order->{STATUS});
+        forgetCache(USER_ORDERS);
 
         return customDelete($order, TRACKING_NUM);
     }
@@ -180,8 +180,8 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
-        forgetCacheFor(USER_ORDERS);
+        forgetCache(ORDERS_TABLE, $orders->{STATUS});
+        forgetCache(USER_ORDERS);
 
         return customDelete($orders);
     }
@@ -194,8 +194,8 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
-        forgetCacheFor(USER_ORDERS);
+        forgetCache(ORDERS_TABLE, $order->{STATUS});
+        forgetCache(USER_ORDERS);
 
         return restore($order, TRACKING_NUM);
     }
@@ -208,8 +208,8 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        forgetCacheFor(ORDERS_TABLE, $order->{STATUS});
-        forgetCacheFor(USER_ORDERS);
+        forgetCache(ORDERS_TABLE, $orders->{STATUS});
+        forgetCache(USER_ORDERS);
 
         return restore($orders);
     }

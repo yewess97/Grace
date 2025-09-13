@@ -257,7 +257,6 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$__query_params = \Illuminate\Support\Arr::except(request()?->query(), ['_token', 'page']);
 
-//                echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, request()?->except(['_token', 'page']))]);
                 echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, \$__query_params)]);
             ?>";
         });

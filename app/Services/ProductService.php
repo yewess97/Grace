@@ -8,6 +8,7 @@ use App\Notifications\NewAdminActionTaken;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -29,12 +30,13 @@ class ProductService
      */
     final public function getProductDetails(string $productSlug): Application|Factory|View|array|string
     {
-        $product = cache()->remember(PRODUCT_MODEL."_".$productSlug, 500, static fn() =>
-            Product::with([
+        $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 500, static fn() =>
+            Product::query()->with([
                 REVIEWS_TABLE,
-                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
+                SIZES => static fn(HasMany $sizes) => $sizes->select(SIZE, PRODUCT_ID),
             ])
                 ->whereSlug($productSlug)
+                ->withoutTrashed()
                 ->first()
         );
 
@@ -47,10 +49,10 @@ class ProductService
         if (request()?->ajax()) {
             return request()?->input(QUICK_VIEW)
                 ? compact(PRODUCT_MODEL)
-                : view(REVIEWS_COMPONENT, getReviews($product->{ID}))->render();
+                : view(REVIEWS_COMPONENT, getReviews($product->{ID}) + compact(PRODUCT_MODEL, PRODUCT_MODEL.ucfirst(SLUG)))->render();
         }
 
-        return showView(USER_PRODUCT_DETAILS_VIEW, getReviews($product->{ID}) + compact(PRODUCT_MODEL, ADD_CART_PRODUCT_ERROR));
+        return showView(USER_PRODUCT_DETAILS_VIEW, getReviews($product->{ID}) + compact(PRODUCT_MODEL, ADD_CART_PRODUCT_ERROR, PRODUCT_MODEL.ucfirst(SLUG)));
     }
 
     /**
@@ -135,7 +137,7 @@ class ProductService
         // Product Related Subcategories
         createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(PRODUCTS_TABLE);
         cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
@@ -153,7 +155,7 @@ class ProductService
      */
     final public function deleteProduct(Product $product): bool
     {
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(PRODUCTS_TABLE);
         cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return customDelete($product, NAME, true);
@@ -169,8 +171,8 @@ class ProductService
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
+        forgetCache(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$products->{SLUG});
 
         return customDelete(model: $products, deleteImages: true);
     }
@@ -183,7 +185,7 @@ class ProductService
      */
     final public function restoreProduct(Product $product): bool
     {
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(PRODUCTS_TABLE);
         cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
         return restore($product, NAME);
@@ -197,8 +199,8 @@ class ProductService
      */
     final public function restoreMultipleProducts(Product $products): bool
     {
-        forgetCacheFor(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
+        forgetCache(PRODUCTS_TABLE);
+        cache()->forget(PRODUCT_MODEL."_".$products->{SLUG});
 
         return restore($products);
     }

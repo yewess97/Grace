@@ -52,7 +52,7 @@ class AdminController extends Controller
     {
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $categories = cache()->remember(paginationCacheKey(CATEGORIES_TABLE, trashedConditionRequest()), 3600, fn():
+        $categories = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
             LengthAwarePaginator => Category::when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
@@ -75,7 +75,7 @@ class AdminController extends Controller
     {
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $subcategories = cache()->remember(paginationCacheKey(SUBCATEGORIES_TABLE, trashedConditionRequest()), 3600, fn():
+        $subcategories = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
             LengthAwarePaginator => Subcategory::with($this->relatedCategories())
                 ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
@@ -105,7 +105,7 @@ class AdminController extends Controller
 
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $products = cache()->remember(paginationCacheKey(PRODUCTS_TABLE, trashedConditionRequest()), 1800, fn():
+        $products = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, 1800, fn():
             LengthAwarePaginator => Product::query()
                 ->withCount(SUBCATEGORIES_TABLE)
                 ->orderBy(SUBCATEGORIES_TABLE.'_count')
@@ -146,7 +146,7 @@ class AdminController extends Controller
     {
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $users = cache()->remember(paginationCacheKey(USERS_TABLE, trashedConditionRequest()), 1800, fn():
+        $users = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, fn():
             LengthAwarePaginator => User::when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
@@ -157,9 +157,14 @@ class AdminController extends Controller
         $update_user_error  = static fn(string $attributeName) => formError(UPDATE, USER_MODEL,  $attributeName);
         $filter_users_error = static fn(string $attributeName) => formError(FILTER, USERS_TABLE, $attributeName);
 
+        $users_pagination_route = match (Route::currentRouteName()) {
+            SEARCH_USERS => SEARCH_USERS,
+            default       => ADMIN_USERS_ROUTE,
+        };
+
         return request()?->ajax()
-            ? ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE)
-            : view(ADMIN_USERS_VIEW, compact(USERS_TABLE, pluralize(ROLE), ADD_USER_ERROR, UPDATE_USER_ERROR, FILTER_USERS_ERROR));
+            ? ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE, compact(USERS_PAGINATION_ROUTE))
+            : view(ADMIN_USERS_VIEW, compact(USERS_TABLE, pluralize(ROLE), ADD_USER_ERROR, UPDATE_USER_ERROR, FILTER_USERS_ERROR, USERS_PAGINATION_ROUTE));
     }
 
     /**
@@ -185,7 +190,7 @@ class AdminController extends Controller
 
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $orders = cache()->remember(paginationCacheKey(ORDERS_TABLE, trashedConditionRequest()).$status, 1800, fn():
+        $orders = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.$status, 1800, fn():
             LengthAwarePaginator => Order::query()->latest()
                 ->whereStatus($status)
                 ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
@@ -205,7 +210,7 @@ class AdminController extends Controller
         };
 
         return request()?->ajax()
-            ? ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, [ORDERS_PAGINATION_ROUTE => $orders_pagination_route])
+            ? ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, compact(ORDERS_PAGINATION_ROUTE))
             : view(ADMIN_ORDERS_VIEW, compact(ORDERS_TABLE, pluralize(STATUS), ORDERS_TITLE, ORDER_MODEL.'_'.STATUS, UPDATE_ORDER_ERROR, FILTER_ORDERS_ERROR, ORDERS_PAGINATION_ROUTE));
     }
 
@@ -232,7 +237,7 @@ class AdminController extends Controller
 
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
-        $reviews = cache()->remember(paginationCacheKey(REVIEWS_TABLE, trashedConditionRequest()).$rating, 1800, fn():
+        $reviews = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.$rating, 1800, fn():
             LengthAwarePaginator => Review::with([
                     PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
                     USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),

@@ -10,7 +10,7 @@
                     {{-- Reviews Search & Delete all selected Button --}}
                     <div class="row col-12 justify-content-between align-items-center gap-3">
                         {{-- Reviews Search --}}
-                        @search(SEARCH_REVIEWS, $review_rating)
+                        @search(SEARCH_REVIEWS, [RATING => $review_rating])
 
                         {{-- Reviews Main Buttons --}}
                         @collectionButtons(REVIEWS_TABLE, ADMIN_REVIEWS_ROUTE)

@@ -44,10 +44,6 @@
     font-size: var(--fourteen-pixels);
 }
 
-.grace-form .grace-form-body .form-select:focus {
-    border-color: var(--main-color);
-}
-
 .grace-form .grace-form-body .form-group .select-wrapper :is(input, ul, svg) {
     display: none;
 }
@@ -143,6 +139,10 @@
 
 .grace-form .grace-form-footer .social-login a:hover::before {
     height: 100%;
+}
+
+.form-select:focus {
+    border-color: var(--main-color);
 }
 
 /* --------- Form Errors --------- */

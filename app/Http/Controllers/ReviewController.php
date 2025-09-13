@@ -25,13 +25,12 @@ class ReviewController extends Controller
     /**
      * Display the reviews' resource.
      *
-     * @param int $productId
      * @return string
      * @throws Throwable
      */
-    final public function index(int $productId): string
+    final public function index(): string
     {
-        return $this->reviewService->getReviews($productId);
+        return $this->reviewService->getReviews();
     }
 
     /**

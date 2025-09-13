@@ -51,9 +51,9 @@ class CategoryService
             ]
         );
 
-        forgetCacheFor(CATEGORIES_TABLE);
-        forgetCacheFor(SUBCATEGORIES_TABLE);
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(CATEGORIES_TABLE);
+        forgetCache(SUBCATEGORIES_TABLE);
+        forgetCache(PRODUCTS_TABLE);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
@@ -73,7 +73,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, (new Subcategory()));
         $this->deleteRelatedCollectionItems($category, (new Product()));
 
-        forgetCacheFor(CATEGORIES_TABLE);
+        forgetCache(CATEGORIES_TABLE);
 
         return customDelete($category, NAME, true);
     }
@@ -91,7 +91,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
         $this->deleteRelatedCollectionItems($categories, (new Product()));
 
-        forgetCacheFor(CATEGORIES_TABLE);
+        forgetCache(CATEGORIES_TABLE);
 
         return customDelete(model: $categories, deleteImages: true);
     }
@@ -104,9 +104,9 @@ class CategoryService
      */
     final public function restoreCategory(Category $category): bool
     {
-        forgetCacheFor(CATEGORIES_TABLE);
-        forgetCacheFor(SUBCATEGORIES_TABLE);
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(CATEGORIES_TABLE);
+        forgetCache(SUBCATEGORIES_TABLE);
+        forgetCache(PRODUCTS_TABLE);
 
         return restore($category, NAME);
     }
@@ -119,9 +119,9 @@ class CategoryService
      */
     final public function restoreMultipleCategories(Category $categories): bool
     {
-        forgetCacheFor(CATEGORIES_TABLE);
-        forgetCacheFor(SUBCATEGORIES_TABLE);
-        forgetCacheFor(PRODUCTS_TABLE);
+        forgetCache(CATEGORIES_TABLE);
+        forgetCache(SUBCATEGORIES_TABLE);
+        forgetCache(PRODUCTS_TABLE);
 
         return restore($categories);
     }
@@ -160,7 +160,7 @@ class CategoryService
                 $related_collection_item->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
             }
 
-            forgetCacheFor($model->getTable());
+            forgetCache($model->getTable());
 
             return $related_collection_item->forceDelete();
         });

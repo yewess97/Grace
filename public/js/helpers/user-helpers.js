@@ -59,7 +59,7 @@ const User = {
     handleFilterProductsMultiItemsWithHiddenInput: (args) => {
         let { target, multiSelectedValuesList, relation } = args;
 
-        if (!target.is(`input[name="${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}_${relation}[]"]`)) return;
+        if (!target.is(`input[name="${IGrace.FILTER_PRODUCTS()}_${relation}[]"]`)) return;
 
         const filter_collection_hidden_input = target.parents('.filter-content').next();
 
@@ -319,7 +319,7 @@ const User = {
                     key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
                     value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
 
-                form_data.set(key, value ? value : ''); // If the value is null, set it to an empty string
+                form_data.set(key, value ? value : '');
             }
 
             let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
@@ -460,7 +460,7 @@ const User = {
                                         User.updateCartContent(data));
 
                                     window.isFormDirty = false;
-
+                                    console.log(reviews_route);
                                     return Common.successMessage(data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
                                 }
 
@@ -801,7 +801,7 @@ const User = {
      * @return {void}
      */
     ajaxFilterProductsRequest: () => {
-        $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER_PRODUCTS()}_form`, function (e) {
+        $(document).on(IGrace.SUBMIT, `#${IGrace.FILTER_PRODUCTS_FORM()}`, function (e) {
             e.preventDefault();
 
             const

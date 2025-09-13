@@ -112,7 +112,7 @@ class Product extends Model
         if (!is_null($sort_value)) {
             if ($sort_value === 'best-selling') {
                 return $query->mostSelling()
-                    ->fastPaginate(1);
+                    ->fastPaginate(16);
             }
 
             if ($sort_value === 'title-ascending') {
@@ -171,7 +171,7 @@ class Product extends Model
         $query->sort($sort_value);
 
         return $query->select(PRODUCT_ITEM_ATTRIBUTES)
-            ->fastPaginate(1);
+            ->fastPaginate(16);
     }
 
 

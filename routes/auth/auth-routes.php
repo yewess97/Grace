@@ -38,7 +38,7 @@ Route::get('/'.CHECKOUT, [CheckoutController::class, 'index'])->name(CHECKOUT);
 
 
 /**
- * User Addresses Route
+ * User Addresses Routes
  */
 Route::controller(AddressController::class)->group(function () {
     basicRoute(ADDRESSES_TABLE, USER_ADDRESSES, capitalizeAllFromSecondWord(USER_ADDRESSES));

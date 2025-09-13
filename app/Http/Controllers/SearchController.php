@@ -26,7 +26,7 @@ use Throwable;
 
 class SearchController extends Controller
 {
-    private string|null $search_value;
+    private string|null $search_value, $type;
 
     /**
      * Search Controller Constructor.
@@ -35,6 +35,7 @@ class SearchController extends Controller
      */
     final public function __construct(private readonly DashboardService $dashboardService) {
         $this->search_value = request()?->input('search_value');
+        $this->type         = request()?->input('type');
     }
 
     /**
@@ -92,13 +93,12 @@ class SearchController extends Controller
     /**
      * Search for specified user(s).
      *
-     * @param string|null $type
      * @return JsonResponse
-     * @throws ValidationException|NotFoundHttpException|Throwable
+     * @throws Throwable
      */
-    final public function searchUsers(?string $type = null): JsonResponse
+    final public function searchUsers(): JsonResponse
     {
-        $users = User::query()->when($type === FILTER, static function ($user) {
+        $users = User::query()->when($this->type === FILTER, static function ($user) {
             $filter_users_request = new UserRequest(FILTER, USERS_TABLE, [ROLE]);
 
             validateAttributes($filter_users_request);
@@ -107,13 +107,19 @@ class SearchController extends Controller
 
             return $user->where(ROLE, $role);
         },
-            fn($user) => $user->search($this->search_value, [FIRST_NAME, LAST_NAME, EMAIL]));
+            fn($user) =>
+                $user->search($this->search_value, [FIRST_NAME, LAST_NAME, EMAIL])
+        )
+            ->fastPaginate(16);
 
-        $users = $users->fastPaginate(16);
+        $users_pagination_route = match (Route::currentRouteName()) {
+            SEARCH_USERS => SEARCH_USERS,
+            default       => ADMIN_USERS_ROUTE,
+        };
 
         noResultsException($users);
 
-        return ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE);
+        return ajaxPaginationResponse($users, ADMIN_USERS_PAGINATION, USERS_TABLE, compact(USERS_PAGINATION_ROUTE));
     }
 
     /**
@@ -143,12 +149,10 @@ class SearchController extends Controller
     final public function searchOrders(): JsonResponse
     {
         $status = request()?->input(STATUS);
-        $type   = request()?->input('type');
 
         $orders = Order::query()->latest()
-            ->whereStatus($status);
-
-        $orders->when($type === FILTER, static function ($order) {
+            ->whereStatus($status)
+            ->when($this->type === FILTER, static function ($order) {
             $filter_orders = new FilterByDatesRequest(FILTER, ORDERS_TABLE, FILTER_BY_DATES_ATTRIBUTES);
 
             validateAttributes($filter_orders);
@@ -157,9 +161,8 @@ class SearchController extends Controller
         },
             fn($order) =>
                 $order->search($this->search_value, ORDER_ATTRIBUTES, [USER_MODEL => [FIRST_NAME, LAST_NAME]])
-        );
-
-        $orders = $orders->fastPaginate(16);
+        )
+            ->fastPaginate(16);
 
         $orders_pagination_route = match (Route::currentRouteName()) {
             SEARCH_ORDERS => SEARCH_ORDERS,
@@ -168,19 +171,18 @@ class SearchController extends Controller
 
         noResultsException($orders);
 
-        return ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, [ORDERS_PAGINATION_ROUTE => $orders_pagination_route]);
+        return ajaxPaginationResponse($orders, ADMIN_ORDERS_PAGINATION, ORDERS_TABLE, compact(ORDERS_PAGINATION_ROUTE));
     }
 
     /**
      * Search for specified review(s).
      *
-     * @param string $rating
      * @return JsonResponse
-     * @throws NotFoundHttpException|Throwable
+     * @throws Throwable
      */
-    final public function searchReviews(string $rating): JsonResponse
+    final public function searchReviews(): JsonResponse
     {
-        $reviews = Review::query()->where(RATING, $rating)
+        $reviews = Review::query()->where(RATING, request()?->input(RATING))
             ->search($this->search_value,
                 [TITLE, BODY_TEXT],
                 [
@@ -230,7 +232,7 @@ class SearchController extends Controller
 
         if (empty($filter_products_request->data())) {
             $products = $products->select(PRODUCT_ITEM_ATTRIBUTES)
-                ->fastPaginate(1);
+                ->fastPaginate(16);
 
             return viewProducts($products);
         }

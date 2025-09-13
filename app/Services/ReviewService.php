@@ -52,6 +52,7 @@ class ReviewService
 
         $available_product = Product::query()->whereId($product_id_value)
             ->whereStatus(1)
+            ->withoutTrashed()
             ->first([ID, NAME]);
 
         if (!$available_product) {
@@ -61,26 +62,30 @@ class ReviewService
         $order_purchased = Order::query()->whereHasAuthUser()
             ->whereHas(ORDER_ITEMS, function ($orderItem) use ($available_product) {
                 $orderItem->where(PRODUCT_NAME, $available_product->{NAME});
-            });
+            })
+            ->withoutTrashed();
 
         if ($order_purchased->cursor()->isEmpty()) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
         }
 
-        $order_completed = $order_purchased->whereStatus(4)->cursor();
+        $order_completed = $order_purchased->whereStatus(4)
+            ->withoutTrashed()
+            ->cursor();
 
         if ($order_completed->isEmpty()) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
 
-        $review = Review::query()->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
+        $review_exists = Review::query()->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
             return $product->whereId($product_id_value)->whereStatus(1);
         })
             ->where(USER_ID, auth()->id())
             ->where(ID, '<>', $review_id)
+            ->withoutTrashed()
             ->exists();
 
-        if ($review) {
+        if ($review_exists) {
             throw ValidationException::withMessages([
                 REVIEW_MODEL.'_exists' => ['You have already reviewed this '.PRODUCT_MODEL.'. You can edit your '.REVIEW_MODEL.'!'],
             ]);
@@ -97,8 +102,7 @@ class ReviewService
             ]
         );
 
-        forgetCacheFor(REVIEWS_TABLE, $rating_value);
-        cache()->forget(AVERAGE_RATE);
+        $this->forgetReviewCache($review);
 
         sendNotificationToAdmins(new NewReviewAdded($review));
 
@@ -113,8 +117,7 @@ class ReviewService
      */
     final public function deleteReview(Review $review): bool
     {
-        forgetCacheFor(REVIEWS_TABLE, $rating_value);
-        cache()->forget(AVERAGE_RATE);
+        $this->forgetReviewCache($review);
 
         return customDelete($review, TITLE);
     }
@@ -127,8 +130,7 @@ class ReviewService
      */
     final public function deleteMultipleReviews(Review $reviews): bool
     {
-        forgetCacheFor(REVIEWS_TABLE, $rating_value);
-        cache()->forget(AVERAGE_RATE);
+        $this->forgetReviewCache($reviews);
 
         return customDelete($reviews);
     }
@@ -141,10 +143,9 @@ class ReviewService
      */
     final public function restoreReview(Review $review): bool
     {
-        forgetCacheFor(REVIEWS_TABLE, $rating_value);
-        cache()->forget(AVERAGE_RATE);
+        $this->forgetReviewCache($review);
 
-        return restore($review, TITLE);
+        return restore($review, $review->{TITLE});
     }
 
     /**
@@ -155,9 +156,21 @@ class ReviewService
      */
     final public function restoreMultipleReviews(Review $reviews): bool
     {
-        forgetCacheFor(REVIEWS_TABLE, $rating_value);
-        cache()->forget(AVERAGE_RATE);
+        $this->forgetReviewCache($reviews);
 
         return restore($reviews);
+    }
+
+    private function forgetReviewCache(Review $review): void
+    {
+        forgetCache(REVIEWS_TABLE, $review, RATING, [
+            'relation'              => PRODUCT_MODEL,
+            'relation_only_columns' => [ID, SLUG],
+            'unique_by'             => SLUG,
+            'cache_keys' => [
+                static fn($product) => PRODUCT_MODEL.'_'.$product[SLUG],
+                static fn($product) => AVERAGE_RATE.'_'.$product[ID],
+            ],
+        ]);
     }
 }

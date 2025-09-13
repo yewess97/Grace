@@ -120,8 +120,8 @@
                     {{-- Related Products --}}
                     <section class="related-products box-content">
                         {{-- Related Products Title --}}
-                        <article class="box-title">
-                            <h2 class="fs-5 fw-600 text-uppercase border-bottom">
+                        <article class="box-title mb-3 border-bottom">
+                            <h2 class="fs-5 fw-600 text-uppercase">
                                 <span class="position-relative">{{capitalizeAll(RELATED_PRODUCTS)}}</span>
                             </h2>
                         </article>

@@ -16,4 +16,4 @@
 </div>
 
 {{-- Users Pagination --}}
-<div class="table-pagination col-12 pt-4">@pagination($users, ADMIN_USERS_ROUTE)</div>
+<div class="table-pagination col-12 pt-4">@pagination($users, $users_pagination_route)</div>

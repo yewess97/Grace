@@ -35,7 +35,7 @@ class AddressService {
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $user_addresses = cache()->remember(paginationCacheKey(ADDRESSES_TABLE, trashedConditionRequest()), 1800, fn():
+        $user_addresses = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn():
         LengthAwarePaginator => Address::query()->where(USER_ID, $user_id)
                 ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
@@ -87,8 +87,8 @@ class AddressService {
             ]
         );
 
-        forgetCacheFor(ADDRESSES_TABLE);
-        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCache(ADDRESSES_TABLE);
+        forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
@@ -103,8 +103,8 @@ class AddressService {
      */
     final public function deleteAddress(Address $address): bool
     {
-        forgetCacheFor(ADDRESSES_TABLE);
-        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCache(ADDRESSES_TABLE);
+        forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
         return customDelete($address, modelAttribute: ADDRESS1);
     }
@@ -117,8 +117,8 @@ class AddressService {
      */
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
-        forgetCacheFor(ADDRESSES_TABLE);
-        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCache(ADDRESSES_TABLE);
+        forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
         return customDelete($addresses);
     }
@@ -131,8 +131,8 @@ class AddressService {
      */
     final public function restoreAddress(Address $address): bool
     {
-        forgetCacheFor(ADDRESSES_TABLE);
-        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCache(ADDRESSES_TABLE);
+        forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
         return restore($address, ADDRESS1);
     }
@@ -145,8 +145,8 @@ class AddressService {
      */
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
-        forgetCacheFor(ADDRESSES_TABLE);
-        forgetCacheFor(USER_ADDRESSES.auth()->id());
+        forgetCache(ADDRESSES_TABLE);
+        forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
         return restore($addresses);
     }

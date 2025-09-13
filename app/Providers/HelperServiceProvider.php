@@ -7,16 +7,22 @@ use Illuminate\Support\ServiceProvider;
 class HelperServiceProvider extends ServiceProvider
 {
     /**
-     * Register services.
+     * Bootstrap services.
      *
      * @return void
      */
-    final public function register(): void
+    final public function boot(): void
     {
-        $helper_files = glob(app_path('Helpers').'/*.php');
+        $helper_files = [
+            'AppPrinciples',
+            'CustomResponses',
+            'RequestHelpers',
+            'GraceStandards',
+            'Helpers',
+        ];
 
         foreach ($helper_files as $helper_file) {
-            require_once $helper_file;
+            require_once app_path("Helpers/{$helper_file}.php");
         }
     }
 }

@@ -3,7 +3,7 @@
 
 #################################### Actions ####################################
 /**
- * Actions.
+ * Main Actions.
  */
 define("ADD",              'add');
 define("CREATE",           'create');
@@ -19,12 +19,19 @@ define("STORE_OR_UPDATE",  'storeOr'.ucfirst(UPDATE));
 define("DESTROY_MULTIPLE", DESTROY.'Multiple');
 define("RESTORE_MULTIPLE", RESTORE.'Multiple');
 
+/**
+ * Auth-Related Actions.
+ */
+define("REGISTER", 'register');
+define("LOGIN",    'login');
+define("LOGOUT",   'logout');
+
 #################################### End Actions ####################################
 
 
-#################################### Models ####################################
+#################################### Models Names ####################################
 /**
- * Models names.
+ * Models Names.
  */
 define("CATEGORY_MODEL",    'category');
 define("SUBCATEGORY_MODEL", 'subcategory');
@@ -36,12 +43,12 @@ define("USER_MODEL",        'user');
 define("ADDRESS_MODEL",     'address');
 define("REVIEW_MODEL",      'review');
 
-#################################### End Models ####################################
+#################################### End Models Names ####################################
 
 
 #################################### Database Attributes ####################################
 /**
- * Common attributes.
+ * Common Attributes.
  */
 define("ID",         'id');
 define("NAME",       'name');
@@ -53,12 +60,12 @@ define("PASSWORD",   'password');
 define("PRICE",      'price');
 
 /**
- * Category attributes.
+ * Category Attributes.
  */
 define("BANNER_IMAGE", 'banner_image');
 
 /**
- * Product attributes.
+ * Product Attributes.
  */
 define("SHORT_DESCRIPTION", 'short_description');
 define("LONG_DESCRIPTION",  'long_description');
@@ -67,20 +74,20 @@ define("NEW_PRICE",         'new_'.PRICE);
 define("QUANTITY",          'quantity');
 
 /**
- * Product's Size & Thumbnail Image attributes.
+ * Product's Size & Thumbnail Image Attributes.
  */
 define("SIZE",        'size');
 define("THUMB_IMAGE", 'thumb_image');
 
 /**
- * Order attributes.
+ * Order Attributes.
  */
 define("TRACKING_NUM", 'tracking_num');
 define("NUM_ITEMS",    'num_items');
 define("TOTAL_COST",   'total_cost');
 
 /**
- * OrderItem attributes.
+ * OrderItem Attributes.
  */
 define("PRODUCT_NAME",        PRODUCT_MODEL.'_'.NAME);
 define("PRODUCT_MAIN_IMAGE",  PRODUCT_MODEL.'_'.MAIN_IMAGE);
@@ -89,12 +96,12 @@ define("PRODUCT_QUANTITY",    PRODUCT_MODEL.'_'.QUANTITY);
 define("PRODUCT_TOTAL_PRICE", PRODUCT_MODEL.'_total_'.PRICE);
 
 /**
- * Cart attributes.
+ * Cart Attributes.
  */
 define("TOTAL_ITEMS", 'total_items');
 
 /**
- * User attributes.
+ * User Attributes.
  */
 define("FIRST_NAME",            'first_'.NAME);
 define("LAST_NAME",             'last_'.NAME);
@@ -104,7 +111,7 @@ define("ROLE",                  'role');
 define("LAST_SEEN",             'last_seen');
 
 /**
- * Address attributes.
+ * Address Attributes.
  */
 define("ADDRESS1",    'address_1');
 define("ADDRESS2",    'address_2');
@@ -114,19 +121,19 @@ define("COUNTRY",     'country');
 define("POSTAL_CODE", 'postal_code');
 
 /**
- * Review attributes.
+ * Review Attributes.
  */
 define("RATING",    'rating');
 define("TITLE",     'title');
 define("BODY_TEXT", 'body_text');
 
 /**
- * Password Resets attributes.
+ * Password Resets Attributes.
  */
 define("TOKEN", 'token');
 
 /**
- * Dates attributes.
+ * Dates Attributes.
  */
 define("DATES", [CREATE.'d_at', UPDATE.'d_at', DELETE.'d_at']);
 
@@ -135,7 +142,7 @@ define("DATES", [CREATE.'d_at', UPDATE.'d_at', DELETE.'d_at']);
 
 #################################### Database Tables Names ####################################
 /**
- * Database Tables names.
+ * Database Tables Names.
  */
 define("CATEGORIES_TABLE",           pluralize(CATEGORY_MODEL));
 define("SUBCATEGORIES_TABLE",        pluralize(SUBCATEGORY_MODEL));
@@ -171,50 +178,6 @@ define("ORDER_ITEMS",  capitalizeAllFromSecondWord(ORDER_ITEMS_TABLE));
 #################################### End For Relations ####################################
 
 
-#################################### Auth ####################################
-/**
- * Auth Standards.
- */
-define("AUTH",          'auth');
-define("AUTH_ACTION",   AUTH.'_action');
-define("AUTH_SUCCESS",  AUTH.'_success');
-define("AUTH_FAILED",   AUTH.'.failed');
-
-/**
- * Auth-Related Actions.
- */
-define("REGISTER", 'register');
-define("LOGIN",    'login');
-define("LOGOUT",   'logout');
-
-/**
- * Login Social Providers
- */
-define("LOGIN_SOCIAL_PROVIDERS", explode(',', env("LOGIN_SOCIAL_PROVIDERS")));
-
-/**
- * Password Management Operations.
- */
-define("FORGOT_PASSWORD", 'forgot_'.PASSWORD);
-define("RESET_PASSWORD",  'reset_'.PASSWORD);
-
-/**
- * Login & Reset Password Errors.
- */
-define("MANY_ATTEMPTS",       'many_attempts');
-define("INVALID_CREDENTIALS", 'invalid_credentials');
-
-/**
- * User-Related Actions.
- */
-define("REGISTER_USER",        userAuthAction(REGISTER));
-define("LOGIN_USER",           userAuthAction(LOGIN));
-define("FORGOT_PASSWORD_USER", userAuthAction(FORGOT_PASSWORD));
-define("RESET_PASSWORD_USER",  userAuthAction(RESET_PASSWORD));
-
-#################################### End Auth ####################################
-
-
 #################################### Other Standards ####################################
 /**
  * Application Standards.
@@ -229,6 +192,30 @@ define("ROW",                  'row');
 define("LAST_PAGE",            'last_page');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
+
+/**
+ * Auth Standards.
+ */
+define("AUTH",                   'auth');
+define("AUTH_ACTION",            AUTH.'_action');
+define("AUTH_SUCCESS",           AUTH.'_success');
+define("AUTH_FAILED",            AUTH.'.failed');
+define("LOGIN_SOCIAL_PROVIDERS", explode(',', env("LOGIN_SOCIAL_PROVIDERS")));
+
+/**
+ * Password Management Standards.
+ *
+ */
+define("FORGOT_PASSWORD", 'forgot_'.PASSWORD);
+define("RESET_PASSWORD",  'reset_'.PASSWORD);
+
+/**
+ * User-Related Actions Standards.
+ */
+define("REGISTER_USER",        userAuthAction(REGISTER));
+define("LOGIN_USER",           userAuthAction(LOGIN));
+define("FORGOT_PASSWORD_USER", userAuthAction(FORGOT_PASSWORD));
+define("RESET_PASSWORD_USER",  userAuthAction(RESET_PASSWORD));
 
 /**
  * Admin Standards.
@@ -256,6 +243,7 @@ define("PRODUCT_SIZE_QUICK_VIEW",     PRODUCT_SIZE.'_'.QUICK_VIEW);
 define("PRODUCT_QUANTITY_QUICK_VIEW", PRODUCT_QUANTITY.'_'.QUICK_VIEW);
 define("PRODUCTS_PRICES",             PRODUCTS_TABLE.'_'.pluralize(PRICE));
 define("PRODUCTS_PAGINATION_ROUTE",   PRODUCTS_TABLE.'_pagination_route');
+define("USERS_PAGINATION_ROUTE",      USERS_TABLE.'_pagination_route');
 define("ORDERS_PAGINATION_ROUTE",     ORDERS_TABLE.'_pagination_route');
 define("SORT",                        'sort');
 define("MIN_PRICE",                   'min_'.PRICE);
@@ -313,10 +301,6 @@ define("USER_ID",        collectionId(USER_MODEL));
 define("ADDRESS_ID",     collectionId(ADDRESS_MODEL));
 define("REVIEW_ID",      collectionId(REVIEW_MODEL));
 
-#################################### End Foreign Keys ####################################
-
-
-#################################### The Foreign Keys For Update ####################################
 /**
  * The Foreign Keys For Update.
  */
@@ -328,7 +312,7 @@ define("UPDATE_USER_ID",        collectionId(USER_MODEL,        true));
 define("UPDATE_ADDRESS_ID",     collectionId(ADDRESS_MODEL,     true));
 define("UPDATE_REVIEW_ID",      collectionId(REVIEW_MODEL,      true));
 
-#################################### End The Foreign Keys For Update ####################################
+#################################### End Foreign Keys ####################################
 
 
 #################################### Database Needed Attributes ####################################
@@ -594,7 +578,7 @@ define("REVIEW_FILLABLE_ATTRIBUTES", [
 
 #################################### Titles ####################################
 /**
- * Add Collection Title.
+ * Add Collection Titles.
  */
 define("ADD_CATEGORY_TITLE",    collectionAction(ADD, CATEGORY_MODEL,    true));
 define("ADD_SUBCATEGORY_TITLE", collectionAction(ADD, SUBCATEGORY_MODEL, true));
@@ -603,7 +587,7 @@ define("ADD_USER_TITLE",        collectionAction(ADD, USER_MODEL,        true));
 define("ADD_ADDRESS_TITLE",     collectionAction(ADD, ADDRESS_MODEL,     true));
 
 /**
- * Edit Collection Title.
+ * Edit Collection Titles.
  */
 define("EDIT_CATEGORY_TITLE",    collectionAction(EDIT, CATEGORY_MODEL,    true));
 define("EDIT_SUBCATEGORY_TITLE", collectionAction(EDIT, SUBCATEGORY_MODEL, true));
@@ -625,9 +609,9 @@ define("ORDER_NUMBER_TITLE",   ORDER_MODEL.'_number_'.TITLE);
 #################################### End Titles ####################################
 
 
-#################################### Create Or Update Collection ####################################
+#################################### Collections Actions ####################################
 /**
- * Create Or Update Collection.
+ * Create Or Update Collections Actions.
  */
 define("CREATE_UPDATE_CATEGORY",    createOrUpdate(CATEGORY_MODEL));
 define("CREATE_UPDATE_SUBCATEGORY", createOrUpdate(SUBCATEGORY_MODEL));
@@ -638,12 +622,8 @@ define("CREATE_UPDATE_USER",        createOrUpdate(USER_MODEL));
 define("CREATE_UPDATE_ADDRESS",     createOrUpdate(ADDRESS_MODEL));
 define("CREATE_UPDATE_REVIEW",      createOrUpdate(REVIEW_MODEL));
 
-#################################### End Create Or Update Collection ####################################
-
-
-#################################### Edit Collection ####################################
 /**
- * Edit Collection.
+ * Edit Collections Actions.
  */
 define("EDIT_CATEGORY",    collectionAction(EDIT, CATEGORY_MODEL));
 define("EDIT_SUBCATEGORY", collectionAction(EDIT, SUBCATEGORY_MODEL));
@@ -653,12 +633,8 @@ define("EDIT_USER",        collectionAction(EDIT, USER_MODEL));
 define("EDIT_ADDRESS",     collectionAction(EDIT, ADDRESS_MODEL));
 define("EDIT_REVIEW",      collectionAction(EDIT, REVIEW_MODEL));
 
-#################################### End Edit Collection ####################################
-
-
-#################################### Remove Collection ####################################
 /**
- * Remove Collection.
+ * Remove Collections Actions.
  */
 define("REMOVE_CATEGORY",    collectionAction(REMOVE, CATEGORY_MODEL));
 define("REMOVE_SUBCATEGORY", collectionAction(REMOVE, SUBCATEGORY_MODEL));
@@ -669,12 +645,8 @@ define("REMOVE_USER",        collectionAction(REMOVE, USER_MODEL));
 define("REMOVE_ADDRESS",     collectionAction(REMOVE, ADDRESS_MODEL));
 define("REMOVE_REVIEW",      collectionAction(REMOVE, REVIEW_MODEL));
 
-#################################### End Remove Collection ####################################
-
-
-#################################### Delete Collection ####################################
 /**
- * Delete Collection.
+ * Delete Collections Actions.
  */
 define("DELETE_CATEGORY",    collectionAction(DELETE, CATEGORY_MODEL));
 define("DELETE_SUBCATEGORY", collectionAction(DELETE, SUBCATEGORY_MODEL));
@@ -685,12 +657,8 @@ define("DELETE_USER",        collectionAction(DELETE, USER_MODEL));
 define("DELETE_ADDRESS",     collectionAction(DELETE, ADDRESS_MODEL));
 define("DELETE_REVIEW",      collectionAction(DELETE, REVIEW_MODEL));
 
-#################################### End Delete Collection ####################################
-
-
-#################################### Restore Collection ####################################
 /**
- * Restore Collection.
+ * Restore Collections Actions.
  */
 define("RESTORE_CATEGORY",    collectionAction(RESTORE, CATEGORY_MODEL));
 define("RESTORE_SUBCATEGORY", collectionAction(RESTORE, SUBCATEGORY_MODEL));
@@ -701,20 +669,22 @@ define("RESTORE_USER",        collectionAction(RESTORE, USER_MODEL));
 define("RESTORE_ADDRESS",     collectionAction(RESTORE, ADDRESS_MODEL));
 define("RESTORE_REVIEW",      collectionAction(RESTORE, REVIEW_MODEL));
 
-#################################### End Restore Collection ####################################
+#################################### End Collections Actions ####################################
 
 
 #################################### Errors ####################################
 /**
- * Auth Error.
+ * Auth Errors.
  */
+define("MANY_ATTEMPTS",              'many_attempts');
+define("INVALID_CREDENTIALS",        'invalid_credentials');
 define("REGISTER_USER_ERROR",        collectionActionError(REGISTER,        USER_MODEL));
 define("LOGIN_USER_ERROR",           collectionActionError(LOGIN,           USER_MODEL));
 define("FORGOT_PASSWORD_USER_ERROR", collectionActionError(FORGOT_PASSWORD, USER_MODEL));
 define("RESET_PASSWORD_USER_ERROR",  collectionActionError(RESET_PASSWORD,  USER_MODEL));
 
 /**
- * Add Collection Error.
+ * Add Collection Errors.
  */
 define("ADD_CATEGORY_ERROR",     collectionActionError(ADD, CATEGORY_MODEL));
 define("ADD_SUBCATEGORY_ERROR",  collectionActionError(ADD, SUBCATEGORY_MODEL));
@@ -726,7 +696,7 @@ define("ADD_ADDRESS_ERROR",      collectionActionError(ADD, ADDRESS_MODEL));
 define("ADD_REVIEW_ERROR",       collectionActionError(ADD, REVIEW_MODEL));
 
 /**
- * Update Collection Error.
+ * Update Collection Errors.
  */
 define("UPDATE_CATEGORY_ERROR",    collectionActionError(UPDATE, CATEGORY_MODEL));
 define("UPDATE_SUBCATEGORY_ERROR", collectionActionError(UPDATE, SUBCATEGORY_MODEL));
@@ -737,7 +707,7 @@ define("UPDATE_ORDER_ERROR",       collectionActionError(UPDATE, ORDER_MODEL));
 define("UPDATE_REVIEW_ERROR",      collectionActionError(UPDATE, REVIEW_MODEL));
 
 /**
- * Filter Collection Error.
+ * Filter Collection Errors.
  */
 define("FILTER_DASHBOARD_ERROR", collectionActionError(FILTER, DASHBOARD));
 define("FILTER_PRODUCTS_ERROR",  collectionActionError(FILTER, PRODUCTS_TABLE));
@@ -750,14 +720,14 @@ define("FILTER_REVIEWS_ERROR",   collectionActionError(FILTER, REVIEWS_TABLE));
 
 #################################### Views ####################################
 /**
- * Auth views.
+ * Auth Views.
  */
 define("LOGIN_REGISTER_VIEW",  authView(kebabAll(LOGIN.'_'.REGISTER)));
 define("FORGOT_PASSWORD_VIEW", authView(kebabAll(FORGOT_PASSWORD)));
 define("RESET_PASSWORD_VIEW",  authView(kebabAll(RESET_PASSWORD)));
 
 /**
- * Admin views.
+ * Admin Views.
  */
 define("ADMIN_DASHBOARD_VIEW",      adminView(DASHBOARD));
 define("ADMIN_CATEGORIES_VIEW",     adminView(CATEGORIES_TABLE));
@@ -769,7 +739,7 @@ define("ADMIN_USER_ADDRESSES_VIEW", adminView(kebabAll(USER_ADDRESSES)));
 define("ADMIN_REVIEWS_VIEW",        adminView(REVIEWS_TABLE));
 
 /**
- * User views.
+ * User Views.
  */
 define("USER_HOME_VIEW",            userView('index'));
 define("USER_PRODUCTS_VIEW",        userView(PRODUCTS_TABLE));
@@ -786,7 +756,7 @@ define("USER_CONTACT_US_VIEW",      userView(kebabAll(CONTACT_US)));
 
 #################################### Admin Routes ####################################
 /**
- * Admin routes.
+ * Admin Routes.
  */
 define("ADMIN_DASHBOARD_ROUTE",      adminRoute(DASHBOARD));
 define("ADMIN_CATEGORIES_ROUTE",     adminRoute(CATEGORIES_TABLE));
@@ -819,8 +789,8 @@ define("ERROR_COMPONENT",                  component('error'));
 /**
  * Emails.
  */
-define("ORDER_EMAIL",          email(ORDER_MODEL));
-define("RESET_PASSWORD_EMAIL", email(RESET_PASSWORD));
+define("ORDER_EMAIL",          emailView(ORDER_MODEL));
+define("RESET_PASSWORD_EMAIL", emailView(RESET_PASSWORD));
 
 #################################### End Emails ####################################
 
@@ -846,6 +816,11 @@ define("ADDRESS_ROW_PARTIAL",     partial(ADDRESS_MODEL));
 define("REVIEW_ROW_PARTIAL",      partial(REVIEW_MODEL));
 
 /**
+ * Errors Partials.
+ */
+define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(pluralize(kebabAll(UPDATE_REVIEW_ERROR)), REVIEWS_TABLE));
+
+/**
  * Other Partials.
  */
 define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
@@ -854,29 +829,20 @@ define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'o
 define("PRODUCT_ITEM_COMMON_PARTIAL",   partial(PRODUCT_MODEL.'-item-common', 'other'));
 define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
 
-/**
- * Errors Partials
- */
-define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(pluralize(kebabAll(UPDATE_REVIEW_ERROR)), REVIEWS_TABLE));
-
 #################################### End Partials ####################################
 
 
-#################################### Add Modal ####################################
+#################################### Modals ####################################
 /**
- * Add Modal.
+ * Add Modals.
  */
 define("ADD_CATEGORY_MODAL",    modal(ADD, CATEGORY_MODEL));
 define("ADD_SUBCATEGORY_MODAL", modal(ADD, SUBCATEGORY_MODEL));
 define("ADD_PRODUCT_MODAL",     modal(ADD, PRODUCT_MODEL));
 define("ADD_USER_MODAL",        modal(ADD, USER_MODEL));
 
-#################################### End Add Modal ####################################
-
-
-#################################### Edit Modal ####################################
 /**
- * Edit Modal.
+ * Edit Modals.
  */
 define("EDIT_CATEGORY_MODAL",    modal(EDIT, CATEGORY_MODEL));
 define("EDIT_SUBCATEGORY_MODAL", modal(EDIT, SUBCATEGORY_MODEL));
@@ -885,56 +851,85 @@ define("EDIT_ORDER_MODAL",       modal(EDIT, ORDER_MODEL));
 define("EDIT_USER_MODAL",        modal(EDIT, USER_MODEL));
 define("EDIT_REVIEW_MODAL",      modal(EDIT, REVIEW_MODEL));
 
-#################################### End Edit Modal ####################################
-
-
-#################################### User Modal ####################################
 /**
- * User Modal.
+ * User Modals.
  */
 define("USER_QUICK_VIEW_PRODUCT_MODAL", modal(kebabAll(QUICK_VIEW), PRODUCT_MODEL, true));
 define("USER_EDIT_REVIEW_MODAL",        modal(EDIT, REVIEW_MODEL, true));
 
-#################################### End User Modal ####################################
+#################################### End Modals ####################################
 
 
-#################################### Search Table ####################################
+#################################### Search & Filter ####################################
 /**
- * Search Table.
+ * Search.
  */
-define("SEARCH_CATEGORIES",     searchableTable(CATEGORIES_TABLE));
-define("SEARCH_SUBCATEGORIES",  searchableTable(SUBCATEGORIES_TABLE));
-define("SEARCH_PRODUCTS",       searchableTable(PRODUCTS_TABLE));
-define("ADMIN_SEARCH_PRODUCTS", searchableTable(table: PRODUCTS_TABLE, role: ADMIN));
-define("SEARCH_ORDERS",         searchableTable(ORDERS_TABLE));
-define("SEARCH_USERS",          searchableTable(USERS_TABLE));
-define("SEARCH_ADDRESSES",      searchableTable(ADDRESSES_TABLE));
-define("SEARCH_REVIEWS",        searchableTable(REVIEWS_TABLE));
-define("FILTER_DASHBOARD",      searchableTable(DASHBOARD,      true));
-define("FILTER_PRODUCTS",       searchableTable(PRODUCTS_TABLE, true));
-define("FILTER_ORDERS",         searchableTable(ORDERS_TABLE,   true));
+define("SEARCH_CATEGORIES",     searchFilter(CATEGORIES_TABLE));
+define("SEARCH_SUBCATEGORIES",  searchFilter(SUBCATEGORIES_TABLE));
+define("SEARCH_PRODUCTS",       searchFilter(PRODUCTS_TABLE));
+define("ADMIN_SEARCH_PRODUCTS", searchFilter(table: PRODUCTS_TABLE, role: ADMIN));
+define("SEARCH_ORDERS",         searchFilter(ORDERS_TABLE));
+define("SEARCH_USERS",          searchFilter(USERS_TABLE));
+define("SEARCH_ADDRESSES",      searchFilter(ADDRESSES_TABLE));
+define("SEARCH_REVIEWS",        searchFilter(REVIEWS_TABLE));
 
-#################################### End Search Table ####################################
-
-
-#################################### Admin/User Pagination Views ####################################
 /**
- * Admin/User pagination views.
+ * Filter.
  */
-define("ADMIN_DASHBOARD_PAGINATION",         pagination(DASHBOARD));
-define("ADMIN_CATEGORIES_PAGINATION",        pagination(CATEGORIES_TABLE));
-define("ADMIN_SUBCATEGORIES_PAGINATION",     pagination(SUBCATEGORIES_TABLE));
-define("ADMIN_PRODUCTS_PAGINATION",          pagination(PRODUCTS_TABLE));
-define("ADMIN_ORDERS_PAGINATION",            pagination(ORDERS_TABLE));
-define("ADMIN_USERS_PAGINATION",             pagination(USERS_TABLE));
-define("ADMIN_USER_ADDRESSES_PAGINATION",    pagination(kebabAll(USER_ADDRESSES)));
-define("ADMIN_REVIEWS_PAGINATION",           pagination(REVIEWS_TABLE));
-define("PROFILE_ORDERS_PAGINATION",            pagination(PROFILE.'-'.ORDERS_TABLE,     true));
-define("USER_PRODUCTS_PAGINATION",           pagination(PRODUCTS_TABLE,               true));
-define("CART_PAGINATION",                    pagination(CART_MODEL,                   true));
-define("CHECKOUT_USER_ADDRESSES_PAGINATION", pagination(kebabAll(CHECKOUT_USER_ADDRESSES), true));
+define("FILTER_DASHBOARD",      searchFilter(DASHBOARD,      true));
+define("FILTER_PRODUCTS",       searchFilter(PRODUCTS_TABLE, true));
+define("FILTER_ORDERS",         searchFilter(ORDERS_TABLE,   true));
 
-#################################### End Admin/User Pagination Views ####################################
+#################################### End Search & Filter ####################################
+
+
+#################################### Pagination Views ####################################
+/**
+ * Admin Pagination Views.
+ */
+define("ADMIN_DASHBOARD_PAGINATION",         paginationView(DASHBOARD));
+define("ADMIN_CATEGORIES_PAGINATION",        paginationView(CATEGORIES_TABLE));
+define("ADMIN_SUBCATEGORIES_PAGINATION",     paginationView(SUBCATEGORIES_TABLE));
+define("ADMIN_PRODUCTS_PAGINATION",          paginationView(PRODUCTS_TABLE));
+define("ADMIN_ORDERS_PAGINATION",            paginationView(ORDERS_TABLE));
+define("ADMIN_USERS_PAGINATION",             paginationView(USERS_TABLE));
+define("ADMIN_USER_ADDRESSES_PAGINATION",    paginationView(kebabAll(USER_ADDRESSES)));
+define("ADMIN_REVIEWS_PAGINATION",           paginationView(REVIEWS_TABLE));
+
+/**
+ * User Pagination Views.
+ */
+define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,     true));
+define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,               true));
+define("CART_PAGINATION",                    paginationView(CART_MODEL,                   true));
+define("CHECKOUT_USER_ADDRESSES_PAGINATION", paginationView(kebabAll(CHECKOUT_USER_ADDRESSES), true));
+
+#################################### End Pagination Views ####################################
+
+
+#################################### Pagination Cache Keys ####################################
+/**
+ * Admin Pagination Cache Keys.
+ */
+define("CATEGORIES_PAGINATION_CACHE_KEY",    paginationCacheKeyName(CATEGORIES_TABLE));
+define("SUBCATEGORIES_PAGINATION_CACHE_KEY", paginationCacheKeyName(SUBCATEGORIES_TABLE));
+define("PRODUCTS_PAGINATION_CACHE_KEY",      paginationCacheKeyName(PRODUCTS_TABLE));
+define("USERS_PAGINATION_CACHE_KEY",         paginationCacheKeyName(USERS_TABLE));
+define("ORDERS_PAGINATION_CACHE_KEY",        paginationCacheKeyName(ORDERS_TABLE));
+define("REVIEWS_PAGINATION_CACHE_KEY",       paginationCacheKeyName(REVIEWS_TABLE));
+
+/**
+ * User Pagination Cache Keys.
+ */
+define("USER_ADDRESSES_PAGINATION_CACHE_KEY", paginationCacheKeyName(USER_ADDRESSES.'_'.auth()->id()));
+define("USER_ORDERS_PAGINATION_CACHE_KEY",    paginationCacheKeyName(USER_ORDERS));
+
+/**
+ * Common Pagination Cache Keys.
+ */
+define("ADDRESSES_PAGINATION_CACHE_KEY", paginationCacheKeyName(ADDRESSES_TABLE));
+
+#################################### End Pagination Cache Keys ####################################
 
 
 #################################### Enums ####################################
@@ -1085,47 +1080,11 @@ function createOrUpdate(string $collectionName): string
 
 
 /**
- * Auth view.
- *
- * @param string $viewName
- * @return string
- */
-function authView(string $viewName): string
-{
-    return AUTH.".$viewName";
-}
-
-
-/**
- * Admin view.
- *
- * @param string $viewName
- * @return string
- */
-function adminView(string $viewName): string
-{
-    return ADMIN.'.'.ADMIN."-$viewName";
-}
-
-
-/**
- * User view.
- *
- * @param string $viewName
- * @return string
- */
-function userView(string $viewName): string
-{
-    return USER_MODEL.".$viewName";
-}
-
-
-/**
- * Admin Routes.
- *
- * @param string $viewName
- * @return string
- */
+* Admin Routes.
+*
+* @param string $viewName
+* @return string
+*/
 function adminRoute(string $viewName): string
 {
     return ADMIN."_$viewName";
@@ -1190,18 +1149,6 @@ function modal(string $action, string $collection, bool $isUser = false): string
 
 
 /**
- * Email.
- *
- * @param string $emailName
- * @return string
- */
-function email(string $emailName): string
-{
-    return pluralize(EMAIL).'.'.kebabAll($emailName).'-'.EMAIL;
-}
-
-
-/**
  * Search or Filter a specified table.
  *
  * @param string $table
@@ -1209,11 +1156,59 @@ function email(string $emailName): string
  * @param string|null $role
  * @return string
  */
-function searchableTable(string $table, bool $isFilter = false, ?string $role = null): string
+function searchFilter(string $table, bool $isFilter = false, ?string $role = null): string
 {
     return $isFilter
         ? "filter_$table"
         : (isset($role) ? $role.'_' : null)."search_$table";
+}
+
+
+/**
+ * Auth view.
+ *
+ * @param string $viewName
+ * @return string
+ */
+function authView(string $viewName): string
+{
+    return AUTH.".$viewName";
+}
+
+
+/**
+ * Admin view.
+ *
+ * @param string $viewName
+ * @return string
+ */
+function adminView(string $viewName): string
+{
+    return ADMIN.'.'.ADMIN."-$viewName";
+}
+
+
+/**
+ * User view.
+ *
+ * @param string $viewName
+ * @return string
+ */
+function userView(string $viewName): string
+{
+    return USER_MODEL.".$viewName";
+}
+
+
+/**
+ * Email view.
+ *
+ * @param string $emailViewName
+ * @return string
+ */
+function emailView(string $emailViewName): string
+{
+    return pluralize(EMAIL).'.'.kebabAll($emailViewName).'-'.EMAIL;
 }
 
 
@@ -1224,13 +1219,27 @@ function searchableTable(string $table, bool $isFilter = false, ?string $role = 
  * @param bool $isUser
  * @return string
  */
-function pagination(string $viewName, bool $isUser = false): string
+function paginationView(string $viewName, bool $isUser = false): string
 {
     $role = $isUser
         ? USER_MODEL
         : ADMIN;
 
     return "$role.pagination.".$viewName."-pagination";
+}
+
+
+/**
+ * Generate the pagination cache key name.
+ *
+ * @param string $key
+ * @param mixed|null $suffix
+ * @param bool $isTrashed
+ * @return string
+ */
+function paginationCacheKeyName(string $key, mixed $suffix = null, bool $isTrashed = false): string
+{
+    return $key.'_'.(trashedConditionRequest() || $isTrashed ? TRASHED : 'main').'_'.currentPageRequest().($suffix ?: '');
 }
 
 #################################### End IGrace Helper Functions ####################################

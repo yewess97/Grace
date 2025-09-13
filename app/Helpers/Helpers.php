@@ -19,7 +19,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -214,38 +213,73 @@ if (!function_exists('adminCurrentUrl')) {
 }
 
 
-if (!function_exists('paginationCacheKey')) {
-    /**
-     * Generate the pagination cache key.
-     *
-     * @param string $key
-     * @param string|null $condition
-     * @return string
-     */
-    function paginationCacheKey(string $key, ?string $condition = null): string
-    {
-        return $key.($condition ? '_trashed_' : '_main_').currentPageRequest();
-    }
-}
-
-
-if (!function_exists('forgetCacheFor')) {
+if (!function_exists('forgetPaginationCacheFor')) {
     /**
      * Forget the cache.
      *
      * @param string $key
-     * @param string|int|null $additionalSuffix
+     * @param Model|stdClass|null $model
+     * @param string|null $additionalSuffix
+     * @param array|null $extraConfig
      * @return bool
      */
-    function forgetCacheFor(string $key, string|int|null $additionalSuffix = null): bool
+    function forgetCache(string $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
     {
-        $all_constants = get_defined_constants(true)['user'] ?? [];
-
+        $all_constants  = get_defined_constants(true)['user'] ?? [];
         $key_const_name = array_search($key, $all_constants, true);
 
-        return str_contains($key_const_name, 'TABLE')
-            ? cache()->forget(paginationCacheKey($key, trashedConditionRequest()).($additionalSuffix ?: ''))
-            : cache()->forget(paginationCacheKey($key));
+        if (!is_null($model)) {
+            $selected_ids = selectedIdsRequest()
+                ? array_map('intval', array_from(selectedIdsRequest()))
+                : [$model->{ID}];
+
+            // Forget the default pagination cache (main and trashed) for each suffix
+            $model::query()->whereIn(ID, $selected_ids)
+                ->withTrashed()
+                ->pluck($additionalSuffix)
+                ->unique()
+                ->each(static function ($suffix) use ($key) {
+                    cache()->forget(paginationCacheKeyName($key, $suffix, true));
+                    cache()->forget(paginationCacheKeyName($key, $suffix));
+                });
+
+            if (!empty($extraConfig)) {
+                $query = $model::query()->whereIn(ID, $selected_ids)
+                    ->withTrashed();
+
+                // Eager load "relation" if provided in config
+                if (!empty($extraConfig['relation'])) {
+                    $query->with([
+                        $extraConfig['relation'] => static fn($relatedCollection) =>
+                            $relatedCollection->select($extraConfig['relation_only_columns'] ?? [ID]),
+                    ]);
+                }
+
+                // Map each model to the required "relation_only_columns" (either directly or via relation)
+                $query->cursor()
+                    ->map(static function ($item) use ($extraConfig) {
+                        if (!empty($extraConfig['relation'])) {
+                            return $item->{$extraConfig['relation']}->only($extraConfig['relation_only_columns']);
+                        }
+
+                        return $item->only($extraConfig['relation_only_columns']);
+                    })
+                    ->unique($extraConfig['unique_by'] ?? null)
+                    // For each row, generate all cache keys (flatten into a single list)
+                    ->flatMap(static function ($data) use ($extraConfig) {
+                        // Return all cache keys as an array so that the flatMap flatten them
+                        return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
+                    })
+                    // Forget all generated cache keys one by one
+                    ->each(static fn($cacheKey) => cache()->forget($cacheKey));
+            }
+
+            return true;
+        }
+
+        return str_contains($key_const_name, 'PAGINATION')
+            ? cache()->forget(paginationCacheKeyName($key))
+            : cache()->forget($key);
     }
 }
 
@@ -737,8 +771,9 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
     function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
     {
         if ($productId) {
-            return cache()->remember(AVERAGE_RATE, 1800, static fn() =>
+            return cache()->remember(AVERAGE_RATE.'_'.$productId, 1800, static fn() =>
                 Review::query()->where(PRODUCT_ID, $productId)
+                    ->withoutTrashed()
                     ->avg(RATING) ?? '0'
             );
         }
@@ -1024,7 +1059,7 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
                 [ID => $user_id], $attributes
             );
 
-            forgetCacheFor(USERS_TABLE);
+            forgetCache(USERS_TABLE);
             cache()->forget(USER_MODEL);
 
             sendNotificationToAdmins(new NewAdminActionTaken([$user, $user->{FULL_NAME}], $operation), true);
@@ -1072,36 +1107,34 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
     {
         $selected_ids = selectedIdsRequest()
             ? array_map('intval', array_from(selectedIdsRequest()))
-            : [];
+            : [$model->{ID}];
 
-        $destroy = static function (array $ids) use ($model, $modelAttribute, $deleteImages, $selected_ids) {
-            $is_collection_trashed = $model::query()->whereIn(ID, $ids)->cursor()->every(fn($collection) => Cart::class ? false : $collection->trashed());
+            $is_collection_trashed = $model::query()->whereIn(ID, $selected_ids)
+                ->cursor()
+                ->every(fn($collection) =>
+                    Cart::class
+                        ? false
+                        : $collection->trashed()
+                );
 
-            if (!$is_collection_trashed) {
-                $destroyed_ids = $model::destroy($ids);
+        if (!$is_collection_trashed) {
+            $destroyed_ids = $model::destroy($selected_ids);
 
-                // In order not to check about trashed() for every id in the controller
-                sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], REMOVE, !empty($selected_ids)), true);
+            // In order not to check about trashed() for every id in the controller
+            sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], REMOVE, count($selected_ids) > 1), true);
 
-                return $destroyed_ids;
-            }
+            return $destroyed_ids;
+        }
 
-            if ($deleteImages) {
-                deleteImages($model, $selected_ids);
-            }
+        if ($deleteImages) {
+            deleteImages($model, $selected_ids);
+        }
 
-            $force_deleted_ids = empty($selected_ids)
-                ? $model->forceDelete()
-                : $model::query()->whereIn(ID, $ids)->forceDelete();
+        $force_deleted_ids = $model::query()->whereIn(ID, $selected_ids)->forceDelete();
 
-            sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], DELETE, !empty($selected_ids)), true);
+        sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], DELETE, count($selected_ids) > 1), true);
 
-            return $force_deleted_ids;
-        };
-
-        return empty($selected_ids)
-            ? $destroy([$model->{ID}])
-            : $destroy($selected_ids);
+        return $force_deleted_ids;
     }
 }
 
@@ -1141,12 +1174,14 @@ if (!function_exists(DELETE.'Images')) {
         $images_to_delete = $model::query()->whereIn(ID, $ids_to_delete)->onlyTrashed();
 
         if (str($table_name)->exactly(CATEGORIES_TABLE)
-            && $images_to_delete->pluck(BANNER_IMAGE)->count()) {
+            && $images_to_delete->pluck(BANNER_IMAGE)->count())
+        {
             $images_data_list = $images_data(BANNER_IMAGE);
         }
 
         if (str($table_name)->exactly(PRODUCTS_TABLE)
-            && $images_to_delete->withCount(THUMB_IMAGES)->pluck(THUMB_IMAGES_TABLE.'_count')->first() > 0) {
+            && $images_to_delete->withCount(THUMB_IMAGES)->pluck(THUMB_IMAGES_TABLE.'_count')->first() > 0)
+        {
                 $images_data_list = $images_data(THUMB_IMAGE);
         }
 
@@ -1162,7 +1197,7 @@ if (!function_exists(DELETE.'Images')) {
             }
         }
 
-        if (is_array($images)) {
+        if (!empty($images)) {
             $images_data_list = $images_data(MAIN_IMAGE);
 
             if ($images_data_list[$db_images_count] === $images_data_list[$storage_images_count]) {
@@ -1241,16 +1276,16 @@ if (!function_exists(RESTORE)) {
      * Restore a specified record or all/some records of a model.
      *
      * @param Model|stdClass $model
-     * @param string|null $modelAttribute
+     * @param string|null $forNotification
      * @return bool
      */
-    function restore(Model|stdClass $model, ?string $modelAttribute = null): bool
+    function restore(Model|stdClass $model, ?string $forNotification = null): bool
     {
         $selected_ids = selectedIdsRequest()
             ? array_map('intval', array_from(selectedIdsRequest()))
             : [];
 
-        sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], RESTORE, !empty($selected_ids)), true);
+        sendNotificationToAdmins(new NewAdminActionTaken([$model, $forNotification], RESTORE, !empty($selected_ids)), true);
 
         return empty($selected_ids)
             ? $model->restore()

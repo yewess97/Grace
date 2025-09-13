@@ -21,7 +21,7 @@
     <button type="button" role='button' title='Close' class="btn-close position-relative p-0" data-mdb-dismiss="alert" aria-label="Close"></button>
 </div>
 {{-- Product Add Review Form --}}
-<form action="{{route(CREATE_UPDATE_REVIEW, ADD)}}" method="post" role="form" id="add_review_form" class="grace-form review-form flex-wrap py-4 px-0 border-top" data-reviews="{{route(REVIEWS_TABLE, [PRODUCT_ID => $product->id])}}">
+<form action="{{route(CREATE_UPDATE_REVIEW, ADD)}}" method="post" role="form" id="add_review_form" class="grace-form review-form flex-wrap py-4 px-0 border-top" data-reviews="{{route(PRODUCT_DETAILS, $productSlug)}}">
     @csrf
     {{-- Review Form Header --}}
     <h3 class="mb-4 fs-6 fw-600">Write a {{REVIEW_MODEL}}</h3>
@@ -105,7 +105,7 @@
                         <i class="fa-regular fa-pen-to-square"></i>
                     </button>
                     {{-- User Review Delete Button --}}
-                    <form action="{{route(DELETE_REVIEW, $review->id)}}" method="post" role="form" class="delete-review-form h-fit-content" data-reviews="{{route(REVIEWS_TABLE, $product->id)}}">
+                    <form action="{{route(DELETE_REVIEW, $review->id)}}" method="post" role="form" class="delete-review-form h-fit-content" data-reviews="{{route(PRODUCT_DETAILS, $productSlug)}}">
                         @csrf
                         @method(strtoupper(DELETE))
                         <button type="submit" role="button" title="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}" data-tooltip="tooltip" data-mdb-placement="top" class="text-danger border-0" aria-label="{{ucfirst(DELETE)}} my {{REVIEW_MODEL}}">

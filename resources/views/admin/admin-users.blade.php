@@ -14,7 +14,7 @@
                             @search(SEARCH_USERS)
 
                             {{-- Users Filter by Role --}}
-                            <form action="{{route(SEARCH_USERS, FILTER)}}" method="post" role="form" id="filter_users_form" class="grace-form filter-form col-12 col-md-5" data-no_results="{{imageSource('no-results.png')}}">
+                            <form action="{{route(SEARCH_USERS, ['type' => FILTER])}}" method="post" role="form" id="filter_users_form" class="grace-form filter-form col-12 col-md-5" data-no_results="{{imageSource('no-results.png')}}">
                                 @csrf
                                 <div class="grace-form-body row col-12 justify-content-between">
                                     {{-- Role --}}
