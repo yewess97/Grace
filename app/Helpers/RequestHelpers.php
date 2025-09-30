@@ -30,7 +30,7 @@ if (!function_exists('selectedIdsRequest')) {
     /**
      * Get the selected ids.
      *
-     * @return array|null
+     * @return string|null
      */
     function selectedIdsRequest(): string|null
     {

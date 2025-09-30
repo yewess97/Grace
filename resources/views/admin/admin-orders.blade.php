@@ -51,7 +51,7 @@
                         </article>
 
                         {{-- Orders Main Buttons --}}
-                        @collectionButtons(ORDERS_TABLE, ADMIN_ORDERS_ROUTE)
+                        @collectionButtons(ORDERS_TABLE, ADMIN_ORDERS_ROUTE, [STATUS => $order_status])
                     </div>
 
                     {{-- Orders Table --}}

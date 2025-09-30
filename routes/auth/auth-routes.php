@@ -41,7 +41,7 @@ Route::get('/'.CHECKOUT, [CheckoutController::class, 'index'])->name(CHECKOUT);
  * User Addresses Routes
  */
 Route::controller(AddressController::class)->group(function () {
-    basicRoute(ADDRESSES_TABLE, USER_ADDRESSES, capitalizeAllFromSecondWord(USER_ADDRESSES));
+    basicRoute(ADDRESSES_TABLE, USER_ADDRESSES, capitalizeSecond(USER_ADDRESSES));
     Route::match(['post', 'put'], '/'.kebabAll(CREATE_UPDATE_ADDRESS).'/{operation}', STORE_OR_UPDATE)->name(CREATE_UPDATE_ADDRESS);
 });
 
@@ -55,7 +55,7 @@ generalControllerRoutes(AddressController::class, ADDRESS_MODEL);
  * Orders Routes
  */
 Route::controller(OrderController::class)->group(function () {
-    Route::get('/'.ORDER_MODEL, capitalizeAllFromSecondWord(ORDER_DETAILS))->name(ORDER_DETAILS);
+    Route::get('/'.ORDER_MODEL, capitalizeSecond(ORDER_DETAILS))->name(ORDER_DETAILS);
     Route::match(['get', 'post'], '/'.kebabAll(CREATE_ORDER), 'store')->name(CREATE_ORDER);
 });
 

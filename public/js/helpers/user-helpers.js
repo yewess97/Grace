@@ -125,9 +125,9 @@ const User = {
             cart_main        = `#${IGrace.CART}_main`,
             update_cart_main = $(cart_main).html($(data[IGrace.ROW]).find(cart_main).html());
 
-        $(`.${IGrace.CLASS(IGrace.CART_TOTAL_ITEMS())}`).html(data[IGrace.TOTAL_ITEMS]);
+        $(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_ITEMS}`)}`).html(data[IGrace.TOTAL_ITEMS]);
 
-        $.each(($(`.${IGrace.CLASS(IGrace.CART_TOTAL_COST())}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
+        $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
         $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
 
@@ -457,10 +457,9 @@ const User = {
                                         : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`;
 
                                     Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () =>
-                                        User.updateCartContent(data));
+                                        User.updateCartContent(data)
+                                    );
 
-                                    window.isFormDirty = false;
-                                    console.log(reviews_route);
                                     return Common.successMessage(data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
                                 }
 

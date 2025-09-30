@@ -1,6 +1,6 @@
 <?php
 
-$login_social_providers = explode(',', env('LOGIN_SOCIAL_PROVIDERS'));
+$login_social_providers = explode(',', config('auth.providers.login_social'));
 
 $socialite_defaults = array_combine(
     $login_social_providers,

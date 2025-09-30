@@ -21,7 +21,7 @@ Route::controller(AdminController::class)->group(function () {
 });
 
 Route::controller(AddressController::class)->group(fn() =>
-    basicRoute(ADDRESSES_TABLE, ADMIN_USER_ADDRESSES_ROUTE, capitalizeAllFromSecondWord(USER_ADDRESSES)));
+    basicRoute(ADDRESSES_TABLE, ADMIN_USER_ADDRESSES_ROUTE, capitalizeSecond(USER_ADDRESSES)));
 
 Route::controller(OrderController::class)->group(fn() =>
-    basicRoute(ORDER_MODEL,     ADMIN_ORDER_DETAILS_ROUTE,  capitalizeAllFromSecondWord(ORDER_DETAILS)));
+    basicRoute(ORDER_MODEL,     ADMIN_ORDER_DETAILS_ROUTE,  capitalizeSecond(ORDER_DETAILS)));

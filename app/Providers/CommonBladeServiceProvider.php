@@ -136,47 +136,48 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('collectionButtons', static function (string $buttonsArgs) {
-            [$table_name, $route] = array_from($buttonsArgs);
+//            [$table_name, $route] = array_from($buttonsArgs);
 
             return "<?php
-                \$main_buttons_class = 'col-md-4';
-                \$button_class       = 'btn d-flex justify-content-center align-items-center gap-2';
-                \$trash_icon_class   = 'fa-solid fa-trash';
-                \$status             = request()?->input(STATUS);
+                [\$table_name, \$route] = [$buttonsArgs];
+                \$query_params          = [$buttonsArgs][2] ?? [];
+                \$main_buttons_class    = 'col-md-4';
+                \$button_class          = 'btn d-flex justify-content-center align-items-center gap-2';
+                \$trash_icon_class      = 'fa-solid fa-trash';
 
-                \$get_status_title = static function (\$haystack) use (\$status) {
-                    return ucfirst(array_search((int) \$status, \$haystack, true)).'_';
+                \$get_title = static function (\$needle, \$haystack) use (\$query_params) {
+                    return ucfirst(array_search((int) \$query_params[\$needle], \$haystack, true)).'_';
                 };
 
-                \$button_text = \$restore_all_selected_button = \$add_button = \$status_title = \$trashed_main_button = '';
+                \$button_text = \$restore_all_selected_button = \$add_button = \$subcollection_title = \$trashed_main_button = '';
 
                 \$button_text = REMOVE;
 
-                \$route = !isAdminRoute() ? trim(str_replace(ADMIN.'_', '', $route)) : $route;
+                \$route = !isAdminRoute() ? trim(str_replace(ADMIN.'_', '', \$route)) : \$route;
 
                 if (Route::currentRouteName() === ADMIN_ORDERS_ROUTE) {
-                    \$main_buttons_class = 'col-md-12 mt-3';
-                    \$status_title       = \$get_status_title(ORDER_STATUS_ENUM);
+                    \$main_buttons_class  = 'col-md-12 mt-3';
+                    \$subcollection_title = \$get_title(STATUS, ORDER_STATUS_ENUM);
                 }
 
                 if (Route::currentRouteName() === ADMIN_REVIEWS_ROUTE) {
-                    \$status_title = \$get_status_title(REVIEW_RATING_ENUM);
+                    \$subcollection_title = \$get_title(RATING, REVIEW_RATING_ENUM);
                 }
 
-                \$trashed_main_button = \"<a href=\".route(\$route, [...request()?->input(), CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$status_title.$table_name).\"</a>\";
+                \$trashed_main_button = \"<a href=\".route(\$route, [...\$query_params, CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"</a>\";
 
                 if (trashedConditionRequest()) {
                     \$button_text = DELETE;
 
-                    \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$status_title.$table_name).\"' id='restore_\".$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
+                    \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$subcollection_title.\$table_name).\"' id='restore_\".\$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.\$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
 
-                    \$trashed_main_button = \"<a href=\".route(\$route, [...request()?->except(CONDITION)]).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$status_title.$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$status_title.$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$status_title.$table_name).\"</a>\";
+                    \$trashed_main_button = \"<a href=\".route(\$route, \$query_params).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"</a>\";
                 }
 
-                \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$status_title.$table_name).\"' id='delete_\".$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.$table_name).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
+                \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$subcollection_title.\$table_name).\"' id='delete_\".\$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.\$table_name).\" data-main=\".route(\$route, [...\$query_params, CONDITION => trashedConditionRequest()]).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
 
                 if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && trashedConditionRequest() !== TRASHED) {
-                    \$add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize($table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize($table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize($table_name)).\"</button>\";
+                    \$add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize(\$table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize(\$table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize(\$table_name)).\"</button>\";
                 }
 
                 echo \"

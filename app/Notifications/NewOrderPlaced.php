@@ -36,7 +36,7 @@ class NewOrderPlaced extends Notification implements ShouldQueue
     final public function toArray(): array
     {
         return [
-            'message' => "New ".ORDER_MODEL." #{$this->{ORDER_MODEL}->tracking_num} has been placed by {$this->{ORDER_MODEL}->{USER_MODEL}->fullName}",
+            'message' => "New ".ORDER_MODEL." #{$this->{ORDER_MODEL}->tracking_num} has been ".toPastTense('place')." by {$this->{ORDER_MODEL}->{USER_MODEL}->fullName}",
         ];
     }
 }

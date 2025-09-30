@@ -84,7 +84,7 @@ class OrderService {
                 ])->status(Response::HTTP_BAD_REQUEST);
             }
 
-            $stripe = new StripeClient(env('STRIPE_SECRET'));
+            $stripe = new StripeClient(config('services.stripe.secret'));
 
             if ((is_null($payment_status) || !$payment_status === 'succeeded') && (int) $payment_method_value === 1) {
                 return $this->stripePayment($stripe, $user_cart_items, $order_request->data());
@@ -107,9 +107,7 @@ class OrderService {
 
             Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
-            forgetCache(ORDERS_TABLE, $status_value);
-            forgetCache(USER_ORDERS);
-            cache()->forget(ORDER_DETAILS);
+            $this->forgetOrderCache($order);
 
             sendNotificationToAdmins(new NewOrderPlaced($order));
 
@@ -147,11 +145,11 @@ class OrderService {
 
         $order = Order::query()->findOrFail($order_id, [ID, TRACKING_NUM, STATUS]);
 
+        $this->forgetOrderCache($order);
+
         $update_order = $order->update([STATUS => $status_value]);
 
-        forgetCache(ORDERS_TABLE, $status_value);
-        forgetCache(USER_ORDERS);
-        cache()->forget(ORDER_DETAILS);
+        $this->forgetOrderCache($order);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
 
@@ -166,10 +164,11 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        forgetCache(ORDERS_TABLE, $order->{STATUS});
-        forgetCache(USER_ORDERS);
+        $deleted_order = customDelete($order, TRACKING_NUM);
 
-        return customDelete($order, TRACKING_NUM);
+        $this->forgetOrderCache($order);
+
+        return $deleted_order;
     }
 
     /**
@@ -180,10 +179,11 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        forgetCache(ORDERS_TABLE, $orders->{STATUS});
-        forgetCache(USER_ORDERS);
+        $deleted_orders = customDelete($orders);
 
-        return customDelete($orders);
+        $this->forgetOrderCache($orders);
+
+        return $deleted_orders;
     }
 
     /**
@@ -194,10 +194,11 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        forgetCache(ORDERS_TABLE, $order->{STATUS});
-        forgetCache(USER_ORDERS);
+        $restored_order = restore($order, TRACKING_NUM);
 
-        return restore($order, TRACKING_NUM);
+        $this->forgetOrderCache($order);
+
+        return $restored_order;
     }
 
     /**
@@ -208,10 +209,11 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        forgetCache(ORDERS_TABLE, $orders->{STATUS});
-        forgetCache(USER_ORDERS);
+        $restored_orders = restore($orders);
 
-        return restore($orders);
+        $this->forgetOrderCache($orders);
+
+        return $restored_orders;
     }
 
     /**
@@ -249,12 +251,12 @@ class OrderService {
      * Process the Stripe checkout session.
      *
      * @param StripeClient $stripe
-     * @param array $lineItems
-     * @param mixed|null $otherArgs
+     * @param array[] $lineItems
+     * @param array|null $otherArgs
      * @return Session
      * @throws ApiErrorException
      */
-    private function stripeCheckout(StripeClient $stripe, array $lineItems, mixed $otherArgs = null): Session
+    private function stripeCheckout(StripeClient $stripe, array $lineItems, ?array $otherArgs = null): Session
     {
         return $stripe->checkout->sessions->create([
             'payment_method_types' => ['card', 'link'],
@@ -286,5 +288,18 @@ class OrderService {
                 ORDER_ID            => $order->getKey(),
             ]);
         });
+    }
+
+    /**
+     * Forget the order cache.
+     *
+     * @param Order $order
+     * @return void
+     */
+    private function forgetOrderCache(Order $order): void
+    {
+        forgetCache(ORDERS_TABLE, $order, STATUS);
+        forgetCache(USER_ORDERS_PAGINATION_CACHE_KEY);
+        forgetCache(ORDER_DETAILS);
     }
 }

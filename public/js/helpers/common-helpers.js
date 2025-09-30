@@ -497,25 +497,39 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (args) => {
-        let { ids, data, mainPage, collection, action } = args;
+        let { ids, data, collection, mainPage, action } = args;
 
         if (ids) {
             $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
         }
         else {
-            const actions = {
-                [IGrace.ADD]: () => {
-                    $("tbody").append(data[IGrace.ROW]);
-                    mainPage += `?page=${data['last_page']}`;
-                },
-                default: () => $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
-            };
+            // const actions = {
+            //     [IGrace.ADD || IGrace.DELETE]: () => {
+            //         $("tbody").append(data[IGrace.ROW]);
+            //         mainPage += `?page=${data['last_page']}`;
+            //     },
+            //     default: () => $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html()),
+            // };
+            //
+            // (actions[action] || actions.default)();
 
-            (actions[action] || actions.default)();
+            if (IGrace.IS_IN_ARRAY([IGrace.ADD, IGrace.DELETE], action)) {
+                if (action !== IGrace.DELETE) $("tbody").append(data[IGrace.ROW]);
 
-            $.get(mainPage)
-                .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
-                .fail(Common.somethingWentWrongError);
+                mainPage += `${Common.routeParamsSeperator(mainPage)}page=${data[action === IGrace.ADD ? 'last_page' : 'current_page']}`;
+            }
+            else {
+                $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
+            }
+
+            if (action !== IGrace.DELETE) {
+                $.get(mainPage)
+                    .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
+                    .fail(Common.somethingWentWrongError);
+            }
+            else {
+                Common.paginationResponse($('.pagination-container'), data);
+            }
         }
 
         $('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false});
@@ -643,7 +657,7 @@ const Common = {
 
                 login_btn.attr('disabled', true);
 
-                attr_err.html(`<li>Too many ${IGrace.LOGIN} attempts. Please try again in <span id="count_down">${seconds}</span> seconds</li>`);
+                attr_err.html(`<li>Too many ${IGrace.LOGIN} attempts. Please try again in <span id="count_down">${seconds}</span></li>`);
 
                 const login_attempts_interval = setInterval(() => {
                     const login_actions = {
@@ -827,13 +841,13 @@ const Common = {
     /**
      * Set up the pagination response after an ajax request.
      *
-     * @param element
+     * @param paginationContainer
      * @param data
      * @return {void}
      */
-    paginationResponse: (element, data) => {
-        element.fadeOut(100, () => {
-            element.html(data['html']).fadeIn(100);
+    paginationResponse: (paginationContainer, data) => {
+        paginationContainer.fadeOut(100, () => {
+            paginationContainer.html(data[IGrace.ROW]).fadeIn(100);
 
             Common.truncateText();
             Common.imageConfig();
@@ -953,18 +967,36 @@ const Common = {
      * @return {object}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, isMultiple, forceDeleteRequest, collectionId, selectedIds, collectionTrashed, successMessage } = options;
+        const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, collection, mainPage, action, collectionTrashed, successMessage } = options;
+
+        const
+            current_page = $('.page-item.active').find('.page-link').html() || 1,
+
+            // Used object spread + short-circuiting to add the params
+            url_params = {
+                ...(isMultiple && { selected_ids: selectedIds.join(',') }),
+                ...(forceDeleteRequest > 0 && { force_delete: forceDeleteRequest }),
+                page: current_page,
+            };
 
         return {
-            url: `${deleteRoute}${isMultiple ? `?selected_ids=${selectedIds}` : '?'}${forceDeleteRequest > 0 ? `${isMultiple ? '&' : ''}force_delete=${forceDeleteRequest}` : ''}`,
+            url: `${deleteRoute}?${$.param(url_params)}`,
             method: IGrace.DELETE.toUpperCase(),
             success: () => {
-                isMultiple
-                    ? Common.updateTableRows({ids: selectedIds})
-                    : Common.updateTableRows({ids: [collectionId]});
+                $.get(`${mainPage}${Common.routeParamsSeperator(mainPage)}page=${current_page}`)
+                    .done((data) => {
+                        Common.updateTableRows({
+                            data:       data,
+                            collection: collection,
+                            mainPage:   mainPage,
+                            action:     action,
+                        });
+                    })
+                    .fail(Common.somethingWentWrongError);
 
                 Common.successMessage((collectionTrashed ? IGrace.DELETED() : IGrace.REMOVED()), successMessage);
             },
+            error: (err) => Common.handleDeleteErrors({ error: err }),
         };
     },
 
@@ -975,14 +1007,17 @@ const Common = {
      * @return {void}
      */
     forceDeleteConfirmation: (options) => {
-        const { error, deleteRoute, forceDeleteRequests, isMultiple, collectionId, selectedIds, successMessage, cancelMessage } = options;
+        const { error, deleteRoute, isMultiple, selectedIds, forceDeleteRequests, collection, mainPage, action, collectionTrashed, successMessage, cancelMessage } = options;
 
         const delete_options = {
-            deleteRoute:    deleteRoute,
-            isMultiple:     isMultiple,
-            collectionId:   collectionId,
-            selectedIds:    selectedIds,
-            successMessage: successMessage,
+            deleteRoute:       deleteRoute,
+            isMultiple:        isMultiple,
+            selectedIds:       selectedIds,
+            collection:        collection,
+            mainPage:          mainPage,
+            action:            action,
+            collectionTrashed: collectionTrashed,
+            successMessage:    successMessage,
         };
 
         let force_delete_requests = [1, 2];
@@ -1029,19 +1064,10 @@ const Common = {
      * @return {void}
      */
     handleDeleteErrors: (options) => {
-        const { error, deleteRoute, forceDeleteRequests, isMultiple, collectionId, selectedIds, successMessage, cancelMessage } = options;
+        // const { error, deleteRoute, isMultiple, selectedIds, forceDeleteRequests, collection, mainPage, action, collectionTrashed, successMessage, cancelMessage } = options;
 
-        error.status === 404
-            ? Common.forceDeleteConfirmation({
-                error:               error,
-                deleteRoute:         deleteRoute,
-                forceDeleteRequests: forceDeleteRequests,
-                isMultiple:          isMultiple,
-                collectionId:        collectionId,
-                selectedIds:         selectedIds,
-                successMessage:      successMessage,
-                cancelMessage:       cancelMessage,
-            })
+        options.error.status === 404
+            ? Common.forceDeleteConfirmation(...options)
             : Common.somethingWentWrongError();
     },
 
@@ -1058,24 +1084,26 @@ const Common = {
             const
                 target                 = $(this),
                 delete_route           = target.data('route'),
-                collection_id          = target.data(IGrace.ID),
-                collection_name        = target.data(IGrace.NAME),
+                collection             = target.data(IGrace.NAME),
+                main_page              = target.data('main'),
                 collection_trashed     = new URLSearchParams(location.search).get(IGrace.CONDITION),
-                delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
+                delete_success_message = `*${collection}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_cancel_message  = `${
                     collection === IGrace.ADDRESS
-                        ? `The ${collection} of the ${IGrace.USER} (${collection_name})`
+                        ? `The ${collection} of the ${IGrace.USER} (${collection})`
                         : `Your ${collection}`
                 } is safe`;
 
             const delete_options = {
                 deleteRoute:       delete_route,
-                collectionId:      collection_id,
+                collection:        collection,
+                mainPage:          main_page,
+                action:            IGrace.DELETE,
                 collectionTrashed: collection_trashed,
                 successMessage:    delete_success_message,
             };
 
-            Common.confirmMessage(`${collection_trashed ? IGrace.DELETE : IGrace.REMOVE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${collection_name})?` : `${collection} (${collection_name})?`} ${collection_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
+            Common.confirmMessage(`${collection_trashed ? IGrace.DELETE : IGrace.REMOVE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${collection})?` : `${collection} (${collection})?`} ${collection_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
                 .then((willDelete) => {
                     if (willDelete.isConfirmed) {
                         $.ajax({
@@ -1105,20 +1133,14 @@ const Common = {
             e.preventDefault();
 
             const
-                delete_all_route             = $(this).data('route'),
+                target                       = $(this),
+                delete_all_route             = target.data('route'),
+                main_page                    = target.data('main'),
                 collections_trashed          = new URLSearchParams(location.search).get(IGrace.CONDITION),
                 selected_rows                = $(`.check-${IGrace.ROW}:checked`).map((_, checkedRow) => $(checkedRow).val()).get(),
                 is_multiple_selection        = selected_rows.length > 1,
                 delete_multi_success_message = `Selected ${is_multiple_selection ? `${collection} have` : `${IGrace.SINGULARIZE(collection)} has`} been ${collections_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_multi_cancel_message  = `Your selected ${is_multiple_selection ? `${collection} are` : `${IGrace.SINGULARIZE(collection)} is`} safe`;
-
-            const delete_options = {
-                deleteRoute:       delete_all_route,
-                isMultiple:          true,
-                selectedIds:       selected_rows,
-                collectionTrashed: collections_trashed,
-                successMessage:    delete_multi_success_message,
-            };
 
             if ($.isEmptyObject(selected_rows)) {
                 return Swal.fire({
@@ -1128,6 +1150,16 @@ const Common = {
                     showConfirmButton: true,
                 });
             }
+
+            const delete_options = {
+                deleteRoute:       delete_all_route,
+                isMultiple:        true,
+                mainPage:          main_page,
+                action:            IGrace.DELETE,
+                selectedIds:       selected_rows,
+                collectionTrashed: collections_trashed,
+                successMessage:    delete_multi_success_message,
+            };
 
             Common.confirmMessage(`${collections_trashed ? IGrace.DELETE : IGrace.REMOVE} selected ${is_multiple_selection ? collection : IGrace.SINGULARIZE(collection)}? ${collections_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
                 .then((willDelete) => {

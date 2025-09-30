@@ -194,7 +194,7 @@ class AdminController extends Controller
             LengthAwarePaginator => Order::query()->latest()
                 ->whereStatus($status)
                 ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+                ->fastPaginate(16, ['*'], 'page', currentPageRequest())
         );
 
         $statuses     = ORDER_STATUS_ENUM;

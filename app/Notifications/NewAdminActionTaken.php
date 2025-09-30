@@ -29,18 +29,14 @@ class NewAdminActionTaken extends Notification implements ShouldQueue
 
     /**
      * Get the array representation of the notification.
-     * 
+     *
      * @return array
      */
     final public function toArray(): array
     {
-        $action_in_past = $this->action === ADD 
-            ? ADD.'ed' 
-            : "{$this->action}d";
-
-        $message = $this->isMultiple 
-                ? "Multiple ".capitalizeAll($this->model[0]->getTable())." have been {$action_in_past}" 
-                : capitalizeAll(singularize($this->model[0]->getTable()))." named *{$this->model[1]}* has been {$action_in_past}";
+        $message = $this->isMultiple
+                ? "Multiple ".capitalizeAll($this->model[0]->getTable())." have been ".toPastTense($this->action)
+                : capitalizeAll(singularize($this->model[0]->getTable()))." named *{$this->model[1]}* has been ".toPastTense($this->action);
 
         return [
             'message' => "{$message} through ".auth()->user()?->{FULL_NAME}." (".ucfirst(ADMIN).").",

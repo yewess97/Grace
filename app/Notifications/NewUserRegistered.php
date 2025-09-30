@@ -36,7 +36,7 @@ class NewUserRegistered extends Notification implements ShouldQueue
     final public function toArray(): array
     {
         return [
-            'message' => "New ".USER_MODEL." *".capitalizeAll($this->{USER_MODEL}->{FULL_NAME})."* has ".REGISTER."ed",
+            'message' => "New ".USER_MODEL." *".capitalizeAll($this->{USER_MODEL}->{FULL_NAME})."* has ".toPastTense(REGISTER),
         ];
     }
 }

@@ -106,7 +106,7 @@ class AddressService {
         forgetCache(ADDRESSES_TABLE);
         forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
-        return customDelete($address, modelAttribute: ADDRESS1);
+        return customDelete($address, ADDRESS1);
     }
 
     /**

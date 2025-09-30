@@ -98,7 +98,7 @@ if (!function_exists('guestControllerRoutes')) {
     function guestControllerRoutes(string $controller, string $url): RouteRegistrar
     {
         $url_kebab     = kebabAll($url);
-        $post_method_callback = capitalizeAllFromSecondWord($url);
+        $post_method_callback = capitalizeSecond($url);
 
         return Route::controller($controller)->group(function () use ($url, $url_kebab, $post_method_callback) {
             Route::get('/'.$url_kebab, 'index')->name($url);
@@ -169,7 +169,7 @@ if (!function_exists('searchRoute')) {
         $searchable_table = str($searchableTable)->ltrim(ADMIN.'_')->value();
         $search_uri = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
 
-        return Route::match(['get', 'post'], $search_uri, capitalizeAllFromSecondWord($searchable_table))->name($searchableTable);
+        return Route::match(['get', 'post'], $search_uri, capitalizeSecond($searchable_table))->name($searchableTable);
     }
 }
 
@@ -225,61 +225,60 @@ if (!function_exists('forgetPaginationCacheFor')) {
      */
     function forgetCache(string $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
     {
-        $all_constants  = get_defined_constants(true)['user'] ?? [];
-        $key_const_name = array_search($key, $all_constants, true);
+        if (is_null($model)) {
+            return cache()->forget($key);
+        }
 
-        if (!is_null($model)) {
-            $selected_ids = selectedIdsRequest()
-                ? array_map('intval', array_from(selectedIdsRequest()))
-                : [$model->{ID}];
+        $selected_ids = selectedIdsRequest()
+            ? array_map('intval', array_from(selectedIdsRequest()))
+            : [$model->{ID}];
 
-            // Forget the default pagination cache (main and trashed) for each suffix
-            $model::query()->whereIn(ID, $selected_ids)
-                ->withTrashed()
-                ->pluck($additionalSuffix)
-                ->unique()
-                ->each(static function ($suffix) use ($key) {
-                    cache()->forget(paginationCacheKeyName($key, $suffix, true));
-                    cache()->forget(paginationCacheKeyName($key, $suffix));
-                });
+        // Forget the default pagination cache (main and trashed) for each suffix
+        $model::query()->whereIn(ID, $selected_ids)
+            ->withTrashed()
+            ->pluck($additionalSuffix)
+            ->unique()
+            ->each(static function ($suffix) use ($key) {
+                cache()->forget(paginationCacheKeyName($key, $suffix, true));
+                cache()->forget(paginationCacheKeyName($key, $suffix));
+            });
 
-            if (!empty($extraConfig)) {
-                $query = $model::query()->whereIn(ID, $selected_ids)
-                    ->withTrashed();
-
-                // Eager load "relation" if provided in config
-                if (!empty($extraConfig['relation'])) {
-                    $query->with([
-                        $extraConfig['relation'] => static fn($relatedCollection) =>
-                            $relatedCollection->select($extraConfig['relation_only_columns'] ?? [ID]),
-                    ]);
-                }
-
-                // Map each model to the required "relation_only_columns" (either directly or via relation)
-                $query->cursor()
-                    ->map(static function ($item) use ($extraConfig) {
-                        if (!empty($extraConfig['relation'])) {
-                            return $item->{$extraConfig['relation']}->only($extraConfig['relation_only_columns']);
-                        }
-
-                        return $item->only($extraConfig['relation_only_columns']);
-                    })
-                    ->unique($extraConfig['unique_by'] ?? null)
-                    // For each row, generate all cache keys (flatten into a single list)
-                    ->flatMap(static function ($data) use ($extraConfig) {
-                        // Return all cache keys as an array so that the flatMap flatten them
-                        return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
-                    })
-                    // Forget all generated cache keys one by one
-                    ->each(static fn($cacheKey) => cache()->forget($cacheKey));
-            }
-
+        if (empty($extraConfig)) {
             return true;
         }
 
-        return str_contains($key_const_name, 'PAGINATION')
-            ? cache()->forget(paginationCacheKeyName($key))
-            : cache()->forget($key);
+        $query = $model::query()->whereIn(ID, $selected_ids)
+            ->withTrashed();
+
+        $relation_only_columns = $extraConfig['relation_only_columns'] ?? [ID];
+
+        // Eager load "relation" if provided in config
+        if (!empty($extraConfig['relation'])) {
+            $query->with([
+                $extraConfig['relation'] => static fn($relatedCollection) =>
+                    $relatedCollection->select($relation_only_columns),
+            ]);
+        }
+
+        // Map each model to the required "relation_only_columns" (either directly or via relation)
+        $query->cursor()
+            ->map(static function ($item) use ($extraConfig) {
+                if (!empty($extraConfig['relation'])) {
+                    return $item->{$extraConfig['relation']}->only($relation_only_columns);
+                }
+
+                return $item->only($relation_only_columns);
+            })
+            ->unique($extraConfig['unique_by'] ?? null)
+            // For each row, generate all cache keys (flatten into a single list)
+            ->flatMap(static function ($data) use ($extraConfig) {
+                // Return all cache keys as an array so that the flatMap flatten them
+                return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
+            })
+            // Forget all generated cache keys one by one
+            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
+
+        return true;
     }
 }
 
@@ -295,9 +294,9 @@ if (!function_exists('getLastPage')) {
      */
     function getLastPage(Model|stdClass $model, int $perPage = 16): int
     {
-        $total_users = $model::query()->count();
+        $total = $model::query()->count();
 
-        return ceil($total_users / $perPage);
+        return ceil($total / $perPage);
     }
 }
 
@@ -366,7 +365,10 @@ if (!function_exists('commonCollections')) {
         $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
         $categories    = Category::get([...$categories_subcategories_common, BANNER_IMAGE]);
         $subcategories = Subcategory::get($categories_subcategories_common);
-        $new_products  = Product::query()->latest()->take(4)->get(PRODUCT_ITEM_ATTRIBUTES);
+        $new_products  = Product::query()
+            ->latest()
+            ->take(4)
+            ->get(PRODUCT_ITEM_ATTRIBUTES);
 
         if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
             $categories    = $categories->load(PRODUCTS_TABLE);
@@ -974,7 +976,7 @@ if (!function_exists('imageSource')) {
 
         $image_name = $modelOrImageName->{$imageType};
 
-        if (str($imageType)->contains(PRODUCT_MODEL)) {
+        if (str_contains($imageType, PRODUCT_MODEL)) {
             $imageType = str_replace(PRODUCT_MODEL.'_', '', $imageType);
             $image_name = $modelOrImageName->{PRODUCT_MODEL."_$imageType"};
         }
@@ -1109,19 +1111,21 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
             ? array_map('intval', array_from(selectedIdsRequest()))
             : [$model->{ID}];
 
-            $is_collection_trashed = $model::query()->whereIn(ID, $selected_ids)
-                ->cursor()
-                ->every(fn($collection) =>
-                    Cart::class
-                        ? false
-                        : $collection->trashed()
-                );
+        $selected_collections = $model::query()->whereIn(ID, $selected_ids);
+
+        $is_collection_trashed = $selected_collections->cursor()
+            ->every(fn($collection) =>
+                Cart::class
+                    ? false
+                    : $collection->trashed()
+            );
+
+        $send_notification_to_admins = static fn(string $action) => sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], $action, count($selected_ids) > 1), true);
 
         if (!$is_collection_trashed) {
             $destroyed_ids = $model::destroy($selected_ids);
 
-            // In order not to check about trashed() for every id in the controller
-            sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], REMOVE, count($selected_ids) > 1), true);
+            $send_notification_to_admins(REMOVE);
 
             return $destroyed_ids;
         }
@@ -1130,9 +1134,9 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
             deleteImages($model, $selected_ids);
         }
 
-        $force_deleted_ids = $model::query()->whereIn(ID, $selected_ids)->forceDelete();
+        $force_deleted_ids = $selected_collections->forceDelete();
 
-        sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], DELETE, count($selected_ids) > 1), true);
+        $send_notification_to_admins(DELETE);
 
         return $force_deleted_ids;
     }
@@ -1328,10 +1332,10 @@ if (!function_exists('ajaxPaginationResponse')) {
      */
     function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, array $otherCompactVars = []): JsonResponse
     {
-        $html         = view($view, [$table => $collection, ...$otherCompactVars])->render();
+        $row          = view($view, [$table => $collection, ...$otherCompactVars])->render();
         $current_page = $collection->currentPage();
         $per_page     = $collection->perPage();
 
-        return responseWithData(compact('html', 'current_page', 'per_page'));
+        return responseWithData(compact(ROW, 'current_page', 'per_page'));
     }
 }

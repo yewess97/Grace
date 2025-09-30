@@ -398,10 +398,10 @@ const Admin = {
             e.preventDefault();
 
             const
-                target               = $(this),
-                route                = target.attr('action'),
-                [action, collection] = form.split('_'),
-                form_data            = Common.filteredFormData(this);
+                target                    = $(this),
+                route                     = target.attr('action'),
+                [action, collection_name] = form.split('_'),
+                form_data                 = Common.filteredFormData(this);
 
             let main_page = target.data('main');
 
@@ -423,16 +423,16 @@ const Admin = {
                             Common.updateTableRows({
                                 data:       data,
                                 mainPage:   main_page,
-                                collection: collection,
+                                collection: collection_name,
                                 action:     action,
                             });
                         },
                         false: () => main_page = IGrace.ADMIN,
                     };
 
-                    data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection)]();
+                    data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection_name)]();
 
-                    Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
+                    Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection_name)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
                 error: (err) => {
                     if (err.status === 404) {

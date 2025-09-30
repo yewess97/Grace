@@ -23,7 +23,7 @@ class NewReviewAdded extends Notification implements ShouldQueue
      *
      * @return array
      */
-    public function via(): array
+    final public function via(): array
     {
         return ['database'];
     }
@@ -36,7 +36,7 @@ class NewReviewAdded extends Notification implements ShouldQueue
     final public function toArray(): array
     {
         return [
-            'message' => "New ".REVIEW_MODEL." added for *{$this->{REVIEW_MODEL}->{PRODUCT_MODEL}->name}* ".PRODUCT_MODEL." by {$this->{REVIEW_MODEL}->{USER_MODEL}->fullName}",
+            'message' => "New ".REVIEW_MODEL." ".toPastTense(ADD)." for *{$this->{REVIEW_MODEL}->{PRODUCT_MODEL}->name}* ".PRODUCT_MODEL." by {$this->{REVIEW_MODEL}->{USER_MODEL}->fullName}",
         ];
     }
 }

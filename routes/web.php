@@ -60,8 +60,8 @@ Route::get('/'.REVIEWS_TABLE, [ReviewController::class, 'index'])->name(REVIEWS_
  */
 Route::controller(PaymentAboutContactController::class)->group(function () {
     Route::get('/'.PAYMENT, PAYMENT)->name(PAYMENT);
-    Route::get('/'.kebabAll(ABOUT_US), capitalizeAllFromSecondWord(ABOUT_US))->name(ABOUT_US);
-    Route::match(['get', 'post'], '/'.kebabAll(CONTACT_US), capitalizeAllFromSecondWord(CONTACT_US))->name(CONTACT_US);
+    Route::get('/'.kebabAll(ABOUT_US), capitalizeSecond(ABOUT_US))->name(ABOUT_US);
+    Route::match(['get', 'post'], '/'.kebabAll(CONTACT_US), capitalizeSecond(CONTACT_US))->name(CONTACT_US);
 });
 
 

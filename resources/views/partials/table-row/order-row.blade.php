@@ -33,7 +33,7 @@
                     <i class="fa-regular fa-pen-to-square"></i>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($order->trashed() ? DELETE_ORDER : REMOVE_ORDER)}}" class="delete-order-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_ORDER, $order->id)}}" data-id="{{$order->id}}" data-name="{{ $order->{TRACKING_NUM} }}">
+            <button type="button" role="button" title="{{capitalizeAll($order->trashed() ? DELETE_ORDER : REMOVE_ORDER)}}" class="delete-order-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_ORDER, $order->id)}}" data-id="{{$order->id}}" data-name="{{ $order->{TRACKING_NUM} }}" data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => trashedConditionRequest()])}}">
                 <i class="{{$order->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
             </button>
         </div>

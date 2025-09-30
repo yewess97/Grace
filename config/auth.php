@@ -65,10 +65,7 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'login_social' => env('LOGIN_SOCIAL_PROVIDERS'),
     ],
 
     /*
@@ -121,5 +118,4 @@ return [
     */
 
     'throttle_key' => 'email|ip',
-
 ];

@@ -172,8 +172,8 @@ define("RELATED_CATEGORIES",    'related_'.CATEGORIES_TABLE);
 define("RELATED_SUBCATEGORIES", 'related_'.SUBCATEGORIES_TABLE);
 
 define("SIZES",        pluralize(SIZE));
-define("THUMB_IMAGES", capitalizeAllFromSecondWord(THUMB_IMAGES_TABLE));
-define("ORDER_ITEMS",  capitalizeAllFromSecondWord(ORDER_ITEMS_TABLE));
+define("THUMB_IMAGES", capitalizeSecond(THUMB_IMAGES_TABLE));
+define("ORDER_ITEMS",  capitalizeSecond(ORDER_ITEMS_TABLE));
 
 #################################### End For Relations ####################################
 
@@ -200,7 +200,7 @@ define("AUTH",                   'auth');
 define("AUTH_ACTION",            AUTH.'_action');
 define("AUTH_SUCCESS",           AUTH.'_success');
 define("AUTH_FAILED",            AUTH.'.failed');
-define("LOGIN_SOCIAL_PROVIDERS", explode(',', env("LOGIN_SOCIAL_PROVIDERS")));
+define("LOGIN_SOCIAL_PROVIDERS", explode(',', config('auth.providers.login_social')));
 
 /**
  * Password Management Standards.

@@ -7,6 +7,7 @@ use App\Services\OrderService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -79,12 +80,15 @@ class OrderController extends Controller
      *
      * @param Order $order
      * @return Response
+     * @throws Throwable
      */
     final public function destroy(Order $order): Response
     {
-        $this->orderService->deleteOrder($order);
+        $order_deleted = $this->orderService->deleteOrder($order);
 
-        return responseSuccess();
+        return $order_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.'is not found!');
     }
 
     /**
@@ -95,9 +99,11 @@ class OrderController extends Controller
      */
     final public function destroyMultiple(Order $orders): Response
     {
-        $this->orderService->deleteMultipleOrders($orders);
+        $orders_deleted = $this->orderService->deleteMultipleOrders($orders);
 
-        return responseSuccess();
+        return $orders_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.'are not found!');
     }
 
     /**

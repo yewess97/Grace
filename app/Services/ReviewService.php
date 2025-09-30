@@ -161,6 +161,12 @@ class ReviewService
         return restore($reviews);
     }
 
+    /**
+     * Forget the review cache.
+     *
+     * @param Review $review
+     * @return void
+     */
     private function forgetReviewCache(Review $review): void
     {
         forgetCache(REVIEWS_TABLE, $review, RATING, [

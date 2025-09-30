@@ -13,7 +13,7 @@
                         @search(SEARCH_REVIEWS, [RATING => $review_rating])
 
                         {{-- Reviews Main Buttons --}}
-                        @collectionButtons(REVIEWS_TABLE, ADMIN_REVIEWS_ROUTE)
+                        @collectionButtons(REVIEWS_TABLE, ADMIN_REVIEWS_ROUTE, [RATING => $review_rating])
                     </div>
 
                     {{-- Reviews Table --}}

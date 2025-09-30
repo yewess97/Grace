@@ -24,7 +24,16 @@ const IGrace = {
     FILTER  : 'filter',
 
     /**
-     * Take an action with a collection.
+     * Actions in the Past.
+     */
+    ADDED    : () => `${IGrace.ADD}ed`,
+    UPDATED  : () => `${IGrace.UPDATE}d`,
+    REMOVED  : () => `${IGrace.REMOVE}d`,
+    DELETED  : () => `${IGrace.DELETE}d`,
+    RESTORED : () => `${IGrace.RESTORE}d`,
+
+    /**
+     * Actions Methods with Collection.
      */
     ADD_COLLECTION     : (collection) => `${IGrace.ADD}_${collection}`,
     UPDATE_COLLECTION  : (collection) => `${IGrace.UPDATE}_${collection}`,
@@ -54,15 +63,6 @@ const IGrace = {
     WARNING : 'warning',
     ERROR   : 'error',
 
-    /**
-     * Action message.
-     */
-    ADDED    : () => `${IGrace.ADD}ed`,
-    UPDATED  : () => `${IGrace.UPDATE}d`,
-    REMOVED  : () => `${IGrace.REMOVE}d`,
-    DELETED  : () => `${IGrace.DELETE}d`,
-    RESTORED : () => `${IGrace.RESTORE}d`,
-
     /*################################### End Statuses ###################################*/
 
 
@@ -89,6 +89,9 @@ const IGrace = {
     ADDRESS     : 'address',
     REVIEW      : 'review',
 
+    /**
+     * Collections Methods.
+     */
     COLLECTION_ID       : (collection) => `${collection}_${IGrace.ID}`,
     RELATED_CATEGORY    : ()           => `related_${IGrace.CATEGORY}`,
     RELATED_SUBCATEGORY : ()           => `related_${IGrace.SUBCATEGORY}`,
@@ -106,6 +109,9 @@ const IGrace = {
     LOGOUT   : 'logout',
     PASSWORD : 'password',
 
+    /**
+     * Authentication Attributes Methods.
+     */
     FORGOT_PASSWORD : () => `forgot_${IGrace.PASSWORD}`,
     RESET_PASSWORD  : () => `reset_${IGrace.PASSWORD}`,
 
@@ -154,8 +160,6 @@ const IGrace = {
     LAST_NAME               : () => `last_${IGrace.NAME}`,
     ADDRESS1                : () => `${IGrace.ADDRESS}_1`,
     ADDRESS2                : () => `${IGrace.ADDRESS}_2`,
-    CART_TOTAL_ITEMS        : () => `${IGrace.CART}_${IGrace.TOTAL_ITEMS}`,
-    CART_TOTAL_COST         : () => `${IGrace.CART}_${IGrace.TOTAL_COST}`,
     FILTER_PRODUCTS         : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`,
     FILTER_PRODUCTS_SORT    : () => `${IGrace.FILTER_PRODUCTS()}_sort`,
     FILTER_PRODUCTS_FORM    : () => `${IGrace.FILTER_PRODUCTS()}_form`,
