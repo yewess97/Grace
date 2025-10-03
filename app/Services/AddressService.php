@@ -37,7 +37,7 @@ class AddressService {
 
         $user_addresses = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn():
         LengthAwarePaginator => Address::query()->where(USER_ID, $user_id)
-                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -106,7 +106,7 @@ class AddressService {
         forgetCache(ADDRESSES_TABLE);
         forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
-        return customDelete($address, ADDRESS1);
+        return removeDeleteOrRestore($address, ADDRESS1);
     }
 
     /**
@@ -120,7 +120,7 @@ class AddressService {
         forgetCache(ADDRESSES_TABLE);
         forgetCache(USER_ADDRESSES.'_'.auth()->id());
 
-        return customDelete($addresses);
+        return removeDeleteOrRestore($addresses);
     }
 
     /**

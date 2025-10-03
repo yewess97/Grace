@@ -57,7 +57,7 @@ class UserService
         forgetCache(USER_ORDERS);
         cache()->forget(USER_MODEL);
 
-        return customDelete($user, FULL_NAME);
+        return removeDeleteOrRestore($user, FULL_NAME);
     }
 
     /**
@@ -73,7 +73,7 @@ class UserService
         forgetCache(USER_ORDERS);
         cache()->forget(USER_MODEL);
 
-        return customDelete($users);
+        return removeDeleteOrRestore($users);
     }
 
     /**

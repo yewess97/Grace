@@ -239,8 +239,7 @@ if (!function_exists('forgetPaginationCacheFor')) {
             ->pluck($additionalSuffix)
             ->unique()
             ->each(static function ($suffix) use ($key) {
-                cache()->forget(paginationCacheKeyName($key, $suffix, true));
-                cache()->forget(paginationCacheKeyName($key, $suffix));
+                cache()->forget($key.('_'.$suffix ?: ''));
             });
 
         if (empty($extraConfig)) {
@@ -1095,17 +1094,16 @@ if (!function_exists('getData')) {
 }
 
 
-if (!function_exists('custom'.ucfirst(DELETE))) {
+if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
     /**
-     * Delete a specified record or all/some records of a model.
+     * Remove, Delete, or Restore a record of a model.
      *
      * @param Model|stdClass $model
-     * @param string|null $modelAttribute
+     * @param string|null $forNotification
      * @param bool $deleteImages
      * @return bool
-     * @throws NotFoundHttpException
      */
-    function customDelete(Model|stdClass $model, ?string $modelAttribute = null, bool $deleteImages = false): bool
+    function removeDeleteOrRestore(Model|stdClass $model, ?string $forNotification = null, bool $deleteImages = false): bool
     {
         $selected_ids = selectedIdsRequest()
             ? array_map('intval', array_from(selectedIdsRequest()))
@@ -1120,8 +1118,9 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
                     : $collection->trashed()
             );
 
-        $send_notification_to_admins = static fn(string $action) => sendNotificationToAdmins(new NewAdminActionTaken([$model, $model->{$modelAttribute}], $action, count($selected_ids) > 1), true);
+        $send_notification_to_admins = static fn(string $action) => sendNotificationToAdmins(new NewAdminActionTaken([$model, $forNotification], $action, count($selected_ids) > 1), true);
 
+        // Remove
         if (!$is_collection_trashed) {
             $destroyed_ids = $model::destroy($selected_ids);
 
@@ -1130,6 +1129,16 @@ if (!function_exists('custom'.ucfirst(DELETE))) {
             return $destroyed_ids;
         }
 
+        // Restore
+        if (request()?->input(RESTORE)) {
+            $restore_ids = $selected_collections->restore();
+
+            $send_notification_to_admins(RESTORE);
+
+            return $restore_ids;
+        }
+
+        // Delete
         if ($deleteImages) {
             deleteImages($model, $selected_ids);
         }
@@ -1275,29 +1284,6 @@ if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
 }
 
 
-if (!function_exists(RESTORE)) {
-    /**
-     * Restore a specified record or all/some records of a model.
-     *
-     * @param Model|stdClass $model
-     * @param string|null $forNotification
-     * @return bool
-     */
-    function restore(Model|stdClass $model, ?string $forNotification = null): bool
-    {
-        $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_from(selectedIdsRequest()))
-            : [];
-
-        sendNotificationToAdmins(new NewAdminActionTaken([$model, $forNotification], RESTORE, !empty($selected_ids)), true);
-
-        return empty($selected_ids)
-            ? $model->restore()
-            : $model::query()->whereIn(ID, $selected_ids)->restore();
-    }
-}
-
-
 if (!function_exists(function: 'sendNotificationToAdmins')) {
     /**
      * Send a notification to all admins.
@@ -1313,6 +1299,26 @@ if (!function_exists(function: 'sendNotificationToAdmins')) {
             ->get([ID, ROLE]);
 
         Notification::send($admins, $notification);
+    }
+}
+
+
+if (! function_exists('paginateWithFallback')) {
+    /**
+     * Paginate with fallback.
+     *
+     * @param Builder $query
+     * @return LengthAwarePaginator
+     */
+    function paginateWithFallback(Builder $query): LengthAwarePaginator
+    {
+        $results = $query->fastPaginate(16, ['*'], 'page', currentPageRequest());
+
+        if ($results->isEmpty() && currentPageRequest() > 1) {
+            $results = $query->fastPaginate(16, ['*'], 'page', max(currentPageRequest() - 1, 1));
+        }
+
+        return $results;
     }
 }
 

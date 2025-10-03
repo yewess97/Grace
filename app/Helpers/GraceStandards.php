@@ -1233,13 +1233,12 @@ function paginationView(string $viewName, bool $isUser = false): string
  * Generate the pagination cache key name.
  *
  * @param string $key
- * @param mixed|null $suffix
  * @param bool $isTrashed
  * @return string
  */
-function paginationCacheKeyName(string $key, mixed $suffix = null, bool $isTrashed = false): string
+function paginationCacheKeyName(string $key, bool $isTrashed = false): string
 {
-    return $key.'_'.(trashedConditionRequest() || $isTrashed ? TRASHED : 'main').'_'.currentPageRequest().($suffix ?: '');
+    return $key.'_'.(conditionRequest() || $isTrashed ? TRASHED : 'main');
 }
 
 #################################### End IGrace Helper Functions ####################################

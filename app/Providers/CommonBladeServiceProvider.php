@@ -166,7 +166,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$trashed_main_button = \"<a href=\".route(\$route, [...\$query_params, CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"' class='trashed-btn mt-2 \$button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"'><i class='\$trash_icon_class'></i> \".capitalizeAll(TRASHED.'_'.\$subcollection_title.\$table_name).\"</a>\";
 
-                if (trashedConditionRequest()) {
+                if (conditionRequest()) {
                     \$button_text = DELETE;
 
                     \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$subcollection_title.\$table_name).\"' id='restore_\".\$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.\$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
@@ -174,9 +174,9 @@ class CommonBladeServiceProvider extends ServiceProvider
                     \$trashed_main_button = \"<a href=\".route(\$route, \$query_params).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"</a>\";
                 }
 
-                \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$subcollection_title.\$table_name).\"' id='delete_\".\$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.\$table_name).\" data-main=\".route(\$route, [...\$query_params, CONDITION => trashedConditionRequest()]).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
+                \$delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$button_text.'_'.\$subcollection_title.\$table_name).\"' id='delete_\".\$table_name.\"_btn' class='delete-btn \$button_class' data-route=\".route(DELETE.'_'.\$table_name).\" data-main=\".route(\$route, [...\$query_params, CONDITION => conditionRequest()]).\"><i class='\$trash_icon_class-can'></i> \".ucfirst(\$button_text).\" all selected</button>\";
 
-                if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && trashedConditionRequest() !== TRASHED) {
+                if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && conditionRequest() !== TRASHED) {
                     \$add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize(\$table_name)).\"' class='add-btn \$button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize(\$table_name).\"_modal'><i class='fas fa-plus-circle'></i> \".capitalizeAll(ADD.'_'.singularize(\$table_name)).\"</button>\";
                 }
 
@@ -241,7 +241,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 ? ++$colspan
                 : $colspan += 3;
 
-            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? trashedConditionRequest() ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
+            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? conditionRequest() ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
 
             return $message_label."<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>\$message</td></tr>\" ?>";
         });

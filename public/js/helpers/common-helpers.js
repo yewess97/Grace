@@ -497,7 +497,7 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (args) => {
-        let { ids, data, collection, mainPage, action } = args;
+        let { ids, data, collectionName, mainPage, action } = args;
 
         if (ids) {
             $.each((ids), (_, id) => Common.removeRow($(`#${IGrace.ROW}_${id}`), () => Common.arrangeTableRows()));
@@ -513,16 +513,16 @@ const Common = {
             //
             // (actions[action] || actions.default)();
 
-            if (IGrace.IS_IN_ARRAY([IGrace.ADD, IGrace.DELETE], action)) {
-                if (action !== IGrace.DELETE) $("tbody").append(data[IGrace.ROW]);
-
-                mainPage += `${Common.routeParamsSeperator(mainPage)}page=${data[action === IGrace.ADD ? 'last_page' : 'current_page']}`;
+            if (action === IGrace.UPDATE) {
+                $(`#${IGrace.ROW}_${data[collectionName.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
             }
-            else {
-                $(`#${IGrace.ROW}_${data[collection.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
+            else if (action === IGrace.ADD) {
+                $("tbody").append(data[IGrace.ROW]);
             }
 
             if (action !== IGrace.DELETE) {
+                mainPage += `${Common.routeParamsSeperator(mainPage)}page=${data[action === IGrace.ADD ? 'last_page' : 'current_page']}`;
+
                 $.get(mainPage)
                     .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
                     .fail(Common.somethingWentWrongError);
@@ -967,7 +967,7 @@ const Common = {
      * @return {object}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, collection, mainPage, action, collectionTrashed, successMessage } = options;
+        const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, collectionName, mainPage, action, collectionTrashed, successMessage } = options;
 
         const
             current_page = $('.page-item.active').find('.page-link').html() || 1,
@@ -986,10 +986,9 @@ const Common = {
                 $.get(`${mainPage}${Common.routeParamsSeperator(mainPage)}page=${current_page}`)
                     .done((data) => {
                         Common.updateTableRows({
-                            data:       data,
-                            collection: collection,
-                            mainPage:   mainPage,
-                            action:     action,
+                            data:           data,
+                            collectionName: collectionName,
+                            action:         action,
                         });
                     })
                     .fail(Common.somethingWentWrongError);
@@ -1084,26 +1083,26 @@ const Common = {
             const
                 target                 = $(this),
                 delete_route           = target.data('route'),
-                collection             = target.data(IGrace.NAME),
+                collection_name        = target.data(IGrace.NAME),
                 main_page              = target.data('main'),
                 collection_trashed     = new URLSearchParams(location.search).get(IGrace.CONDITION),
-                delete_success_message = `*${collection}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
+                delete_success_message = `*${collection_name}* ${collection} has been ${collection_trashed ? IGrace.DELETED() : IGrace.REMOVED()}`,
                 delete_cancel_message  = `${
                     collection === IGrace.ADDRESS
-                        ? `The ${collection} of the ${IGrace.USER} (${collection})`
+                        ? `The ${collection} of the ${IGrace.USER} (${collection_name})`
                         : `Your ${collection}`
                 } is safe`;
 
             const delete_options = {
                 deleteRoute:       delete_route,
-                collection:        collection,
+                collectionName:    collection_name,
                 mainPage:          main_page,
                 action:            IGrace.DELETE,
                 collectionTrashed: collection_trashed,
                 successMessage:    delete_success_message,
             };
 
-            Common.confirmMessage(`${collection_trashed ? IGrace.DELETE : IGrace.REMOVE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${collection})?` : `${collection} (${collection})?`} ${collection_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
+            Common.confirmMessage(`${collection_trashed ? IGrace.DELETE : IGrace.REMOVE} this ${collection === IGrace.ADDRESS ? `${collection} of the ${IGrace.USER} (${collection_name})?` : `${collection} (${collection_name})?`} ${collection_trashed ? `<br><br> Rest items related to it will be ${IGrace.DELETED()}` : ''}`)
                 .then((willDelete) => {
                     if (willDelete.isConfirmed) {
                         $.ajax({
@@ -1202,10 +1201,21 @@ const Common = {
                     : `*${collection_name}* ${collection}`} has been ${IGrace.RESTORED()}`;
 
             $.ajax({
-                url: restore_route,
+                url: `${restore_route}?restore=true`,
                 method: IGrace.PUT,
                 success: () => {
-                    Common.updateTableRows({ids: [collection_id]});
+                    // $.get(`${mainPage}${Common.routeParamsSeperator(mainPage)}page=${current_page}`)
+                    //     .done((data) => {
+                    //         Common.updateTableRows({
+                    //             data:           data,
+                    //             collectionName: collectionName,
+                    //             mainPage:       mainPage,
+                    //             action:         action,
+                    //         });
+                    //     })
+                    //     .fail(Common.somethingWentWrongError);
+
+                    Common.updateTableRows({ ids: [collection_id] });
 
                     Common.successMessage(IGrace.RESTORED(), restore_success_message)
                 },
@@ -1241,7 +1251,7 @@ const Common = {
             }
 
             $.ajax({
-                url: `${restore_all_route}?selected_ids=${selected_rows}`,
+                url: `${restore_all_route}?selected_ids=${selected_rows}&restore=true`,
                 method: IGrace.PUT,
                 success: () => {
                     Common.updateTableRows({ids: selected_rows});

@@ -164,7 +164,7 @@ class OrderService {
      */
     final public function deleteOrder(Order $order): bool
     {
-        $deleted_order = customDelete($order, TRACKING_NUM);
+        $deleted_order = removeDeleteOrRestore($order, $order->{TRACKING_NUM});
 
         $this->forgetOrderCache($order);
 
@@ -179,7 +179,7 @@ class OrderService {
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
-        $deleted_orders = customDelete($orders);
+        $deleted_orders = removeDeleteOrRestore($orders);
 
         $this->forgetOrderCache($orders);
 
@@ -194,7 +194,7 @@ class OrderService {
      */
     final public function restoreOrder(Order $order): bool
     {
-        $restored_order = restore($order, TRACKING_NUM);
+        $restored_order = removeDeleteOrRestore($order, $order->{TRACKING_NUM});
 
         $this->forgetOrderCache($order);
 
@@ -209,7 +209,7 @@ class OrderService {
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
-        $restored_orders = restore($orders);
+        $restored_orders = removeDeleteOrRestore($orders);
 
         $this->forgetOrderCache($orders);
 
@@ -298,7 +298,7 @@ class OrderService {
      */
     private function forgetOrderCache(Order $order): void
     {
-        forgetCache(ORDERS_TABLE, $order, STATUS);
+        forgetCache(ORDERS_PAGINATION_CACHE_KEY, $order, STATUS);
         forgetCache(USER_ORDERS_PAGINATION_CACHE_KEY);
         forgetCache(ORDER_DETAILS);
     }

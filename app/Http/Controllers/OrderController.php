@@ -88,7 +88,7 @@ class OrderController extends Controller
 
         return $order_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.'is not found!');
+            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -103,7 +103,7 @@ class OrderController extends Controller
 
         return $orders_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.'are not found!');
+            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -114,9 +114,11 @@ class OrderController extends Controller
      */
     final public function restore(Order $order): Response
     {
-        $this->orderService->restoreOrder($order);
+        $order_restored = $this->orderService->restoreOrder($order);
 
-        return responseSuccess();
+        return $order_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -127,8 +129,10 @@ class OrderController extends Controller
      */
     final public function restoreMultiple(Order $orders): Response
     {
-        $this->orderService->restoreMultipleOrders($orders);
+        $orders_restored = $this->orderService->restoreMultipleOrders($orders);
 
-        return responseSuccess();
+        return $orders_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }

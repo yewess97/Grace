@@ -53,7 +53,7 @@ class AdminController extends Controller
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
         $categories = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
-            LengthAwarePaginator => Category::when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+            LengthAwarePaginator => Category::when(conditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -77,7 +77,7 @@ class AdminController extends Controller
         // Here, we specify the return type for the closure.
         $subcategories = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
             LengthAwarePaginator => Subcategory::with($this->relatedCategories())
-                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -116,7 +116,7 @@ class AdminController extends Controller
                     THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                     SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
                 ])
-                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -147,7 +147,7 @@ class AdminController extends Controller
         // Use the cache()->remember() with generic typing (LengthAwarePaginator).
         // Here, we specify the return type for the closure.
         $users = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, fn():
-            LengthAwarePaginator => User::when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
+            LengthAwarePaginator => User::when(conditionRequest(), static fn($query) => $query->onlyTrashed())
                 ->fastPaginate(16)
         );
 
@@ -188,13 +188,17 @@ class AdminController extends Controller
 
         session()->push('last_valid_status', $status);
 
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $orders = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.$status, 1800, fn():
-            LengthAwarePaginator => Order::query()->latest()
-                ->whereStatus($status)
-                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16, ['*'], 'page', currentPageRequest())
+        $orders_ids = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.'_'.$status, 1800, fn() =>
+            Order::query()->whereStatus($status)
+                ->withTrashed()
+                ->pluck(ID)
+                ->toArray()
+        );
+
+        $orders = paginateWithFallback(
+            Order::query()->latest()
+                ->whereIn(ID, $orders_ids)
+                ->when(conditionRequest() === TRASHED, static fn($query) => $query->onlyTrashed())
         );
 
         $statuses     = ORDER_STATUS_ENUM;
@@ -235,16 +239,20 @@ class AdminController extends Controller
 
         session()->push('last_valid_rating', $rating);
 
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $reviews = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.$rating, 1800, fn():
-            LengthAwarePaginator => Review::with([
-                    PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
-                    USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
-                ])
+        $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, 1800, fn() =>
+            Review::with([
+                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name),
+                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES),
+            ])
                 ->where(RATING, $rating)
-                ->when(trashedConditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+                ->withTrashed()
+                ->pluck(ID)
+                ->toArray()
+        );
+
+        $reviews = paginateWithFallback(
+            Review::query()->whereIn(ID, $reviews_ids)
+                ->when(conditionRequest() === TRASHED, static fn($query) => $query->onlyTrashed())
         );
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));

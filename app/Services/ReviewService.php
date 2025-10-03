@@ -117,9 +117,11 @@ class ReviewService
      */
     final public function deleteReview(Review $review): bool
     {
+        $deleted_review = removeDeleteOrRestore($review, $review->{TITLE});
+
         $this->forgetReviewCache($review);
 
-        return customDelete($review, TITLE);
+        return $deleted_review;
     }
 
     /**
@@ -130,9 +132,11 @@ class ReviewService
      */
     final public function deleteMultipleReviews(Review $reviews): bool
     {
+        $deleted_reviews = removeDeleteOrRestore($reviews);
+
         $this->forgetReviewCache($reviews);
 
-        return customDelete($reviews);
+        return $deleted_reviews;
     }
 
     /**
@@ -143,9 +147,11 @@ class ReviewService
      */
     final public function restoreReview(Review $review): bool
     {
+        $restored_review = removeDeleteOrRestore($review, $review->{TITLE});
+
         $this->forgetReviewCache($review);
 
-        return restore($review, $review->{TITLE});
+        return $restored_review;
     }
 
     /**
@@ -156,9 +162,11 @@ class ReviewService
      */
     final public function restoreMultipleReviews(Review $reviews): bool
     {
+        $restored_reviews = removeDeleteOrRestore($reviews);
+
         $this->forgetReviewCache($reviews);
 
-        return restore($reviews);
+        return $restored_reviews;
     }
 
     /**
@@ -169,7 +177,7 @@ class ReviewService
      */
     private function forgetReviewCache(Review $review): void
     {
-        forgetCache(REVIEWS_TABLE, $review, RATING, [
+        forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $review, RATING, [
             'relation'              => PRODUCT_MODEL,
             'relation_only_columns' => [ID, SLUG],
             'unique_by'             => SLUG,

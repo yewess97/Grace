@@ -16,10 +16,10 @@ class DBServiceProvider extends ServiceProvider
     {
         /**
          * Check if the collection has the auth user.
-         * 
+         *
          * @return Builder
          */
-        Builder::macro('whereHasAuthUser', fn() => 
+        Builder::macro('whereHasAuthUser', fn() =>
             $this->whereHas(USER_MODEL, fn(Builder $user) => $user->whereId(auth()->id()))
         );
 
@@ -29,7 +29,7 @@ class DBServiceProvider extends ServiceProvider
          * @param array $dates
          * @return Builder
          */
-        Builder::macro('filterByDates', fn(array $dates) => 
+        Builder::macro('filterByDates', fn(array $dates) =>
             $this->whereBetween(DATES[0], $dates)
         );
 
@@ -38,7 +38,7 @@ class DBServiceProvider extends ServiceProvider
          *
          * @return Builder
          */
-        Builder::macro('allTotalCost', fn() => 
+        Builder::macro('allTotalCost', fn() =>
             $this->sum(TOTAL_COST)
         );
 

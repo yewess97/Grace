@@ -158,7 +158,7 @@ class ProductService
         forgetCache(PRODUCTS_TABLE);
         cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
 
-        return customDelete($product, NAME, true);
+        return removeDeleteOrRestore($product, NAME, true);
     }
 
     /**
@@ -174,7 +174,7 @@ class ProductService
         forgetCache(PRODUCTS_TABLE);
         cache()->forget(PRODUCT_MODEL."_".$products->{SLUG});
 
-        return customDelete(model: $products, deleteImages: true);
+        return removeDeleteOrRestore(model: $products, deleteImages: true);
     }
 
     /**

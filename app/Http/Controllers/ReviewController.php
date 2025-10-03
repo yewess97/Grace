@@ -66,9 +66,11 @@ class ReviewController extends Controller
      */
     final public function destroy(Review $review): Response
     {
-        $this->reviewService->deleteReview($review);
+        $review_deleted = $this->reviewService->deleteReview($review);
 
-        return responseSuccess();
+        return $review_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.REVIEW_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -79,9 +81,11 @@ class ReviewController extends Controller
      */
     final public function destroyMultiple(Review $reviews): Response
     {
-        $this->reviewService->deleteMultipleReviews($reviews);
+        $reviews_deleted = $this->reviewService->deleteMultipleReviews($reviews);
 
-        return responseSuccess();
+        return $reviews_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -92,9 +96,11 @@ class ReviewController extends Controller
      */
     final public function restore(Review $review): Response
     {
-        $this->reviewService->restoreReview($review);
+        $review_restored = $this->reviewService->restoreReview($review);
 
-        return responseSuccess();
+        return $review_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.REVIEW_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -105,8 +111,10 @@ class ReviewController extends Controller
      */
     final public function restoreMultiple(Review $reviews): Response
     {
-        $this->reviewService->restoreMultipleReviews($reviews);
+        $reviews_restored = $this->reviewService->restoreMultipleReviews($reviews);
 
-        return responseSuccess();
+        return $reviews_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
     }
 }

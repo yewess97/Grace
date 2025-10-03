@@ -13,13 +13,13 @@ if (!function_exists('currentPageRequest')) {
 }
 
 
-if (!function_exists('trashedConditionRequest')) {
+if (!function_exists('conditionRequest')) {
     /**
-     * Get the trashed condition.
+     * Get the current condition.
      *
      * @return string|null
      */
-    function trashedConditionRequest(): string|null
+    function conditionRequest(): string|null
     {
         return request()?->input(CONDITION);
     }

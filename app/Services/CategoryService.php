@@ -75,7 +75,7 @@ class CategoryService
 
         forgetCache(CATEGORIES_TABLE);
 
-        return customDelete($category, NAME, true);
+        return removeDeleteOrRestore($category, NAME, true);
     }
 
     /**
@@ -93,7 +93,7 @@ class CategoryService
 
         forgetCache(CATEGORIES_TABLE);
 
-        return customDelete(model: $categories, deleteImages: true);
+        return removeDeleteOrRestore(model: $categories, deleteImages: true);
     }
 
     /**

@@ -65,7 +65,7 @@ class SubcategoryService
     {
         forgetCache(SUBCATEGORIES_TABLE);
 
-        return customDelete($subcategory, NAME, true);
+        return removeDeleteOrRestore($subcategory, NAME, true);
     }
 
     /**
@@ -80,7 +80,7 @@ class SubcategoryService
     {
         forgetCache(SUBCATEGORIES_TABLE);
 
-        return customDelete(model: $subcategories, deleteImages: true);
+        return removeDeleteOrRestore(model: $subcategories, deleteImages: true);
     }
 
     /**
