@@ -169,7 +169,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 if (conditionRequest()) {
                     \$button_text = DELETE;
 
-                    \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$subcollection_title.\$table_name).\"' id='restore_\".\$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.\$table_name).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
+                    \$restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$subcollection_title.\$table_name).\"' id='restore_\".\$table_name.\"_btn' class='restore-btn \$button_class' data-route=\".route(RESTORE.'_'.\$table_name).\" data-main=\".route(\$route, [...\$query_params, CONDITION => conditionRequest()]).\"><i class='fa-solid fa-rotate-left'></i> \".ucfirst(RESTORE).\" all selected</button>\";
 
                     \$trashed_main_button = \"<a href=\".route(\$route, \$query_params).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"' class='main-btn mt-2 \$button_class' aria-label='\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$subcollection_title.\$table_name).\"</a>\";
                 }

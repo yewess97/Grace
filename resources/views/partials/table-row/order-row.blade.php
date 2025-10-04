@@ -29,8 +29,9 @@
             @if($order->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_ORDER)}}"
                         class="restore-order-btn h-fit-content fs-5 text-success bg-transparent border-0"
-                        data-route="{{route(RESTORE_ORDER, $order->id)}}" data-id="{{$order->id}}"
-                        data-name="{{ $order->{TRACKING_NUM} }}">
+                        data-route="{{route(RESTORE_ORDER, $order->id)}}"
+                        data-name="{{ $order->{TRACKING_NUM} }}"
+                        data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => conditionRequest()])}}">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </button>
             @else
@@ -44,7 +45,7 @@
             <button type="button" role="button"
                     title="{{capitalizeAll($order->trashed() ? DELETE_ORDER : REMOVE_ORDER)}}"
                     class="delete-order-btn h-fit-content fs-5 text-danger bg-transparent border-0"
-                    data-route="{{route(DELETE_ORDER, $order->id)}}" data-id="{{$order->id}}"
+                    data-route="{{route(DELETE_ORDER, $order->id)}}"
                     data-name="{{ $order->{TRACKING_NUM} }}"
                     data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => conditionRequest()])}}">
                 <i class="{{$order->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>

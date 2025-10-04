@@ -146,6 +146,7 @@ const IGrace = {
     TOTAL_COST        : 'total_cost',
     ROW               : 'row',
     CONDITION         : 'condition',
+    TRASHED           : 'trashed',
 
     /**
      * Common Attributes Methods.
