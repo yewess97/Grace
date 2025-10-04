@@ -90,27 +90,30 @@
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($product->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_PRODUCT)}}"
-                        class="restore-product-btn h-fit-content fs-5 text-success bg-transparent border-0"
+                        data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_PRODUCT, $product->id)}}" data-id="{{$product->id}}"
-                        data-name="{{ $product->{NAME} }}">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                        data-name="{{ $product->{NAME} }}"
+                        class="restore-product-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_PRODUCT_TITLE}}"
-                        class="edit-product-btn h-fit-content fs-5 text-success bg-transparent border-0"
+                        data-tooltip="tooltip" data-mdb-placement="top"
                         data-mdb-toggle="modal" data-mdb-target="#edit_product_modal"
                         data-route="{{route(EDIT_PRODUCT, $product->id)}}"
                         data-main_image="{{imageSource($product, MAIN_IMAGE)}}"
-                        data-thumb_images="@foreach($product->{THUMB_IMAGES} as $thumb_image){{imageSource($thumb_image, THUMB_IMAGE)}} @endforeach">
-                    <i class="fa-regular fa-pen-to-square"></i>
+                        data-thumb_images="@foreach($product->{THUMB_IMAGES} as $thumb_image){{imageSource($thumb_image, THUMB_IMAGE)}} @endforeach"
+                        class="edit-product-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
                     title="{{capitalizeAll($product->trashed() ? DELETE_PRODUCT : REMOVE_PRODUCT)}}"
-                    class="delete-product-btn h-fit-content fs-5 text-danger bg-transparent border-0"
+                    data-tooltip="tooltip" data-mdb-placement="top"
                     data-route="{{route(DELETE_PRODUCT, $product->id)}}" data-id="{{$product->id}}"
-                    data-name="{{ $product->{NAME} }}">
-                <i class="{{$product->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
+                    data-name="{{ $product->{NAME} }}"
+                    class="delete-product-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                <x-action-icon action="{{$product->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

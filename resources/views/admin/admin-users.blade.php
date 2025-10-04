@@ -23,12 +23,8 @@
                                     {{-- Role --}}
                                     <div class="filter-users-role">
                                         <div class="form-group position-relative">
-                                            <label for="filter_users_role"
-                                                   class="label-select position-absolute user-select-none pe-none"></label>
-                                            <select name="filter_users_role" id="filter_users_role"
-                                                    class="form-select py-2">
-                                                <option disabled selected>{{ucfirst(FILTER)}}
-                                                    by {{ucfirst(ROLE)}} </option>
+                                            <label for="filter_users_role" class="label-select position-absolute user-select-none pe-none">{{ucfirst(FILTER)}} by {{ucfirst(ROLE)}}</label>
+                                            <select name="filter_users_role" id="filter_users_role" class="form-select">
                                                 @foreach ($roles as $role => $value)
                                                     <option value="{{$value}}">{{pluralize($role)}}</option>
                                                 @endforeach

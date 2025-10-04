@@ -17,16 +17,31 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($category->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_CATEGORY)}}" class="restore-category-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_CATEGORY, $category->id)}}" data-id="{{$category->id}}" data-name="{{ $category->{NAME} }}">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_CATEGORY)}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-route="{{route(RESTORE_CATEGORY, $category->id)}}" data-id="{{$category->id}}"
+                        data-name="{{ $category->{NAME} }}"
+                        class="restore-category-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{RESTORE}}"/>
                 </button>
             @else
-                <button type="button" role="button" title="{{EDIT_CATEGORY_TITLE}}" class="edit-category-btn h-fit-content fs-5 text-success bg-transparent border-0" data-mdb-toggle="modal" data-mdb-target="#edit_category_modal" data-route="{{route(EDIT_CATEGORY, $category->id)}}" data-main_image="{{imageSource($category, MAIN_IMAGE)}}" data-banner_image="{{imageSource($category, BANNER_IMAGE)}}">
-                    <i class="fa-regular fa-pen-to-square"></i>
+                <button type="button" role="button" title="{{EDIT_CATEGORY_TITLE}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-mdb-toggle="modal" data-mdb-target="#edit_category_modal"
+                        data-route="{{route(EDIT_CATEGORY, $category->id)}}"
+                        data-main_image="{{imageSource($category, MAIN_IMAGE)}}"
+                        data-banner_image="{{imageSource($category, BANNER_IMAGE)}}"
+                        class="edit-category-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{EDIT}}"/>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($category->trashed() ? DELETE_CATEGORY : REMOVE_CATEGORY)}}" class="delete-category-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_CATEGORY, $category->id)}}" data-id="{{$category->id}}" data-name="{{ $category->{NAME} }}">
-                <i class="{{$category->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
+            <button type="button" role="button"
+                    title="{{capitalizeAll($category->trashed() ? DELETE_CATEGORY : REMOVE_CATEGORY)}}"
+                    data-tooltip="tooltip" data-mdb-placement="top"
+                    data-route="{{route(DELETE_CATEGORY, $category->id)}}" data-id="{{$category->id}}"
+                    data-name="{{ $category->{NAME} }}"
+                    class="delete-category-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                <x-action-icon action="{{$category->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

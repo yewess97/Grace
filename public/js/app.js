@@ -4,8 +4,6 @@ import { IGrace, Common, User } from "./helpers/user-helpers.js";
 
 
 $(document).ready(() => {
-
-
     /* ========================================= Global Variables ========================================= */
     const products_main_view = $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`);
 

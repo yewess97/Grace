@@ -31,7 +31,7 @@
                         @search(SEARCH_ADDRESSES, $user_id)
 
                         {{-- Addresses Main Buttons --}}
-                        @collectionButtons(ADDRESSES_TABLE, ADMIN_USER_ADDRESSES_ROUTE)
+                        @collectionButtons(ADDRESSES_TABLE, ADMIN_USER_ADDRESSES_ROUTE, [ID => encrypt($user_id)])
                     </div>
 
                     {{-- Addresses Table --}}

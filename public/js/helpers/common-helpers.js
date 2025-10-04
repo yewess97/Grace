@@ -507,24 +507,29 @@ const Common = {
     updateTableRows: (args) => {
         let { data, collectionName, mainPage, action } = args;
 
-        if (action === IGrace.UPDATE) {
-            $(`#${IGrace.ROW}_${data[collectionName.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
-        }
+        const pagination_container = $('.pagination-container');
 
-        if (action === IGrace.ADD) {
-            $("tbody").append(data[IGrace.ROW]);
-        }
-
-        if (!IGrace.IS_IN_ARRAY([IGrace.DELETE, IGrace.RESTORE], action)) {
+        const ajaxHandlePagination = () => {
             mainPage += `${Common.routeParamsSeperator(mainPage)}page=${data[action === IGrace.ADD ? 'last_page' : 'current_page']}`;
 
             $.get(mainPage)
-                .done((successData) => Common.paginationResponse($('.pagination-container'), successData))
+                .done((successData) => Common.paginationResponse(pagination_container, successData))
                 .fail(Common.somethingWentWrongError);
-        }
-        else {
-            Common.paginationResponse($('.pagination-container'), data);
-        }
+        };
+
+        const actions = {
+            [IGrace.ADD]: () => {
+                $("tbody").append(data[IGrace.ROW]);
+                ajaxHandlePagination();
+            },
+            [IGrace.UPDATE]: () => {
+                $(`#${IGrace.ROW}_${data[collectionName.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
+                ajaxHandlePagination();
+            },
+            default: () => Common.paginationResponse(pagination_container, data),
+        };
+
+        (actions[action] || actions.default)?.();
 
         $('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false});
     },
@@ -961,7 +966,7 @@ const Common = {
      * @return {object}
      */
     ajaxDeleteItems: (options) => {
-        const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, collectionName, mainPage, action, collectionTrashed, successMessage } = options;
+        const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, mainPage, action, collectionTrashed, successMessage } = options;
 
         // Used object spread + short-circuiting to add the params
         const url_params = {
@@ -977,9 +982,8 @@ const Common = {
                 $.get(`${mainPage}${Common.routeParamsSeperator(mainPage)}page=${url_params.page}`)
                     .done((data) => {
                         Common.updateTableRows({
-                            data:           data,
-                            collectionName: collectionName,
-                            action:         action,
+                            data:   data,
+                            action: action,
                         });
                     })
                     .fail(Common.somethingWentWrongError);
@@ -997,13 +1001,12 @@ const Common = {
      * @return {void}
      */
     forceDeleteConfirmation: (options) => {
-        const { error, deleteRoute, isMultiple, selectedIds, forceDeleteRequests, collection, mainPage, action, collectionTrashed, successMessage, cancelMessage } = options;
+        const { error, deleteRoute, isMultiple, selectedIds, forceDeleteRequests, mainPage, action, collectionTrashed, successMessage, cancelMessage } = options;
 
         const delete_options = {
             deleteRoute:       deleteRoute,
             isMultiple:        isMultiple,
             selectedIds:       selectedIds,
-            collection:        collection,
             mainPage:          mainPage,
             action:            action,
             collectionTrashed: collectionTrashed,
@@ -1086,7 +1089,6 @@ const Common = {
 
             const delete_options = {
                 deleteRoute:       delete_route,
-                collectionName:    collection_name,
                 mainPage:          main_page,
                 action:            IGrace.DELETE,
                 collectionTrashed: collection_trashed,
@@ -1144,9 +1146,9 @@ const Common = {
             const delete_options = {
                 deleteRoute:       delete_all_route,
                 isMultiple:        true,
+                selectedIds:       selected_rows,
                 mainPage:          main_page,
                 action:            IGrace.DELETE,
-                selectedIds:       selected_rows,
                 collectionTrashed: collections_trashed,
                 successMessage:    delete_multi_success_message,
             };
@@ -1198,10 +1200,8 @@ const Common = {
                     $.get(`${main_page}${Common.routeParamsSeperator(main_page)}page=${Common.currentPageNumber()}`)
                         .done((data) => {
                             Common.updateTableRows({
-                                data:           data,
-                                collectionName: collection_name,
-                                mainPage:       main_page,
-                                action:         IGrace.RESTORE,
+                                data:   data,
+                                action: IGrace.RESTORE,
                             });
                         })
                         .fail(Common.somethingWentWrongError);
@@ -1247,9 +1247,8 @@ const Common = {
                     $.get(`${main_page}${Common.routeParamsSeperator(main_page)}page=${Common.currentPageNumber()}`)
                         .done((data) => {
                             Common.updateTableRows({
-                                data:     data,
-                                mainPage: main_page,
-                                action:   IGrace.RESTORE,
+                                data:   data,
+                                action: IGrace.RESTORE,
                             });
                         })
                         .fail(Common.somethingWentWrongError);

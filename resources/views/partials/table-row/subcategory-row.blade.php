@@ -19,16 +19,30 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($subcategory->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}" class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}" data-name="{{ $subcategory->{NAME} }}">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}"
+                        data-name="{{ $subcategory->{NAME} }}"
+                        class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{RESTORE}}"/>
                 </button>
             @else
-                <button type="button" role="button" title="{{EDIT_SUBCATEGORY_TITLE}}" class="edit-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0" data-mdb-toggle="modal" data-mdb-target="#edit_subcategory_modal" data-route="{{route(EDIT_SUBCATEGORY, $subcategory->id)}}" data-main_image="{{imageSource($subcategory, MAIN_IMAGE)}}">
-                    <i class="fa-regular fa-pen-to-square"></i>
+                <button type="button" role="button" title="{{EDIT_SUBCATEGORY_TITLE}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-mdb-toggle="modal" data-mdb-target="#edit_subcategory_modal"
+                        data-route="{{route(EDIT_SUBCATEGORY, $subcategory->id)}}"
+                        data-main_image="{{imageSource($subcategory, MAIN_IMAGE)}}"
+                        class="edit-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{EDIT}}"/>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($subcategory->trashed() ? DELETE_SUBCATEGORY : REMOVE_SUBCATEGORY)}}" class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}" data-name="{{ $subcategory->{NAME} }}">
-                <i class="{{$subcategory->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
+            <button type="button" role="button"
+                    title="{{capitalizeAll($subcategory->trashed() ? DELETE_SUBCATEGORY : REMOVE_SUBCATEGORY)}}"
+                    data-tooltip="tooltip" data-mdb-placement="top"
+                    data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}"
+                    data-name="{{ $subcategory->{NAME} }}"
+                    class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                <x-action-icon action="{{$subcategory->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

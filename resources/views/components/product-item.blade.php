@@ -32,14 +32,14 @@
             {{-- Product Info --}}
             <article class="product-info d-flex flex-column justify-content-center gap-2 px-3 px-md-0 py-3">
                 {{-- Product Name & Price --}}
-                @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'info', 'is_single' => true])
+                @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'info', 'is_single_view' => true])
 
                 {{-- Product Short Description --}}
                 <p class="product-info-short-desc">{{ $product->{SHORT_DESCRIPTION} }}</p>
 
                 {{-- Product Actions --}}
                 <article class="product-actions d-flex align-items-center mt-2">
-                    @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'actions', 'is_single' => true])
+                    @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'actions', 'is_single_view' => true])
                 </article>
             </article>
         </section>

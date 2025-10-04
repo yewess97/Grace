@@ -35,11 +35,14 @@ class AddressService {
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $user_addresses = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn():
-        LengthAwarePaginator => Address::query()->where(USER_ID, $user_id)
-                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+        $user_addresses_ids = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn() =>
+            Address::query()->where(USER_ID, $user_id)
+                ->withTrashed()
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $user_addresses = paginateWithFallback(new Address(), $user_addresses_ids);
 
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);

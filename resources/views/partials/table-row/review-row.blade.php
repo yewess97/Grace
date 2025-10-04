@@ -25,16 +25,31 @@
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if($review->trashed())
-                <button type="button" role="button" title="{{capitalizeAll(RESTORE_REVIEW)}}" class="restore-review-btn h-fit-content fs-5 text-success bg-transparent border-0" data-route="{{route(RESTORE_REVIEW, $review->id)}}" data-id="{{$review->id}}" data-name="{{ $review->{TITLE} }}">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                <button type="button" role="button" title="{{capitalizeAll(RESTORE_REVIEW)}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-route="{{route(RESTORE_REVIEW, $review->id)}}"
+                        data-name="{{ $review->{TITLE} }}"
+                        data-main="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review->{RATING}, CONDITION => conditionRequest()])}}"
+                        class="restore-review-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{RESTORE}}"/>
                 </button>
             @else
-                <button type="button" role="button" title="{{EDIT_REVIEW_TITLE}}" class="edit-review-btn h-fit-content fs-5 text-success bg-transparent border-0" data-mdb-toggle="modal" data-mdb-target="#edit_review_modal" data-route="{{route(EDIT_REVIEW, $review->id)}}">
-                    <i class="fa-regular fa-pen-to-square"></i>
+                <button type="button" role="button" title="{{EDIT_REVIEW_TITLE}}"
+                        data-tooltip="tooltip" data-mdb-placement="top"
+                        data-mdb-toggle="modal" data-mdb-target="#edit_review_modal"
+                        data-route="{{route(EDIT_REVIEW, $review->id)}}"
+                        class="edit-review-btn h-fit-content fs-5 text-success bg-transparent border-0">
+                    <x-action-icon action="{{EDIT}}"/>
                 </button>
             @endif
-            <button type="button" role="button" title="{{capitalizeAll($review->trashed() ? DELETE_REVIEW : REMOVE_REVIEW)}}" class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0" data-route="{{route(DELETE_REVIEW, $review->id)}}" data-id="{{$review->id}}" data-name="{{ $review->{TITLE} }}">
-                <i class="{{$review->trashed() ? 'fa-solid fa-trash' : 'fa-regular fa-trash-can'}}"></i>
+            <button type="button" role="button"
+                    title="{{capitalizeAll($review->trashed() ? DELETE_REVIEW : REMOVE_REVIEW)}}"
+                    data-tooltip="tooltip" data-mdb-placement="top"
+                    data-route="{{route(DELETE_REVIEW, $review->id)}}"
+                    data-name="{{ $review->{TITLE} }}"
+                    data-main="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review->{RATING}, CONDITION => conditionRequest()])}}"
+                    class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                <x-action-icon action="{{$review->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

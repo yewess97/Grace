@@ -364,10 +364,10 @@ const User = {
                     formReset(target, action);
 
                     Common.updateTableRows({
-                        data:       data,
-                        mainPage:   main_page,
-                        collection: collection,
-                        action:     action,
+                        data:           data,
+                        collectionName: collection,
+                        mainPage:       main_page,
+                        action:         action,
                     });
 
                     Common.successMessage(IGrace.SUCCESS, success_message);

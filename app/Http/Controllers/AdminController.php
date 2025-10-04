@@ -195,11 +195,7 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $orders = paginateWithFallback(
-            Order::query()->latest()
-                ->whereIn(ID, $orders_ids)
-                ->when(conditionRequest() === TRASHED, static fn($query) => $query->onlyTrashed())
-        );
+        $orders = paginateWithFallback(new Order(), $orders_ids);
 
         $statuses     = ORDER_STATUS_ENUM;
         $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
@@ -250,10 +246,7 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $reviews = paginateWithFallback(
-            Review::query()->whereIn(ID, $reviews_ids)
-                ->when(conditionRequest() === TRASHED, static fn($query) => $query->onlyTrashed())
-        );
+        $reviews = paginateWithFallback(new Review(), $reviews_ids);
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 

@@ -249,21 +249,22 @@ if (!function_exists('forgetPaginationCacheFor')) {
         $query = $model::query()->whereIn(ID, $selected_ids)
             ->withTrashed();
 
+        $relation              = $extraConfig['relation'];
         $relation_only_columns = $extraConfig['relation_only_columns'] ?? [ID];
 
         // Eager load "relation" if provided in config
-        if (!empty($extraConfig['relation'])) {
+        if (!empty($relation)) {
             $query->with([
-                $extraConfig['relation'] => static fn($relatedCollection) =>
+                $relation => static fn($relatedCollection) =>
                     $relatedCollection->select($relation_only_columns),
             ]);
         }
 
         // Map each model to the required "relation_only_columns" (either directly or via relation)
         $query->cursor()
-            ->map(static function ($item) use ($extraConfig) {
-                if (!empty($extraConfig['relation'])) {
-                    return $item->{$extraConfig['relation']}->only($relation_only_columns);
+            ->map(static function ($item) use ($relation, $relation_only_columns) {
+                if (!empty($relation)) {
+                    return $item->{$relation}->only($relation_only_columns);
                 }
 
                 return $item->only($relation_only_columns);
@@ -1307,12 +1308,24 @@ if (! function_exists('paginateWithFallback')) {
     /**
      * Paginate with fallback.
      *
-     * @param Builder $query
+     * @param Model|stdClass $model
+     * @param array $ids
      * @return LengthAwarePaginator
      */
-    function paginateWithFallback(Builder $query): LengthAwarePaginator
+    function paginateWithFallback(Model|stdClass $model, array $ids): LengthAwarePaginator
     {
-        $results = $query->fastPaginate(16, ['*'], 'page', currentPageRequest());
+        $results = $model::query()
+            ->whereIn(ID, $ids)
+            ->when(true, static function (Builder $query) use ($model) {
+                if (in_array($model->getTable(), [PRODUCTS_TABLE, ORDERS_TABLE], true)) {
+                    $query->latest();
+                }
+
+                if (conditionRequest() === TRASHED) {
+                    $query->onlyTrashed();
+                }
+            })
+            ->fastPaginate(16, ['*'], 'page', currentPageRequest());
 
         if ($results->isEmpty() && currentPageRequest() > 1) {
             $results = $query->fastPaginate(16, ['*'], 'page', max(currentPageRequest() - 1, 1));
