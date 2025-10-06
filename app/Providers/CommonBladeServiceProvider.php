@@ -89,7 +89,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                     ? route(\$route, \$query_params)
                     : (Route::has(\$title) ? route(\$title) : url()->previous());
 
-                echo \"<div class='back-btn'><a href='\$url' type='button' role='link' title='Back to \".ucfirst(\$title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".ucfirst(\$title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
+                echo \"<div class='back-btn'><a href='\$url' type='button' role='link' title='Back to \".capitalizeAll(\$title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".capitalizeAll(\$title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
             ?>"
         );
 
@@ -103,10 +103,15 @@ class CommonBladeServiceProvider extends ServiceProvider
             return "<?php
                 \$__table        = [$searchArgs][0];
                 \$__query_params = [$searchArgs][1] ?? null;
+                \$__form_class   = 'grace-form '.match (\$__table) {
+                    SEARCH_ORDERS    => 'col-12 col-lg-5 col-md-5',
+                    SEARCH_ADDRESSES => 'flex-fill',
+                    default          => 'col-12 col-lg-6 col-md-6',
+                };
 
                 echo
                 \"
-                    <form action='\".route(\$__table, \$__query_params).\"' method='get' role='form' id='search_form' class='grace-form col-12 \".(\$__table === SEARCH_ORDERS ? 'col-lg-5 col-md-5' : 'col-lg-6 col-md-6').\"' data-no_results=\".imageSource('no-results.png').\">
+                    <form action=\".route(\$__table, \$__query_params).\" method='get' role='form' id='search_form' class='\".\$__form_class.\"' data-no_results=\".imageSource('no-results.png').\">
                         <div class='grace-form-body row col-12'>
                             <div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'>
                                 <input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'>

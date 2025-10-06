@@ -1,4 +1,4 @@
-@if($container === MAIN_IMAGE)
+@if ($container === MAIN_IMAGE)
     {{-- Product Image --}}
     <img src="{{imageSource($product, MAIN_IMAGE)}}" alt="{{ $product->{NAME} }}">
 
@@ -9,7 +9,7 @@
 @endif
 
 
-@if($container === 'info')
+@if ($container === 'info')
     {{-- Product Name --}}
     <h3 class="product-info-name text-capitalize @isset($is_single_view) mt-0 @endisset">{{ $product->{NAME} }}</h3>
 
@@ -23,7 +23,7 @@
 @endif
 
 
-@if($container === 'actions')
+@if ($container === 'actions')
     {{-- Add To Cart --}}
     @if ($product->{STATUS} === 1)
         <button type="submit" role="button" title="{{capitalizeAll(ADD.' to '.CART_MODEL)}}" class="add-cart-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{capitalizeAll(ADD.' to '.CART_MODEL)}}">

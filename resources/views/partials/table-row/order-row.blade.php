@@ -26,7 +26,7 @@
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($order->trashed())
+            @if ($order->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_ORDER)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_ORDER, $order->id)}}"

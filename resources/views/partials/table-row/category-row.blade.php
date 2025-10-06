@@ -16,7 +16,7 @@
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($category->trashed())
+            @if ($category->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_CATEGORY)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_CATEGORY, $category->id)}}" data-id="{{$category->id}}"

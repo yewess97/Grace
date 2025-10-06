@@ -23,7 +23,9 @@ use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
+use Exception;
 
 class OrderService {
     /**
@@ -50,7 +52,7 @@ class OrderService {
      * Store an order.
      *
      * @return RedirectResponse|JsonResponse|int
-     * @throws ValidationException|RandomException|Throwable|\Exception
+     * @throws ValidationException|RandomException|CacheInvalidArgumentException|Throwable|Exception
      */
     final public function createOrder(): RedirectResponse|JsonResponse|int
     {
@@ -120,7 +122,7 @@ class OrderService {
 
             return $destroy_cart_items;
         }
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             DB::rollBack();
 
             throw $exception;
@@ -131,7 +133,7 @@ class OrderService {
      * Update an order.
      *
      * @return int
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     final public function updateOrder(): int
     {
@@ -161,6 +163,7 @@ class OrderService {
      *
      * @param Order $order
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteOrder(Order $order): bool
     {
@@ -176,6 +179,7 @@ class OrderService {
      *
      * @param Order $orders
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteMultipleOrders(Order $orders): bool
     {
@@ -191,6 +195,7 @@ class OrderService {
      *
      * @param Order $order
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreOrder(Order $order): bool
     {
@@ -206,6 +211,7 @@ class OrderService {
      *
      * @param Order $orders
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleOrders(Order $orders): bool
     {
@@ -295,6 +301,7 @@ class OrderService {
      *
      * @param Order $order
      * @return void
+     * @throws CacheInvalidArgumentException
      */
     private function forgetOrderCache(Order $order): void
     {

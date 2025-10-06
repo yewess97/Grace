@@ -4,7 +4,7 @@
     $current_item = adminCurrentUrl($url, ['current-item', 'active'])
 @endphp
 
-@if($submenu)
+@if ($submenu)
     @props(['all_table', 'column_name'])
 
     <li role="listitem" id="{{$id ?? null}}" class="nav-menu-list-item {{$current_item}}">

@@ -11,14 +11,14 @@
     </td>
     <td>
         <ul class="cell-menu overflow-auto">
-            @foreach($subcategory->{CATEGORIES_TABLE} as $category)
+            @foreach ($subcategory->{CATEGORIES_TABLE} as $category)
                 <li>{{ $category->{NAME} }}</li>
             @endforeach
         </ul>
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($subcategory->trashed())
+            @if ($subcategory->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}"

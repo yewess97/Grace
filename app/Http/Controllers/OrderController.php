@@ -7,13 +7,15 @@ use App\Services\OrderService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Random\RandomException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
+use Exception;
 
 class OrderController extends Controller
 {
@@ -40,7 +42,7 @@ class OrderController extends Controller
      * Store an order.
      *
      * @return Response|RedirectResponse|JsonResponse
-     * @throws ValidationException|RandomException|Throwable|\Exception
+     * @throws ValidationException|RandomException|CacheInvalidArgumentException|Throwable|Exception
      */
     final public function store(): Response|RedirectResponse|JsonResponse
     {
@@ -66,7 +68,7 @@ class OrderController extends Controller
      * Update an order.
      *
      * @return Response
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     final public function update(): Response
     {
@@ -80,7 +82,7 @@ class OrderController extends Controller
      *
      * @param Order $order
      * @return Response
-     * @throws Throwable
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Order $order): Response
     {
@@ -96,6 +98,7 @@ class OrderController extends Controller
      *
      * @param Order $orders
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Order $orders): Response
     {
@@ -111,6 +114,7 @@ class OrderController extends Controller
      *
      * @param Order $order
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Order $order): Response
     {
@@ -126,6 +130,7 @@ class OrderController extends Controller
      *
      * @param Order $orders
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Order $orders): Response
     {

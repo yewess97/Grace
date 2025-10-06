@@ -10,11 +10,12 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class AddressService {
@@ -60,7 +61,7 @@ class AddressService {
      *
      * @param string $operation
      * @return array
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     final public function createOrUpdateAddress(string $operation): array
     {
@@ -90,8 +91,7 @@ class AddressService {
             ]
         );
 
-        forgetCache(ADDRESSES_TABLE);
-        forgetCache(USER_ADDRESSES.'_'.auth()->id());
+        $this->forgetAddressCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
@@ -103,13 +103,15 @@ class AddressService {
      *
      * @param Address $address
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteAddress(Address $address): bool
     {
-        forgetCache(ADDRESSES_TABLE);
-        forgetCache(USER_ADDRESSES.'_'.auth()->id());
+        $deleted_address = removeDeleteOrRestore($address, $address->{ADDRESS1});
 
-        return removeDeleteOrRestore($address, ADDRESS1);
+        $this->forgetAddressCache();
+
+        return $deleted_address;
     }
 
     /**
@@ -117,13 +119,15 @@ class AddressService {
      *
      * @param Address $addresses
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteMultipleAddresses(Address $addresses): bool
     {
-        forgetCache(ADDRESSES_TABLE);
-        forgetCache(USER_ADDRESSES.'_'.auth()->id());
+        $deleted_addresses = removeDeleteOrRestore($addresses);
 
-        return removeDeleteOrRestore($addresses);
+        $this->forgetAddressCache();
+
+        return $deleted_addresses;
     }
 
     /**
@@ -131,13 +135,15 @@ class AddressService {
      *
      * @param Address $address
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreAddress(Address $address): bool
     {
-        forgetCache(ADDRESSES_TABLE);
-        forgetCache(USER_ADDRESSES.'_'.auth()->id());
+        $restored_address = removeDeleteOrRestore($address, $address->{ADDRESS1});
 
-        return restore($address, ADDRESS1);
+        $this->forgetAddressCache();
+
+        return $restored_address;
     }
 
     /**
@@ -145,12 +151,25 @@ class AddressService {
      *
      * @param Address $addresses
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleAddresses(Address $addresses): bool
     {
-        forgetCache(ADDRESSES_TABLE);
-        forgetCache(USER_ADDRESSES.'_'.auth()->id());
+        $restored_addresses = removeDeleteOrRestore($addresses);
 
-        return restore($addresses);
+        $this->forgetAddressCache();
+
+        return $restored_addresses;
+    }
+
+    /**
+     * Forget the address cache.
+     *
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    private function forgetAddressCache(): void
+    {
+        forgetCache([ADDRESSES_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY]);
     }
 }

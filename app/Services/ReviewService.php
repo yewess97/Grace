@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class ReviewService
@@ -32,7 +33,7 @@ class ReviewService
      *
      * @param string $operation
      * @return Review
-     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException
+     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
      */
     final public function createOrUpdateReview(string $operation): Review
     {
@@ -114,6 +115,7 @@ class ReviewService
      *
      * @param Review $review
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteReview(Review $review): bool
     {
@@ -129,6 +131,7 @@ class ReviewService
      *
      * @param Review $reviews
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteMultipleReviews(Review $reviews): bool
     {
@@ -144,6 +147,7 @@ class ReviewService
      *
      * @param Review $review
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreReview(Review $review): bool
     {
@@ -159,6 +163,7 @@ class ReviewService
      *
      * @param Review $reviews
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleReviews(Review $reviews): bool
     {
@@ -174,6 +179,7 @@ class ReviewService
      *
      * @param Review $review
      * @return void
+     * @throws CacheInvalidArgumentException
      */
     private function forgetReviewCache(Review $review): void
     {

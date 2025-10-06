@@ -24,7 +24,7 @@
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($review->trashed())
+            @if ($review->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_REVIEW)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_REVIEW, $review->id)}}"

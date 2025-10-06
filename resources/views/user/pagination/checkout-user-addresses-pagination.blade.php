@@ -1,5 +1,5 @@
 <div class="shipping-address row row-cols-1 row-cols-md-2">
-    @foreach($user_addresses as $user_address)
+    @foreach ($user_addresses as $user_address)
         <div class="shipping-address-card col px-2">
             <div class="card justify-content-center h-100 py-2 border">
                 <label for="add_order_address_id{{ $user_address->{ID} }}" class="h-0">

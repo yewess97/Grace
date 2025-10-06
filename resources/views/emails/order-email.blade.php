@@ -14,7 +14,7 @@
         <div class="order-info">
             <div class="border rounded">
                 <div class="px-5 py-4">
-                    @foreach($order_details as $title => $value)
+                    @foreach ($order_details as $title => $value)
                         <div class="order-details-info col-12 d-table py-3 border-top border-bottom">
                             <h2 class="d-table-cell vertical-center fs-6 fw-600">{{$title}}:</h2>
                             <div class="d-table-cell vertical-center text-right">{!! $value !!}</div>

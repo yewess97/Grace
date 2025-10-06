@@ -102,7 +102,7 @@
                         <h2 class="fs-6 fw-600">{{ucfirst(ORDERS_TABLE)}} Analytics</h2>
                         {{-- Orders Analytics Numbers --}}
                         <ul role="list" class="orders-analytics-nums row gap-3">
-                            @foreach($orders_statuses as $order_status)
+                            @foreach ($orders_statuses as $order_status)
                                 <li role="listitem">
                                     <a href="{{route(ADMIN_ORDERS_ROUTE, $order_status->{STATUS})}}" role="link" class="analytic-card d-flex justify-content-between align-items-center">
                                         <div class="order-analytic-icon-name d-flex align-items-center gap-3">
@@ -121,7 +121,7 @@
                         <h2 class="fs-6 fw-600">{{ucfirst(REVIEWS_TABLE)}} Analytics</h2>
                         {{-- Reviews Analytics Numbers --}}
                         <ul role="list" class="reviews-analytics-nums d-grid gap-3">
-                            @foreach($reviews_ratings as $review_rating)
+                            @foreach ($reviews_ratings as $review_rating)
                                 <li role="listitem">
                                     <a href="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review_rating->{RATING}])}}" role="link" class="analytic-card d-flex justify-content-between align-items-center">
                                         <div class="review-analytic-stars d-flex align-items-center gap-1">

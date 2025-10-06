@@ -22,18 +22,17 @@ class NotificationController extends Controller
             ->unreadNotifications()
             ->first([ID, 'data', DATES[0]]);
 
-        if ($unread_notification) {
-            echo 'data: '.json_encode([
-                'notification' => [
-                    ID        => $unread_notification->{ID},
-                    'message' => $unread_notification->data['message'],
-                    DATES[0]  => $unread_notification->{DATES[0]}->diffForHumans(),
-                ]
-            ]).PHP_EOL.PHP_EOL;
-        } 
-        else {
-            echo PHP_EOL.PHP_EOL;
-        }
+        echo (
+            $unread_notification
+                ? 'data: '.json_encode([
+                    'notification' => [
+                        ID        => $unread_notification->{ID},
+                        'message' => $unread_notification->data['message'],
+                        DATES[0]  => $unread_notification->{DATES[0]}->diffForHumans(),
+                    ]
+                ])
+                : ''
+            ).PHP_EOL.PHP_EOL;
 
         ob_flush();
         flush();
@@ -65,7 +64,7 @@ class NotificationController extends Controller
     final public function markAllAsRead(): JsonResponse
     {
         $unread_notifications = auth()->user()->unreadNotifications;
-        
+
         $unread_notifications->markAsRead();
 
         return responseWithData([pluralize(ID) => $unread_notifications->pluck(ID)->toArray()]);
@@ -82,7 +81,7 @@ class NotificationController extends Controller
             ->notifications()
             ->whereId(request()?->input(ID))
             ->delete();
-            
+
         return responseWithData([ID => request()?->input(ID)]);
     }
 }

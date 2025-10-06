@@ -35,6 +35,7 @@ use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
 
 if (!function_exists('canonicalUrl')) {
@@ -217,16 +218,21 @@ if (!function_exists('forgetPaginationCacheFor')) {
     /**
      * Forget the cache.
      *
-     * @param string $key
+     * @param string|array $key
      * @param Model|stdClass|null $model
      * @param string|null $additionalSuffix
      * @param array|null $extraConfig
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
-    function forgetCache(string $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
+    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
     {
         if (is_null($model)) {
-            return cache()->forget($key);
+            $cache_keys = is_array($key)
+                ? $key
+                : [$key];
+
+            return cache()->deleteMultiple($cache_keys);
         }
 
         $selected_ids = selectedIdsRequest()
@@ -1020,7 +1026,7 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
      *
      * @param string $operation
      * @return User
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     function storeOrUpdateUser(string $operation): User
     {
@@ -1052,28 +1058,27 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
             $password   => bcrypt($password_value),
         ];
 
-        if ($operation !== REGISTER) {
-            $role_value = Arr::last($user_request->dataValues());
+        if ($operation === REGISTER) {
+            $user = User::query()->create($attributes);
 
-            $attributes = array_merge($attributes, [ROLE => (int) $role_value]);
+            forgetCache([USERS_PAGINATION_CACHE_KEY, USER_MODEL]);
 
-            $user = User::query()->updateOrCreate(
-                [ID => $user_id], $attributes
-            );
-
-            forgetCache(USERS_TABLE);
-            cache()->forget(USER_MODEL);
-
-            sendNotificationToAdmins(new NewAdminActionTaken([$user, $user->{FULL_NAME}], $operation), true);
+            sendNotificationToAdmins(new NewUserRegistered($user));
 
             return $user;
         }
 
-        $user = User::query()->create($attributes);
+        $role_value = Arr::last($user_request->dataValues());
 
-        cache()->forget(USERS_TABLE);
+        $attributes = array_merge($attributes, [ROLE => (int) $role_value]);
 
-        sendNotificationToAdmins(new NewUserRegistered($user));
+        $user = User::query()->updateOrCreate(
+            [ID => $user_id], $attributes
+        );
+
+        forgetCache([USERS_PAGINATION_CACHE_KEY, USER_MODEL]);
+
+        sendNotificationToAdmins(new NewAdminActionTaken([$user, $user->{FULL_NAME}], $operation), true);
 
         return $user;
     }
@@ -1310,9 +1315,11 @@ if (! function_exists('paginateWithFallback')) {
      *
      * @param Model|stdClass $model
      * @param array $ids
+     * @param int $perPage
+     * @param array $attributes
      * @return LengthAwarePaginator
      */
-    function paginateWithFallback(Model|stdClass $model, array $ids): LengthAwarePaginator
+    function paginateWithFallback(Model|stdClass $model, array $ids, int $perPage = 16, array $attributes = ['*']): LengthAwarePaginator
     {
         $results = $model::query()
             ->whereIn(ID, $ids)
@@ -1325,10 +1332,10 @@ if (! function_exists('paginateWithFallback')) {
                     $query->onlyTrashed();
                 }
             })
-            ->fastPaginate(16, ['*'], 'page', currentPageRequest());
+            ->fastPaginate($perPage, $attributes, 'page', currentPageRequest());
 
         if ($results->isEmpty() && currentPageRequest() > 1) {
-            $results = $query->fastPaginate(16, ['*'], 'page', max(currentPageRequest() - 1, 1));
+            $results = $query->fastPaginate($perPage, $attributes, 'page', max(currentPageRequest() - 1, 1));
         }
 
         return $results;

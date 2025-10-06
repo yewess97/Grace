@@ -10,6 +10,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class UserController extends Controller
@@ -39,7 +41,7 @@ class UserController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException|Throwable
+     * @throws ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -66,12 +68,15 @@ class UserController extends Controller
      *
      * @param User $user
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(User $user): Response
     {
-        $this->userService->deleteUser($user);
+        $user_deleted = $this->userService->deleteUser($user);
 
-        return responseSuccess();
+        return $user_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.USER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -79,12 +84,15 @@ class UserController extends Controller
      *
      * @param User $users
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(User $users): Response
     {
-        $this->userService->deleteMultipleUsers($users);
+        $users_deleted = $this->userService->deleteMultipleUsers($users);
 
-        return responseSuccess();
+        return $users_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -92,12 +100,15 @@ class UserController extends Controller
      *
      * @param User $user
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(User $user): Response
     {
-        $this->userService->restoreUser($user);
+        $user_restored =  $this->userService->restoreUser($user);
 
-        return responseSuccess();
+        return $user_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.USER_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -105,11 +116,14 @@ class UserController extends Controller
      *
      * @param User $users
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(User $users): Response
     {
-        $this->userService->restoreMultipleUsers($users);
+        $users_restored = $this->userService->restoreMultipleUsers($users);
 
-        return responseSuccess();
+        return $users_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
     }
 }

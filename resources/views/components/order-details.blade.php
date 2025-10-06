@@ -10,7 +10,7 @@
                     @customSession("orderPlaced", "success", "check")
                 @endif
 
-                @unless(isAdminRoute())
+                @unless (isAdminRoute())
                     <div class="d-flex align-items-baseline gap-3 mb-lg-3">
                         @backTo(PROFILE)
                         <h2 class="title mb-3 fs-5 fw-600">{{$order_number_title}} Details</h2>
@@ -20,12 +20,12 @@
                 <!----======= Left Side =======---->
                 <section class="left-side col-12 col-lg-7">
                     <div class="box-content border rounded">
-                        @if(isAdminRoute())
+                        @if (isAdminRoute())
                             @backTo(ORDERS_TABLE, ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}])
                         @endif
                         {{-- Order Details Info --}}
                         <div class="order-details-info-wrapper px-4 px-lg-5 py-4">
-                            @foreach($order_details as $title => $slot)
+                            @foreach ($order_details as $title => $slot)
                                 <article class="order-details-info d-flex justify-content-between align-items-center border-top border-bottom">
                                     <h2 class="fs-6 fw-600">{{$title}}:</h2>
                                     {!! $slot !!}

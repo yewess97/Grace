@@ -22,7 +22,7 @@
                                 </article>
                                 {{-- Form Body --}}
                                 <article class="grace-form-body row col-12">
-                                    @if($auth_action === REGISTER)
+                                    @if ($auth_action === REGISTER)
                                         {{-- First Name --}}
                                         <div class="register-user-first-name col-12">
                                             <div class="form-outline">
@@ -69,10 +69,12 @@
                                             </label>
                                         </div>
                                         {{$auth_action === REGISTER ? $register_user_error(PASSWORD) : $login_user_error(PASSWORD)}}
-                                        @if($auth_action === LOGIN) {{$login_user_error(INVALID_CREDENTIALS)}} @endif
+                                        @if ($auth_action === LOGIN)
+                                            {{$login_user_error(INVALID_CREDENTIALS)}}
+                                        @endif
                                     </div>
 
-                                    @if($auth_action === LOGIN)
+                                    @if ($auth_action === LOGIN)
                                         <div class="login-user-actions col-12 d-flex justify-content-between align-items-center mb-2">
                                             {{-- Remember Me --}}
                                             <div class="form-group">
@@ -98,7 +100,7 @@
                                     </div>
                                 </article>
 
-                                @if($auth_action === LOGIN)
+                                @if ($auth_action === LOGIN)
                                     {{-- Social Login --}}
                                     <article class="grace-form-footer col-12 text-center">
                                         <h1 class="title d-flex align-items-center mb-3">

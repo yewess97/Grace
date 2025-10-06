@@ -121,10 +121,10 @@ class AdminController extends Controller
         );
 
         $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
-            Category::get($id_name_attributes)
+            Category::query()->get($id_name_attributes)
         );
         $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
-            Subcategory::get($id_name_attributes)
+            Subcategory::query()->get($id_name_attributes)
         );
         $sizes = PRODUCT_SIZE_ENUM;
 
@@ -144,12 +144,13 @@ class AdminController extends Controller
      */
     final public function users(): Application|Factory|View|JsonResponse
     {
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $users = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, fn():
-            LengthAwarePaginator => User::when(conditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+        $users_ids = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, fn() =>
+            User::query()->withTrashed()
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $users = paginateWithFallback(new User(), $users_ids);
 
         $roles = USER_ROLE_ENUM;
 

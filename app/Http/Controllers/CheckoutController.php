@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Contracts\Foundation\Application;
@@ -9,7 +10,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -39,9 +39,13 @@ class CheckoutController extends Controller
             && $cart_item->delete()
         );
 
-        $user_addresses  = cache()->remember(USER_ADDRESSES_PAGINATION_CACHE_KEY, 1800, static fn():
-            LengthAwarePaginator => auth()->user()?->{ADDRESSES_TABLE}()->fastPaginate(4, [ID, ...ADDRESS_ATTRIBUTES])
+        $user_addresses_ids = cache()->remember(USER_ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn() =>
+            auth()->user()?->{ADDRESSES_TABLE}()
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $user_addresses = paginateWithFallback(new Address(), $user_addresses_ids, 4, [ID, ...ADDRESS_ATTRIBUTES]);
 
         $add_order_error = static fn(string $attributeName) => formError(ADD, ORDER_MODEL, $attributeName);
 

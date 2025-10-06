@@ -21,11 +21,12 @@
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($address->trashed())
+            @if ($address->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_ADDRESS)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
-                        data-route="{{route(RESTORE_ADDRESS, $address->id)}}" data-id="{{$address->id}}"
+                        data-route="{{route(RESTORE_ADDRESS, $address->id)}}"
                         data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}"
+                        data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID), CONDITION => conditionRequest()])}}"
                         class="restore-address-btn h-fit-content fs-5 text-success bg-transparent border-0">
                     <x-action-icon action="{{RESTORE}}"/>
                 </button>
@@ -41,8 +42,9 @@
             <button type="button" role="button"
                     title="{{capitalizeAll($address->trashed() ? DELETE_ADDRESS : REMOVE_ADDRESS)}}"
                     data-tooltip="tooltip" data-mdb-placement="top"
-                    data-route="{{route(DELETE_ADDRESS, $address->id)}}" data-id="{{$address->id}}"
+                    data-route="{{route(DELETE_ADDRESS, $address->id)}}"
                     data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}"
+                    data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID), CONDITION => conditionRequest()])}}"
                     class="delete-address-btn h-fit-content fs-5 text-danger bg-transparent border-0">
                 <x-action-icon action="{{$address->trashed() ? DELETE : REMOVE}}"/>
             </button>

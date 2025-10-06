@@ -30,11 +30,12 @@
                 </a>
             @endif
 
-            @if($user->trashed())
+            @if ($user->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_USER)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
-                        data-route="{{route(RESTORE_USER, $user->id)}}" data-id="{{$user->id}}"
+                        data-route="{{route(RESTORE_USER, $user->id)}}"
                         data-name="{{ $user->{FULL_NAME} }}"
+                        data-main="{{route(ADMIN_USERS_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-user-btn h-fit-content fs-5 text-success bg-transparent border-0">
                     <x-action-icon action="{{RESTORE}}"/>
                 </button>
@@ -50,8 +51,9 @@
 
             <button type="button" role="button" title="{{capitalizeAll($user->trashed() ? DELETE_USER : REMOVE_USER)}}"
                     data-tooltip="tooltip" data-mdb-placement="top"
-                    data-route="{{route(DELETE_USER, $user->id)}}" data-id="{{$user->id}}"
+                    data-route="{{route(DELETE_USER, $user->id)}}"
                     data-name="{{ $user->{FULL_NAME} }}"
+                    data-main="{{route(ADMIN_USERS_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0">
                 <x-action-icon action="{{$user->trashed() ? DELETE : REMOVE}}"/>
             </button>

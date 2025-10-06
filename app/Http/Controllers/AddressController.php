@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class AddressController extends Controller
@@ -65,12 +67,15 @@ class AddressController extends Controller
      *
      * @param Address $address
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Address $address): Response
     {
-        $this->addressService->deleteAddress($address);
+        $address_deleted = $this->addressService->deleteAddress($address);
 
-        return responseSuccess();
+        return $address_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ADDRESS_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -78,12 +83,15 @@ class AddressController extends Controller
      *
      * @param Address $addresses
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Address $addresses): Response
     {
-        $this->addressService->deleteMultipleAddresses($addresses);
+        $addresses_deleted = $this->addressService->deleteMultipleAddresses($addresses);
 
-        return responseSuccess();
+        return $addresses_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ADDRESSES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -91,12 +99,15 @@ class AddressController extends Controller
      *
      * @param Address $address
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Address $address): Response
     {
-        $this->addressService->restoreAddress($address);
+        $address_restored = $this->addressService->restoreAddress($address);
 
-        return responseSuccess();
+        return $address_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ADDRESS_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -104,11 +115,14 @@ class AddressController extends Controller
      *
      * @param Address $addresses
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Address $addresses): Response
     {
-        $this->addressService->restoreMultipleAddresses($addresses);
+        $addresses_restored = $this->addressService->restoreMultipleAddresses($addresses);
 
-        return responseSuccess();
+        return $addresses_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.ADDRESSES_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
     }
 }

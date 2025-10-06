@@ -74,7 +74,7 @@
                                     <label for="filter_products_sort" class="fw-600">{{ucfirst(SORT)}} By</label>
                                     <select name="filter_products_sort" id="filter_products_sort" class="form-select col py-2">
                                         <option disabled hidden selected>Select {{ucfirst(FILTER)}}</option>
-                                        @foreach(SORT_PRODUCTS_ENUM as $sort_type => $sort_value)
+                                        @foreach (SORT_PRODUCTS_ENUM as $sort_type => $sort_value)
                                             <option value="{{$sort_value}}">{{$sort_type}}</option>
                                         @endforeach
                                     </select>

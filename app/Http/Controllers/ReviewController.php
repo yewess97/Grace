@@ -7,9 +7,10 @@ use App\Services\ReviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class ReviewController extends Controller
@@ -38,7 +39,7 @@ class ReviewController extends Controller
      *
      * @param string $operation
      * @return Response
-     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException
+     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
      */
     final public function storeOrUpdate(string $operation): Response
     {
@@ -63,6 +64,7 @@ class ReviewController extends Controller
      *
      * @param Review $review
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Review $review): Response
     {
@@ -78,6 +80,7 @@ class ReviewController extends Controller
      *
      * @param Review $reviews
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Review $reviews): Response
     {
@@ -93,6 +96,7 @@ class ReviewController extends Controller
      *
      * @param Review $review
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Review $review): Response
     {
@@ -108,6 +112,7 @@ class ReviewController extends Controller
      *
      * @param Review $reviews
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Review $reviews): Response
     {

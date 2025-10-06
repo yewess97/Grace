@@ -67,7 +67,7 @@
                             </article>
                              {{-- Our Services Content --}}
                             <article class="main-services d-flex justify-content-between overflow-auto">
-                                @foreach($services as $service)
+                                @foreach ($services as $service)
                                     <div class="service d-flex align-items-center w-25">
                                         <article class="service-icon">
                                             <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="{{config('app.name')}} Service">

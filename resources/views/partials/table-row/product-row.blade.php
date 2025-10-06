@@ -29,7 +29,7 @@
             <div id="admin_product_thumb_images_carousel{{$product->id}}"
                  class="admin-carousel carousel slide carousel-fade" data-mdb-ride="carousel" data-mdb-interval="false">
                 <ul class="carousel-inner">
-                    @foreach($product->{THUMB_IMAGES} as $thumb_image)
+                    @foreach ($product->{THUMB_IMAGES} as $thumb_image)
                         <li class="carousel-item admin-product-imgs">
                             <img src="{{imageSource($thumb_image, THUMB_IMAGE)}}" alt="{{ $product->{NAME} }}">
                         </li>
@@ -67,15 +67,15 @@
     </td>
     <td>
         <ul class="cell-menu overflow-auto">
-            @foreach($product->{CATEGORIES_TABLE} as $category)
+            @foreach ($product->{CATEGORIES_TABLE} as $category)
                 <li>{{ $category->{NAME} }}</li>
             @endforeach
         </ul>
     </td>
     <td>
-        @if($product->{SUBCATEGORIES_TABLE}->isNotEmpty())
+        @if ($product->{SUBCATEGORIES_TABLE}->isNotEmpty())
             <ul class="cell-menu overflow-auto">
-                @foreach($product->{SUBCATEGORIES_TABLE} as $subcategory)
+                @foreach ($product->{SUBCATEGORIES_TABLE} as $subcategory)
                     <li>{{ $subcategory->{NAME} }}</li>
                 @endforeach
             </ul>
@@ -88,7 +88,7 @@
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
-            @if($product->trashed())
+            @if ($product->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_PRODUCT)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
                         data-route="{{route(RESTORE_PRODUCT, $product->id)}}" data-id="{{$product->id}}"

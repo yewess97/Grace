@@ -57,14 +57,14 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param Request $request
-     * @param Throwable $exception
+     * @param Throwable $e
      * @return JsonResponse|Response|RedirectResponse
      * @throws Throwable
      */
-    final public function render($request, Throwable $exception): JsonResponse|Response|RedirectResponse
+    final public function render($request, Throwable $e): JsonResponse|Response|RedirectResponse
     {
-        if ($exception instanceof HttpExceptionInterface && !($request->ajax() || $request->is('/api.*'))) {
-            $status = $exception->getStatusCode();
+        if ($e instanceof HttpExceptionInterface && !($request->ajax() || $request->is('/api.*'))) {
+            $status = $e->getStatusCode();
 
             return response(view(ERROR_COMPONENT, [
                 TITLE           => $this->getErrorPageTitle($status),
@@ -74,16 +74,16 @@ class Handler extends ExceptionHandler
             ]), $status);
         }
 
-        return parent::render($request, $exception);
+        return parent::render($request, $e);
     }
 
     /**
      * Get the error page title based on the status code.
-     * 
+     *
      * @param int $status
      * @return string
      */
-    final protected function getErrorPageTitle(int $status): string
+    private function getErrorPageTitle(int $status): string
     {
         return match ($status) {
             400 => '400 Bad Request',
@@ -104,7 +104,7 @@ class Handler extends ExceptionHandler
      * @param int $status
      * @return string
      */
-    final protected function getErrorTitle($status): string
+    private function getErrorTitle(int $status): string
     {
         return match ($status) {
             400 => 'Bad Request',
@@ -125,7 +125,7 @@ class Handler extends ExceptionHandler
      * @param int $status
      * @return string
      */
-    final protected function getErrorMessage($status): string
+    private function getErrorMessage(int $status): string
     {
         return match ($status) {
             400 => "We're sorry but the request you made is invalid. Please check the URL and try again!",

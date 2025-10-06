@@ -2,7 +2,7 @@
 
 @section('main')
 
-    @unless(in_array(Route::currentRouteName(), [CHECKOUT, CREATE_ORDER], true))
+    @unless (in_array(Route::currentRouteName(), [CHECKOUT, CREATE_ORDER], true))
         {{-- Top Bar --}}
         @include(userLayout('top-bar'))
 
