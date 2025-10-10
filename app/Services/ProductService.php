@@ -30,7 +30,7 @@ class ProductService
      */
     final public function getProductDetails(string $productSlug): Application|Factory|View|array|string
     {
-        $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 500, static fn() =>
+        $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 1800, static fn() =>
             Product::query()->with([
                 REVIEWS_TABLE,
                 SIZES => static fn(HasMany $sizes) => $sizes->select(SIZE, PRODUCT_ID),

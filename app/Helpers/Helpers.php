@@ -276,7 +276,7 @@ if (!function_exists('forgetPaginationCacheFor')) {
                             )
                             ->filter()
                             ->map(static fn($relatedItem) =>
-                                $relatedItem->only($relationColumns->get($relation, [ID]))
+                                $relatedItem->only($relation_columns->get($relation, [ID]))
                             )
                     );
             })
@@ -877,7 +877,7 @@ if (!function_exists('get'.ucfirst(REVIEWS_TABLE))) {
      */
     function getReviews(int $productId): array
     {
-        $average_rate        = reviewData(productId: $productId);
+        $average_rate        = reviewData($productId);
         $add_review_error    = static fn(string $attributeName) => reviewData(operation: ADD, attributeName: $attributeName);
         $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
 
@@ -1396,9 +1396,11 @@ if (! function_exists('paginateWithFallback')) {
      */
     function paginateWithFallback(Model|stdClass $model, array $ids, int $perPage = 16, array $attributes = ['*'], array $extraAttributes = []): LengthAwarePaginator
     {
+        $id_name_with_trashed = [ID, NAME, toPastTense(DELETE).'_at'];
+
         $results = $model::query()
             ->whereIn(ID, $ids)
-            ->when(true, static function (Builder $query) use ($model, $extraAttributes) {
+            ->when(true, static function (Builder $query) use ($model, $extraAttributes, $id_name_with_trashed) {
                 if (in_array($model->getTable(), [PRODUCTS_TABLE, ORDERS_TABLE], true)) {
                     $query->latest();
                 }
@@ -1406,10 +1408,10 @@ if (! function_exists('paginateWithFallback')) {
                 if ($model->getTable() === PRODUCTS_TABLE) {
                     if (str_contains(Route::currentRouteName(), ADMIN)) {
                         $query->withCount(SUBCATEGORIES_TABLE)
-                            ->orderBy(SUBCATEGORIES_TABLE . '_count')
+                            ->orderBy(SUBCATEGORIES_TABLE.'_count')
                             ->with([
-                                CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select([ID, NAME])->withTrashed(),
-                                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select([ID, NAME])->withTrashed(),
+                                CATEGORIES_TABLE => static fn(BelongsToMany $category) => $category->select($id_name_with_trashed)->withTrashed(),
+                                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_with_trashed)->withTrashed(),
                                 THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                                 SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
                             ]);
@@ -1421,6 +1423,14 @@ if (! function_exists('paginateWithFallback')) {
                             )
                         );
                     }
+                }
+
+                if ($model->getTable() === REVIEWS_TABLE && str_contains(Route::currentRouteName(), ADMIN)) {
+                    $query->with([
+                        PRODUCT_MODEL => static fn(BelongsTo $product) => $product->select($id_name_with_trashed)->withTrashed(),
+                        USER_MODEL    => static fn(BelongsTo $user)    => $user->select([...USER_SELECTED_ATTRIBUTES, $id_name_with_trashed[2]])->withTrashed(),
+                    ])
+                        ->where(RATING, $extraAttributes[RATING]);
                 }
 
                 if (conditionRequest() === TRASHED) {

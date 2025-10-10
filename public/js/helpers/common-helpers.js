@@ -848,6 +848,10 @@ const Common = {
         paginationContainer.fadeOut(100, () => {
             paginationContainer.html(data[IGrace.ROW]).fadeIn(100);
 
+            if (Common.urlLastDirectory().includes(IGrace.CHECKOUT)) {
+                User.checkoutAddressesConfig();
+            }
+
             Common.truncateText();
             Common.imageConfig();
             Common.arrangeTableRows((data['current_page'] - 1) * data['per_page']);
@@ -1415,10 +1419,6 @@ const Common = {
 
             $.get(url)
                 .done((data) => {
-                    if (route.includes(IGrace.CHECKOUT)) {
-                        User.checkoutAddressesConfig();
-                    }
-
                     Common.paginationResponse($('.pagination-container'), data);
 
                     window.isFormDirty = false;

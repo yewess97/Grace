@@ -1,4 +1,4 @@
-<tr id="row_{{$review->id}}">
+<tr id="row_{{$review->id}}" @class(['bg-danger-highlight' => $review->{PRODUCT_MODEL}->trashed() || $review->{USER_MODEL}->trashed()])>
     @checkRow($review->id)
     @loopIteration()
     <td>
@@ -21,6 +21,17 @@
     </td>
     <td>
         <p>{!! dates($review, 1, true) !!}</p>
+    </td>
+    <td>
+        <p>
+            @if ($review->{PRODUCT_MODEL}->trashed())
+                <b>The {{ucfirst(PRODUCT_MODEL)}} has been removed</b>
+            @elseif ($review->{USER_MODEL}->trashed())
+                <b>The {{ucfirst(USER_MODEL)}} has been removed</b>
+            @else
+                <i>Nothing</i>
+            @endif
+        </p>
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">

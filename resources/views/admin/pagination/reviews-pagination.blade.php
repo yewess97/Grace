@@ -2,7 +2,7 @@
     <table role="table" class="table table-bordered align-middle mb-0 fs-7 bg-white">
         <thead class="text-center bg-light">
         <tr>
-            @tableHeaders("Title", "Body Text", "Rating", "Related Product", "From User", "Creation Date/Time", "Updated Date/Time")
+            @tableHeaders("Title", "Body Text", "Rating", "Related Product", "From User", "Creation Date/Time", "Updated Date/Time", "Trashed")
         </tr>
         </thead>
         <tbody class="text-center">

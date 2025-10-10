@@ -101,8 +101,6 @@ class AdminController extends Controller
      */
     final public function products(): Application|Factory|View|JsonResponse
     {
-        $id_name_attributes = $this->id_name;
-
         $products_ids = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, 1800, static fn() =>
             Product::query()->withTrashed()
                 ->pluck(ID)
@@ -111,11 +109,11 @@ class AdminController extends Controller
 
         $products = paginateWithFallback(new Product(), $products_ids);
 
-        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, static fn() =>
-            Category::query()->get($id_name_attributes)
+        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+            Category::query()->get($this->id_name)
         );
-        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, static fn() =>
-            Subcategory::query()->get($id_name_attributes)
+        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+            Subcategory::query()->get($this->id_name)
         );
         $sizes = PRODUCT_SIZE_ENUM;
 
@@ -228,17 +226,12 @@ class AdminController extends Controller
         session()->push('last_valid_rating', $rating);
 
         $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, 1800, static fn() =>
-            Review::with([
-                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name),
-                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES),
-            ])
-                ->where(RATING, $rating)
-                ->withTrashed()
+            Review::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
         );
 
-        $reviews = paginateWithFallback(new Review(), $reviews_ids);
+        $reviews = paginateWithFallback(new Review(), $reviews_ids, extraAttributes: [RATING => $rating]);
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 
