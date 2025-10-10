@@ -124,6 +124,6 @@ class UserController extends Controller
 
         return $users_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
+            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }

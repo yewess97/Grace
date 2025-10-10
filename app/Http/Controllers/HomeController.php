@@ -19,10 +19,13 @@ class HomeController extends Controller
      */
     final public function index(): Application|Factory|View|JsonResponse
     {
-        $products = cache()->remember('home_'.PRODUCTS_TABLE. currentPageRequest(), 500, static fn() =>
+        $products_ids = cache()->remember(HOME_PRODUCTS, 1800, static fn() =>
             Product::query()->mostSelling()
-                ->fastPaginate(16)
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $products = paginateWithFallback(new Product(), $products_ids);
 
         $services = [
             [

@@ -235,6 +235,7 @@ define("UPDATE_ADDRESS", UPDATE.'_'.ADDRESS_MODEL);
 /**
  * Products Standards.
  */
+define("HOME_PRODUCTS",               'home_'.PRODUCTS_TABLE);
 define("NEW_PRODUCTS",                'new_'.PRODUCTS_TABLE);
 define("QUICK_VIEW",                  'quick_view');
 define("PRODUCTS_LIST",               PRODUCTS_TABLE.'_list');

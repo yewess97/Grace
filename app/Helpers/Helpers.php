@@ -19,6 +19,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -225,67 +227,137 @@ if (!function_exists('forgetPaginationCacheFor')) {
      * @return bool
      * @throws CacheInvalidArgumentException
      */
-    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
-    {
+    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool {
         if (is_null($model)) {
-            $cache_keys = is_array($key)
-                ? $key
-                : [$key];
-
-            return cache()->deleteMultiple($cache_keys);
+            return cache()->deleteMultiple(is_array($key) ? $key : [$key]);
         }
 
         $selected_ids = selectedIdsRequest()
             ? array_map('intval', array_from(selectedIdsRequest()))
             : [$model->{ID}];
 
-        // Forget the default pagination cache (main and trashed) for each suffix
-        $model::query()->whereIn(ID, $selected_ids)
-            ->withTrashed()
-            ->pluck($additionalSuffix)
+        $query = $model::query()->whereIn(ID, $selected_ids)
+            ->withTrashed();
+
+        $query->pluck($additionalSuffix)
             ->unique()
-            ->each(static function ($suffix) use ($key) {
-                cache()->forget($key.('_'.$suffix ?: ''));
-            });
+            ->each(static fn($suffix) =>
+                cache()->forget($key.('_'.$suffix ?: ''))
+            );
 
         if (empty($extraConfig)) {
             return true;
         }
 
-        $query = $model::query()->whereIn(ID, $selected_ids)
-            ->withTrashed();
+        $relations = collect($extraConfig['relation'] ?? [])
+            ->when(is_string($extraConfig['relation'] ?? null), static fn() => collect([$extraConfig['relation']]));
 
-        $relation              = $extraConfig['relation'];
-        $relation_only_columns = $extraConfig['relation_only_columns'] ?? [ID];
+        $relation_columns = collect($extraConfig['relation_only_columns'] ?? []);
 
-        // Eager load "relation" if provided in config
-        if (!empty($relation)) {
-            $query->with([
-                $relation => static fn($relatedCollection) =>
-                    $relatedCollection->select($relation_only_columns),
-            ]);
-        }
+        $query->when($relations->isNotEmpty(), static fn($q) =>
+            $q->with(
+            $relations->mapWithKeys(static fn($relation) => [
+                        $relation => static fn($relQuery) =>
+                            $relQuery->select($relation_columns->get($relation, [ID]))
+                    ]
+                )
+                ->toArray()
+            )
+        );
 
-        // Map each model to the required "relation_only_columns" (either directly or via relation)
         $query->cursor()
-            ->map(static function ($item) use ($relation, $relation_only_columns) {
-                if (!empty($relation)) {
-                    return $item->{$relation}->only($relation_only_columns);
-                }
-
-                return $item->only($relation_only_columns);
+            ->flatMap(static function ($item) use ($relations, $relation_columns) {
+                return $relations->isEmpty()
+                    ? collect([$item->only($relation_columns->flatten()->toArray())])
+                    : $relations->flatMap(static fn($relation) =>
+                        collect($item->{$relation})
+                            ->when(!($item->{$relation} instanceof Collection), static fn() =>
+                                collect([$item->{$relation}])
+                            )
+                            ->filter()
+                            ->map(static fn($relatedItem) =>
+                                $relatedItem->only($relationColumns->get($relation, [ID]))
+                            )
+                    );
             })
             ->unique($extraConfig['unique_by'] ?? null)
-            // For each row, generate all cache keys (flatten into a single list)
-            ->flatMap(static function ($data) use ($extraConfig) {
-                // Return all cache keys as an array so that the flatMap flatten them
-                return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
-            })
-            // Forget all generated cache keys one by one
+            ->flatMap(static fn($data) =>
+                collect($extraConfig['cache_keys'])->map(static fn($builder) => $builder($data))
+            )
             ->each(static fn($cacheKey) => cache()->forget($cacheKey));
 
         return true;
     }
+
+
+
+
+
+
+
+
+
+//    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
+//    {
+//        if (is_null($model)) {
+//            $cache_keys = is_array($key)
+//                ? $key
+//                : [$key];
+//
+//            return cache()->deleteMultiple($cache_keys);
+//        }
+//
+//        $selected_ids = selectedIdsRequest()
+//            ? array_map('intval', array_from(selectedIdsRequest()))
+//            : [$model->{ID}];
+//
+//        // Forget the default pagination cache (main and trashed) for each suffix
+//        $model::query()->whereIn(ID, $selected_ids)
+//            ->withTrashed()
+//            ->pluck($additionalSuffix)
+//            ->unique()
+//            ->each(static function ($suffix) use ($key) {
+//                cache()->forget($key.('_'.$suffix ?: ''));
+//            });
+//
+//        if (empty($extraConfig)) {
+//            return true;
+//        }
+//
+//        $query = $model::query()->whereIn(ID, $selected_ids)
+//            ->withTrashed();
+//
+//        $relation              = $extraConfig['relation'];
+//        $relation_only_columns = $extraConfig['relation_only_columns'] ?? [ID];
+//
+//        // Eager load "relation" if provided in config
+//        if (!empty($relation)) {
+//            $query->with([
+//                $relation => static fn($relatedCollection) =>
+//                    $relatedCollection->select($relation_only_columns),
+//            ]);
+//        }
+//
+//        // Map each model to the required "relation_only_columns" (either directly or via relation)
+//        $query->cursor()
+//            ->map(static function ($item) use ($relation, $relation_only_columns) {
+//                if (!empty($relation)) {
+//                    return $item->{$relation}->only($relation_only_columns);
+//                }
+//
+//                return $item->only($relation_only_columns);
+//            })
+//            ->unique($extraConfig['unique_by'] ?? null)
+//            // For each row, generate all cache keys (flatten into a single list)
+//            ->flatMap(static function ($data) use ($extraConfig) {
+//                // Return all cache keys as an array so that the flatMap flatten them
+//                return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
+//            })
+//            // Forget all generated cache keys one by one
+//            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
+//
+//        return true;
+//    }
 }
 
 
@@ -542,7 +614,7 @@ if (!function_exists(CART_MODEL.'Config')) {
     function cartConfig(array $vars = []): array|string
     {
         $user_carts = Cart::query()
-            ->with(PRODUCT_MODEL)
+            ->with(PRODUCT_MODEL, static fn(BelongsTo $query) => $query->select(PRODUCT_ITEM_ATTRIBUTES))
             ->whereHasAuthUser();
 
         $total_items = $user_carts->sum(PRODUCT_QUANTITY);
@@ -755,12 +827,13 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
-        $products = cache()->remember(PRODUCTS_TABLE. currentPageRequest(), 500, static fn() =>
-            Product::query()->when($table !== PRODUCTS_TABLE, static fn(Builder $product) =>
-                $product->whereHas($table, fn(Builder $query) => $query->where(SLUG, $slug))
-            )
-                ->fastPaginate(16, PRODUCT_ITEM_ATTRIBUTES)
+        $products_ids = cache()->remember(PRODUCTS_TABLE, 1800, static fn() =>
+            Product::query()
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $products = paginateWithFallback(new Product(), $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, extraAttributes: ['table' => $table, SLUG => $slug]);
 
         return viewProducts($products);
     }
@@ -1108,6 +1181,7 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
      * @param string|null $forNotification
      * @param bool $deleteImages
      * @return bool
+     * @throws NotFoundHttpException
      */
     function removeDeleteOrRestore(Model|stdClass $model, ?string $forNotification = null, bool $deleteImages = false): bool
     {
@@ -1118,7 +1192,7 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
         $selected_collections = $model::query()->whereIn(ID, $selected_ids);
 
         $is_collection_trashed = $selected_collections->cursor()
-            ->every(fn($collection) =>
+            ->every(static fn($collection) =>
                 Cart::class
                     ? false
                     : $collection->trashed()
@@ -1290,7 +1364,7 @@ if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
 }
 
 
-if (!function_exists(function: 'sendNotificationToAdmins')) {
+if (!function_exists('sendNotificationToAdmins')) {
     /**
      * Send a notification to all admins.
      *
@@ -1317,15 +1391,36 @@ if (! function_exists('paginateWithFallback')) {
      * @param array $ids
      * @param int $perPage
      * @param array $attributes
+     * @param array $extraAttributes
      * @return LengthAwarePaginator
      */
-    function paginateWithFallback(Model|stdClass $model, array $ids, int $perPage = 16, array $attributes = ['*']): LengthAwarePaginator
+    function paginateWithFallback(Model|stdClass $model, array $ids, int $perPage = 16, array $attributes = ['*'], array $extraAttributes = []): LengthAwarePaginator
     {
         $results = $model::query()
             ->whereIn(ID, $ids)
-            ->when(true, static function (Builder $query) use ($model) {
+            ->when(true, static function (Builder $query) use ($model, $extraAttributes) {
                 if (in_array($model->getTable(), [PRODUCTS_TABLE, ORDERS_TABLE], true)) {
                     $query->latest();
+                }
+
+                if ($model->getTable() === PRODUCTS_TABLE) {
+                    if (str_contains(Route::currentRouteName(), ADMIN)) {
+                        $query->withCount(SUBCATEGORIES_TABLE)
+                            ->orderBy(SUBCATEGORIES_TABLE . '_count')
+                            ->with([
+                                CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select([ID, NAME])->withTrashed(),
+                                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select([ID, NAME])->withTrashed(),
+                                THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
+                            ]);
+                    }
+                    else {
+                        $query->when(!empty($extraAttributes) && $extraAttributes['table'] !== PRODUCTS_TABLE, static fn(Builder $q) =>
+                            $q->whereHas($extraAttributes['table'], static fn(Builder $table) =>
+                                $table->where(SLUG, $extraAttributes[SLUG])
+                            )
+                        );
+                    }
                 }
 
                 if (conditionRequest() === TRASHED) {

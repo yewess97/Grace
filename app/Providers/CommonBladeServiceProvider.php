@@ -81,15 +81,15 @@ class CommonBladeServiceProvider extends ServiceProvider
          */
         Blade::directive('backTo', static fn(string $backArgs) =>
             "<?php
-                \$title        = [$backArgs][0];
-                \$route        = [$backArgs][1] ?? null;
-                \$query_params = [$backArgs][2] ?? null;
+                \$__title        = [$backArgs][0];
+                \$__route        = [$backArgs][1] ?? null;
+                \$__query_params = [$backArgs][2] ?? null;
 
-                \$url = isset(\$route)
-                    ? route(\$route, \$query_params)
-                    : (Route::has(\$title) ? route(\$title) : url()->previous());
+                \$__url = isset(\$__route)
+                    ? route(\$__route, \$__query_params)
+                    : (Route::has(\$__title) ? route(\$__title) : url()->previous());
 
-                echo \"<div class='back-btn'><a href='\$url' type='button' role='link' title='Back to \".capitalizeAll(\$title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".capitalizeAll(\$title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
+                echo \"<div class='back-btn'><a href='\$__url' type='button' role='link' title='Back to \".capitalizeAll(\$__title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".capitalizeAll(\$__title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
             ?>"
         );
 

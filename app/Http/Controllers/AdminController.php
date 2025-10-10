@@ -103,27 +103,18 @@ class AdminController extends Controller
     {
         $id_name_attributes = $this->id_name;
 
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $products = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, 1800, fn():
-            LengthAwarePaginator => Product::query()
-                ->withCount(SUBCATEGORIES_TABLE)
-                ->orderBy(SUBCATEGORIES_TABLE.'_count')
-                ->latest()
-                ->with([
-                    ...$this->relatedCategories(),
-                    SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_attributes)->withTrashed(),
-                    THUMB_IMAGES        => static fn(HasMany $thumbImage)        => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                    SIZES               => static fn(HasMany $size)              => $size->select(SIZE, PRODUCT_ID),
-                ])
-                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+        $products_ids = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, 1800, static fn() =>
+            Product::query()->withTrashed()
+                ->pluck(ID)
+                ->toArray()
         );
 
-        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+        $products = paginateWithFallback(new Product(), $products_ids);
+
+        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, static fn() =>
             Category::query()->get($id_name_attributes)
         );
-        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, static fn() =>
             Subcategory::query()->get($id_name_attributes)
         );
         $sizes = PRODUCT_SIZE_ENUM;
@@ -144,7 +135,7 @@ class AdminController extends Controller
      */
     final public function users(): Application|Factory|View|JsonResponse
     {
-        $users_ids = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, fn() =>
+        $users_ids = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, static fn() =>
             User::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
@@ -189,7 +180,7 @@ class AdminController extends Controller
 
         session()->push('last_valid_status', $status);
 
-        $orders_ids = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.'_'.$status, 1800, fn() =>
+        $orders_ids = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.'_'.$status, 1800, static fn() =>
             Order::query()->whereStatus($status)
                 ->withTrashed()
                 ->pluck(ID)
@@ -236,7 +227,7 @@ class AdminController extends Controller
 
         session()->push('last_valid_rating', $rating);
 
-        $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, 1800, fn() =>
+        $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, 1800, static fn() =>
             Review::with([
                 PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name),
                 USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES),

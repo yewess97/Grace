@@ -184,9 +184,11 @@ class ReviewService
     private function forgetReviewCache(Review $review): void
     {
         forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $review, RATING, [
-            'relation'              => PRODUCT_MODEL,
-            'relation_only_columns' => [ID, SLUG],
-            'unique_by'             => SLUG,
+            'relation' => PRODUCT_MODEL,
+            'relation_only_columns' => [
+                PRODUCT_MODEL => [ID, SLUG],
+            ],
+            'unique_by'  => SLUG,
             'cache_keys' => [
                 static fn($product) => PRODUCT_MODEL.'_'.$product[SLUG],
                 static fn($product) => AVERAGE_RATE.'_'.$product[ID],

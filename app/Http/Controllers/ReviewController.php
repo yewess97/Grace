@@ -120,6 +120,6 @@ class ReviewController extends Controller
 
         return $reviews_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
+            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }

@@ -1415,11 +1415,11 @@ const Common = {
 
             $.get(url)
                 .done((data) => {
-                    Common.paginationResponse($('.pagination-container'), data);
-
                     if (route.includes(IGrace.CHECKOUT)) {
                         User.checkoutAddressesConfig();
                     }
+
+                    Common.paginationResponse($('.pagination-container'), data);
 
                     window.isFormDirty = false;
                 })

@@ -8,7 +8,6 @@ use App\Notifications\NewAdminActionTaken;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -17,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class ProductService
@@ -41,7 +41,7 @@ class ProductService
         );
 
         if (is_null($product)) {
-            throw new ModelNotFoundException("This ".PRODUCT_MODEL."is not found!");
+            throw new ModelNotFoundException("This ".PRODUCT_MODEL." is not found!");
         }
 
         $add_cart_product_error = static fn(string $attributeName) => formError(ADD, CART_MODEL, $attributeName);
@@ -61,7 +61,7 @@ class ProductService
      *
      * @param string $operation
      * @return array
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
     final public function createOrUpdateProduct(string $operation): array
     {
@@ -137,8 +137,7 @@ class ProductService
         // Product Related Subcategories
         createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
 
-        forgetCache(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
+        $this->forgetProductCache($product);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
@@ -151,14 +150,15 @@ class ProductService
      *
      * @param Product $product
      * @return bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteProduct(Product $product): bool
     {
-        forgetCache(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
+        $deleted_product = removeDeleteOrRestore($product, $product->{NAME}, true);
 
-        return removeDeleteOrRestore($product, NAME, true);
+        $this->forgetProductCache($product);
+
+        return $deleted_product;
     }
 
     /**
@@ -167,14 +167,15 @@ class ProductService
      *
      * @param Product $products
      * @return bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        forgetCache(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$products->{SLUG});
+        $deleted_products = removeDeleteOrRestore($products, deleteImages: true);
 
-        return removeDeleteOrRestore(model: $products, deleteImages: true);
+        $this->forgetProductCache($products);
+
+        return $deleted_products;
     }
 
     /**
@@ -182,13 +183,15 @@ class ProductService
      *
      * @param Product $product
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreProduct(Product $product): bool
     {
-        forgetCache(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$product->{SLUG});
+        $restored_product = removeDeleteOrRestore($product, $product->{NAME});
 
-        return restore($product, NAME);
+        $this->forgetProductCache($product);
+
+        return $restored_product;
     }
 
     /**
@@ -196,12 +199,27 @@ class ProductService
      *
      * @param Product $products
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleProducts(Product $products): bool
     {
-        forgetCache(PRODUCTS_TABLE);
-        cache()->forget(PRODUCT_MODEL."_".$products->{SLUG});
+        $restored_products = removeDeleteOrRestore($products);
 
-        return restore($products);
+        $this->forgetProductCache($products);
+
+        return $restored_products;
+    }
+
+    /**
+     * Forget the product cache.
+     *
+     * @param Product $product
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    private function forgetProductCache(Product $product): void
+    {
+        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
+        forgetCache(PRODUCT_MODEL, $product, SLUG);
     }
 }

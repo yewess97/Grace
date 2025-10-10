@@ -9,10 +9,12 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class ProductController extends Controller
@@ -54,7 +56,7 @@ class ProductController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -83,13 +85,15 @@ class ProductController extends Controller
      *
      * @param Product $product
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Product $product): Response
     {
-        $this->productService->deleteProduct($product);
+        $product_deleted = $this->productService->deleteProduct($product);
 
-        return responseSuccess();
+        return $product_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.PRODUCT_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -98,13 +102,15 @@ class ProductController extends Controller
      *
      * @param Product $products
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Product $products): Response
     {
-        $this->productService->deleteMultipleProducts($products);
+        $products_deleted = $this->productService->deleteMultipleProducts($products);
 
-        return responseSuccess();
+        return $products_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.PRODUCTS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -112,12 +118,15 @@ class ProductController extends Controller
      *
      * @param Product $product
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Product $product): Response
     {
-        $this->productService->restoreProduct($product);
+        $product_restored = $this->productService->restoreProduct($product);
 
-        return responseSuccess();
+        return $product_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.PRODUCT_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -125,11 +134,14 @@ class ProductController extends Controller
      *
      * @param Product $products
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Product $products): Response
     {
-        $this->productService->restoreMultipleProducts($products);
+        $products_restored = $this->productService->restoreMultipleProducts($products);
 
-        return responseSuccess();
+        return $products_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.PRODUCTS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }
