@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class CartController extends Controller
@@ -43,7 +44,7 @@ class CartController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|Throwable
+     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -60,7 +61,7 @@ class CartController extends Controller
      *
      * @param Cart $cart
      * @return JsonResponse
-     * @throws Throwable
+     * @throws ModelNotFoundException|CacheInvalidArgumentException|Throwable
      */
     final public function destroy(Cart $cart): JsonResponse
     {
@@ -78,7 +79,7 @@ class CartController extends Controller
      * Delete all user's carts.
      *
      * @return JsonResponse
-     * @throws Throwable
+     * @throws CacheInvalidArgumentException|Throwable
      */
     final public function destroyMultiple(): JsonResponse
     {

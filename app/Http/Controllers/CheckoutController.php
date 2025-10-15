@@ -45,7 +45,7 @@ class CheckoutController extends Controller
                 ->toArray()
         );
 
-        $user_addresses = paginateWithFallback(new Address(), $user_addresses_ids, 4, [ID, ...ADDRESS_ATTRIBUTES]);
+        $user_addresses = paginateWithFallback(Address::class, $user_addresses_ids, 4, [ID, ...ADDRESS_ATTRIBUTES]);
 
         $add_order_error = static fn(string $attributeName) => formError(ADD, ORDER_MODEL, $attributeName);
 

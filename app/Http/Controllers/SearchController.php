@@ -219,12 +219,12 @@ class SearchController extends Controller
         $query_params = Arr::except(request()?->query(), ['page']);
 
         if (!empty($query_params)) {
-            collect($query_params)->each(fn($collectionValue, $relatedCollection) =>
-                $products->whereHas($relatedCollection, function (Builder $product) use ($collectionValue) {
-                        is_array($collectionValue)
-                            ? $product->whereIn(SLUG, $collectionValue)
-                            : $product->where(SLUG, $collectionValue);
-                    })
+            collect($query_params)->each(static fn($collectionValue, $relatedCollection) =>
+                $products->whereHas($relatedCollection, static fn(Builder $product) =>
+                    is_array($collectionValue)
+                        ? $product->whereIn(SLUG, $collectionValue)
+                        : $product->where(SLUG, $collectionValue)
+                )
             );
         }
 

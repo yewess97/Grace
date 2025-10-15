@@ -95,12 +95,13 @@ const User = {
      * Display the login confirmation message,
      * when the user not logged in.
      *
+     * @param message
      * @return {void}
      */
-    confirmLoginMessage: () => {
+    confirmLoginMessage: (message) => {
         Common.swalWithButtons.fire({
             title: `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
-            html: `<p class="fs-8">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue <i class="ti ti-face-smile"></i></p>`,
+            html: `<p class="fs-8">${message}</p>`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             confirmButtonText: `Go to ${IGrace.LOGIN} page`,
@@ -374,7 +375,7 @@ const User = {
                 },
                 error: (err) => {
                     if (err.status === 401) {
-                        return User.confirmLoginMessage();
+                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
                     }
 
                     if (IGrace.IS_IN_ARRAY([400, 403], err.status)) {
@@ -648,7 +649,7 @@ const User = {
                 },
                 error: (err) => {
                     if (err.status === 401) {
-                        return User.confirmLoginMessage();
+                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
                     }
 
                     if (err.status === 404) {

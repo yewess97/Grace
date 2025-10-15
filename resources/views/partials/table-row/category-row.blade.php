@@ -19,8 +19,9 @@
             @if ($category->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_CATEGORY)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
-                        data-route="{{route(RESTORE_CATEGORY, $category->id)}}" data-id="{{$category->id}}"
+                        data-route="{{route(RESTORE_CATEGORY, $category->id)}}"
                         data-name="{{ $category->{NAME} }}"
+                        data-main="{{route(ADMIN_CATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-category-btn h-fit-content fs-5 text-success bg-transparent border-0">
                     <x-action-icon action="{{RESTORE}}"/>
                 </button>
@@ -38,8 +39,9 @@
             <button type="button" role="button"
                     title="{{capitalizeAll($category->trashed() ? DELETE_CATEGORY : REMOVE_CATEGORY)}}"
                     data-tooltip="tooltip" data-mdb-placement="top"
-                    data-route="{{route(DELETE_CATEGORY, $category->id)}}" data-id="{{$category->id}}"
+                    data-route="{{route(DELETE_CATEGORY, $category->id)}}"
                     data-name="{{ $category->{NAME} }}"
+                    data-main="{{route(ADMIN_CATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-category-btn h-fit-content fs-5 text-danger bg-transparent border-0">
                 <x-action-icon action="{{$category->trashed() ? DELETE : REMOVE}}"/>
             </button>

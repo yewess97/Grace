@@ -115,6 +115,8 @@ class OrderService {
 
             $destroy_cart_items = Cart::destroy($user_cart_items->pluck(ID)->toArray());
 
+            forgetCache(CARTS_TABLE);
+
             if ((int) $payment_method_value === 1 && $payment_status === 'succeeded') {
                 return to_route(ORDER_DETAILS, [TRACKING_NUM => $order->{TRACKING_NUM}])
                     ->with('orderPlaced', 'Your '.ORDER_MODEL.' has been placed successfully!');

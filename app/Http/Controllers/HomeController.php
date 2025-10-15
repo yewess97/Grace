@@ -25,7 +25,7 @@ class HomeController extends Controller
                 ->toArray()
         );
 
-        $products = paginateWithFallback(new Product(), $products_ids);
+        $products = paginateWithFallback(Product::class, $products_ids);
 
         $services = [
             [

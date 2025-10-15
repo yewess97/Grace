@@ -21,8 +21,9 @@
             @if ($subcategory->trashed())
                 <button type="button" role="button" title="{{capitalizeAll(RESTORE_SUBCATEGORY)}}"
                         data-tooltip="tooltip" data-mdb-placement="top"
-                        data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}"
+                        data-route="{{route(RESTORE_SUBCATEGORY, $subcategory->id)}}"
                         data-name="{{ $subcategory->{NAME} }}"
+                        data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0">
                     <x-action-icon action="{{RESTORE}}"/>
                 </button>
@@ -39,8 +40,9 @@
             <button type="button" role="button"
                     title="{{capitalizeAll($subcategory->trashed() ? DELETE_SUBCATEGORY : REMOVE_SUBCATEGORY)}}"
                     data-tooltip="tooltip" data-mdb-placement="top"
-                    data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}" data-id="{{$subcategory->id}}"
+                    data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}"
                     data-name="{{ $subcategory->{NAME} }}"
+                    data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0">
                 <x-action-icon action="{{$subcategory->trashed() ? DELETE : REMOVE}}"/>
             </button>

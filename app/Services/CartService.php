@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class CartService
@@ -47,12 +48,12 @@ class CartService
      *
      * @param string $operation
      * @return Cart|Collection|bool|array
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|Throwable
+     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function createOrUpdateCart(string $operation): Cart|Collection|bool|array
     {
         if (!auth()->check()) {
-            throw new AuthenticationException();
+            throw new AuthenticationException('Please '.ucfirst(LOGIN).' to Continue!');
         }
 
         $cart_attributes = [PRODUCT_ID];
@@ -66,7 +67,11 @@ class CartService
         $product_id = $cart_attributes[0];
 
         if ($operation === UPDATE) {
-            return $this->updateCartItems($cart_request, $product_id);
+            $updated_cart = $this->updateCartItems($cart_request, $product_id);
+
+            $this->forgetCartCache();
+
+            return $updated_cart;
         }
 
         $product_id_value       = (int)   $cart_request->dataValues()[0];
@@ -84,7 +89,11 @@ class CartService
             $product_id => $product->getKey(),
         ];
 
-        return $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
+        $created_cart = $this->createCartItem($cart_attributes, $cart_relations, $product_sizes_values, $product_quantity_value);
+
+        $this->forgetCartCache();
+
+        return $created_cart;
     }
 
     /**
@@ -93,7 +102,7 @@ class CartService
      *
      * @param Cart $cart
      * @return array|bool
-     * @throws ModelNotFoundException
+     * @throws ModelNotFoundException|CacheInvalidArgumentException
      */
     final public function deleteCart(Cart $cart): array|bool
     {
@@ -102,25 +111,35 @@ class CartService
         if ($cart_item->{PRODUCT_QUANTITY} > 1) {
             $cart_item->decrement(PRODUCT_QUANTITY);
 
+            $this->forgetCartCache();
+
             return ['decremented'];
         }
 
-        return removeDeleteOrRestore($cart_item);
+        $deleted_cart = removeDeleteOrRestore($cart_item);
+
+        $this->forgetCartCache();
+
+        return $deleted_cart;
     }
 
     /**
      * Delete all user's carts.
      *
      * @return int
+     * @throws CacheInvalidArgumentException
      */
     final public function deleteAllCarts(): int
     {
-        $delete_user_carts = Cart::query()->whereHasAuthUser()
-            ->cursor()
+        $delete_user_carts_ids = Cart::query()->whereHasAuthUser()
             ->pluck(ID)
             ->toArray();
 
-        return Cart::destroy($delete_user_carts);
+        $deleted_carts = Cart::destroy($delete_user_carts_ids);
+
+        $this->forgetCartCache();
+
+        return $deleted_carts;
     }
 
     /**
@@ -284,5 +303,16 @@ class CartService
                 PRODUCT_QUANTITY => $productQuantityValue,
             ]);
         });
+    }
+
+    /**
+     * Forget the cart cache.
+     *
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    private function forgetCartCache(): void
+    {
+        forgetCache(CARTS_TABLE);
     }
 }

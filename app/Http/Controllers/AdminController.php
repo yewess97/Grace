@@ -12,12 +12,12 @@ use App\Services\DashboardService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -50,12 +50,13 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View|JsonResponse
     {
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $categories = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
-            LengthAwarePaginator => Category::when(conditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+        $categories_ids = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, 1800, static fn() =>
+            Category::query()->withTrashed()
+                ->pluck(ID)
+                ->toArray()
         );
+
+        $categories = paginateWithFallback(Category::class, $categories_ids);
 
         $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
         $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
@@ -73,12 +74,14 @@ class AdminController extends Controller
      */
     final public function subcategories(): Application|Factory|View|JsonResponse
     {
-        // Use the cache()->remember() with generic typing (LengthAwarePaginator).
-        // Here, we specify the return type for the closure.
-        $subcategories = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, 3600, fn():
-            LengthAwarePaginator => Subcategory::with($this->relatedCategories())
-                ->when(conditionRequest(), static fn($query) => $query->onlyTrashed())
-                ->fastPaginate(16)
+        $subcategories_ids = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, 1800, static fn() =>
+            Subcategory::query()->withTrashed()
+                ->pluck(ID)
+                ->toArray()
+        );
+
+        $subcategories = paginateWithFallback(Subcategory::class, $subcategories_ids, callback: fn(Builder $query) =>
+            $query->with([...$this->relatedCategories()])
         );
 
         $categories = cache()->remember(CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE, 1800, fn() =>
@@ -107,7 +110,14 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $products = paginateWithFallback(new Product(), $products_ids);
+        $products = paginateWithFallback(Product::class, $products_ids, callback: fn(Builder $query) =>
+            $query->with([
+                ...$this->relatedCategories(),
+                SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) => $subcategory->select($this->id_name)->withTrashed(),
+                THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
+            ])
+        );
 
         $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
             Category::query()->get($this->id_name)
@@ -139,7 +149,7 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $users = paginateWithFallback(new User(), $users_ids);
+        $users = paginateWithFallback(User::class, $users_ids);
 
         $roles = USER_ROLE_ENUM;
 
@@ -185,7 +195,7 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $orders = paginateWithFallback(new Order(), $orders_ids);
+        $orders = paginateWithFallback(Order::class, $orders_ids);
 
         $statuses     = ORDER_STATUS_ENUM;
         $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
@@ -231,7 +241,13 @@ class AdminController extends Controller
                 ->toArray()
         );
 
-        $reviews = paginateWithFallback(new Review(), $reviews_ids, extraAttributes: [RATING => $rating]);
+        $reviews = paginateWithFallback(Review::class, $reviews_ids, callback: fn(Builder $query) =>
+            $query->with([
+                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
+                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
+            ])
+                ->where(RATING, $rating)
+        );
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 

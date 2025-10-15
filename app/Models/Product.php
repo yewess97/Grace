@@ -109,7 +109,7 @@ class Product extends Model
      */
     final public function scopeSort(Builder $query, ?string $sort_value = null): LengthAwarePaginator|Builder
     {
-        if (!is_null($sort_value)) {
+        if (isset($sort_value)) {
             if ($sort_value === 'best-selling') {
                 return $query->mostSelling()
                     ->fastPaginate(16);
@@ -146,17 +146,19 @@ class Product extends Model
     final public function scopeFilter(Builder $query, array $filterAttributes, array $filterRequestValues): LengthAwarePaginator
     {
         $filter_related_collection = static function (string $relatedCollection, array $collectionValues) use ($query) {
-            $query->when(!empty($collectionValues), function (Builder $product) use ($relatedCollection, $collectionValues) {
-                $product->whereHas($relatedCollection, function (Builder $query) use ($relatedCollection, $collectionValues) {
-                    $query->whereIn(str_contains($relatedCollection, SIZE) ? SIZE : ID, $collectionValues);
-                });
-            });
+            $query->when(!empty($collectionValues), static fn(Builder $product) =>
+                $product->whereHas($relatedCollection, static fn(Builder $query) =>
+                    $query->whereIn(str_contains($relatedCollection, SIZE) ? SIZE : ID, $collectionValues)
+                )
+            );
         };
 
         [$categories, $subcategories, $sizes] = $filterAttributes;
 
         [$categories_ids_values, $subcategories_ids_values, $sizes_values, $min_price_value, $max_price_value, $sort_value] = array_map(static fn($value) =>
-            is_array($value) ? array_filter($value) : $value,
+            is_array($value)
+                ? array_filter($value)
+                : $value,
             $filterRequestValues
         );
 
@@ -164,9 +166,9 @@ class Product extends Model
         $filter_related_collection($subcategories, $subcategories_ids_values);
         $filter_related_collection($sizes,         $sizes_values);
 
-        $query->when(is_numeric($min_price_value) && is_numeric($max_price_value), function (Builder $product) use ($min_price_value, $max_price_value) {
-            $product->whereBetween(NEW_PRICE, [(double) $min_price_value, (double) $max_price_value]);
-        });
+        $query->when(is_numeric($min_price_value) && is_numeric($max_price_value), static fn(Builder $product) =>
+            $product->whereBetween(NEW_PRICE, [(double) $min_price_value, (double) $max_price_value])
+        );
 
         $query->sort($sort_value);
 

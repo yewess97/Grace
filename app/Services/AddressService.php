@@ -10,7 +10,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
@@ -43,7 +42,7 @@ class AddressService {
                 ->toArray()
         );
 
-        $user_addresses = paginateWithFallback(new Address(), $user_addresses_ids);
+        $user_addresses = paginateWithFallback(Address::class, $user_addresses_ids);
 
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);

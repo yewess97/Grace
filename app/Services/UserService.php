@@ -31,7 +31,7 @@ class UserService
                 ->toArray();
         });
 
-        $user_orders = paginateWithFallback(new Order(), $user_orders_ids, 5);
+        $user_orders = paginateWithFallback(Order::class, $user_orders_ids, 5);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($user_orders, PROFILE_ORDERS_PAGINATION, USER_ORDERS, compact(USER_MODEL))

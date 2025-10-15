@@ -219,7 +219,7 @@ class ProductService
      */
     private function forgetProductCache(Product $product): void
     {
-        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
+        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_TABLE]);
         forgetCache(PRODUCT_MODEL, $product, SLUG);
     }
 }

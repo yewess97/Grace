@@ -216,7 +216,7 @@ if (!function_exists('adminCurrentUrl')) {
 }
 
 
-if (!function_exists('forgetPaginationCacheFor')) {
+if (!function_exists('forgetCache')) {
     /**
      * Forget the cache.
      *
@@ -241,7 +241,7 @@ if (!function_exists('forgetPaginationCacheFor')) {
 
         $query->pluck($additionalSuffix)
             ->unique()
-            ->each(static fn($suffix) =>
+            ->each(static fn(string $suffix) =>
                 cache()->forget($key.('_'.$suffix ?: ''))
             );
 
@@ -288,76 +288,6 @@ if (!function_exists('forgetPaginationCacheFor')) {
 
         return true;
     }
-
-
-
-
-
-
-
-
-
-//    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool
-//    {
-//        if (is_null($model)) {
-//            $cache_keys = is_array($key)
-//                ? $key
-//                : [$key];
-//
-//            return cache()->deleteMultiple($cache_keys);
-//        }
-//
-//        $selected_ids = selectedIdsRequest()
-//            ? array_map('intval', array_from(selectedIdsRequest()))
-//            : [$model->{ID}];
-//
-//        // Forget the default pagination cache (main and trashed) for each suffix
-//        $model::query()->whereIn(ID, $selected_ids)
-//            ->withTrashed()
-//            ->pluck($additionalSuffix)
-//            ->unique()
-//            ->each(static function ($suffix) use ($key) {
-//                cache()->forget($key.('_'.$suffix ?: ''));
-//            });
-//
-//        if (empty($extraConfig)) {
-//            return true;
-//        }
-//
-//        $query = $model::query()->whereIn(ID, $selected_ids)
-//            ->withTrashed();
-//
-//        $relation              = $extraConfig['relation'];
-//        $relation_only_columns = $extraConfig['relation_only_columns'] ?? [ID];
-//
-//        // Eager load "relation" if provided in config
-//        if (!empty($relation)) {
-//            $query->with([
-//                $relation => static fn($relatedCollection) =>
-//                    $relatedCollection->select($relation_only_columns),
-//            ]);
-//        }
-//
-//        // Map each model to the required "relation_only_columns" (either directly or via relation)
-//        $query->cursor()
-//            ->map(static function ($item) use ($relation, $relation_only_columns) {
-//                if (!empty($relation)) {
-//                    return $item->{$relation}->only($relation_only_columns);
-//                }
-//
-//                return $item->only($relation_only_columns);
-//            })
-//            ->unique($extraConfig['unique_by'] ?? null)
-//            // For each row, generate all cache keys (flatten into a single list)
-//            ->flatMap(static function ($data) use ($extraConfig) {
-//                // Return all cache keys as an array so that the flatMap flatten them
-//                return array_map(static fn($keyBuilder) => $keyBuilder($data), $extraConfig['cache_keys']);
-//            })
-//            // Forget all generated cache keys one by one
-//            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
-//
-//        return true;
-//    }
 }
 
 
@@ -613,9 +543,14 @@ if (!function_exists(CART_MODEL.'Config')) {
      */
     function cartConfig(array $vars = []): array|string
     {
-        $user_carts = Cart::query()
-            ->with(PRODUCT_MODEL, static fn(BelongsTo $query) => $query->select(PRODUCT_ITEM_ATTRIBUTES))
-            ->whereHasAuthUser();
+        $user_carts_ids = cache()->remember(CARTS_TABLE, 1800, static fn() =>
+            Cart::query()->whereHasAuthUser()
+                ->pluck(ID)
+                ->toArray()
+        );
+
+        $user_carts = Cart::query()->whereIn(ID, $user_carts_ids)
+            ->with(PRODUCT_MODEL, static fn(BelongsTo $query) => $query->select(PRODUCT_ITEM_ATTRIBUTES));
 
         $total_items = $user_carts->sum(PRODUCT_QUANTITY);
 
@@ -833,7 +768,11 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
                 ->toArray()
         );
 
-        $products = paginateWithFallback(new Product(), $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, extraAttributes: ['table' => $table, SLUG => $slug]);
+        $products = paginateWithFallback(Product::class, $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, callback: static fn(Builder $query) =>
+            $query->whereHas($table, static fn(Builder $q) =>
+                $q->where(SLUG, $slug)
+            )
+        );
 
         return viewProducts($products);
     }
@@ -1387,50 +1326,24 @@ if (! function_exists('paginateWithFallback')) {
     /**
      * Paginate with fallback.
      *
-     * @param Model|stdClass $model
+     * @param string $modelClass
      * @param array $ids
      * @param int $perPage
      * @param array $attributes
-     * @param array $extraAttributes
+     * @param Closure|null $callback
      * @return LengthAwarePaginator
      */
-    function paginateWithFallback(Model|stdClass $model, array $ids, int $perPage = 16, array $attributes = ['*'], array $extraAttributes = []): LengthAwarePaginator
+    function paginateWithFallback(string $modelClass, array $ids, int $perPage = 16, array $attributes = ['*'], Closure $callback = null): LengthAwarePaginator
     {
-        $id_name_with_trashed = [ID, NAME, toPastTense(DELETE).'_at'];
-
-        $results = $model::query()
+        $results = $modelClass::query()
             ->whereIn(ID, $ids)
-            ->when(true, static function (Builder $query) use ($model, $extraAttributes, $id_name_with_trashed) {
-                if (in_array($model->getTable(), [PRODUCTS_TABLE, ORDERS_TABLE], true)) {
+            ->when(true, static function (Builder $query) use ($modelClass, $callback) {
+                if (in_array($modelClass, [Product::class, Order::class], true)) {
                     $query->latest();
                 }
 
-                if ($model->getTable() === PRODUCTS_TABLE) {
-                    if (str_contains(Route::currentRouteName(), ADMIN)) {
-                        $query->withCount(SUBCATEGORIES_TABLE)
-                            ->orderBy(SUBCATEGORIES_TABLE.'_count')
-                            ->with([
-                                CATEGORIES_TABLE => static fn(BelongsToMany $category) => $category->select($id_name_with_trashed)->withTrashed(),
-                                SUBCATEGORIES_TABLE => static fn(BelongsToMany $subcategory) => $subcategory->select($id_name_with_trashed)->withTrashed(),
-                                THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
-                            ]);
-                    }
-                    else {
-                        $query->when(!empty($extraAttributes) && $extraAttributes['table'] !== PRODUCTS_TABLE, static fn(Builder $q) =>
-                            $q->whereHas($extraAttributes['table'], static fn(Builder $table) =>
-                                $table->where(SLUG, $extraAttributes[SLUG])
-                            )
-                        );
-                    }
-                }
-
-                if ($model->getTable() === REVIEWS_TABLE && str_contains(Route::currentRouteName(), ADMIN)) {
-                    $query->with([
-                        PRODUCT_MODEL => static fn(BelongsTo $product) => $product->select($id_name_with_trashed)->withTrashed(),
-                        USER_MODEL    => static fn(BelongsTo $user)    => $user->select([...USER_SELECTED_ATTRIBUTES, $id_name_with_trashed[2]])->withTrashed(),
-                    ])
-                        ->where(RATING, $extraAttributes[RATING]);
+                if (isset($callback)) {
+                    $callback($query);
                 }
 
                 if (conditionRequest() === TRASHED) {

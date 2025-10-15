@@ -7,12 +7,14 @@ use App\Services\SubcategoryService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class SubcategoryController extends Controller
@@ -44,7 +46,7 @@ class SubcategoryController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -73,13 +75,15 @@ class SubcategoryController extends Controller
      *
      * @param Subcategory $subcategory
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Subcategory $subcategory): Response
     {
-        $this->subcategoryService->deleteSubcategory($subcategory);
+        $subcategory_deleted = $this->subcategoryService->deleteSubcategory($subcategory);
 
-        return responseSuccess();
+        return $subcategory_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.SUBCATEGORY_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -88,13 +92,15 @@ class SubcategoryController extends Controller
      *
      * @param Subcategory $subcategories
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Subcategory $subcategories): Response
     {
-        $this->subcategoryService->deleteMultipleSubcategories($subcategories);
+        $subcategories_deleted = $this->subcategoryService->deleteMultipleSubcategories($subcategories);
 
-        return responseSuccess();
+        return $subcategories_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.SUBCATEGORIES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -102,12 +108,15 @@ class SubcategoryController extends Controller
      *
      * @param Subcategory $subcategory
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Subcategory $subcategory): Response
     {
-        $this->subcategoryService->restoreSubcategory($subcategory);
+        $subcategory_restored = $this->subcategoryService->restoreSubcategory($subcategory);
 
-        return responseSuccess();
+        return $subcategory_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.SUBCATEGORY_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -115,11 +124,14 @@ class SubcategoryController extends Controller
      *
      * @param Subcategory $subcategories
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Subcategory $subcategories): Response
     {
-        $this->subcategoryService->restoreMultipleSubcategories($subcategories);
+        $subcategories_restored = $this->subcategoryService->restoreMultipleSubcategories($subcategories);
 
-        return responseSuccess();
+        return $subcategories_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.SUBCATEGORIES_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }

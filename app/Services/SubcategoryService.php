@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
 class SubcategoryService
 {
@@ -18,7 +19,7 @@ class SubcategoryService
      *
      * @param string $operation
      * @return array
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
     final public function createOrUpdateSubcategory(string $operation): array
     {
@@ -45,8 +46,7 @@ class SubcategoryService
 
         createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
 
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $this->forgetSubcategoryCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
 
@@ -59,13 +59,15 @@ class SubcategoryService
      *
      * @param Subcategory $subcategory
      * @return bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        forgetCache(SUBCATEGORIES_TABLE);
+        $deleted_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME}, true);
 
-        return removeDeleteOrRestore($subcategory, NAME, true);
+        $this->forgetSubcategoryCache();
+
+        return $deleted_subcategory;
     }
 
     /**
@@ -74,13 +76,15 @@ class SubcategoryService
      *
      * @param Subcategory $subcategories
      * @return bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        forgetCache(SUBCATEGORIES_TABLE);
+        $deleted_subcategories = removeDeleteOrRestore($subcategories, deleteImages: true);
 
-        return removeDeleteOrRestore(model: $subcategories, deleteImages: true);
+        $this->forgetSubcategoryCache();
+
+        return $deleted_subcategories;
     }
 
     /**
@@ -88,13 +92,15 @@ class SubcategoryService
      *
      * @param Subcategory $subcategory
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreSubcategory(Subcategory $subcategory): bool
     {
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $restored_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME});
 
-        return restore($subcategory, NAME);
+        $this->forgetSubcategoryCache();
+
+        return $restored_subcategory;
     }
 
     /**
@@ -102,12 +108,25 @@ class SubcategoryService
      *
      * @param Subcategory $subcategories
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleSubcategories(Subcategory $subcategories): bool
     {
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $restored_subcategories = removeDeleteOrRestore($subcategories);
 
-        return restore($subcategories);
+        $this->forgetSubcategoryCache();
+
+        return $restored_subcategories;
+    }
+
+    /**
+     * Forget the subcategory cache.
+     *
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    private function forgetSubcategoryCache(): void
+    {
+        forgetCache([SUBCATEGORIES_PAGINATION_CACHE_KEY, PRODUCTS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }

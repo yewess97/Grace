@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\ThumbImage;
 use App\Notifications\NewAdminActionTaken;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -15,6 +16,7 @@ use Random\RandomException;
 use stdClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
 class CategoryService
 {
@@ -24,7 +26,7 @@ class CategoryService
      *
      * @param string $operation
      * @return array
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
     final public function createOrUpdateCategory(string $operation): array
     {
@@ -51,9 +53,7 @@ class CategoryService
             ]
         );
 
-        forgetCache(CATEGORIES_TABLE);
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $this->forgetCategoryCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
@@ -66,16 +66,18 @@ class CategoryService
      *
      * @param Category $category
      * @return bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteCategory(Category $category): bool
     {
-        $this->deleteRelatedCollectionItems($category, (new Subcategory()));
-        $this->deleteRelatedCollectionItems($category, (new Product()));
+        $this->deleteRelatedCollectionItems($category, Subcategory::class);
+        $this->deleteRelatedCollectionItems($category, Product::class);
 
-        forgetCache(CATEGORIES_TABLE);
+        $deleted_category = removeDeleteOrRestore($category, $category->{NAME}, true);
 
-        return removeDeleteOrRestore($category, NAME, true);
+        $this->forgetCategoryCache();
+
+        return $deleted_category;
     }
 
     /**
@@ -84,16 +86,18 @@ class CategoryService
      *
      * @param Category $categories
      * @return Category|bool
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException
      */
     final public function deleteMultipleCategories(Category $categories): Category|bool
     {
-        $this->deleteRelatedCollectionItems($categories, (new Subcategory()));
-        $this->deleteRelatedCollectionItems($categories, (new Product()));
+        $this->deleteRelatedCollectionItems($categories, Subcategory::class);
+        $this->deleteRelatedCollectionItems($categories, Product::class);
 
-        forgetCache(CATEGORIES_TABLE);
+        $deleted_categories = removeDeleteOrRestore($categories, deleteImages: true);
 
-        return removeDeleteOrRestore(model: $categories, deleteImages: true);
+        $this->forgetCategoryCache();
+
+        return $deleted_categories;
     }
 
     /**
@@ -101,14 +105,15 @@ class CategoryService
      *
      * @param Category $category
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreCategory(Category $category): bool
     {
-        forgetCache(CATEGORIES_TABLE);
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $restored_category = removeDeleteOrRestore($category, $category->{NAME});
 
-        return restore($category, NAME);
+        $this->forgetCategoryCache();
+
+        return $restored_category;
     }
 
     /**
@@ -116,53 +121,86 @@ class CategoryService
      *
      * @param Category $categories
      * @return bool
+     * @throws CacheInvalidArgumentException
      */
     final public function restoreMultipleCategories(Category $categories): bool
     {
-        forgetCache(CATEGORIES_TABLE);
-        forgetCache(SUBCATEGORIES_TABLE);
-        forgetCache(PRODUCTS_TABLE);
+        $restored_categories = removeDeleteOrRestore($categories);
 
-        return restore($categories);
+        $this->forgetCategoryCache();
+
+        return $restored_categories;
     }
 
     /**
      * Delete all or Detach the related collection items of category(ies).
      *
      * @param Category $category
-     * @param Model|stdClass $model
+     * @param string $modelClass
      * @return void
+     * @throws CacheInvalidArgumentException
      */
-    private function deleteRelatedCollectionItems(Category $category, Model|stdClass $model): void
+    private function deleteRelatedCollectionItems(Category $category, string $modelClass): void
     {
-        $categories_ids = selectedIdsRequest()
+        $category_ids = selectedIdsRequest()
             ? array_map('intval', array_from(selectedIdsRequest()))
             : [$category->{ID}];
 
-        // Get all related collection items once
-        // Used lazy() to improve memory efficiency when handling large datasets
-        $related_collection_items = $model::query()->whereHas(CATEGORIES_TABLE, static function ($query) use ($categories_ids) {
-            $query->whereIn(ID, $categories_ids)->onlyTrashed();
-        })->with(CATEGORIES_TABLE)->cursor();
+        $modelClass::query()
+            ->whereHas(CATEGORIES_TABLE, static fn(Builder $query) =>
+                $query->whereIn(ID, $category_ids)->onlyTrashed()
+            )
+            ->with([CATEGORIES_TABLE => static fn(Builder $query) => $query->withTrashed()])
+            ->cursor()
+            ->each(function (Model|stdClass $related_collection_item) use ($category_ids, $modelClass) {
+            $related_category_ids = $related_collection_item->{CATEGORIES_TABLE}
+                ->pluck(ID);
 
-        $related_collection_items->each(function (Model|stdClass $related_collection_item) use ($categories_ids, $model) {
-            // Reduced database queries by using pluck(ID)
-            $related_categories_ids = $related_collection_item->{CATEGORIES_TABLE}()->withTrashed()->pluck(ID);
-
-            // Used diff() to efficiently check if the subcategory should be deleted or the category should be detached
-            if ($related_categories_ids->diff($categories_ids)->isNotEmpty()) {
-                return $related_collection_item->{CATEGORIES_TABLE}()->detach($categories_ids);
+            // If the item still has other categories attached -> detach only
+            if ($related_category_ids->diff($category_ids)->isNotEmpty()) {
+                return $related_collection_item->{CATEGORIES_TABLE}()
+                    ->detach($categoryIds);
             }
 
-            Storage::delete(imageSource($related_collection_item, MAIN_IMAGE, true));
-
-            if ($model instanceof Product) {
-                $related_collection_item->{THUMB_IMAGES}->each(static fn(ThumbImage $thumb_image) => Storage::delete(imageSource($thumb_image, THUMB_IMAGE, true)));
-            }
-
-            forgetCache($model->getTable());
+            $this->deleteRelatedCollectionImages($related_collection_item, $modelClass);
 
             return $related_collection_item->forceDelete();
         });
+
+        $this->forgetCategoryCache();
+    }
+
+    /**
+     * Delete all images of the related collection items of category(ies).
+     *
+     * @param Model|stdClass $related_collection_item
+     * @param string $modelClass
+     * @return void
+     */
+    private function deleteRelatedCollectionImages(Model|stdClass $related_collection_item, string $modelClass): void
+    {
+        $images_paths = [imageSource($related_collection_item, MAIN_IMAGE, true)];
+
+        if ($modelClass === Product::class) {
+            $images_paths = array_merge(
+                $images_paths,
+                $related_collection_item->{THUMB_IMAGES}->map(
+                    static fn(ThumbImage $thumb_image) => imageSource($thumb_image, THUMB_IMAGE, true)
+                )->toArray()
+            );
+        }
+
+        Storage::delete(array_filter($images_paths));
+    }
+
+    /**
+     * Forget the category cache.
+     *
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    private function forgetCategoryCache(): void
+    {
+        forgetCache([CATEGORIES_PAGINATION_CACHE_KEY, SUBCATEGORIES_PAGINATION_CACHE_KEY, PRODUCTS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }

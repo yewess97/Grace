@@ -7,12 +7,14 @@ use App\Services\CategoryService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class CategoryController extends Controller
@@ -43,7 +45,7 @@ class CategoryController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|Throwable
+     * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
@@ -71,13 +73,15 @@ class CategoryController extends Controller
      *
      * @param Category $category
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroy(Category $category): Response
     {
-        $this->categoryService->deleteCategory($category);
+        $category_deleted = $this->categoryService->deleteCategory($category);
 
-        return responseSuccess();
+        return $category_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.CATEGORY_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
     }
 
     /**
@@ -86,13 +90,15 @@ class CategoryController extends Controller
      *
      * @param Category $categories
      * @return Response
-     * @throws NotFoundHttpException
+     * @throws NotFoundHttpException|CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function destroyMultiple(Category $categories): Response
     {
-        $this->categoryService->deleteMultipleCategories($categories);
+        $categories_deleted = $this->categoryService->deleteMultipleCategories($categories);
 
-        return responseSuccess();
+        return $categories_deleted
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.CATEGORIES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
     }
 
     /**
@@ -100,12 +106,15 @@ class CategoryController extends Controller
      *
      * @param Category $category
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restore(Category $category): Response
     {
-        $this->categoryService->restoreCategory($category);
+        $category_restored = $this->categoryService->restoreCategory($category);
 
-        return responseSuccess();
+        return $category_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.CATEGORY_MODEL.' you are trying to '.RESTORE.' is not found!');
     }
 
     /**
@@ -113,11 +122,14 @@ class CategoryController extends Controller
      *
      * @param Category $categories
      * @return Response
+     * @throws CacheInvalidArgumentException|ModelNotFoundException
      */
     final public function restoreMultiple(Category $categories): Response
     {
-        $this->categoryService->restoreMultipleCategories($categories);
+        $categories_restored =  $this->categoryService->restoreMultipleCategories($categories);
 
-        return responseSuccess();
+        return $categories_restored
+            ? responseSuccess()
+            : throw new ModelNotFoundException('The '.CATEGORIES_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
     }
 }
