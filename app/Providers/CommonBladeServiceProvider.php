@@ -99,8 +99,8 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $searchArgs
          * @return string
          */
-        Blade::directive('search', static function (string $searchArgs) {
-            return "<?php
+        Blade::directive('search', static fn(string $searchArgs) =>
+            "<?php
                 \$__table        = [$searchArgs][0];
                 \$__query_params = [$searchArgs][1] ?? null;
                 \$__form_class   = 'grace-form '.match (\$__table) {
@@ -121,8 +121,8 @@ class CommonBladeServiceProvider extends ServiceProvider
                         </div>
                     </form>
                 \";
-            ?>";
-        });
+            ?>"
+        );
 
         /**
          * Clear Search or Filter.
@@ -140,14 +140,14 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $buttonsArgs
          * @return string
          */
-        Blade::directive('collectionButtons', static function (string $buttonsArgs) {
-            return "<?php
+        Blade::directive('collectionButtons', static fn(string $buttonsArgs) =>
+            "<?php
                 [\$__table_name, \$__route] = [$buttonsArgs];
                 \$__query_params            = [$buttonsArgs][2] ?? [];
                 \$__main_buttons_class      = 'col-md-4';
                 \$__button_class            = 'btn d-flex justify-content-center align-items-center gap-2';
 
-                \$__get_title = static function (\$__needle, \$__haystack) use (\$__query_params) {
+                \$__get_title = static function (string \$__needle, array \$__haystack) use (\$__query_params) {
                     return ucfirst(array_search((int) \$__query_params[\$__needle], \$__haystack, true)).'_';
                 };
 
@@ -192,8 +192,8 @@ class CommonBladeServiceProvider extends ServiceProvider
                     </article>
                     \$__trashed_main_button
                 \";
-            ?>";
-        });
+            ?>"
+        );
 
         /**
          * Table Headers.
@@ -230,6 +230,47 @@ class CommonBladeServiceProvider extends ServiceProvider
          */
         Blade::directive('loopIteration', static fn() =>
             "<?php echo \"<td class='row-num'><p></p></td>\" ?>"
+        );
+
+        /**
+         * Generate a readable message for trashed relations.
+         *
+         * @param array $trashedRelations
+         * @return string
+         */
+        Blade::directive('trashedRelationsMessage', static fn(string $trashedRelations) =>
+            "<?php
+                \$__grouped = collect($trashedRelations)
+                    ->reduce(function (array \$__carry, string \$__type, string \$__relation) {
+                        \$__carry[\$__type][] = \$__relation;
+                        return \$__carry;
+                    }, []);
+dd(\$__grouped);
+                \$__format_names = static fn(array \$__names) =>
+                    collect(\$__names)->map(static fn(string \$__name) => ucfirst(\$__name))
+                        ->join(' and ');
+
+                \$__messages = collect();
+
+                if (!empty(\$__grouped['single'])) {
+                    \$__names = \$__format_names(\$__grouped['single']);
+                    \$__verb  = count(\$__grouped['single']) > 1 ? 'have' : 'has';
+                    \$__messages->push(\"The \$__names \$__verb been removed\");
+                }
+
+                if (!empty(\$__grouped['multiple'])) {
+                    \$__names = \$__format_names(\$__grouped['multiple']);
+                    \$__messages->push(\"Some \$__names have been removed\");
+                }
+
+                \$__message = empty($trashedRelations) ? '<i>Nothing</i>' : '<b>'.\$__messages->join(' and ').'</b>';
+
+                echo \"
+                    <td>
+                        <p>\$__message</p>
+                    </td>
+                \"
+            ?>"
         );
 
         /**

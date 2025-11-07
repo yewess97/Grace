@@ -35,6 +35,13 @@ class Review extends Model
     protected $dates = DATES;
 
     /**
+     * The relations that should be considered when soft-deleting.
+     *
+     * @var array<string>
+     */
+    protected array $trashedRelationsList = [PRODUCT_MODEL, USER_MODEL];
+
+    /**
      * Get the data of the specified review.
      *
      * @return Attribute
@@ -42,5 +49,15 @@ class Review extends Model
     final protected function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, REVIEW_ATTRIBUTES));
+    }
+
+    /**
+     * Get the trashed relations of the specified review.
+     *
+     * @return Attribute
+     */
+    final protected function trashedRelations(): Attribute
+    {
+        return Attribute::get(fn() => softDeletedRelations($this, $this->trashedRelationsList));
     }
 }

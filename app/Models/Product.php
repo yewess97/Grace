@@ -41,6 +41,13 @@ class Product extends Model
     protected $hidden = DATES;
 
     /**
+     * The relations that should be considered when soft-deleting.
+     *
+     * @var array<string>
+     */
+    protected array $trashedRelationsList = [CATEGORIES_TABLE, SUBCATEGORIES_TABLE];
+
+    /**
      * Get the data of the specified product
      * with its related categories & subcategories, sizes, and thumbnail images.
      *
@@ -73,6 +80,16 @@ class Product extends Model
             ->reject(fn(self $product) => $product->{ID} === $this->{ID})
             ->unique(ID)
         );
+    }
+
+    /**
+     * Get the trashed relations of the specified product.
+     *
+     * @return Attribute
+     */
+    final protected function trashedRelations(): Attribute
+    {
+        return Attribute::get(fn() => softDeletedRelations($this, $this->trashedRelationsList));
     }
 
     /**

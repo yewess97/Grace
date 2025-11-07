@@ -20,7 +20,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -574,25 +573,6 @@ if (!function_exists(CART_MODEL.'Config')) {
 }
 
 
-if (!function_exists(PRODUCT_MODEL.ucfirst(SIZES))) {
-    /**
-     * Get the sizes of a product.
-     *
-     * @param Model|stdClass $product
-     * @param bool $areValues
-     * @return array
-     */
-    function productSizes(Model|stdClass $product, bool $areValues = false): array
-    {
-        $product_sizes = array_intersect(PRODUCT_SIZE_ENUM, $product->{SIZES}->pluck(SIZE)->toArray());
-
-        return $areValues
-            ? $product_sizes
-            : array_keys($product_sizes);
-    }
-}
-
-
 if (!function_exists(ADDRESS_MODEL.ucfirst(COUNTRY))) {
     /**
      * Get the user's address country(ies).
@@ -676,6 +656,25 @@ if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
         $order_product_size = static fn(OrderItem $orderItem) => key(array_intersect(PRODUCT_SIZE_ENUM, (array) $orderItem->{PRODUCT_SIZE}));
 
         return compact(ORDER_MODEL, ORDER_NUMBER_TITLE, ORDER_DETAILS, ORDER_PRODUCT_SIZE);
+    }
+}
+
+
+if (!function_exists(PRODUCT_MODEL.ucfirst(SIZES))) {
+    /**
+     * Get the sizes of a product.
+     *
+     * @param Model|stdClass $product
+     * @param bool $areValues
+     * @return array
+     */
+    function productSizes(Model|stdClass $product, bool $areValues = false): array
+    {
+        $product_sizes = array_intersect(PRODUCT_SIZE_ENUM, $product->{SIZES}->pluck(SIZE)->toArray());
+
+        return $areValues
+            ? $product_sizes
+            : array_keys($product_sizes);
     }
 }
 
@@ -769,8 +768,10 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
         );
 
         $products = paginateWithFallback(Product::class, $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, callback: static fn(Builder $query) =>
-            $query->whereHas($table, static fn(Builder $q) =>
-                $q->where(SLUG, $slug)
+            $query->when($table !== PRODUCTS_TABLE, static fn(Builder $q) =>
+                $q->whereHas($table, static fn(Builder $item) =>
+                    $item->where(SLUG, $slug)
+                )
             )
         );
 
@@ -1299,6 +1300,47 @@ if (!function_exists('getImagesTo'.ucfirst(DELETE))) {
         });
 
         return compact('deletable_images', 'db_images_count', 'storage_images_count', 'image_type', 'model_item_name');
+    }
+}
+
+
+if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
+    /**
+     * Get the trashed relations of a model.
+     *
+     * @param Model|stdClass $model
+     * @param array $relations
+     * @return array
+     */
+    function softDeletedRelations(Model|stdClass $model, array $relations): array
+    {
+        return collect($relations)
+            ->mapWithKeys(function (string $relation) use ($model) {
+                $related_item = $model->{$relation} ?? null;
+
+                if (!$related_item) {
+                    return [];
+                }
+
+                // Single relation (belongsTo / hasOne)
+                if (method_exists($related_item, 'trashed') && $related_item->trashed()) {
+                    return [$relation => 'single'];
+                }
+
+                // Collection (belongsToMany / hasMany)
+                if ($related_item instanceof Collection) {
+                    $any_item_trashed = $related_item->contains(static fn(Model|stdClass $item) =>
+                        method_exists($item, 'trashed') && $item->trashed()
+                    );
+
+                    if ($any_item_trashed) {
+                        return [$relation => 'multiple'];
+                    }
+                }
+
+                return [];
+            })
+            ->all();
     }
 }
 

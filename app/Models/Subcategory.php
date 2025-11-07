@@ -35,6 +35,13 @@ class Subcategory extends Model
     protected $hidden = DATES;
 
     /**
+     * The relations that should be considered when soft-deleting.
+     *
+     * @var array<string>
+     */
+    protected array $trashedRelationsList = [CATEGORIES_TABLE];
+
+    /**
      * Get the data of the specified subcategory.
      */
     final protected function data(): Attribute
@@ -42,5 +49,15 @@ class Subcategory extends Model
         return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE])?->load([
             CATEGORIES_TABLE => static fn($category) => $category->select(ID, NAME),
         ]));
+    }
+
+    /**
+     * Get the trashed relations of the specified subcategory.
+     *
+     * @return Attribute
+     */
+    final protected function trashedRelations(): Attribute
+    {
+        return Attribute::get(fn() => softDeletedRelations($this, $this->trashedRelationsList));
     }
 }

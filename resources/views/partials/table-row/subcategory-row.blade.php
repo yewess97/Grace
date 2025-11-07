@@ -1,4 +1,6 @@
-<tr id="row_{{$subcategory->id}}">
+<tr id="row_{{$subcategory->id}}" @class([
+        'bg-danger-highlight' => !empty($subcategory->trashedRelations),
+    ])>
     @checkRow($subcategory->id)
     @loopIteration()
     <td>
@@ -16,6 +18,7 @@
             @endforeach
         </ul>
     </td>
+    @trashedRelationsMessage($subcategory->trashedRelations)
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if ($subcategory->trashed())

@@ -1,6 +1,6 @@
 <tr id="row_{{$product->id}}" @class([
         'bg-highlight' => $product->{CATEGORIES_TABLE}?->isEmpty() || $product->{SUBCATEGORIES_TABLE}?->isEmpty(),
-        'bg-danger-highlight' => $product->{STATUS} === 0,
+        'bg-danger-highlight' => $product->{STATUS} === 0 || !empty($product->trashedRelations),
     ])>
     @checkRow($product->id)
     @loopIteration()
@@ -86,6 +86,7 @@
     <td>
         <p>{!! $product->{STATUS} === 1 ? 'Available' : '<strong>Not Available</strong>' !!}</p>
     </td>
+    @trashedRelationsMessage($product->trashedRelations)
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if ($product->trashed())

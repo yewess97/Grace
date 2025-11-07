@@ -1,4 +1,4 @@
-<tr id="row_{{$order->id}}">
+<tr id="row_{{$order->id}}" @class(['bg-highlight' => empty($order->{USER_MODEL})])>
     @checkRow($order->id)
     @loopIteration()
     <td>
@@ -6,7 +6,7 @@
            class="order-tracking-num fw-600">{{ $order->{TRACKING_NUM} }}</a>
     </td>
     <td>
-        <p>{{ $order->{USER_MODEL}->{FULL_NAME} }}</p>
+        <p>{!! $order->{USER_MODEL}->{FULL_NAME} ?? '<b>The '.ucfirst(USER_MODEL).' has been removed</b>' !!}</p>
     </td>
     <td>
         <p>{!! dates($order, 0, true) !!}</p>
@@ -21,8 +21,7 @@
         <p>@priceFormat($order->{TOTAL_COST})</p>
     </td>
     <td>
-        <span
-            class="badge badge-{{orderStatus($order, 'badge')}} rounded-pill d-inline p-2">{{orderStatus($order)}}</span>
+        <span class="badge badge-{{orderStatus($order, 'badge')}} rounded-pill d-inline p-2">{{orderStatus($order)}}</span>
     </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">

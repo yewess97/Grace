@@ -2,7 +2,7 @@
     <table role="table" class="table table-bordered align-middle mb-0 fs-7 bg-white">
         <thead class="text-center bg-light">
         <tr>
-            @tableHeaders("Name", "Short Description", "Long Description", "Main Image", "Thumbnail Images", "Sizes", "Old Price", "New Price", "Quantity", "Related Categories", "Related Subcategories", "Stock Status")
+            @tableHeaders("Name", "Short Description", "Long Description", "Main Image", "Thumbnail Images", "Sizes", "Old Price", "New Price", "Quantity", "Related Categories", "Related Subcategories", "Stock Status", "Trashed")
         </tr>
         </thead>
         <tbody class="text-center">

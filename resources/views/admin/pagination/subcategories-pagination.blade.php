@@ -2,7 +2,7 @@
     <table role="table" class="subcategories-table table align-middle mb-0 fs-7 bg-white">
         <thead class="text-center bg-light">
         <tr>
-            @tableHeaders("Name", "Main Image", "Related Categories")
+            @tableHeaders("Name", "Main Image", "Related Categories", "Trashed")
         </tr>
         </thead>
         <tbody class="text-center">

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -29,7 +30,10 @@ class AdminController extends Controller
      *
      * @return void
      */
-    final public function __construct(private readonly DashboardService $dashboardService, private readonly array $id_name = [ID, NAME]){}
+    final public function __construct(
+        private readonly DashboardService $dashboardService,
+        private readonly array $id_name = [ID, NAME]
+    ){}
 
     /**
      * Dashboard.
@@ -113,7 +117,7 @@ class AdminController extends Controller
         $products = paginateWithFallback(Product::class, $products_ids, callback: fn(Builder $query) =>
             $query->with([
                 ...$this->relatedCategories(),
-                SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) => $subcategory->select($this->id_name)->withTrashed(),
+                SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) => $subcategory->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
                 THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
                 SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
             ])
@@ -243,8 +247,8 @@ class AdminController extends Controller
 
         $reviews = paginateWithFallback(Review::class, $reviews_ids, callback: fn(Builder $query) =>
             $query->with([
-                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select($this->id_name)->withTrashed(),
-                USER_MODEL    => static fn(BelongsTo $user) => $user->select(USER_SELECTED_ATTRIBUTES)->withTrashed(),
+                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
+                USER_MODEL    => static fn(BelongsTo $user) => $user->select([...USER_SELECTED_ATTRIBUTES, Arr::last(DATES)])->withTrashed(),
             ])
                 ->where(RATING, $rating)
         );
@@ -266,7 +270,7 @@ class AdminController extends Controller
     private function relatedCategories(): array
     {
         return [
-            CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select($this->id_name)->withTrashed(),
+            CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
         ];
     }
 }

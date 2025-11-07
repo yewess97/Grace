@@ -135,7 +135,7 @@ define("TOKEN", 'token');
 /**
  * Dates Attributes.
  */
-define("DATES", [CREATE.'d_at', UPDATE.'d_at', DELETE.'d_at']);
+define("DATES", [toPastTense(CREATE).'_at', toPastTense(UPDATE).'_at', toPastTense(DELETE).'_at']);
 
 #################################### End Database Attributes ####################################
 
