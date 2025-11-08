@@ -9,7 +9,7 @@
         @forelse ($reviews as $key => $review)
             @include(REVIEW_ROW_PARTIAL, [REVIEW_MODEL => $review])
         @empty
-            @noResults(REVIEWS_TABLE, 7)
+            @noResults(REVIEWS_TABLE, 8)
         @endforelse
         </tbody>
     </table>

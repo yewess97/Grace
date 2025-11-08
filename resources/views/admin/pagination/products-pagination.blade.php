@@ -9,7 +9,7 @@
         @forelse($products as $key => $product)
             @include(PRODUCT_ROW_PARTIAL, [PRODUCT_MODEL => $product])
         @empty
-            @noResults(PRODUCTS_TABLE, 12)
+            @noResults(PRODUCTS_TABLE, 13)
         @endforelse
         </tbody>
     </table>

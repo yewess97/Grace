@@ -245,7 +245,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                         \$__carry[\$__type][] = \$__relation;
                         return \$__carry;
                     }, []);
-dd(\$__grouped);
+
                 \$__format_names = static fn(array \$__names) =>
                     collect(\$__names)->map(static fn(string \$__name) => ucfirst(\$__name))
                         ->join(' and ');

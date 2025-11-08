@@ -9,7 +9,7 @@
         @forelse($subcategories as $key => $subcategory)
             @include(SUBCATEGORY_ROW_PARTIAL, [SUBCATEGORY_MODEL => $subcategory])
         @empty
-            @noResults(SUBCATEGORIES_TABLE, 3)
+            @noResults(SUBCATEGORIES_TABLE, 4)
         @endforelse
         </tbody>
     </table>
