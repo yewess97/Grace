@@ -301,7 +301,7 @@ const User = {
                 route              = target.attr('action'),
                 main_page          = target.data('main'),
                 action             = form.split('_')[0],
-                collection         = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
+                collection_name         = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
                 place_order_button = $(`#place_${IGrace.ORDER}_btn`),
                 form_data          = Common.filteredFormData(this),
 
@@ -315,7 +315,7 @@ const User = {
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
 
             // Because of the pagination
-            if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
+            if (collection_name === IGrace.CAPITALIZE(IGrace.ORDER)) {
                 const
                     key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
                     value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
@@ -323,7 +323,7 @@ const User = {
                 form_data.set(key, value ? value : '');
             }
 
-            let success_message = `${collection} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
+            let success_message = `${collection_name} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`;
 
             $.ajax({
                 url: route,
@@ -337,7 +337,7 @@ const User = {
                         return location.assign(data['redirect_to']);
                     }
 
-                    if (collection === IGrace.CAPITALIZE(IGrace.ORDER)) {
+                    if (collection_name === IGrace.CAPITALIZE(IGrace.ORDER)) {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
 
                         place_order_button.prop('disabled', false)
@@ -349,10 +349,10 @@ const User = {
                         $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))} ul`).empty();
                         $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).addClass('d-none');
 
-                        return Common.successMessage(IGrace.SUCCESS, success_message, collection);
+                        return Common.successMessage(IGrace.SUCCESS, success_message, collection_name);
                     }
 
-                    if (collection === IGrace.CAPITALIZE(IGrace.REVIEW)) {
+                    if (collection_name === IGrace.CAPITALIZE(IGrace.REVIEW)) {
                         const reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW));
 
                         window.isFormDirty = false;
@@ -365,10 +365,9 @@ const User = {
                     formReset(target, action);
 
                     Common.updateTableRows({
-                        data:           data,
-                        collectionName: collection,
-                        mainPage:       main_page,
-                        action:         action,
+                        data:     data,
+                        mainPage: main_page,
+                        action:   action,
                     });
 
                     Common.successMessage(IGrace.SUCCESS, success_message);

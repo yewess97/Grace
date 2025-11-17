@@ -232,7 +232,7 @@ if (!function_exists('forgetCache')) {
         }
 
         $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_from(selectedIdsRequest()))
+            ? array_map('intval', [selectedIdsRequest()])
             : [$model->{ID}];
 
         $query = $model::query()->whereIn(ID, $selected_ids)
@@ -1126,7 +1126,7 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
     function removeDeleteOrRestore(Model|stdClass $model, ?string $forNotification = null, bool $deleteImages = false): bool
     {
         $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_from(selectedIdsRequest()))
+            ? array_map('intval', [selectedIdsRequest()])
             : [$model->{ID}];
 
         $selected_collections = $model::query()->whereIn(ID, $selected_ids);
@@ -1399,29 +1399,5 @@ if (! function_exists('paginateWithFallback')) {
         }
 
         return $results;
-    }
-}
-
-
-if (!function_exists('ajaxPaginationResponse')) {
-    /**
-     * Get the ajax pagination response.
-     * To update the row number through ajax,
-     * when a new row is added or deleted/restored.
-     *
-     * @param LengthAwarePaginator $collection
-     * @param string $view
-     * @param string $table
-     * @param array $otherCompactVars
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, array $otherCompactVars = []): JsonResponse
-    {
-        $row          = view($view, [$table => $collection, ...$otherCompactVars])->render();
-        $current_page = $collection->currentPage();
-        $per_page     = $collection->perPage();
-
-        return responseWithData(compact(ROW, 'current_page', 'per_page'));
     }
 }

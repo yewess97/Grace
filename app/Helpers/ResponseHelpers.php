@@ -2,6 +2,7 @@
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response as ResponseClass;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Validator as ValidatorClass;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -57,5 +58,27 @@ if (!function_exists('responseError')) {
     function responseError(string $status): JsonResponse
     {
         return response()->json(['status' => $status], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+if (!function_exists('ajaxPaginationResponse')) {
+    /**
+     * Generate a standardized AJAX response for paginated data updates.
+     *
+     * @param LengthAwarePaginator $collection
+     * @param string $view
+     * @param string $table
+     * @param array $otherViewDataVars
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, array $otherViewDataVars = []): JsonResponse
+    {
+        $row          = view($view, [$table => $collection, ...$otherViewDataVars])->render();
+        $current_page = $collection->currentPage();
+        $per_page     = $collection->perPage();
+
+        return responseWithData(compact(ROW, 'current_page', 'per_page'));
     }
 }

@@ -45,11 +45,12 @@ class UserController extends Controller
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
-        [$user, $last_page] = $this->userService->createOrUpdateUser($operation);
+        $user = $this->userService->createOrUpdateUser($operation);
 
-        $row = view(USER_ROW_PARTIAL, compact(USER_MODEL))->render();
+        $row       = view(USER_ROW_PARTIAL, compact(USER_MODEL))->render();
+        $last_page = getLastPage($user);
 
-        return responseWithData(compact(USER_MODEL, ROW, LAST_PAGE));
+        return responseWithData(compact(ROW, LAST_PAGE));
     }
 
     /**

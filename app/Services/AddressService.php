@@ -59,10 +59,10 @@ class AddressService {
      * Store or Update an address.
      *
      * @param string $operation
-     * @return array
+     * @return Address
      * @throws ValidationException|CacheInvalidArgumentException
      */
-    final public function createOrUpdateAddress(string $operation): array
+    final public function createOrUpdateAddress(string $operation): Address
     {
         $address_request = new AddressRequest($operation, ADDRESS_MODEL, ADDRESS_FILLABLE_ATTRIBUTES);
 
@@ -94,7 +94,7 @@ class AddressService {
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
-        return [$address, getLastPage(new Address())];
+        return $address;
     }
 
     /**

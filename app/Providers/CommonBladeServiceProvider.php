@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class CommonBladeServiceProvider extends ServiceProvider
@@ -40,7 +39,11 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('modalCloseBtn', static fn() =>
-            "<?php echo \"<button type='button' role='button' title='Close' class='btn-close' data-mdb-dismiss='modal' aria-label='Close'></button>\" ?>"
+            "<?php
+                echo \"
+                    <button type='button' role='button' title='Close' class='btn-close' data-mdb-dismiss='modal' aria-label='Close'></button>
+                \"
+            ?>"
         );
 
         /**
@@ -49,13 +52,17 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $ariaControls
          * @return string
          */
-        Blade::directive('menuCloseBtn', static function (string $ariaControls) {
-            $additional_classes = str_contains($ariaControls, ADMIN)
-                ? "col-1 ms-3"
-                : "position-absolute top-50";
+        Blade::directive('menuCloseBtn', static fn(string $ariaControls) =>
+            "<?php
+                \$__additional_classes = str_contains($ariaControls, ADMIN)
+                    ? 'col-1 ms-3'
+                    : 'position-absolute top-50';
 
-            return "<?php echo \"<i role='button' title='Close menu' class='fa-solid fa-circle-xmark nav-menu-close $additional_classes text-center rounded-circle' aria-label='Close menu' aria-controls=\".$ariaControls.\"></i>\" ?>";
-        });
+                echo \"
+                    <i role='button' title='Close menu' class='fa-solid fa-circle-xmark nav-menu-close \$__additional_classes text-center rounded-circle' aria-label='Close menu' aria-controls=\".$ariaControls.\"></i>
+                \";
+            ?>"
+        );
 
         /**
          * Submit Button.
@@ -63,15 +70,28 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $btnName
          * @return string
          */
-        Blade::directive('submitButton', static function (string $btnName) {
-            $title = array_from($btnName)[0];
+        Blade::directive('submitButton', static fn(string $btnName) =>
+            "<?php
+                if (str_contains($btnName, CART_MODEL)) {
+                    echo \"
+                        <div class='add-cart'>
+                           <div class='form-group'>
+                               <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'>
+                                    <i class='ti ti-shopping-cart'></i>
+                                    <span>\".capitalizeAll($btnName).\"</span>
+                               </button>
+                           </div>
+                        </div>
+                    \";
+                }
 
-            if (str_contains(constant($title), CART_MODEL)) {
-                return "<?php echo \"<div class='add-cart'><div class='form-group'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'><i class='ti ti-shopping-cart'></i><span>\".capitalizeAll($title).\"</span></button></div></div>\" ?>";
-            }
-
-            return "<?php echo \"<div class='modal-footer p-2'><button type='submit' role='button' title='\".capitalizeAll($title).\"' class='btn'>\".capitalizeAll($title).\"</button></div>\" ?>";
-        });
+                echo \"
+                    <div class='modal-footer p-2'>
+                        <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn'>\".capitalizeAll($btnName).\"</button>
+                    </div>
+                \";
+            ?>"
+        );
 
         /**
          * Back Button to a specified route or to the previous page.
@@ -89,7 +109,13 @@ class CommonBladeServiceProvider extends ServiceProvider
                     ? route(\$__route, \$__query_params)
                     : (Route::has(\$__title) ? route(\$__title) : url()->previous());
 
-                echo \"<div class='back-btn'><a href='\$__url' type='button' role='link' title='Back to \".capitalizeAll(\$__title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".capitalizeAll(\$__title).\"'><i class='fa-solid fa-angle-left'></i></a></div>\"
+                echo \"
+                    <div class='back-btn'>
+                        <a href='\$__url' type='button' role='link' title='Back to \".capitalizeAll(\$__title).\"' class='btn top-back-btn d-flex justify-content-center align-items-center rounded-circle' aria-label='Back to \".capitalizeAll(\$__title).\"'>
+                            <i class='fa-solid fa-angle-left'></i>
+                        </a>
+                    </div>
+                \"
             ?>"
         );
 
@@ -131,7 +157,11 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('clearSearchFilter', static fn(string $route) =>
-            "<?php echo \"<a href=\".array_from($route)[0].\" role='link' id='clear_filter' class='text-decoration-underline lh-base'>Clear Search/\".ucfirst(FILTER).\"</a>\" ?>"
+            "<?php
+                echo \"
+                    <a href=\".$route.\" role='link' id='clear_filter' class='text-decoration-underline lh-base'>Clear Search/\".ucfirst(FILTER).\"</a>
+                \"
+            ?>"
         );
 
         /**
@@ -166,22 +196,41 @@ class CommonBladeServiceProvider extends ServiceProvider
                     \$__subcollection_title = \$__get_title(RATING, REVIEW_RATING_ENUM);
                 }
 
-                \$__trashed_main_button = \"<a href=\".route(\$__route, [...\$__query_params, CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"' class='trashed-btn mt-2 \$__button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"'>
-                    \".Blade::render('<x-action-icon action='.\$__button_text.'/>').capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"
-                </a>\";
+                \$__trashed_main_button = \"
+                    <a href=\".route(\$__route, [...\$__query_params, CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"' class='trashed-btn mt-2 \$__button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"'>
+                        \".Blade::render('<x-action-icon action='.\$__button_text.'/>').capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"
+                    </a>
+                \";
 
                 if (conditionRequest()) {
                     \$__button_text = DELETE;
 
-                    \$__restore_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$__subcollection_title.\$__table_name).\"' id='restore_\".\$__table_name.\"_btn' class='restore-btn \$__button_class' data-route=\".route(RESTORE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">\".Blade::render('<x-action-icon action='.RESTORE.'/>').ucfirst(RESTORE).\" all selected</button>\";
+                    \$__restore_all_selected_button = \"
+                        <button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$__subcollection_title.\$__table_name).\"' id='restore_\".\$__table_name.\"_btn' class='restore-btn \$__button_class' data-route=\".route(RESTORE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">
+                            \".Blade::render('<x-action-icon action='.RESTORE.'/>').ucfirst(RESTORE).\" all selected
+                        </button>
+                    \";
 
-                    \$__trashed_main_button = \"<a href=\".route(\$__route, \$__query_params).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"' class='main-btn mt-2 \$__button_class' aria-label='\".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"'><i class='fa-solid fa-circle-left'></i>\".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"</a>\";
+                    \$__trashed_main_button = \"
+                        <a href=\".route(\$__route, \$__query_params).\" type='button' role='link' title='\".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"' class='main-btn mt-2 \$__button_class' aria-label='\".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"'>
+                            <i class='fa-solid fa-circle-left'></i>
+                            \".capitalizeAll('Main_'.\$__subcollection_title.\$__table_name).\"
+                        </a>
+                    \";
                 }
 
-                \$__delete_remove_all_selected_button = \"<button type='button' role='button' title='\".capitalizeAll(\$__button_text.'_'.\$__subcollection_title.\$__table_name).\"' id='delete_\".\$__table_name.\"_btn' class='delete-btn \$__button_class' data-route=\".route(DELETE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">\".Blade::render('<x-action-icon action='.\$__button_text.'/>').ucfirst(\$__button_text).\" all selected</button>\";
+                \$__delete_remove_all_selected_button = \"
+                    <button type='button' role='button' title='\".capitalizeAll(\$__button_text.'_'.\$__subcollection_title.\$__table_name).\"' id='delete_\".\$__table_name.\"_btn' class='delete-btn \$__button_class' data-route=\".route(DELETE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">
+                        \".Blade::render('<x-action-icon action='.\$__button_text.'/>').ucfirst(\$__button_text).\" all selected
+                    </button>
+                \";
 
                 if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && conditionRequest() !== TRASHED) {
-                    \$__add_button = \"<button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"' class='add-btn \$__button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize(\$__table_name).\"_modal'>\".Blade::render('<x-action-icon action='.ADD.'/>').capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"</button>\";
+                    \$__add_button = \"
+                        <button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"' class='add-btn \$__button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize(\$__table_name).\"_modal'>
+                            \".Blade::render('<x-action-icon action='.ADD.'/>').capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"
+                        </button>
+                    \";
                 }
 
                 echo \"
@@ -201,17 +250,24 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $headers
          * @return string
          */
-        Blade::directive('tableHeaders', static function (string $headers) {
-            $headers_arr = array_from($headers);
-            $table_headers = implode('', array_map(static fn(string $header) => "<th scope='col'>$header</th>", $headers_arr));
-            $table_headers = "<th scope='col'>#</th> $table_headers";
+        Blade::directive('tableHeaders', static fn(string $headers) =>
+            "<?php
+                \$__table_headers = implode('', array_map(static fn(string \$__header) => '<th scope=\'col\'>'.\$__header.'</th>', [$headers]));
+                \$__table_headers = '<th scope=\'col\'>#</th>'.\$__table_headers;
 
-            if (in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)) {
-                return "<?php echo \"$table_headers\" ?>";
-            }
+                if (in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)) {
+                    echo \$__table_headers;
+                }
 
-            return "<?php echo \"<th scope='col' class='position-relative'><input type='checkbox' role='checkbox' id='check_all'><span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span></th> $table_headers <th scope='col'>Action</th>\" ?>";
-        });
+                echo \"
+                    <th scope='col' class='position-relative'>
+                        <input type='checkbox' role='checkbox' id='check_all'>
+                        <span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span>
+                    </th> \$__table_headers
+                    <th scope='col'>Action</th>
+                \";
+            ?>"
+        );
 
         /**
          * Check Row Checkbox.
@@ -220,7 +276,14 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('checkRow',  static fn(string $id) =>
-            "<?php echo \"<td class='position-relative'><input type='checkbox' role='checkbox' id='check_row_$id' class='check-row' value='$id'><span role='checkbox' class='custom-check-row custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_row_$id'></span></td>\" ?>"
+            "<?php
+                echo \"
+                    <td class='position-relative'>
+                        <input type='checkbox' role='checkbox' id='check_row_$id' class='check-row' value='$id'>
+                        <span role='checkbox' class='custom-check-row custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_row_$id'></span>
+                    </td>
+                \"
+            ?>"
         );
 
         /**
@@ -279,17 +342,19 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $emptyArgs
          * @return string
          */
-        Blade::directive('noResults', static function (string $emptyArgs) {
-            [$table_name, $colspan] = array_from($emptyArgs);
+        Blade::directive('noResults', static fn(string $emptyArgs) =>
+            "<?php
+                [\$__table_name, \$__colspan] = [$emptyArgs];
 
-            in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)
-                ? ++$colspan
-                : $colspan += 3;
+                in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)
+                    ? ++\$__colspan
+                    : \$__colspan += 3;
 
-            $message_label = "<?php \$message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? conditionRequest() ?? '')).' '.capitalizeAll($table_name).' Found' ?>";
+                \$__message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? conditionRequest() ?? '')).' '.capitalizeAll(\$__table_name).' Found';
 
-            return $message_label."<?php echo \"<tr><td colspan='$colspan' class='py-4 fs-6 fw-500 text-muted'>\$message</td></tr>\" ?>";
-        });
+                echo \"<tr><td colspan='\$__colspan' class='py-4 fs-6 fw-500 text-muted'>\$__message</td></tr>\";
+            ?>"
+        );
 
         /**
          * Pagination Links.
@@ -297,14 +362,14 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @param string $paginationArgs
          * @return string
          */
-        Blade::directive('pagination', static function (string $paginationArgs) {
-            return "<?php
+        Blade::directive('pagination', static fn(string $paginationArgs) =>
+            "<?php
                 [\$__collection, \$__route] = [$paginationArgs];
 
                 \$__query_params = \Illuminate\Support\Arr::except(request()?->query(), ['_token', 'page']);
 
                 echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, \$__query_params)]);
-            ?>";
-        });
+            ?>"
+        );
     }
 }

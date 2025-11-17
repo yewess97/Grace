@@ -35,7 +35,7 @@ class CartService
         $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
         $row        = view($row_view, $row_compact_vars)->render();
 
-        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, 'header_row', ROW);
+        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, 'header_row', 'row');
 
         return [
             ...$compact_vars,

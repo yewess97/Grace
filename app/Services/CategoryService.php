@@ -25,10 +25,10 @@ class CategoryService
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return array
+     * @return Category
      * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
-    final public function createOrUpdateCategory(string $operation): array
+    final public function createOrUpdateCategory(string $operation): Category
     {
         $category_request = new CategoryRequest($operation, CATEGORY_MODEL, CATEGORY_ATTRIBUTES);
 
@@ -57,7 +57,7 @@ class CategoryService
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
-        return [$category, getLastPage(new Category())];
+        return $category;
     }
 
     /**
@@ -143,7 +143,7 @@ class CategoryService
     private function deleteRelatedCollectionItems(Category $category, string $modelClass): void
     {
         $category_ids = selectedIdsRequest()
-            ? array_map('intval', array_from(selectedIdsRequest()))
+            ? array_map('intval', [selectedIdsRequest()])
             : [$category->{ID}];
 
         $modelClass::query()

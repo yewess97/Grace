@@ -60,10 +60,10 @@ class ProductService
      * and its images in the database and storage.
      *
      * @param string $operation
-     * @return array
+     * @return Product
      * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
-    final public function createOrUpdateProduct(string $operation): array
+    final public function createOrUpdateProduct(string $operation): Product
     {
         $product_attributes = PRODUCT_ATTRIBUTES;
         $thumb_image_input_name = "{$operation}_".PRODUCT_MODEL."_".THUMB_IMAGE;
@@ -141,7 +141,7 @@ class ProductService
 
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
-        return [$product, getLastPage(new Product())];
+        return $product;
     }
 
     /**

@@ -42,12 +42,12 @@ class UserService
      * Store or Update a user.
      *
      * @param string $operation
-     * @return array
+     * @return User
      * @throws ValidationException|CacheInvalidArgumentException
      */
-    final public function createOrUpdateUser(string $operation): array
+    final public function createOrUpdateUser(string $operation): User
     {
-        return [storeOrUpdateUser($operation), getLastPage(new User())];
+        return storeOrUpdateUser($operation);
     }
 
     /**

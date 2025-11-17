@@ -19,7 +19,7 @@ class UserBladeServiceProvider extends ServiceProvider
          *
          *  @return bool
          */
-        Blade::if('admin', static fn() => 
+        Blade::if('admin', static fn() =>
             auth()->user()?->isAdmin
         );
 
@@ -30,7 +30,7 @@ class UserBladeServiceProvider extends ServiceProvider
          * @param mixed $newPrice
          * @return bool
          */
-        Blade::if('oldprice', static fn(mixed $oldPrice, mixed $newPrice) => 
+        Blade::if('oldprice', static fn(mixed $oldPrice, mixed $newPrice) =>
             (int) $oldPrice !== 0 && (int) $oldPrice !== (int) $newPrice
         );
 
@@ -40,26 +40,38 @@ class UserBladeServiceProvider extends ServiceProvider
          * @param string $prices
          * @return string
          */
-        Blade::directive('discount', static function (string $prices) {
-            [$selling_price, $original_price] = array_from($prices);
+        Blade::directive('discount', static fn(string $prices) =>
+            "<?php
+                [\$__selling_price, \$__original_price] = [$prices];
 
-            return "<?php echo round((($selling_price * 100) / $original_price) - 100).'%' ?>";
-        });
+                echo round(((\$__selling_price * 100) / \$__original_price) - 100).'%'
+            ?>"
+        );
 
         /**
          * Show the session message.
-         * 
+         *
          * @param string $sessionArgs
          * @return string
          */
-        Blade::directive('customSession', static function (string $sessionArgs) {
-            [$message, $type, $icon_type] = array_from($sessionArgs);
+        Blade::directive('customSession', static fn(string $sessionArgs) =>
+            "<?php
+                [\$__message, \$__type, \$__icon_type] = [$sessionArgs];
 
-            $message_container_class = $type !== 'danger'
-                ? $type 
-                : 'error';
+                \$__message_container_class = \$__type !== 'danger'
+                    ? \$__type
+                    : 'error';
 
-            return "<?php echo \"<div role='alert' class='alert alert-dismissible fade show alert-$type d-flex justify-content-between align-items-center pe-4' data-mdb-color='$type'><div class='$message_container_class-message'><i class='fas fa-$icon_type-circle me-3'></i><span>\".session('$message').\"</span></div><button type='button' role='button' title='Close Alert' class='btn-close position-relative p-0' data-mdb-dismiss='alert' aria-label='Close Alert'></button></div>\" ?>";
-        });
+                echo \"
+                    <div role='alert' class='alert alert-dismissible fade show alert-\$__type d-flex justify-content-between align-items-center pe-4' data-mdb-color='\$__type'>
+                        <div class='\$__message_container_class-message'>
+                            <i class='fas fa-\$__icon_type-circle me-3'></i>
+                            <span>\".session(\$__message).\"</span>
+                        </div>
+                        <button type='button' role='button' title='Close Alert' class='btn-close position-relative p-0' data-mdb-dismiss='alert' aria-label='Close Alert'></button>
+                    </div>
+                \"
+            ?>"
+        );
     }
 }

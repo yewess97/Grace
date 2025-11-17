@@ -60,11 +60,12 @@ class ProductController extends Controller
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
-        [$product, $last_page] = $this->productService->createOrUpdateProduct($operation);
+        $product = $this->productService->createOrUpdateProduct($operation);
 
-        $row = view(PRODUCT_ROW_PARTIAL, compact(PRODUCT_MODEL))->render();
+        $row       = view(PRODUCT_ROW_PARTIAL, compact(PRODUCT_MODEL))->render();
+        $last_page = getLastPage($product);
 
-        return responseWithData(compact(PRODUCT_MODEL, ROW, LAST_PAGE));
+        return responseWithData(compact(ROW, LAST_PAGE));
     }
 
     /**

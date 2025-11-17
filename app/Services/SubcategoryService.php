@@ -18,10 +18,10 @@ class SubcategoryService
      * and its main image in the database and storage.
      *
      * @param string $operation
-     * @return array
+     * @return Subcategory
      * @throws ValidationException|NotFoundHttpException|ServiceUnavailableHttpException|RandomException|CacheInvalidArgumentException
      */
-    final public function createOrUpdateSubcategory(string $operation): array
+    final public function createOrUpdateSubcategory(string $operation): Subcategory
     {
         $subcategory_request = new SubcategoryRequest($operation, SUBCATEGORY_MODEL, SUBCATEGORY_ATTRIBUTES);
 
@@ -50,7 +50,7 @@ class SubcategoryService
 
         sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
 
-        return [$subcategory, getLastPage(new Subcategory())];
+        return $subcategory;
     }
 
     /**

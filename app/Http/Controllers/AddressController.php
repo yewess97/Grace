@@ -44,11 +44,12 @@ class AddressController extends Controller
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
-        [$address, $last_page] = $this->addressService->createOrUpdateAddress($operation);
+        $address = $this->addressService->createOrUpdateAddress($operation);
 
-        $row = view(ADDRESS_ROW_PARTIAL, compact(ADDRESS_MODEL))->render();
+        $row       = view(ADDRESS_ROW_PARTIAL, compact(ADDRESS_MODEL))->render();
+        $last_page = getLastPage($address);
 
-        return responseWithData(compact(ADDRESS_MODEL, ROW, LAST_PAGE));
+        return responseWithData(compact(ROW, LAST_PAGE));
     }
 
     /**

@@ -50,11 +50,12 @@ class SubcategoryController extends Controller
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {
-        [$subcategory, $last_page] = $this->subcategoryService->createOrUpdateSubcategory($operation);
+        $subcategory = $this->subcategoryService->createOrUpdateSubcategory($operation);
 
-        $row = view(SUBCATEGORY_ROW_PARTIAL, compact(SUBCATEGORY_MODEL))->render();
+        $row       = view(SUBCATEGORY_ROW_PARTIAL, compact(SUBCATEGORY_MODEL))->render();
+        $last_page = getLastPage($subcategory);
 
-        return responseWithData(compact(SUBCATEGORY_MODEL, ROW, LAST_PAGE));
+        return responseWithData(compact(ROW, LAST_PAGE));
     }
 
     /**

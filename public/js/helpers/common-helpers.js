@@ -505,12 +505,12 @@ const Common = {
      * @return {void}
      */
     updateTableRows: (args) => {
-        let { data, collectionName, mainPage, action } = args;
+        let { data, mainPage, action } = args;
 
         const pagination_container = $('.pagination-container');
 
         const ajaxHandlePagination = () => {
-            mainPage += `${Common.routeParamsSeperator(mainPage)}page=${data[action === IGrace.ADD ? 'last_page' : 'current_page']}`;
+            mainPage += `${Common.routeParamsSeperator(mainPage)}page=${action === IGrace.ADD ? data['last_page'] : Common.currentPageNumber()}`;
 
             $.get(mainPage)
                 .done((successData) => Common.paginationResponse(pagination_container, successData))
@@ -523,7 +523,7 @@ const Common = {
                 ajaxHandlePagination();
             },
             [IGrace.UPDATE]: () => {
-                $(`#${IGrace.ROW}_${data[collectionName.toLowerCase()][IGrace.ID]}`).html($(data[IGrace.ROW]).html());
+                $(`#${$(data[IGrace.ROW]).first().attr(IGrace.ID)}`).html($(data[IGrace.ROW]).html());
                 ajaxHandlePagination();
             },
             default: () => Common.paginationResponse(pagination_container, data),

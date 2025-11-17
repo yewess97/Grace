@@ -1,22 +1,6 @@
 <?php
 
 
-if (!function_exists('array_from')) {
-    /**
-     * Create an array from received string.
-     *
-     * @param string $string
-     * @return array
-     */
-    function array_from(string $string): array
-    {
-        $string = str_replace(['[', ']', '"', "'"], '', $string);
-
-        return array_map('trim', explode(',', $string));
-    }
-}
-
-
 if (!function_exists('object_from_array')) {
     /**
      * Convert an array of associative arrays to an array of objects.

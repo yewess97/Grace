@@ -421,10 +421,9 @@ const Admin = {
                     const data_actions = {
                         true: () => {
                             Common.updateTableRows({
-                                data:           data,
-                                collectionName: collection_name,
-                                mainPage:       main_page,
-                                action:         action,
+                                data:     data,
+                                mainPage: main_page,
+                                action:   action,
                             });
                         },
                         false: () => main_page = IGrace.ADMIN,

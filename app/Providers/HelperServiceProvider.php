@@ -15,7 +15,7 @@ class HelperServiceProvider extends ServiceProvider
     {
         $helper_files = [
             'AppPrinciples',
-            'CustomResponses',
+            'ResponseHelpers',
             'RequestHelpers',
             'GraceStandards',
             'Helpers',
