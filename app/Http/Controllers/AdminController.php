@@ -88,7 +88,7 @@ class AdminController extends Controller
             $query->with([...$this->relatedCategories()])
         );
 
-        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE, 1800, fn() =>
+        $categories = cache()->remember(CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY, 1800, fn() =>
             Category::get($this->id_name)
         );
 
@@ -123,10 +123,10 @@ class AdminController extends Controller
             ])
         );
 
-        $categories = cache()->remember(CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+        $categories = cache()->remember(CATEGORIES_FOR_PRODUCTS_CACHE_KEY, 1800, fn() =>
             Category::query()->get($this->id_name)
         );
-        $subcategories = cache()->remember(SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE, 1800, fn() =>
+        $subcategories = cache()->remember(SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY, 1800, fn() =>
             Subcategory::query()->get($this->id_name)
         );
         $sizes = PRODUCT_SIZE_ENUM;

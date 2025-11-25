@@ -68,7 +68,15 @@
     <td>
         <ul class="cell-menu overflow-auto">
             @foreach ($product->{CATEGORIES_TABLE} as $category)
-                <li>{{ $category->{NAME} }}</li>
+                <li>
+                    @foreach (trashedRelationsData($product->trashedRelations)[toPastTense(TRASHED).'_relations'] as $relation)
+                        @if ($relation === $category->{NAME})
+                            <del>{{$relation}}</del>
+                        @else
+                            {{$relation}}
+                        @endif
+                    @endforeach
+                </li>
             @endforeach
         </ul>
     </td>
@@ -76,7 +84,15 @@
         @if ($product->{SUBCATEGORIES_TABLE}->isNotEmpty())
             <ul class="cell-menu overflow-auto">
                 @foreach ($product->{SUBCATEGORIES_TABLE} as $subcategory)
-                    <li>{{ $subcategory->{NAME} }}</li>
+                    <li>
+                        @foreach (trashedRelationsData($product->trashedRelations)[toPastTense(TRASHED).'_relations'] as $relation)
+                            @if ($relation === $subcategory->{NAME})
+                                <del>{{$relation}}</del>
+                            @else
+                                {{$relation}}
+                            @endif
+                        @endforeach
+                    </li>
                 @endforeach
             </ul>
         @else
@@ -86,7 +102,9 @@
     <td>
         <p>{!! $product->{STATUS} === 1 ? 'Available' : '<strong>Not Available</strong>' !!}</p>
     </td>
-    @trashedRelationsMessage($product->trashedRelations)
+    <td>
+        <p>{!! trashedRelationsData($product->trashedRelations)['message'] !!}</p>
+    </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if ($product->trashed())

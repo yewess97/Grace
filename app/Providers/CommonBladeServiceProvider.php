@@ -303,36 +303,73 @@ class CommonBladeServiceProvider extends ServiceProvider
          */
         Blade::directive('trashedRelationsMessage', static fn(string $trashedRelations) =>
             "<?php
-                \$__grouped = collect($trashedRelations)
-                    ->reduce(function (array \$__carry, string \$__type, string \$__relation) {
-                        \$__carry[\$__type][] = \$__relation;
-                        return \$__carry;
-                    }, []);
+                \$__message = [];
+                \$__trashed_relations_data = [];
 
-                \$__format_names = static fn(array \$__names) =>
-                    collect(\$__names)->map(static fn(string \$__name) => ucfirst(\$__name))
-                        ->join(' and ');
+                foreach ($trashedRelations as \$__relation => \$__info) {
+                    if (\$__info['type'] === 'single') {
+                        \$__message[] = '<b>The '.ucfirst(\$__info['label']).' has been removed</b>';
+                    }
 
-                \$__messages = collect();
+                    if (\$__info['type'] === 'multiple') {
+                        \$__message[] = '<b>Some '.ucfirst(\$__info['label']).' have been removed</b>';
+                    }
 
-                if (!empty(\$__grouped['single'])) {
-                    \$__names = \$__format_names(\$__grouped['single']);
-                    \$__verb  = count(\$__grouped['single']) > 1 ? 'have' : 'has';
-                    \$__messages->push(\"The \$__names \$__verb been removed\");
+                    if (empty($trashedRelations)) {
+                        \$__message[] = '<i>Nothing</i>';
+                    }
                 }
 
-                if (!empty(\$__grouped['multiple'])) {
-                    \$__names = \$__format_names(\$__grouped['multiple']);
-                    \$__messages->push(\"Some \$__names have been removed\");
-                }
 
-                \$__message = empty($trashedRelations) ? '<i>Nothing</i>' : '<b>'.\$__messages->join(' and ').'</b>';
 
                 echo \"
                     <td>
-                        <p>\$__message</p>
+                        <p>\".implode(' and ', \$__message).\"</p>
+                        \".(!empty(\$__details) ? implode('<br>', \$__details) : '').\"
                     </td>
-                \"
+                \";
+
+
+
+
+//                if (empty($trashedRelations)) {
+//                    echo '<td><p><i>Nothing</i></p></td>';
+//                }
+//                else {
+//                    \$__messages = [];
+//                    \$__details  = [];
+//
+//                    foreach ($trashedRelations as \$relation => \$info) {
+//
+//                        // Format label
+//                        \$label = ucfirst(\$info['label']);
+//
+//                        // Single / Multiple Grammar
+//                        if (\$info['type'] === 'single') {
+//                            \$__messages[] = 'The '.\$label.' has been removed';
+//                        }
+//
+//                        if (\$info['type'] === 'multiple') {
+//                            \$__messages[] = 'Some '.\$label.' have been removed';
+//                        }
+//
+//                        // Deleted item list with <del>
+//                        if (!empty(\$info['deleted_items'])) {
+//                            \$items = collect(\$info['deleted_items'])
+//                                ->map(fn(\$item) => '<del>'.\$item.'</del>')
+//                                ->join(', ');
+//
+//                            \$__details[] = '<small>'.\$items.'</small>';
+//                        }
+//                    }
+//
+//                    echo \"
+//                        <td>
+//                            <p><b>\".implode(' and ', \$__messages).\"</b></p>
+//                            \".(!empty(\$__details) ? implode('<br>', \$__details) : '').\"
+//                        </td>
+//                    \";
+//                }
             ?>"
         );
 

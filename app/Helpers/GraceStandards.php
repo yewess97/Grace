@@ -263,7 +263,7 @@ define("DELETE_ALL_CARTS", DELETE.'_all_'.CARTS_TABLE);
  */
 define("CHECKOUT",                'checkout');
 define("CHECKOUT_USER_ADDRESSES", CHECKOUT.'_'.USER_ADDRESSES);
-define("CHECKOUT_PAYMENT", CHECKOUT.'_'.PAYMENT);
+define("CHECKOUT_PAYMENT",        CHECKOUT.'_'.PAYMENT);
 
 /**
  * Order Standards.
@@ -286,6 +286,13 @@ define("END_DATE",           'end_date');
 define("CUSTOMERS_REVIEWS", 'customers_'.REVIEWS_TABLE);
 define("AVERAGE_RATE",      'average_rate');
 define("REVIEW_RATING",     REVIEW_MODEL.'_'.RATING);
+
+/*
+ * Cache Standards.
+ */
+define("CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY", CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE);
+define("CATEGORIES_FOR_PRODUCTS_CACHE_KEY",      CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE);
+define("SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY",   SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE);
 
 #################################### End Other Standards ####################################
 

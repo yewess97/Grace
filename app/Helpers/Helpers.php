@@ -1315,32 +1315,89 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
     function softDeletedRelations(Model|stdClass $model, array $relations): array
     {
         return collect($relations)
-            ->mapWithKeys(function (string $relation) use ($model) {
-                $related_item = $model->{$relation} ?? null;
+            ->mapWithKeys(function ($attribute, string $relation) use ($model) {
+                $related = $model->{$relation} ?? null;
+                $trashed_method_exists = static fn($item) => method_exists($item, TRASHED) && $item->trashed();
 
-                if (!$related_item) {
+                if (!$related) {
                     return [];
                 }
 
-                // Single relation (belongsTo / hasOne)
-                if (method_exists($related_item, 'trashed') && $related_item->trashed()) {
-                    return [$relation => 'single'];
+                // Single Relation (belongsTo / hasOne)
+                if ($trashed_method_exists($related)) {
+                    return [
+                        $relation => [
+                            'type'          => 'single',
+                            'label'         => $relation,
+                            'attribute'     => $attribute,
+                            toPastTense(DELETE).'_items' => [$related->{$attribute} ?? $relation],
+                        ]
+                    ];
                 }
 
-                // Collection (belongsToMany / hasMany)
-                if ($related_item instanceof Collection) {
-                    $any_item_trashed = $related_item->contains(static fn(Model|stdClass $item) =>
-                        method_exists($item, 'trashed') && $item->trashed()
-                    );
+                // Many Relation (hasMany / belongsToMany)
+                if ($related instanceof Collection) {
+                    $deleted_items = $related->filter(fn($item) => $trashed_method_exists($item))
+                        ->map(fn(Model|stdClass $item) => $item->{$attribute} ?? 'Unknown')
+                        ->values()
+                        ->all();
 
-                    if ($any_item_trashed) {
-                        return [$relation => 'multiple'];
+                    if (!empty($deleted_items)) {
+                        return [
+                            $relation => [
+                                'type'          => 'multiple',
+                                'label'         => $relation,
+                                'attribute'     => $attribute,
+                                toPastTense(DELETE).'_items' => $deleted_items,
+                            ]
+                        ];
                     }
                 }
 
                 return [];
             })
             ->all();
+    }
+}
+
+
+if (!function_exists(toPastTense(TRASHED).'RelationsData')) {
+    /**
+     * Get the trashed relations data.
+     *
+     * @param array $trashedRelations
+     * @return array
+     */
+    function trashedRelationsData(array $trashedRelations): array
+    {
+        $message_parts     = [];
+        $trashed_relations = [];
+
+        foreach ($trashedRelations as $relation => $info) {
+
+            if ($info['type'] === 'single') {
+                $message_parts[] = 'The '.ucfirst($info['label']);
+            }
+
+            if ($info['type'] === 'multiple') {
+                $message_parts[] = 'Some '.ucfirst($info['label']);
+            }
+
+            $trashed_relations = $info[toPastTense(DELETE).'_items'];
+        }
+
+        $verb = count($message_parts) === 1
+            ? ' has '
+            : ' have ';
+
+        $message = empty($message_parts)
+            ? '<i>Nothing</i>'
+            : '<b>'.implode(' and ', $message_parts).$verb.'been '.toPastTense(REMOVE).'</b>';
+
+        return [
+            'message' => $message,
+            toPastTense(TRASHED).'_relations' => $trashed_relations,
+        ];
     }
 }
 

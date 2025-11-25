@@ -45,7 +45,11 @@ class Product extends Model
      *
      * @var array<string>
      */
-    protected array $trashedRelationsList = [CATEGORIES_TABLE, SUBCATEGORIES_TABLE];
+    protected array $trashedRelationsList = [
+        CATEGORIES_TABLE    => NAME,
+        SUBCATEGORIES_TABLE => NAME,
+    ];
+
 
     /**
      * Get the data of the specified product
