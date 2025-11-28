@@ -192,6 +192,7 @@ define("ROW",                  'row');
 define("LAST_PAGE",            'last_page');
 define("MAIN_IMAGES_FOLDER",   pluralize(MAIN_IMAGE));
 define("BANNER_IMAGES_FOLDER", pluralize(BANNER_IMAGE));
+define("TRASHED_RELATIONS",    TRASHED.'_relations');
 
 /**
  * Auth Standards.

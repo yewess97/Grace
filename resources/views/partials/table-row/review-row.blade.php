@@ -11,10 +11,10 @@
         @include(REVIEW_RATING_PARTIAL, [RATING => $review->{RATING}])
     </td>
     <td class="truncate lh-lg">
-        {{ $review->{PRODUCT_MODEL}->{NAME} }}
+        @strikeIfTrashed($review, $review->{PRODUCT_MODEL}->{NAME})
     </td>
     <td>
-        <p>{{ $review->{USER_MODEL}->{FULL_NAME} }}</p>
+        @strikeIfTrashed($review, $review->{USER_MODEL}->{FULL_NAME})
     </td>
     <td>
         <p>{!! dates($review, 0, true) !!}</p>
@@ -22,7 +22,9 @@
     <td>
         <p>{!! dates($review, 1, true) !!}</p>
     </td>
-    @trashedRelationsMessage($review->trashedRelations)
+    <td>
+        <p>{!! trashedRelationsData($review->trashedRelations)['message'] !!}</p>
+    </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if ($review->trashed())

@@ -1315,13 +1315,9 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
     function softDeletedRelations(Model|stdClass $model, array $relations): array
     {
         return collect($relations)
-            ->mapWithKeys(function ($attribute, string $relation) use ($model) {
+            ->mapWithKeys(static function (string $attribute, string $relation) use ($model) {
                 $related = $model->{$relation} ?? null;
                 $trashed_method_exists = static fn($item) => method_exists($item, TRASHED) && $item->trashed();
-
-                if (!$related) {
-                    return [];
-                }
 
                 // Single Relation (belongsTo / hasOne)
                 if ($trashed_method_exists($related)) {
@@ -1329,7 +1325,6 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
                         $relation => [
                             'type'          => 'single',
                             'label'         => $relation,
-                            'attribute'     => $attribute,
                             toPastTense(DELETE).'_items' => [$related->{$attribute} ?? $relation],
                         ]
                     ];
@@ -1347,7 +1342,6 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
                             $relation => [
                                 'type'          => 'multiple',
                                 'label'         => $relation,
-                                'attribute'     => $attribute,
                                 toPastTense(DELETE).'_items' => $deleted_items,
                             ]
                         ];
@@ -1361,7 +1355,7 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
 }
 
 
-if (!function_exists(toPastTense(TRASHED).'RelationsData')) {
+if (!function_exists(TRASHED.'RelationsData')) {
     /**
      * Get the trashed relations data.
      *
@@ -1374,7 +1368,6 @@ if (!function_exists(toPastTense(TRASHED).'RelationsData')) {
         $trashed_relations = [];
 
         foreach ($trashedRelations as $relation => $info) {
-
             if ($info['type'] === 'single') {
                 $message_parts[] = 'The '.ucfirst($info['label']);
             }
@@ -1383,7 +1376,7 @@ if (!function_exists(toPastTense(TRASHED).'RelationsData')) {
                 $message_parts[] = 'Some '.ucfirst($info['label']);
             }
 
-            $trashed_relations = $info[toPastTense(DELETE).'_items'];
+            $trashed_relations[] = $info[toPastTense(DELETE).'_items'];
         }
 
         $verb = count($message_parts) === 1
@@ -1395,8 +1388,8 @@ if (!function_exists(toPastTense(TRASHED).'RelationsData')) {
             : '<b>'.implode(' and ', $message_parts).$verb.'been '.toPastTense(REMOVE).'</b>';
 
         return [
-            'message' => $message,
-            toPastTense(TRASHED).'_relations' => $trashed_relations,
+            'message'         => $message,
+            TRASHED_RELATIONS => Arr::flatten($trashed_relations),
         ];
     }
 }

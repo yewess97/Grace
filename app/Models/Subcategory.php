@@ -39,7 +39,7 @@ class Subcategory extends Model
      *
      * @var array<string>
      */
-    protected array $trashedRelationsList = [CATEGORIES_TABLE];
+    protected array $trashedRelationsList = [CATEGORIES_TABLE => NAME];
 
     /**
      * Get the data of the specified subcategory.

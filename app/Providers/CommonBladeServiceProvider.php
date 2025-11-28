@@ -292,84 +292,32 @@ class CommonBladeServiceProvider extends ServiceProvider
          * @return string
          */
         Blade::directive('loopIteration', static fn() =>
-            "<?php echo \"<td class='row-num'><p></p></td>\" ?>"
+            "<?php
+                echo \"
+                    <td class='row-num'>
+                        <p></p>
+                    </td>
+                \"
+            ?>"
         );
 
         /**
-         * Generate a readable message for trashed relations.
+         * Strike the relation if it is trashed.
          *
-         * @param array $trashedRelations
+         * @param string $trashedData
          * @return string
          */
-        Blade::directive('trashedRelationsMessage', static fn(string $trashedRelations) =>
+        Blade::directive('strikeIfTrashed', static fn(string $trashedData) =>
             "<?php
-                \$__message = [];
-                \$__trashed_relations_data = [];
+                [\$__model, \$__relation] = [$trashedData];
 
-                foreach ($trashedRelations as \$__relation => \$__info) {
-                    if (\$__info['type'] === 'single') {
-                        \$__message[] = '<b>The '.ucfirst(\$__info['label']).' has been removed</b>';
-                    }
-
-                    if (\$__info['type'] === 'multiple') {
-                        \$__message[] = '<b>Some '.ucfirst(\$__info['label']).' have been removed</b>';
-                    }
-
-                    if (empty($trashedRelations)) {
-                        \$__message[] = '<i>Nothing</i>';
-                    }
-                }
-
-
+                \$__message = in_array(\$__relation, trashedRelationsData(\$__model->trashedRelations)[TRASHED_RELATIONS], true)
+                    ? '<del>'.\$__relation.'</del>'
+                    : \$__relation;
 
                 echo \"
-                    <td>
-                        <p>\".implode(' and ', \$__message).\"</p>
-                        \".(!empty(\$__details) ? implode('<br>', \$__details) : '').\"
-                    </td>
+                    <p>\$__message</p>
                 \";
-
-
-
-
-//                if (empty($trashedRelations)) {
-//                    echo '<td><p><i>Nothing</i></p></td>';
-//                }
-//                else {
-//                    \$__messages = [];
-//                    \$__details  = [];
-//
-//                    foreach ($trashedRelations as \$relation => \$info) {
-//
-//                        // Format label
-//                        \$label = ucfirst(\$info['label']);
-//
-//                        // Single / Multiple Grammar
-//                        if (\$info['type'] === 'single') {
-//                            \$__messages[] = 'The '.\$label.' has been removed';
-//                        }
-//
-//                        if (\$info['type'] === 'multiple') {
-//                            \$__messages[] = 'Some '.\$label.' have been removed';
-//                        }
-//
-//                        // Deleted item list with <del>
-//                        if (!empty(\$info['deleted_items'])) {
-//                            \$items = collect(\$info['deleted_items'])
-//                                ->map(fn(\$item) => '<del>'.\$item.'</del>')
-//                                ->join(', ');
-//
-//                            \$__details[] = '<small>'.\$items.'</small>';
-//                        }
-//                    }
-//
-//                    echo \"
-//                        <td>
-//                            <p><b>\".implode(' and ', \$__messages).\"</b></p>
-//                            \".(!empty(\$__details) ? implode('<br>', \$__details) : '').\"
-//                        </td>
-//                    \";
-//                }
             ?>"
         );
 
@@ -387,9 +335,15 @@ class CommonBladeServiceProvider extends ServiceProvider
                     ? ++\$__colspan
                     : \$__colspan += 3;
 
-                \$__message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE) ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true) : request()?->input(STATUS) ?? conditionRequest() ?? '')).' '.capitalizeAll(\$__table_name).' Found';
+                \$__message = 'No '.capitalizeAll((str_contains(url()->current(), ORDERS_TABLE)
+                    ? array_search((int) request()?->input(STATUS), ORDER_STATUS_ENUM, true)
+                    : request()?->input(STATUS) ?? conditionRequest() ?? '')).' '.capitalizeAll(\$__table_name).' Found';
 
-                echo \"<tr><td colspan='\$__colspan' class='py-4 fs-6 fw-500 text-muted'>\$__message</td></tr>\";
+                echo \"
+                    <tr>
+                        <td colspan='\$__colspan' class='py-4 fs-6 fw-500 text-muted'>\$__message</td>
+                    </tr>
+                \";
             ?>"
         );
 

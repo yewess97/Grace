@@ -14,11 +14,13 @@
     <td>
         <ul class="cell-menu overflow-auto">
             @foreach ($subcategory->{CATEGORIES_TABLE} as $category)
-                <li>{{ $category->{NAME} }}</li>
+                <li>@strikeIfTrashed($subcategory, $category->{NAME})</li>
             @endforeach
         </ul>
     </td>
-    @trashedRelationsMessage($subcategory->trashedRelations)
+    <td>
+        <p>{!! trashedRelationsData($subcategory->trashedRelations)['message'] !!}</p>
+    </td>
     <td>
         <div class="d-flex justify-content-center align-items-center gap-3">
             @if ($subcategory->trashed())

@@ -39,7 +39,10 @@ class Review extends Model
      *
      * @var array<string>
      */
-    protected array $trashedRelationsList = [PRODUCT_MODEL, USER_MODEL];
+    protected array $trashedRelationsList = [
+        PRODUCT_MODEL => NAME,
+        USER_MODEL    => FULL_NAME,
+    ];
 
     /**
      * Get the data of the specified review.

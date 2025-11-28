@@ -68,15 +68,7 @@
     <td>
         <ul class="cell-menu overflow-auto">
             @foreach ($product->{CATEGORIES_TABLE} as $category)
-                <li>
-                    @foreach (trashedRelationsData($product->trashedRelations)[toPastTense(TRASHED).'_relations'] as $relation)
-                        @if ($relation === $category->{NAME})
-                            <del>{{$relation}}</del>
-                        @else
-                            {{$relation}}
-                        @endif
-                    @endforeach
-                </li>
+                <li>@strikeIfTrashed($product, $category->{NAME})</li>
             @endforeach
         </ul>
     </td>
@@ -84,15 +76,7 @@
         @if ($product->{SUBCATEGORIES_TABLE}->isNotEmpty())
             <ul class="cell-menu overflow-auto">
                 @foreach ($product->{SUBCATEGORIES_TABLE} as $subcategory)
-                    <li>
-                        @foreach (trashedRelationsData($product->trashedRelations)[toPastTense(TRASHED).'_relations'] as $relation)
-                            @if ($relation === $subcategory->{NAME})
-                                <del>{{$relation}}</del>
-                            @else
-                                {{$relation}}
-                            @endif
-                        @endforeach
-                    </li>
+                    <li>@strikeIfTrashed($product, $subcategory->{NAME})</li>
                 @endforeach
             </ul>
         @else
