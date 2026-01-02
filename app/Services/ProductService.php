@@ -154,7 +154,7 @@ class ProductService
      */
     final public function deleteProduct(Product $product): bool
     {
-        $deleted_product = removeDeleteOrRestore($product, $product->{NAME}, true);
+        $deleted_product = removeDeleteOrRestore($product, $product->{NAME});
 
         $this->forgetProductCache($product);
 
@@ -171,7 +171,7 @@ class ProductService
      */
     final public function deleteMultipleProducts(Product $products): bool
     {
-        $deleted_products = removeDeleteOrRestore($products, deleteImages: true);
+        $deleted_products = removeDeleteOrRestore($products);
 
         $this->forgetProductCache($products);
 

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\HasImages;
+use App\Contracts\IGrace;
+use App\Traits\HasTrashedRelations;
 use App\Traits\Relations\BelongsToMany\CategoriesRelation;
 use App\Traits\Relations\BelongsToMany\SubcategoriesRelation;
 use App\Traits\Relations\HasMany\HasCarts;
@@ -15,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Product extends Model
+class Product extends Model implements IGrace, HasImages
 {
-    use HasFactory, SoftDeletes, HasCarts, CategoriesRelation, SubcategoriesRelation;
+    use HasFactory, HasTrashedRelations, SoftDeletes, HasCarts, CategoriesRelation, SubcategoriesRelation;
 
     /**
      * The table associated with the model.
@@ -57,7 +60,7 @@ class Product extends Model
      *
      * @return Attribute
      */
-    final protected function data(): Attribute
+    final public function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, [NAME, SHORT_DESCRIPTION, LONG_DESCRIPTION, MAIN_IMAGE, OLD_PRICE, NEW_PRICE, QUANTITY, STATUS])?->load([
             CATEGORIES_TABLE    => static fn($category)    => $category->select(ID, NAME),
@@ -65,6 +68,24 @@ class Product extends Model
             SIZES,
             THUMB_IMAGES,
         ]));
+    }
+
+    /**
+     * Configure all image properties for the product.
+     *
+     * @return array
+     */
+    final public function imageProperties(): array
+    {
+        return [
+            MAIN_IMAGE => [
+                'type' => 'column',
+            ],
+            THUMB_IMAGES => [
+                'type'       => 'relation',
+                'image_type' => THUMB_IMAGE,
+            ],
+        ];
     }
 
     /**
@@ -84,16 +105,6 @@ class Product extends Model
             ->reject(fn(self $product) => $product->{ID} === $this->{ID})
             ->unique(ID)
         );
-    }
-
-    /**
-     * Get the trashed relations of the specified product.
-     *
-     * @return Attribute
-     */
-    final protected function trashedRelations(): Attribute
-    {
-        return Attribute::get(fn() => softDeletedRelations($this, $this->trashedRelationsList));
     }
 
     /**

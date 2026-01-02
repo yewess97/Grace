@@ -73,7 +73,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($category, Subcategory::class);
         $this->deleteRelatedCollectionItems($category, Product::class);
 
-        $deleted_category = removeDeleteOrRestore($category, $category->{NAME}, true);
+        $deleted_category = removeDeleteOrRestore($category, $category->{NAME});
 
         $this->forgetCategoryCache();
 
@@ -93,7 +93,7 @@ class CategoryService
         $this->deleteRelatedCollectionItems($categories, Subcategory::class);
         $this->deleteRelatedCollectionItems($categories, Product::class);
 
-        $deleted_categories = removeDeleteOrRestore($categories, deleteImages: true);
+        $deleted_categories = removeDeleteOrRestore($categories);
 
         $this->forgetCategoryCache();
 
@@ -143,7 +143,9 @@ class CategoryService
     private function deleteRelatedCollectionItems(Category $category, string $modelClass): void
     {
         $category_ids = selectedIdsRequest()
-            ? array_map('intval', [selectedIdsRequest()])
+            ? array_map('intval', array_filter(
+                array_map('trim', explode(',', selectedIdsRequest()))
+            ))
             : [$category->{ID}];
 
         $modelClass::query()

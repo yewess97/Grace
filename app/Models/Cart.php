@@ -38,7 +38,7 @@ class Cart extends Model
      *
      * @return Attribute
      */
-    final protected function selectedProductSize(): Attribute
+    final public function selectedProductSize(): Attribute
     {
         return Attribute::get(fn() => array_search($this->{PRODUCT_SIZE}, PRODUCT_SIZE_ENUM, true) ?? '');
     }

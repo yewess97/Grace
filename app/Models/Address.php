@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\IGrace;
 use App\Traits\Relations\BelongsTo\UserRelation;
 use App\Traits\Relations\HasMany\HasOrders;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Address extends Model
+class Address extends Model implements IGrace
 {
     use HasFactory, SoftDeletes, UserRelation, HasOrders;
 
@@ -39,7 +40,7 @@ class Address extends Model
      *
      * @return Attribute
      */
-    final protected function data(): Attribute
+    final public function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, [ADDRESS1, ADDRESS2, CITY, STATE, POSTAL_CODE, COUNTRY]));
     }

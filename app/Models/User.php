@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\IGrace;
 use App\Traits\Relations\HasMany\HasCarts;
 use App\Traits\Relations\HasMany\HasOrders;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements IGrace
 {
     use HasFactory, SoftDeletes, Notifiable, HasOrders, HasCarts;
 
@@ -49,7 +50,7 @@ class User extends Authenticatable
      *
      * @return Attribute
      */
-    final protected function fullName(): Attribute
+    final public function fullName(): Attribute
     {
         return Attribute::get(fn() => ucwords("$this->first_name $this->last_name"));
     }
@@ -59,7 +60,7 @@ class User extends Authenticatable
      *
      * @return Attribute
      */
-    final protected function isAdmin(): Attribute
+    final public function isAdmin(): Attribute
     {
         return Attribute::get(fn() => $this->{ROLE} === 1);
     }
@@ -69,7 +70,7 @@ class User extends Authenticatable
      *
      * @return Attribute
      */
-    final protected function data(): Attribute
+    final public function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, [FIRST_NAME, LAST_NAME, EMAIL, ROLE, LAST_SEEN]));
     }

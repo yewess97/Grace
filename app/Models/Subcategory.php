@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\HasImages;
+use App\Contracts\IGrace;
+use App\Traits\HasTrashedRelations;
 use App\Traits\Relations\BelongsToMany\CategoriesRelation;
 use App\Traits\Relations\BelongsToMany\ProductsRelation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -9,9 +12,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Subcategory extends Model
+class Subcategory extends Model implements IGrace, HasImages
 {
-    use HasFactory, SoftDeletes, CategoriesRelation, ProductsRelation;
+    use HasFactory, HasTrashedRelations, SoftDeletes, CategoriesRelation, ProductsRelation;
 
     /**
      * The table associated with the model.
@@ -43,8 +46,10 @@ class Subcategory extends Model
 
     /**
      * Get the data of the specified subcategory.
+     *
+     * @return Attribute
      */
-    final protected function data(): Attribute
+    final public function data(): Attribute
     {
         return Attribute::get(fn() => getData($this, [NAME, MAIN_IMAGE])?->load([
             CATEGORIES_TABLE => static fn($category) => $category->select(ID, NAME),
@@ -52,12 +57,16 @@ class Subcategory extends Model
     }
 
     /**
-     * Get the trashed relations of the specified subcategory.
+     * Configure all image properties for the subcategory.
      *
-     * @return Attribute
+     * @return array
      */
-    final protected function trashedRelations(): Attribute
+    final public function imageProperties(): array
     {
-        return Attribute::get(fn() => softDeletedRelations($this, $this->trashedRelationsList));
+        return [
+            MAIN_IMAGE => [
+                'type' => 'column',
+            ],
+        ];
     }
 }

@@ -1061,10 +1061,8 @@ const Common = {
      * @return {void}
      */
     handleDeleteErrors: (options) => {
-        // const { error, deleteRoute, isMultiple, selectedIds, forceDeleteRequests, collection, mainPage, action, collectionTrashed, successMessage, cancelMessage } = options;
-
         options.error.status === 404
-            ? Common.forceDeleteConfirmation(...options)
+            ? Common.forceDeleteConfirmation(options)
             : Common.somethingWentWrongError();
     },
 

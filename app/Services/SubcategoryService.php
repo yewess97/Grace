@@ -63,7 +63,7 @@ class SubcategoryService
      */
     final public function deleteSubcategory(Subcategory $subcategory): bool
     {
-        $deleted_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME}, true);
+        $deleted_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME});
 
         $this->forgetSubcategoryCache();
 
@@ -80,7 +80,7 @@ class SubcategoryService
      */
     final public function deleteMultipleSubcategories(Subcategory $subcategories): bool
     {
-        $deleted_subcategories = removeDeleteOrRestore($subcategories, deleteImages: true);
+        $deleted_subcategories = removeDeleteOrRestore($subcategories);
 
         $this->forgetSubcategoryCache();
 
