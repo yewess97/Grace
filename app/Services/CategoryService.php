@@ -155,19 +155,19 @@ class CategoryService
             ->with([CATEGORIES_TABLE => static fn(Builder $query) => $query->withTrashed()])
             ->cursor()
             ->each(function (Model|stdClass $related_collection_item) use ($category_ids, $modelClass) {
-            $related_category_ids = $related_collection_item->{CATEGORIES_TABLE}
-                ->pluck(ID);
+                $related_category_ids = $related_collection_item->{CATEGORIES_TABLE}
+                    ->pluck(ID);
 
-            // If the item still has other categories attached -> detach only
-            if ($related_category_ids->diff($category_ids)->isNotEmpty()) {
-                return $related_collection_item->{CATEGORIES_TABLE}()
-                    ->detach($categoryIds);
-            }
+                // If the item still has other categories attached -> detach only
+                if ($related_category_ids->diff($category_ids)->isNotEmpty()) {
+                    return $related_collection_item->{CATEGORIES_TABLE}()
+                        ->detach($category_ids);
+                }
 
-            $this->deleteRelatedCollectionImages($related_collection_item, $modelClass);
+                $this->deleteRelatedCollectionImages($related_collection_item, $modelClass);
 
-            return $related_collection_item->forceDelete();
-        });
+                return $related_collection_item->forceDelete();
+            });
 
         $this->forgetCategoryCache();
     }
@@ -186,8 +186,8 @@ class CategoryService
         if ($modelClass === Product::class) {
             $images_paths = array_merge(
                 $images_paths,
-                $related_collection_item->{THUMB_IMAGES}->map(
-                    static fn(ThumbImage $thumb_image) => imageSource($thumb_image, THUMB_IMAGE, true)
+                $related_collection_item->{THUMB_IMAGES}->map(static fn(ThumbImage $thumb_image) =>
+                    imageSource($thumb_image, THUMB_IMAGE, true)
                 )->toArray()
             );
         }

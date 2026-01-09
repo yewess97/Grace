@@ -84,12 +84,13 @@ class CommonBladeServiceProvider extends ServiceProvider
                         </div>
                     \";
                 }
-
-                echo \"
-                    <div class='modal-footer p-2'>
-                        <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn'>\".capitalizeAll($btnName).\"</button>
-                    </div>
-                \";
+                else {
+                    echo \"
+                        <div class='modal-footer p-2'>
+                            <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn'>\".capitalizeAll($btnName).\"</button>
+                        </div>
+                    \";
+                }
             ?>"
         );
 
@@ -258,14 +259,15 @@ class CommonBladeServiceProvider extends ServiceProvider
                 if (in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)) {
                     echo \$__table_headers;
                 }
-
-                echo \"
-                    <th scope='col' class='position-relative'>
-                        <input type='checkbox' role='checkbox' id='check_all'>
-                        <span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span>
-                    </th> \$__table_headers
-                    <th scope='col'>Action</th>
-                \";
+                else {
+                    echo \"
+                        <th scope='col' class='position-relative'>
+                            <input type='checkbox' role='checkbox' id='check_all'>
+                            <span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span>
+                        </th> \$__table_headers
+                        <th scope='col'>Action</th>
+                    \";
+                }
             ?>"
         );
 

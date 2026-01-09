@@ -36,6 +36,7 @@ define("LOGOUT",   'logout');
 define("CATEGORY_MODEL",    'category');
 define("SUBCATEGORY_MODEL", 'subcategory');
 define("PRODUCT_MODEL",     'product');
+define("WISHLIST_MODEL",    'wishlist');
 define("CART_MODEL",        'cart');
 define("ORDER_MODEL",       'order');
 define("ORDER_ITEM_MODEL",  ORDER_MODEL.'_item');
@@ -149,6 +150,7 @@ define("SUBCATEGORIES_TABLE",        pluralize(SUBCATEGORY_MODEL));
 define("PRODUCTS_TABLE",             pluralize(PRODUCT_MODEL));
 define("PRODUCT_SIZES_TABLE",        pluralize(PRODUCT_SIZE));
 define("THUMB_IMAGES_TABLE",         pluralize(THUMB_IMAGE));
+define("WISHLISTS_TABLE",            pluralize(WISHLIST_MODEL));
 define("CARTS_TABLE",                pluralize(CART_MODEL));
 define("ORDERS_TABLE",               pluralize(ORDER_MODEL));
 define("ORDER_ITEMS_TABLE",          pluralize(ORDER_ITEM_MODEL));
@@ -450,8 +452,7 @@ define("ORDER_ATTRIBUTES", [
 define("ORDER_ITEM_ATTRIBUTES", [
     PRODUCT_NAME,
     PRODUCT_MAIN_IMAGE,
-    PRODUCT_SIZE,
-    PRODUCT_QUANTITY,
+    ...CART_COMMON_ATTRIBUTES,
     PRODUCT_TOTAL_PRICE,
 ]);
 
@@ -532,13 +533,19 @@ define("PRODUCT_FILLABLE_ATTRIBUTES", [
 ]);
 
 /**
+ * Wishlist.
+ */
+define("WISHLIST_FILLABLE_ATTRIBUTES", [
+    USER_ID,
+    PRODUCT_ID,
+]);
+
+/**
  * Cart.
  */
 define("CART_FILLABLE_ATTRIBUTES", [
-    USER_ID,
-    PRODUCT_ID,
-    PRODUCT_SIZE,
-    PRODUCT_QUANTITY,
+    ...WISHLIST_FILLABLE_ATTRIBUTES,
+    ...CART_COMMON_ATTRIBUTES,
 ]);
 
 /**
@@ -648,7 +655,6 @@ define("EDIT_REVIEW",      collectionAction(EDIT, REVIEW_MODEL));
 define("REMOVE_CATEGORY",    collectionAction(REMOVE, CATEGORY_MODEL));
 define("REMOVE_SUBCATEGORY", collectionAction(REMOVE, SUBCATEGORY_MODEL));
 define("REMOVE_PRODUCT",     collectionAction(REMOVE, PRODUCT_MODEL));
-define("REMOVE_CART",        collectionAction(REMOVE, CART_MODEL));
 define("REMOVE_ORDER",       collectionAction(REMOVE, ORDER_MODEL));
 define("REMOVE_USER",        collectionAction(REMOVE, USER_MODEL));
 define("REMOVE_ADDRESS",     collectionAction(REMOVE, ADDRESS_MODEL));
@@ -672,7 +678,6 @@ define("DELETE_REVIEW",      collectionAction(DELETE, REVIEW_MODEL));
 define("RESTORE_CATEGORY",    collectionAction(RESTORE, CATEGORY_MODEL));
 define("RESTORE_SUBCATEGORY", collectionAction(RESTORE, SUBCATEGORY_MODEL));
 define("RESTORE_PRODUCT",     collectionAction(RESTORE, PRODUCT_MODEL));
-define("RESTORE_CART",        collectionAction(RESTORE, CART_MODEL));
 define("RESTORE_ORDER",       collectionAction(RESTORE, ORDER_MODEL));
 define("RESTORE_USER",        collectionAction(RESTORE, USER_MODEL));
 define("RESTORE_ADDRESS",     collectionAction(RESTORE, ADDRESS_MODEL));
@@ -885,9 +890,9 @@ define("SEARCH_REVIEWS",        searchFilter(REVIEWS_TABLE));
 /**
  * Filter.
  */
-define("FILTER_DASHBOARD",      searchFilter(DASHBOARD,      true));
-define("FILTER_PRODUCTS",       searchFilter(PRODUCTS_TABLE, true));
-define("FILTER_ORDERS",         searchFilter(ORDERS_TABLE,   true));
+define("FILTER_DASHBOARD", searchFilter(DASHBOARD,      true));
+define("FILTER_PRODUCTS",  searchFilter(PRODUCTS_TABLE, true));
+define("FILTER_ORDERS",    searchFilter(ORDERS_TABLE,   true));
 
 #################################### End Search & Filter ####################################
 
@@ -896,21 +901,21 @@ define("FILTER_ORDERS",         searchFilter(ORDERS_TABLE,   true));
 /**
  * Admin Pagination Views.
  */
-define("ADMIN_DASHBOARD_PAGINATION",         paginationView(DASHBOARD));
-define("ADMIN_CATEGORIES_PAGINATION",        paginationView(CATEGORIES_TABLE));
-define("ADMIN_SUBCATEGORIES_PAGINATION",     paginationView(SUBCATEGORIES_TABLE));
-define("ADMIN_PRODUCTS_PAGINATION",          paginationView(PRODUCTS_TABLE));
-define("ADMIN_ORDERS_PAGINATION",            paginationView(ORDERS_TABLE));
-define("ADMIN_USERS_PAGINATION",             paginationView(USERS_TABLE));
-define("ADMIN_USER_ADDRESSES_PAGINATION",    paginationView(kebabAll(USER_ADDRESSES)));
-define("ADMIN_REVIEWS_PAGINATION",           paginationView(REVIEWS_TABLE));
+define("ADMIN_DASHBOARD_PAGINATION",      paginationView(DASHBOARD));
+define("ADMIN_CATEGORIES_PAGINATION",     paginationView(CATEGORIES_TABLE));
+define("ADMIN_SUBCATEGORIES_PAGINATION",  paginationView(SUBCATEGORIES_TABLE));
+define("ADMIN_PRODUCTS_PAGINATION",       paginationView(PRODUCTS_TABLE));
+define("ADMIN_ORDERS_PAGINATION",         paginationView(ORDERS_TABLE));
+define("ADMIN_USERS_PAGINATION",          paginationView(USERS_TABLE));
+define("ADMIN_USER_ADDRESSES_PAGINATION", paginationView(kebabAll(USER_ADDRESSES)));
+define("ADMIN_REVIEWS_PAGINATION",        paginationView(REVIEWS_TABLE));
 
 /**
  * User Pagination Views.
  */
-define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,     true));
-define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,               true));
-define("CART_PAGINATION",                    paginationView(CART_MODEL,                   true));
+define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,               true));
+define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,                         true));
+define("CART_PAGINATION",                    paginationView(CART_MODEL,                             true));
 define("CHECKOUT_USER_ADDRESSES_PAGINATION", paginationView(kebabAll(CHECKOUT_USER_ADDRESSES), true));
 
 #################################### End Pagination Views ####################################

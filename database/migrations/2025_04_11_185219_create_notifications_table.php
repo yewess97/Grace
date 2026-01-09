@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Notification;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,9 +12,9 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    final public function up(): void
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create((new Notification())->getTable(), static function (Blueprint $table) {
             $table->uuid(ID)->primary();
             $table->string('type');
             $table->morphs('notifiable');
@@ -33,8 +34,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    final public function down(): void
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists((new Notification())->getTable());
     }
 };

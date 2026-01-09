@@ -14,7 +14,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up(): void
+    final public function up(): void
     {
         Schema::create((new Cart())->getTable(), static function (Blueprint $table) {
             $table->id();
@@ -30,7 +30,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
+    final public function down(): void
     {
         Schema::dropIfExists((new Cart())->getTable());
     }

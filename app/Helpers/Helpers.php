@@ -99,12 +99,12 @@ if (!function_exists('guestControllerRoutes')) {
      */
     function guestControllerRoutes(string $controller, string $url): RouteRegistrar
     {
-        $url_kebab     = kebabAll($url);
+        $formated_url         = kebabAll($url);
         $post_method_callback = capitalizeSecond($url);
 
-        return Route::controller($controller)->group(function () use ($url, $url_kebab, $post_method_callback) {
-            Route::get('/'.$url_kebab, 'index')->name($url);
-            Route::post('/'.$url_kebab, $post_method_callback)->name($url.'_'.USER_MODEL);
+        return Route::controller($controller)->group(function () use ($url, $formated_url, $post_method_callback) {
+            Route::get('/'.$formated_url, 'index')->name($url);
+            Route::post('/'.$formated_url, $post_method_callback)->name($url.'_'.USER_MODEL);
         });
     }
 }
@@ -121,15 +121,16 @@ if (!function_exists('generalControllerRoutes')) {
      */
     function generalControllerRoutes(string $controller, string $modelName, ?string $urlParam = null): RouteRegistrar
     {
-        $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
-        $edit_model             = EDIT.'_'.$modelName;
-        $update_model           = UPDATE.'_'.$modelName;
-        $delete_model           = DELETE.'_'.$modelName;
-        $restore_model          = RESTORE.'_'.$modelName;
+        return Route::controller($controller)->group(function () use ($modelName, $urlParam) {
+            $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
+            $edit_model             = EDIT.'_'.$modelName;
+            $update_model           = UPDATE.'_'.$modelName;
+            $delete_model           = DELETE.'_'.$modelName;
+            $restore_model          = RESTORE.'_'.$modelName;
+            $singular_urls          = [WISHLIST_MODEL, CART_MODEL];
 
-        return Route::controller($controller)->group(function () use ($modelName, $create_or_update_model, $edit_model, $update_model, $delete_model, $restore_model, $urlParam) {
             if ($modelName !== REVIEW_MODEL && !isAdminRoute()) {
-                $url = $modelName === CART_MODEL
+                $url = in_array($modelName, $singular_urls, true)
                     ? $modelName
                     : pluralize($modelName);
 
@@ -142,7 +143,7 @@ if (!function_exists('generalControllerRoutes')) {
                 Route::put('/'.kebabAll($update_model), UPDATE)->name($update_model);
             }
 
-            if ($modelName !== CART_MODEL) {
+            if (!in_array($modelName, $singular_urls, true)) {
                 Route::get('/'.kebabAll($edit_model).'/{'.$modelName.'}', EDIT)->name($edit_model);
             }
 
@@ -150,9 +151,11 @@ if (!function_exists('generalControllerRoutes')) {
 
             Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model))->withTrashed();
 
-            Route::put('/'.kebabAll($restore_model).'/{'.$modelName.'}', RESTORE)->name($restore_model)->withTrashed();
+            if (!in_array($modelName, $singular_urls, true)) {
+                Route::put('/' . kebabAll($restore_model) . '/{' . $modelName . '}', RESTORE)->name($restore_model)->withTrashed();
 
-            Route::put('/'.kebabAll(pluralize($restore_model)), RESTORE_MULTIPLE)->name(pluralize($restore_model))->withTrashed();
+                Route::put('/' . kebabAll(pluralize($restore_model)), RESTORE_MULTIPLE)->name(pluralize($restore_model))->withTrashed();
+            }
         });
     }
 }
@@ -1186,6 +1189,7 @@ if (!function_exists(DELETE.'Images')) {
     function deleteImages(Model|stdClass $model, array $selectedIds): bool
     {
         /** @var (HasImages&Model)|(HasImages&stdClass) $model */
+
         $images_relations = collect($model->imageProperties())
             ->filter(static fn(array $image) => $image['type'] === 'relation')
             ->keys()

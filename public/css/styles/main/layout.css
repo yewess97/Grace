@@ -12,7 +12,7 @@
 
 /* ------------============== Top Bar ==============------------ */
 .top-bar {
-    padding-block: var(--thirteen-pixels);
+    padding-block: var(--ten-pixels);
     border-bottom: var(--one-pixel) solid rgba(255, 255, 255, 0.1);
     background-color: var(--light-gray-color);
 }
@@ -267,8 +267,16 @@
     background-color: var(--black-color);
 }
 
-.footer .footer-bottom p > a:hover {
+.footer .footer-bottom .copyright > a:hover {
     color: var(--second-color);
+}
+
+.footer .footer-bottom .payment-methods {
+    width: calc(var(--sixty-pixels) + var(--twenty-pixels));
+}
+
+.footer .footer-bottom .payment-methods img {
+    mix-blend-mode: normal !important;
 }
 
 .footer .footer-bottom .scroll-to-top {

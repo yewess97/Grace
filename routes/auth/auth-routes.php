@@ -7,6 +7,7 @@ use App\Http\Controllers\AddressController,
     App\Http\Controllers\OrderController,
     App\Http\Controllers\ReviewController,
     App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,12 @@ use App\Http\Controllers\AddressController,
  * Logout Route
  */
 Route::post('/'.LOGOUT, [LogoutController::class, LOGOUT])->name(LOGOUT);
+
+
+/**
+ * Wishlist Routes
+ */
+generalControllerRoutes(WishlistController::class, WISHLIST_MODEL);
 
 
 /**
