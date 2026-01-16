@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -61,7 +62,7 @@ class UserService
     {
         $deleted_user = removeDeleteOrRestore($user, $user->{FULL_NAME});
 
-        $this->forgetUserCache();
+        $this->forgetUserCache($user);
 
         return $deleted_user;
     }
@@ -77,7 +78,7 @@ class UserService
     {
         $deleted_users = removeDeleteOrRestore($users);
 
-        $this->forgetUserCache();
+        $this->forgetUserCache($users);
 
         return $deleted_users;
     }
@@ -93,7 +94,7 @@ class UserService
     {
         $restored_user = removeDeleteOrRestore($user, $user->{FULL_NAME});
 
-        $this->forgetUserCache();
+        $this->forgetUserCache($user);
 
         return $restored_user;
     }
@@ -109,7 +110,7 @@ class UserService
     {
         $restored_users = removeDeleteOrRestore($users);
 
-        $this->forgetUserCache();
+        $this->forgetUserCache($users);
 
         return $restored_users;
     }
@@ -117,11 +118,19 @@ class UserService
     /**
      * Forget the user cache.
      *
+     * @param User $user
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetUserCache(): void
+    private function forgetUserCache(User $user): void
     {
+        $user->{REVIEWS_TABLE}()
+            ->withTrashed()
+            ->cursor()
+            ->each(static fn(Review $review) =>
+                app(ReviewService::class)->forgetReviewCache($review)
+            );
+
         forgetCache([USERS_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY, USER_ORDERS_PAGINATION_CACHE_KEY, USER_MODEL]);
     }
 }

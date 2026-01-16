@@ -121,42 +121,52 @@ if (!function_exists('generalControllerRoutes')) {
      */
     function generalControllerRoutes(string $controller, string $modelName, ?string $urlParam = null): RouteRegistrar
     {
-        return Route::controller($controller)->group(function () use ($modelName, $urlParam) {
-            $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
-            $edit_model             = EDIT.'_'.$modelName;
-            $update_model           = UPDATE.'_'.$modelName;
-            $delete_model           = DELETE.'_'.$modelName;
-            $restore_model          = RESTORE.'_'.$modelName;
-            $singular_urls          = [WISHLIST_MODEL, CART_MODEL];
+        $create_or_update_model = CREATE.'_'.UPDATE.'_'.$modelName;
+        $edit_model             = EDIT.'_'.$modelName;
+        $update_model           = UPDATE.'_'.$modelName;
+        $delete_model           = DELETE.'_'.$modelName;
+        $restore_model          = RESTORE.'_'.$modelName;
+        $singular_urls          = [WISHLIST_MODEL, CART_MODEL];
 
-            if ($modelName !== REVIEW_MODEL && !isAdminRoute()) {
-                $url = in_array($modelName, $singular_urls, true)
-                    ? $modelName
-                    : pluralize($modelName);
+        $routes = collect()->when($modelName !== REVIEW_MODEL && !isAdminRoute(), static fn(Collection $routesCollection) =>
+            $routesCollection->push(static fn() =>
+                Route::get('/'.kebabAll($modelName).($urlParam ? "/{{$urlParam}}" : ''), 'index')
+                    ->name(
+                        in_array($modelName, $singular_urls, true)
+                            ? $modelName
+                            : pluralize($modelName)
+                    )
+            )
+        )
+            ->push(static fn() =>
+                Route::match(['post', 'put'], '/'.kebabAll($create_or_update_model).'/{operation}', STORE_OR_UPDATE)->name($create_or_update_model)
+            )
+            ->when(in_array($modelName, [ORDER_MODEL, ADDRESS_MODEL], true), static fn(Collection $routesCollection) =>
+                $routesCollection->push(static fn() =>
+                    Route::put('/'.kebabAll($update_model), UPDATE)->name($update_model)
+                )
+            )
+            ->when($modelName !== CART_MODEL, static fn(Collection $routesCollection) =>
+                $routesCollection->push(static fn() =>
+                    Route::get('/'.kebabAll($edit_model)."/{{$modelName}}", EDIT)->name($edit_model)
+                )
+            )
+            ->push(static fn() =>
+                Route::delete('/'.kebabAll($delete_model)."/{{$modelName}}", DESTROY)->name($delete_model)->withTrashed()
+            )
+            ->push(static fn() =>
+                Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model))->withTrashed()
+            )
+            ->when(!in_array($modelName, $singular_urls, true), static fn(Collection $routesCollection) =>
+                $routesCollection->push(static fn() =>
+                    Route::put('/'.kebabAll($restore_model)."/{{$modelName}}", RESTORE)->name($restore_model)->withTrashed()
+                )
+                    ->push(static fn() =>
+                        Route::put('/'.kebabAll(pluralize($restore_model)), RESTORE_MULTIPLE)->name(pluralize($restore_model))->withTrashed()
+                    )
+            );
 
-                Route::get('/'.kebabAll($modelName).(isset($urlParam) ? "/{{$urlParam}}" : ''), 'index')->name($url);
-            }
-
-            Route::match(['post', 'put'], '/'.kebabAll($create_or_update_model).'/{operation}', STORE_OR_UPDATE)->name($create_or_update_model);
-
-            if (in_array($modelName, [ORDER_MODEL, ADDRESS_MODEL], true)) {
-                Route::put('/'.kebabAll($update_model), UPDATE)->name($update_model);
-            }
-
-            if (!in_array($modelName, $singular_urls, true)) {
-                Route::get('/'.kebabAll($edit_model).'/{'.$modelName.'}', EDIT)->name($edit_model);
-            }
-
-            Route::delete('/'.kebabAll($delete_model).'/{'.$modelName.'}', DESTROY)->name($delete_model)->withTrashed();
-
-            Route::delete('/'.kebabAll(pluralize($delete_model)), DESTROY_MULTIPLE)->name(pluralize($delete_model))->withTrashed();
-
-            if (!in_array($modelName, $singular_urls, true)) {
-                Route::put('/' . kebabAll($restore_model) . '/{' . $modelName . '}', RESTORE)->name($restore_model)->withTrashed();
-
-                Route::put('/' . kebabAll(pluralize($restore_model)), RESTORE_MULTIPLE)->name(pluralize($restore_model))->withTrashed();
-            }
-        });
+        return Route::controller($controller)->group(static fn() => $routes->each(static fn($route) => $route()));
     }
 }
 
@@ -706,10 +716,10 @@ if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
                 PRODUCTS_TABLE.'_count' => ProductSize::query()->where(SIZE, $value)->count(),
             ])->values();
 
-        $prices_range = (object)[
-            MIN_PRICE => Product::query()->min(NEW_PRICE),
-            MAX_PRICE => Product::query()->max(NEW_PRICE),
-        ];
+        $prices_range = (object) Product::query()
+            ->selectRaw('MIN(?) as '.MIN_PRICE.', MAX(?) as '.MAX_PRICE, [NEW_PRICE, NEW_PRICE])
+            ->first()
+            ?->toArray();
 
         $filter_products_error = static fn(string $attributeName) => formError(FILTER, PRODUCTS_TABLE, $attributeName);
 
@@ -799,6 +809,7 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
         if ($productId) {
             return cache()->remember(AVERAGE_RATE.'_'.$productId, 1800, static fn() =>
                 Review::query()->where(PRODUCT_ID, $productId)
+                    ->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed())
                     ->withoutTrashed()
                     ->avg(RATING) ?? '0'
             );

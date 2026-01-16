@@ -20,7 +20,7 @@
                     {{\Carbon\Carbon::now()->format('l - d F Y')}}
                 </li>
                 <li role="listitem" class="top-wishlist col d-lg-flex d-sm-none justify-content-end align-items-center">
-                    <a href="https://www.facebook.com/YousufAymooni" target="_blank" role="link" aria-label="Facebook">
+                    <a href="{{route(WISHLIST_MODEL)}}" role="link">
                         <i class="fa-solid fa-heart me-1"></i>
                         <span>Wishlist (0)</span>
                     </a>

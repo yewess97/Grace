@@ -37,6 +37,13 @@ class Review extends Model implements IGrace
     protected $dates = DATES;
 
     /**
+     * The relations that should be touched on save.
+     *
+     * @var array<string>
+     */
+    protected $touches = [PRODUCT_MODEL];
+
+    /**
      * The relations that should be considered when soft-deleting.
      *
      * @var array<string>

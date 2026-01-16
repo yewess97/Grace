@@ -254,6 +254,14 @@ define("MIN_PRICE",                   'min_'.PRICE);
 define("MAX_PRICE",                   'max_'.PRICE);
 
 /**
+ * Wishlist Standards.
+ */
+define("ADD_TO_WISHLIST",      ADD.' to '.WISHLIST_MODEL);
+define("USER_WISHLIST_ITEMS",  USER_MODEL.'_'.WISHLIST_MODEL.'_items');
+define("EMPTY_WISHLIST",       'empty_'.WISHLIST_MODEL);
+define("DELETE_ALL_WISHLISTS", DELETE.'_all_'.WISHLISTS_TABLE);
+
+/**
  * Cart Standards.
  */
 define("ADD_TO_CART",      ADD.' to '.CART_MODEL);

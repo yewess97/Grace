@@ -78,11 +78,11 @@ class ReviewService
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
 
-        $review_exists = Review::query()->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
-            return $product->whereId($product_id_value)->whereStatus(1);
-        })
+        $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
+            ->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
+                return $product->whereId($product_id_value)->whereStatus(1);
+            })
             ->where(USER_ID, auth()->id())
-            ->where(ID, '<>', $review_id)
             ->withoutTrashed()
             ->exists();
 
@@ -181,7 +181,7 @@ class ReviewService
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetReviewCache(Review $review): void
+    final public function forgetReviewCache(Review $review): void
     {
         forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $review, RATING, [
             'relation' => PRODUCT_MODEL,

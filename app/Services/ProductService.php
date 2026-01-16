@@ -8,6 +8,7 @@ use App\Notifications\NewAdminActionTaken;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
@@ -32,7 +33,9 @@ class ProductService
     {
         $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 1800, static fn() =>
             Product::query()->with([
-                REVIEWS_TABLE,
+                REVIEWS_TABLE => static fn(HasMany $reviews) =>
+                    $reviews->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed()
+                ),
                 SIZES => static fn(HasMany $sizes) => $sizes->select(SIZE, PRODUCT_ID),
             ])
                 ->whereSlug($productSlug)
@@ -107,8 +110,6 @@ class ProductService
             $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($new_product_id) {
                 $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
                 $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
-//                $thumb_image_name = time().random_int(10, 100).'.png';
-//                $thumb_image->storeAs($thumb_image_path, $thumb_image_name);
 
                 return [
                     THUMB_IMAGE => $thumb_image_name,
