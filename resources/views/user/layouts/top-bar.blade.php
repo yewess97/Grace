@@ -22,7 +22,7 @@
                 <li role="listitem" class="top-wishlist col d-lg-flex d-sm-none justify-content-end align-items-center">
                     <a href="{{route(WISHLIST_MODEL)}}" role="link">
                         <i class="fa-solid fa-heart me-1"></i>
-                        <span>Wishlist (0)</span>
+                        <span>{{ucfirst(WISHLIST_MODEL)}} ({{$wishlist_total_items}})</span>
                     </a>
                 </li>
             </ul>

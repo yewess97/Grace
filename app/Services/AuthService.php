@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use InvalidArgumentException;
 use Laravel\Socialite\Facades\Socialite;
 use RuntimeException;
@@ -30,7 +31,7 @@ class AuthService {
      * Register a new user.
      *
      * @return void
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     final public function registerUser(): void
     {

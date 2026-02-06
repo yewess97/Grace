@@ -3,7 +3,7 @@
     <div class="cart-title d-flex justify-content-between align-items-center border-top border-bottom">
         <h2 class="fs-6 fw-600">My {{ucfirst(CART_MODEL)}}:</h2>
         <p class="cart-count">
-            <span class="cart-counter">{{$total_items}} Items</span>
+            <span class="cart-counter">{{$cart_total_items}} Items</span>
         </p>
     </div>
 

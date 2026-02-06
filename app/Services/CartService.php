@@ -24,10 +24,10 @@ class CartService
      */
     final public function getCartData(array $otherVars = []): array
     {
-        $user_cart_items  = cartConfig()[USER_CART_ITEMS];
-        $total_cost       = cartConfig()[TOTAL_COST];
-        $total_items      = cartConfig()[TOTAL_ITEMS];
-        $row_compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
+        $user_cart_items  = userCollectionsData()[CART_MODEL][ITEMS];
+        $cart_total_items = userCollectionsData()[CART_MODEL][TOTAL_ITEMS];
+        $total_cost       = userCollectionsData()[CART_MODEL][TOTAL_COST];
+        $row_compact_vars = compact(USER_CART_ITEMS, CART_TOTAL_ITEMS, TOTAL_COST);
         $row_view = $total_items === 0
             ? USER_CART_VIEW
             : CART_CONTENT_PARTIAL;
@@ -35,7 +35,7 @@ class CartService
         $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
         $row        = view($row_view, $row_compact_vars)->render();
 
-        $compact_vars = compact(TOTAL_COST, TOTAL_ITEMS, 'header_row', 'row');
+        $compact_vars = compact(CART_TOTAL_ITEMS, TOTAL_COST, 'header_row', 'row');
 
         return [
             ...$compact_vars,

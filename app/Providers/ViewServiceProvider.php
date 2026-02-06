@@ -21,11 +21,12 @@ class ViewServiceProvider extends ServiceProvider
             [USER_MODEL.".*"],
             static function ($view) {
                 $view->with([
-                    COMMON_COLLECTIONS => commonCollections(),
-                    'aside_menus'      => commonAsideMenus(),
-                    USER_CART_ITEMS    => cartConfig()[USER_CART_ITEMS],
-                    TOTAL_COST         => cartConfig()[TOTAL_COST],
-                    TOTAL_ITEMS        => cartConfig()[TOTAL_ITEMS],
+                    COMMON_COLLECTIONS   => commonCollections(),
+                    'aside_menus'        => commonAsideMenus(),
+                    USER_CART_ITEMS      => userCollectionsData()[CART_MODEL][ITEMS],
+                    CART_TOTAL_ITEMS     => userCollectionsData()[CART_MODEL][TOTAL_ITEMS],
+                    TOTAL_COST           => userCollectionsData()[CART_MODEL][TOTAL_COST],
+                    WISHLIST_TOTAL_ITEMS => userCollectionsData()[WISHLIST_MODEL][TOTAL_ITEMS],
                 ]);
             }
         );

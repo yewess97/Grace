@@ -68,14 +68,14 @@ if (!function_exists('ajaxPaginationResponse')) {
      *
      * @param LengthAwarePaginator $collection
      * @param string $view
-     * @param string $table
+     * @param string $tableName
      * @param array $otherViewDataVars
      * @return JsonResponse
      * @throws Throwable
      */
-    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $table, array $otherViewDataVars = []): JsonResponse
+    function ajaxPaginationResponse(LengthAwarePaginator $collection, string $view, string $tableName, array $otherViewDataVars = []): JsonResponse
     {
-        $row          = view($view, [$table => $collection, ...$otherViewDataVars])->render();
+        $row          = view($view, [$tableName => $collection, ...$otherViewDataVars])->render();
         $current_page = $collection->currentPage();
         $per_page     = $collection->perPage();
 

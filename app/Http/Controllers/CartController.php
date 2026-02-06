@@ -34,7 +34,7 @@ class CartController extends Controller
     final public function index(): Application|Factory|View|JsonResponse
     {
         return request()?->ajax()
-            ? ajaxPaginationResponse(cartConfig()[USER_CART_ITEMS], CART_PAGINATION, USER_CART_ITEMS)
+            ? ajaxPaginationResponse(userCollectionsData()[CART_MODEL][ITEMS], CART_PAGINATION, USER_CART_ITEMS)
             : showView(USER_CART_VIEW);
     }
 

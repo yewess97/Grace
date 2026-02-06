@@ -6,6 +6,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -33,6 +34,8 @@ trait LoginHelpers
      */
     private function sendLoginResponse(string $email): JsonResponse
     {
+        Artisan::call('optimize:clear');
+
         request()?->session()->regenerate();
 
         $this->clearLoginAttempts($email);

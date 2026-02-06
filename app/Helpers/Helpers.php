@@ -12,6 +12,7 @@ use App\Models\ProductSize;
 use App\Models\Review;
 use App\Models\Subcategory;
 use App\Models\User;
+use App\Models\Wishlist;
 use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewUserRegistered;
 use Illuminate\Contracts\Foundation\Application;
@@ -547,43 +548,70 @@ if (!function_exists('commonAsideMenus')) {
 }
 
 
-if (!function_exists(CART_MODEL.'Config')) {
+if (!function_exists(USER_MODEL.'CollectionsData')) {
     /**
-     * Configure the cart.
+     * Get the wishlist and cart data.
      *
      * @param array $vars
-     * @return array|string
+     * @return array|array[]
      * @throws Throwable
      */
-    function cartConfig(array $vars = []): array|string
+    function userCollectionsData(array $vars = []): array
     {
-        $user_carts_ids = cache()->remember(CARTS_TABLE, 1800, static fn() =>
-            Cart::query()->whereHasAuthUser()
-                ->pluck(ID)
-                ->toArray()
-        );
+        $collections_config = [
+            CART_MODEL => [
+                'model'             => Cart::class,
+                'cache_key'         => CARTS_TABLE,
+                'empty_session_key' => EMPTY_CART,
+            ],
+            WISHLIST_MODEL => [
+                'model'             => Wishlist::class,
+                'cache_key'         => WISHLISTS_TABLE,
+                'empty_session_key' => EMPTY_WISHLIST,
+            ],
+        ];
 
-        $user_carts = Cart::query()->whereIn(ID, $user_carts_ids)
-            ->with(PRODUCT_MODEL, static fn(BelongsTo $query) => $query->select(PRODUCT_ITEM_ATTRIBUTES));
+        $compact_vars = [];
 
-        $total_items = $user_carts->sum(PRODUCT_QUANTITY);
+        foreach ($collections_config as $type => $config) {
+            $collection_ids = cache()->remember($config['cache_key'], 1800, static fn() =>
+                $config['model']::query()
+                    ->whereHasAuthUser()
+                    ->pluck(ID)
+                    ->toArray()
+            );
 
-        $total_cost = $user_carts->cursor()
-            ->sum(fn(Cart $cartItem) => $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * $cartItem->{PRODUCT_QUANTITY});
+            $collection = $config['model']::query()
+                ->whereIn(ID, $collection_ids)
+                ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
 
-        $user_cart_items = Route::currentRouteName() === CART_MODEL
-            ? $user_carts->fastPaginate(5)
-            : $user_carts->cursor();
+            $items = Route::currentRouteName() === $type
+                ? $collection->fastPaginate(5)
+                : $collection->cursor();
 
-        $user_cart_items->isEmpty()
-            ? session()->flash(EMPTY_CART)
-            : session()->forget(EMPTY_CART);
+            $items->isEmpty()
+                ? session()->flash($config['empty_session_key'])
+                : session()->forget($config['empty_session_key']);
 
-        $compact_vars = compact(USER_CART_ITEMS, TOTAL_COST, TOTAL_ITEMS);
+            $collection_data = [
+                ITEMS => $items,
+                TOTAL_ITEMS => $type === CART_MODEL
+                    ? $collection->sum(PRODUCT_QUANTITY)
+                    : $collection->count(),
+            ];
+
+            // Add total_cost only for cart
+            if ($type === CART_MODEL) {
+                $collection_data[TOTAL_COST] = $collection->cursor()
+                    ->sum(static fn($item) => $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY});
+            }
+
+            $compact_vars[$type] = $collection_data;
+        }
 
         return empty($vars)
             ? $compact_vars
-            : [...$compact_vars, ...$vars];
+            : $compact_vars + $vars;
     }
 }
 
@@ -717,7 +745,7 @@ if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
             ])->values();
 
         $prices_range = (object) Product::query()
-            ->selectRaw('MIN(?) as '.MIN_PRICE.', MAX(?) as '.MAX_PRICE, [NEW_PRICE, NEW_PRICE])
+            ->selectRaw('MIN('.NEW_PRICE.') as '.MIN_PRICE.', MAX('.NEW_PRICE.') as '.MAX_PRICE)
             ->first()
             ?->toArray();
 
@@ -855,7 +883,7 @@ if (!function_exists('showView')) {
     {
         $view_vars = isAdminRoute()
             ? $vars
-            : cartConfig($vars);
+            : userCollectionsData($vars);
 
         return view($viewName, $view_vars);
     }

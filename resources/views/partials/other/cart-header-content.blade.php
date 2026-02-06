@@ -11,7 +11,7 @@
     @else
         {{-- Cart Product Title --}}
         <p class="cart-title px-3 py-2">
-            <span class="cart-total-items">There are {{$total_items}} {{pluralize(PRODUCT_MODEL, $total_items)}}</span>
+            <span class="cart-total-items">There are {{$cart_total_items}} {{pluralize(PRODUCT_MODEL, $cart_total_items)}}</span>
         </p>
         {{-- Cart Details --}}
         <ul role="list" class="cart-details border-top">

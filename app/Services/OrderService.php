@@ -77,8 +77,8 @@ class OrderService {
 
             [$status_value, $address_id_value, $payment_method_value] = $order_request->dataValues();
 
-            $user_cart_items  = cartConfig()[USER_CART_ITEMS];
-            $order_total_cost = cartConfig()[TOTAL_COST];
+            $user_cart_items  = userCollectionsData()[CART_MODEL][ITEMS];
+            $order_total_cost = userCollectionsData()[CART_MODEL][TOTAL_COST];
 
             if ($user_cart_items->isEmpty()) {
                 throw ValidationException::withMessages([

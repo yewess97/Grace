@@ -23,7 +23,7 @@ class CheckoutController extends Controller
      */
     final public function index(): Application|Factory|View|RedirectResponse|JsonResponse
     {
-        $user_cart_items = cartConfig()[USER_CART_ITEMS];
+        $user_cart_items = userCollectionsData()[CART_MODEL][ITEMS];
 
         if ($user_cart_items->isEmpty()) {
             return to_route('home')

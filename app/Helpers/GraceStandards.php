@@ -51,14 +51,16 @@ define("REVIEW_MODEL",      'review');
 /**
  * Common Attributes.
  */
-define("ID",         'id');
-define("NAME",       'name');
-define("SLUG",       'slug');
-define("MAIN_IMAGE", 'main_image');
-define("STATUS",     'status');
-define("CONDITION",  'condition');
-define("PASSWORD",   'password');
-define("PRICE",      'price');
+define("ID",          'id');
+define("NAME",        'name');
+define("SLUG",        'slug');
+define("MAIN_IMAGE",  'main_image');
+define("STATUS",      'status');
+define("CONDITION",   'condition');
+define("PASSWORD",    'password');
+define("PRICE",       'price');
+define("ITEMS",       'items');
+define("TOTAL_ITEMS", 'total_'.ITEMS);
 
 /**
  * Category Attributes.
@@ -81,6 +83,16 @@ define("SIZE",        'size');
 define("THUMB_IMAGE", 'thumb_image');
 
 /**
+ * Wishlist Attributes.
+ */
+define("WISHLIST_TOTAL_ITEMS", WISHLIST_MODEL.'_'.TOTAL_ITEMS);
+
+/**
+ *  Cart Attributes.
+ */
+define("CART_TOTAL_ITEMS", CART_MODEL.'_'.TOTAL_ITEMS);
+
+/**
  * Order Attributes.
  */
 define("TRACKING_NUM", 'tracking_num');
@@ -95,11 +107,6 @@ define("PRODUCT_MAIN_IMAGE",  PRODUCT_MODEL.'_'.MAIN_IMAGE);
 define("PRODUCT_SIZE",        PRODUCT_MODEL.'_'.SIZE);
 define("PRODUCT_QUANTITY",    PRODUCT_MODEL.'_'.QUANTITY);
 define("PRODUCT_TOTAL_PRICE", PRODUCT_MODEL.'_total_'.PRICE);
-
-/**
- * Cart Attributes.
- */
-define("TOTAL_ITEMS", 'total_items');
 
 /**
  * User Attributes.
