@@ -72,7 +72,18 @@ class CommonBladeServiceProvider extends ServiceProvider
          */
         Blade::directive('submitButton', static fn(string $btnName) =>
             "<?php
-                if (str_contains($btnName, CART_MODEL)) {
+                if (str_contains($btnName, WISHLIST_MODEL)) {
+                    echo \"
+                        <div class='add-wishlist'>
+                           <div class='form-group'>
+                               <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-wishlist-btn add-wishlist-lg-btn d-grid place-items-center rounded-1'>
+                                    <i class='ti ti-heart'></i>
+                               </button>
+                           </div>
+                        </div>
+                    \";
+                }
+                elseif (str_contains($btnName, CART_MODEL)) {
                     echo \"
                         <div class='add-cart'>
                            <div class='form-group'>

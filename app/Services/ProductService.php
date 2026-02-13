@@ -106,30 +106,33 @@ class ProductService
         /*---------------------------- One to Many Relationships ----------------------------*/
         // Product Thumbnail Images
         if (Arr::last($product_attributes) === THUMB_IMAGE) {
-            $thumb_images = request()?->file($thumb_image_input_name);
-            $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($new_product_id) {
-                $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
-                $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
-
-                return [
-                    THUMB_IMAGE => $thumb_image_name,
-                    ...$new_product_id
-                ];
-            }, $thumb_images);
-
-            $product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
+            $this->storeThumbImages($product, $new_product_id, $thumb_image_input_name);
+//            $thumb_images = request()?->file($thumb_image_input_name);
+//            $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($new_product_id) {
+//                $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
+//                $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
+//
+//                return [
+//                    THUMB_IMAGE => $thumb_image_name,
+//                    ...$new_product_id
+//                ];
+//            }, $thumb_images);
+//
+//            $product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
         }
 
         // Product Sizes
         $sizes_values = array_filter((array) $sizes_values);
-        array_walk($sizes_values, static function (&$size_value) use ($new_product_id) {
-            $size_value = [
-                SIZE => $size_value,
-                ...$new_product_id
-            ];
-        });
-        $product->{SIZES}()->delete();
-        $product->{SIZES}()->createMany($sizes_values);
+        $this->storeSizes($product, $new_product_id, $sizes_values);
+//        $sizes_values = array_filter((array) $sizes_values);
+//        array_walk($sizes_values, static function (&$size_value) use ($new_product_id) {
+//            $size_value = [
+//                SIZE => $size_value,
+//                ...$new_product_id
+//            ];
+//        });
+//        $product->{SIZES}()->delete();
+//        $product->{SIZES}()->createMany($sizes_values);
 
         /*---------------------------- Many to Many Relationships ----------------------------*/
         // Product Related Categories
@@ -209,6 +212,51 @@ class ProductService
         $this->forgetProductCache($products);
 
         return $restored_products;
+    }
+
+    /**
+     * Store the product's thumbnail images.
+     *
+     * @param Product $product
+     * @param array $productAttributes
+     * @param string $inputName
+     * @return void
+     * @throws RandomException
+     */
+    private function storeThumbImages(Product $product, array $productAttributes, string $inputName): void
+    {
+        $thumb_images = request()?->file($inputName);
+        $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($productAttributes) {
+            $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
+            $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
+
+            return [
+                THUMB_IMAGE => $thumb_image_name,
+                ...$productAttributes
+            ];
+        }, $thumb_images);
+
+        $product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
+    }
+
+    /**
+     * Store the product's sizes.
+     *
+     * @param Product $product
+     * @param array $productAttributes
+     * @param array $sizesValues
+     * @return void
+     */
+    private function storeSizes(Product $product, array $productAttributes, array $sizesValues): void
+    {
+        array_walk($sizesValues, static function (&$size_value) use ($productAttributes) {
+            $size_value = [
+                SIZE => $size_value,
+                ...$productAttributes
+            ];
+        });
+        $product->{SIZES}()->delete();
+        $product->{SIZES}()->createMany($sizesValues);
     }
 
     /**

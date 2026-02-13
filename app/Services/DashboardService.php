@@ -118,13 +118,10 @@ class DashboardService
      */
     private function getOrdersMetrics(bool $isFilter, array $filterDashboardDates): array
     {
-        [$completed_orders, $fulfilled_orders] = collect([
-            ['Completed'],
-            ['Shipped', 'Delivered', 'Completed']
-        ])->map(static fn($status) =>
-            Order::whereIn(STATUS, array_values(Arr::only(ORDER_STATUS_ENUM, $status))
-        )
-        ->when($isFilter, fn($order) => $order->filterByDates($filterDashboardDates)));
+        $completed_orders = $this->getCompletedOrdersQuery($isFilter, $filterDashboardDates);
+        $fulfilled_orders = $this->getFulfilledOrdersQuery($isFilter, $filterDashboardDates);
+
+        $expences = $this->applyFilter(Order::query(), $isFilter, $filterDashboardDates);
 
         // Metrics calculation
         $metrics = [
@@ -135,11 +132,7 @@ class DashboardService
             ],
             'Expenses' => [
                 'icon' => 'bar_chart',
-                'data' => $this->applyFilter(
-                    Order::query(),
-                    $isFilter,
-                    $filterDashboardDates
-                ),
+                'data' => $expences,
                 'padding' => 'px-lg-2'
             ],
             'Income' => [
@@ -149,14 +142,14 @@ class DashboardService
             ]
         ];
 
-        $orders_metrics = collect($metrics)->map(function ($metric, $name) {
+        $orders_metrics = collect($metrics)->map(static function (array $metric, string $name) {
             $orders = $metric['data'];
 
             return [
                 NAME           => $name,
                 'icon'         => $metric['icon'],
                 'card_padding' => $metric['padding'],
-                TOTAL_COST     => cache()->remember(strtolower($name).'_total_cost', 300, static fn() =>
+                TOTAL_COST     => cache()->remember(strtolower($name).'_'.TOTAL_COST, 300, static fn() =>
                     $orders->allTotalCost()),
                 'statistic'    => cache()->remember(strtolower($name).'_statistic', 300, static fn() =>
                     $orders->statisticsInLast24Hours()),
@@ -169,6 +162,43 @@ class DashboardService
             ORDERS_TABLE.'_metrics'   => object_from_array($orders_metrics),
             'fulfilled_'.ORDERS_TABLE => $fulfilled_orders,
         ];
+    }
+
+    /**
+     * Get query for completed orders.
+     *
+     * @param bool $isFilter
+     * @param array $filterDates
+     * @return Builder|Order
+     */
+    private function getCompletedOrdersQuery(bool $isFilter, array $filterDates): Builder|Order
+    {
+        return Order::whereIn(STATUS, $this->getStatusValues(['Completed']))
+            ->when($isFilter, static fn(Builder $order) => $order->filterByDates($filterDates));
+    }
+
+    /**
+     * Get query for fulfilled orders (Shipped, Delivered, Completed).
+     *
+     * @param bool $isFilter
+     * @param array $filterDates
+     * @return Builder|Order
+     */
+    private function getFulfilledOrdersQuery(bool $isFilter, array $filterDates): Builder|Order
+    {
+        return Order::whereIn(STATUS, $this->getStatusValues(['Shipped', 'Delivered', 'Completed']))
+            ->when($isFilter, static fn(Builder $order) => $order->filterByDates($filterDates));
+    }
+
+    /**
+     * Get the actual status values from enum.
+     *
+     * @param array $statusNames
+     * @return array
+     */
+    private function getStatusValues(array $statusNames): array
+    {
+        return array_values(Arr::only(ORDER_STATUS_ENUM, $statusNames));
     }
 
     /**
@@ -255,6 +285,19 @@ class DashboardService
     }
 
     /**
+     * Set the first part of the cache key based on whether the data is filtered or not.
+     *
+     * @param bool $isFilter
+     * @return string
+     */
+    private function allOrFilteredCacheKey(bool $isFilter): string
+    {
+        return $isFilter
+            ? 'filtered'
+            : 'all';
+    }
+
+    /**
      * Get the query or apply filter on it based on the request.
      *
      * @param Builder $query
@@ -267,16 +310,5 @@ class DashboardService
         return $isFilter
             ? $query->filterByDates($filterDashboardDates)
             : $query;
-    }
-
-    /**
-     * Set the first part of the cache key based on whether the data is filtered or not.
-     *
-     * @param bool $isFilter
-     * @return string
-     */
-    private function allOrFilteredCacheKey(bool $isFilter): string
-    {
-        return $isFilter ? 'filtered' : 'all';
     }
 }

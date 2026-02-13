@@ -4,7 +4,7 @@
 
     {{-- Product Discount --}}
     @oldprice ($product->old_price, $product->new_price)
-    <span class="discount-percent position-absolute end-0 fw-500 lh-1">@discount($product->new_price, $product->old_price)</span>
+        <span class="discount-percent position-absolute end-0 fw-500 lh-1">@discount($product->new_price, $product->old_price)</span>
     @endoldprice
 @endif
 
@@ -17,17 +17,22 @@
     <div class="product-info-price d-flex flex-wrap align-items-center w-100 overflow-hidden lh-1 @isset($is_single_view) mt-0 @endisset">
         <span class="new-price fs-6 fw-600">@priceFormat($product->new_price)</span>
         @oldprice ($product->old_price, $product->new_price)
-        <s class="old-price fs-7">@priceFormat($product->old_price)</s>
+            <s class="old-price fs-7">@priceFormat($product->old_price)</s>
         @endoldprice
     </div>
 @endif
 
 
 @if ($container === 'actions')
-    {{-- Add To Cart --}}
     @if ($product->{STATUS} === 1)
-        <button type="submit" role="button" title="{{capitalizeAll(ADD.' to '.CART_MODEL)}}" class="add-cart-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{capitalizeAll(ADD.' to '.CART_MODEL)}}">
+        {{-- Add To Cart --}}
+        <button type="submit" role="button" title="{{capitalizeAll(ADD_TO_CART)}}" class="add-cart-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{capitalizeAll(ADD_TO_CART)}}">
             <i class="ti ti-shopping-cart"></i>
+        </button>
+
+        {{-- Add To Wishlist --}}
+        <button type="submit" role="button" title="{{capitalizeAll(ADD_TO_WISHLIST)}}" class="add-wishlist-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{capitalizeAll(ADD_TO_WISHLIST)}}">
+            <i class="ti ti-heart"></i>
         </button>
     @endif
 

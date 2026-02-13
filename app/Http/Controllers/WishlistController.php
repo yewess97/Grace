@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
-use App\Http\Controllers\Controller;
 use App\Services\WishlistService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Foundation\Application;
@@ -11,9 +10,9 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
+use Throwable;
 
 class WishlistController extends Controller
 {
@@ -22,7 +21,6 @@ class WishlistController extends Controller
      *
      * @param WishlistService $wishlistService
      * @return void
-     * @throws Throwable
      */
     final public function __construct(private readonly WishlistService $wishlistService){}
 
@@ -35,30 +33,28 @@ class WishlistController extends Controller
     final public function index(): Application|Factory|View|JsonResponse
     {
         return request()?->ajax()
-            ? ajaxPaginationResponse(cartConfig()[USER_CART_ITEMS], CART_PAGINATION, USER_CART_ITEMS)
-            : showView(USER_CART_VIEW);
+            ? ajaxPaginationResponse(userCollectionsData()[WISHLIST_MODEL][ITEMS], WISHLIST_PAGINATION, USER_WISHLIST_ITEMS)
+            : showView(USER_WISHLIST_VIEW);
     }
 
 
     /**
      * Store a wishlist.
      *
-     * @param string $operation
      * @return JsonResponse
      * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function store(): JsonResponse
     {
-        $this->wishlistService->createOrUpdateCart();
+        $this->wishlistService->createWishlist();
 
-        $last_page = getLastPage(new Cart(), 5);
+        $last_page = getLastPage(new Wishlist(), 5);
 
-        return responseWithData($this->wishlistService->getCartData([LAST_PAGE => $last_page]));
+        return responseWithData($this->wishlistService->getWishlistData([LAST_PAGE => $last_page]));
     }
 
     /**
-     *  Delete a specified wishlist
-     *  or decrement the wishlist's product quantity.
+     *  Delete a specified wishlist.
      *
      * @param Wishlist $wishlist
      * @return JsonResponse
@@ -66,13 +62,11 @@ class WishlistController extends Controller
      */
     final public function destroy(Wishlist $wishlist): JsonResponse
     {
-        $delete_cart = $this->wishlistService->deleteCart($wishlist);
+        $wishlist_deleted = $this->wishlistService->deleteWishlist($wishlist);
 
-        $compact_vars = $this->wishlistService->getCartData();
+        $compact_vars = $this->wishlistService->getWishlistData();
 
-        return is_array($delete_cart)
-            ? responseWithData([STATUS => $delete_cart[0], ...$compact_vars])
-            : responseWithData($compact_vars);
+        return responseWithData($compact_vars);
     }
 
 
@@ -84,10 +78,10 @@ class WishlistController extends Controller
      */
     final public function destroyMultiple(): JsonResponse
     {
-        $this->wishlistService->deleteAllCarts();
+        $this->wishlistService->deleteAllWishlists();
 
-        $row = view(USER_CART_VIEW)->render();
+        $row = view(USER_WISHLIST_VIEW)->render();
 
-        return responseWithData(array_merge(array_diff_key($this->wishlistService->getCartData(), [ROW]), compact(ROW)));
+        return responseWithData(array_merge(array_diff_key($this->wishlistService->getWishlistData(), [ROW]), compact(ROW)));
     }
 }

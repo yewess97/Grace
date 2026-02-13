@@ -246,8 +246,7 @@ $(document).ready(() => {
 
         const
             quantity_input           = target.parent().find(`.${IGrace.QUANTITY}-input`),
-            current_quantity_value   = +quantity_input.val(),
-            cart_product_remove_form = $(`#${IGrace.CART_PRODUCT()}_remove_form`);
+            current_quantity_value   = +quantity_input.val();
 
         const common_select_all_multi_items = {
             target:           target,
@@ -328,7 +327,8 @@ $(document).ready(() => {
         }
 
         // Remove the product from the cart
-        if (target.hasClass(`${IGrace.CLASS(IGrace.CART_PRODUCT())}-remove`)) {
+        if (target.hasClass(`${IGrace.CART} ${IGrace.PRODUCT}-remove`)) {
+            const cart_product_remove_form = $(`#${IGrace.CART}_${IGrace.PRODUCT}_remove_form`);
             cart_product_remove_form.attr('action', target.data('route')).submit();
             let cartProductInfo = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
             cartProductInfo(IGrace.PRODUCT_SIZE());

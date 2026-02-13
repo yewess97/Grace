@@ -82,13 +82,21 @@
                                         </div>
                                         {{$add_cart_product_error(PRODUCT_QUANTITY)}}
                                     </div>
-                                    {{-- Add To Cart Button --}}
                                     @if ($product->{STATUS} === 1)
-                                        @submitButton(ADD_TO_CART)
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{-- Add To Wishlist Button --}}
+                                            @submitButton(ADD_TO_WISHLIST)
+                                            {{-- Add To Cart Button --}}
+                                            @submitButton(ADD_TO_CART)
+                                        </div>
                                     @endif
                                 </div>
                             </article>
                         </div>
+                    </form>
+                    <form action="{{route(CREATE_WISHLIST)}}" method="post" role="form" class="add-wishlist-form" data-loading_spinner="{{imageSource('loading.png')}}">
+                        @csrf
+                        <input type="hidden" name="add_wishlist_product_id" value="{{$product->id}}">
                     </form>
                     {{-- Product Long-Description & Reviews --}}
                     <section class="box-content product-details-reviews">

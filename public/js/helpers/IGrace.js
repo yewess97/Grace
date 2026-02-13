@@ -84,6 +84,7 @@ const IGrace = {
     CATEGORY    : 'category',
     SUBCATEGORY : 'subcategory',
     PRODUCT     : 'product',
+    WISHLIST    : 'wishlist',
     CART        : 'cart',
     ORDER       : 'order',
     ADDRESS     : 'address',
@@ -95,7 +96,6 @@ const IGrace = {
     COLLECTION_ID       : (collection) => `${collection}_${IGrace.ID}`,
     RELATED_CATEGORY    : ()           => `related_${IGrace.CATEGORY}`,
     RELATED_SUBCATEGORY : ()           => `related_${IGrace.SUBCATEGORY}`,
-    CART_PRODUCT        : ()           => `${IGrace.CART}_${IGrace.PRODUCT}`,
 
     /*################################### End Collections ###################################*/
 

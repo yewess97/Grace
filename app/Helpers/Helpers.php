@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewUserRegistered;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -53,6 +54,25 @@ if (!function_exists('canonicalUrl')) {
         }
 
         return str_replace('https://', 'https://www.', $current_url);
+    }
+}
+
+
+if (!function_exists('ensureAuthenticated')) {
+    /**
+     * Ensure the user is authenticated,
+     * otherwise, throwing an exception.
+     *
+     * @return void
+     * @throws AuthenticationException
+     */
+    function ensureAuthenticated(): void
+    {
+        if (!auth()->check()) {
+            throw new AuthenticationException(
+                'Please '.ucfirst(LOGIN).' to Continue!'
+            );
+        }
     }
 }
 
@@ -147,7 +167,7 @@ if (!function_exists('generalControllerRoutes')) {
                     Route::put('/'.kebabAll($update_model), UPDATE)->name($update_model)
                 )
             )
-            ->when($modelName !== CART_MODEL, static fn(Collection $routesCollection) =>
+            ->when(!in_array($modelName, $singular_urls, true), static fn(Collection $routesCollection) =>
                 $routesCollection->push(static fn() =>
                     Route::get('/'.kebabAll($edit_model)."/{{$modelName}}", EDIT)->name($edit_model)
                 )
@@ -1178,7 +1198,7 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
 
         $is_collection_trashed = $selected_collections->cursor()
             ->every(static fn($collection) =>
-                Cart::class
+                Wishlist::class || Cart::class
                     ? false
                     : $collection->trashed()
             );

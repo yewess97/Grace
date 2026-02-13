@@ -16,7 +16,7 @@ use Throwable;
 class CartService
 {
     /**
-     * Get the cart data for the cart partials.
+     * Get the cart data.
      *
      * @param array $otherVars
      * @return array
@@ -28,14 +28,14 @@ class CartService
         $cart_total_items = userCollectionsData()[CART_MODEL][TOTAL_ITEMS];
         $total_cost       = userCollectionsData()[CART_MODEL][TOTAL_COST];
         $row_compact_vars = compact(USER_CART_ITEMS, CART_TOTAL_ITEMS, TOTAL_COST);
-        $row_view = $total_items === 0
+        $row_view = $cart_total_items === 0
             ? USER_CART_VIEW
             : CART_CONTENT_PARTIAL;
 
-        $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
         $row        = view($row_view, $row_compact_vars)->render();
+        $header_row = view(CART_HEADER_CONTENT_PARTIAL, $row_compact_vars)->render();
 
-        $compact_vars = compact(CART_TOTAL_ITEMS, TOTAL_COST, 'header_row', 'row');
+        $compact_vars = compact(CART_TOTAL_ITEMS, TOTAL_COST, ROW, 'header_'.ROW);
 
         return [
             ...$compact_vars,
@@ -52,9 +52,7 @@ class CartService
      */
     final public function createOrUpdateCart(string $operation): Cart|Collection|bool|array
     {
-        if (!auth()->check()) {
-            throw new AuthenticationException('Please '.ucfirst(LOGIN).' to Continue!');
-        }
+        ensureAuthenticated();
 
         $cart_attributes = [PRODUCT_ID];
 
@@ -201,9 +199,8 @@ class CartService
             ->get([ID, PRODUCT_ID, ...CART_COMMON_ATTRIBUTES])
             ->load(PRODUCT_MODEL);
 
-
         if ($cart_items->count() !== count($products_quantities_values)) {
-            throw new ModelNotFoundException('The number of the '.PRODUCTS_TABLE.' in the '.CART_MODEL.' is not equal to the number of the received quantities!');
+            throw new ModelNotFoundException('The number of the '.PRODUCTS_TABLE.' in the '.CART_MODEL.' is not equal to the number of the received '.pluralize(QUANTITY).'!');
         }
 
         $cart_items->each(static function (Model $cartItem, int $key) use ($products_quantities_values) {

@@ -68,6 +68,20 @@ User.ajaxGetProductDataRequest();
 /* ---------------------------------- END PRODUCT QUICK VIEW DATA ---------------------------------- */
 
 
+/* ---------------------------------- WISHLIST ---------------------------------- */
+
+// Add wishlist
+User.ajaxCreateWishlistRequest();
+
+// Delete wishlist
+User.ajaxDeleteRequest(IGrace.WISHLIST);
+
+// Delete all user's wishlists
+User.ajaxDeleteAllUserCollectionRequest(IGrace.WISHLIST);
+
+/* ---------------------------------- END WISHLIST ---------------------------------- */
+
+
 /* ---------------------------------- CART ---------------------------------- */
 
 // Add Cart
@@ -80,7 +94,7 @@ User.ajaxCreateOrUpdateCartRequest(IGrace.UPDATE);
 User.ajaxDeleteRequest(IGrace.CART);
 
 // Delete all user's carts
-User.ajaxDeleteAllCartsRequest();
+User.ajaxDeleteAllUserCollectionRequest(IGrace.CART);
 
 /* ---------------------------------- END CART ---------------------------------- */
 

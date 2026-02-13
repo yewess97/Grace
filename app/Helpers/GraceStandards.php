@@ -264,9 +264,9 @@ define("MAX_PRICE",                   'max_'.PRICE);
  * Wishlist Standards.
  */
 define("ADD_TO_WISHLIST",      ADD.' to '.WISHLIST_MODEL);
+define("CREATE_WISHLIST",      CREATE.'_'.WISHLIST_MODEL);
 define("USER_WISHLIST_ITEMS",  USER_MODEL.'_'.WISHLIST_MODEL.'_items');
 define("EMPTY_WISHLIST",       'empty_'.WISHLIST_MODEL);
-define("DELETE_ALL_WISHLISTS", DELETE.'_all_'.WISHLISTS_TABLE);
 
 /**
  * Cart Standards.
@@ -274,7 +274,6 @@ define("DELETE_ALL_WISHLISTS", DELETE.'_all_'.WISHLISTS_TABLE);
 define("ADD_TO_CART",      ADD.' to '.CART_MODEL);
 define("USER_CART_ITEMS",  USER_MODEL.'_'.CART_MODEL.'_items');
 define("EMPTY_CART",       'empty_'.CART_MODEL);
-define("DELETE_ALL_CARTS", DELETE.'_all_'.CARTS_TABLE);
 
 /**
  * Checkout Standards.
@@ -681,6 +680,7 @@ define("REMOVE_REVIEW",      collectionAction(REMOVE, REVIEW_MODEL));
 define("DELETE_CATEGORY",    collectionAction(DELETE, CATEGORY_MODEL));
 define("DELETE_SUBCATEGORY", collectionAction(DELETE, SUBCATEGORY_MODEL));
 define("DELETE_PRODUCT",     collectionAction(DELETE, PRODUCT_MODEL));
+define("DELETE_WISHLIST",    collectionAction(DELETE, WISHLIST_MODEL));
 define("DELETE_CART",        collectionAction(DELETE, CART_MODEL));
 define("DELETE_ORDER",       collectionAction(DELETE, ORDER_MODEL));
 define("DELETE_USER",        collectionAction(DELETE, USER_MODEL));
@@ -773,6 +773,7 @@ define("ADMIN_REVIEWS_VIEW",        adminView(REVIEWS_TABLE));
 define("USER_HOME_VIEW",            userView('index'));
 define("USER_PRODUCTS_VIEW",        userView(PRODUCTS_TABLE));
 define("USER_PRODUCT_DETAILS_VIEW", userView(kebabAll(PRODUCT_DETAILS)));
+define("USER_WISHLIST_VIEW",        userView(WISHLIST_MODEL));
 define("USER_CART_VIEW",            userView(CART_MODEL));
 define("USER_CHECKOUT_VIEW",        userView(CHECKOUT));
 define("USER_PROFILE_VIEW",         userView(PROFILE));
@@ -852,11 +853,12 @@ define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(pluralize(kebabAll(UPDATE_REVIEW_
 /**
  * Other Partials.
  */
-define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout', 'other'));
-define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content', 'other'));
+define("ADMIN_NAV_MENU_LAYOUT_PARTIAL", partial(ADMIN.'-nav-menu-layout',     'other'));
+define("WISHLIST_CONTENT_PARTIAL",      partial(WISHLIST_MODEL.'-content',    'other'));
+define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content',        'other'));
 define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'other'));
 define("PRODUCT_ITEM_COMMON_PARTIAL",   partial(PRODUCT_MODEL.'-item-common', 'other'));
-define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears', 'other'));
+define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears',           'other'));
 
 #################################### End Partials ####################################
 
@@ -930,6 +932,7 @@ define("ADMIN_REVIEWS_PAGINATION",        paginationView(REVIEWS_TABLE));
  */
 define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,               true));
 define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,                         true));
+define("WISHLIST_PAGINATION",                paginationView(WISHLIST_MODEL,                         true));
 define("CART_PAGINATION",                    paginationView(CART_MODEL,                             true));
 define("CHECKOUT_USER_ADDRESSES_PAGINATION", paginationView(kebabAll(CHECKOUT_USER_ADDRESSES), true));
 

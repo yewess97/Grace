@@ -92,7 +92,7 @@ class AuthService {
      * @return JsonResponse
      * @throws InvalidArgumentException|RuntimeException
      */
-    final public function redirectToSocialProvider($provider): JsonResponse
+    final public function redirectToSocialProvider(string $provider): JsonResponse
     {
         if (!in_array($provider, LOGIN_SOCIAL_PROVIDERS, true)) {
             throw new InvalidArgumentException("The provider *$provider* is not supported");
@@ -116,7 +116,7 @@ class AuthService {
      * @param string $provider
      * @return RedirectResponse
      */
-    final public function handleSocialProviderCallback($provider): RedirectResponse
+    final public function handleSocialProviderCallback(string $provider): RedirectResponse
     {
         $social_user = Socialite::driver($provider)->user();
 
@@ -142,10 +142,10 @@ class AuthService {
         $new_or_current_user = User::updateOrCreate(
             [EMAIL => $social_user->getEmail()],
             [
-                FIRST_NAME  => str($social_user->getName())->before(' ')->value(),
-                LAST_NAME   => str($social_user->getName())->after(' ')->value(),
-                PASSWORD => bcrypt(Str::random(16)), // Temporary password
-                ROLE => 0, // Default role
+                FIRST_NAME => str($social_user->getName())->before(' ')->value(),
+                LAST_NAME  => str($social_user->getName())->after(' ')->value(),
+                PASSWORD   => bcrypt(Str::random(16)), // Temporary password
+                ROLE       => 0, // Default role
                 $social_id => $social_user->getId(),
             ]
         );
@@ -159,7 +159,7 @@ class AuthService {
      * Logout the user.
      *
      * @return null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws CacheInvalidArgumentException
      */
     final public function logoutUser(): null
     {

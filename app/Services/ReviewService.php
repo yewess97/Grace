@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Notifications\NewReviewAdded;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,9 +38,7 @@ class ReviewService
      */
     final public function createOrUpdateReview(string $operation): Review
     {
-        if (!auth()->check()) {
-            throw new AuthenticationException('You must be logged in to '.REVIEW_MODEL.' the '.PRODUCT_MODEL.'!');
-        }
+        ensureAuthenticated();
 
         $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);
 
@@ -51,46 +50,11 @@ class ReviewService
 
         [$rating_value, $title_value, $body_text_value, $product_id_value] = $review_request->dataValues();
 
-        $available_product = Product::query()->whereId($product_id_value)
-            ->whereStatus(1)
-            ->withoutTrashed()
-            ->first([ID, NAME]);
+        $product         = $this->getProductOrFail($product_id_value);
+        $order_purchased = $this->getPurchasedOrderOrFail($product);
+        $order_completed = $this->getCompletedOrderOrFail($order_purchased);
 
-        if (!$available_product) {
-            throw new ModelNotFoundException('This '.PRODUCT_MODEL.' is currently out of stock!');
-        }
-
-        $order_purchased = Order::query()->whereHasAuthUser()
-            ->whereHas(ORDER_ITEMS, function ($orderItem) use ($available_product) {
-                $orderItem->where(PRODUCT_NAME, $available_product->{NAME});
-            })
-            ->withoutTrashed();
-
-        if ($order_purchased->cursor()->isEmpty()) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
-        }
-
-        $order_completed = $order_purchased->whereStatus(4)
-            ->withoutTrashed()
-            ->cursor();
-
-        if ($order_completed->isEmpty()) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
-        }
-
-        $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
-            ->whereHas(PRODUCT_MODEL, static function ($product) use ($product_id_value) {
-                return $product->whereId($product_id_value)->whereStatus(1);
-            })
-            ->where(USER_ID, auth()->id())
-            ->withoutTrashed()
-            ->exists();
-
-        if ($review_exists) {
-            throw ValidationException::withMessages([
-                REVIEW_MODEL.'_exists' => ['You have already reviewed this '.PRODUCT_MODEL.'. You can edit your '.REVIEW_MODEL.'!'],
-            ]);
-        }
+        $this->checkReviewExistingOrFail($product_id_value);
 
         $review = Review::query()->updateOrCreate(
             [ID => $review_id],
@@ -172,6 +136,94 @@ class ReviewService
         $this->forgetReviewCache($reviews);
 
         return $restored_reviews;
+    }
+
+    /**
+     * Get the first product or throw an exception if none exists.
+     *
+     * @param int $productId
+     * @return Product
+     * @throws ModelNotFoundException
+     */
+    private function getProductOrFail(int $productId): Product
+    {
+        $product = Product::query()->whereId($productId)
+            ->whereStatus(1)
+            ->withoutTrashed()
+            ->first([ID, NAME]);
+
+        if (!$product) {
+            throw new ModelNotFoundException('This '.PRODUCT_MODEL.' is currently out of stock!');
+        }
+
+        return $product;
+    }
+
+    /**
+     * Get the first purchased order or throw an exception if none exists.
+     *
+     * @param Product $product
+     * @return Builder
+     * @throws HttpException
+     */
+    private function getPurchasedOrderOrFail(Product $product): Builder
+    {
+        $purchased_order = Order::query()->whereHasAuthUser()
+            ->whereHas(ORDER_ITEMS, function ($orderItem) use ($product) {
+                $orderItem->where(PRODUCT_NAME, $product->{NAME});
+            })
+            ->withoutTrashed();
+
+        if ($purchased_order->cursor()->isEmpty()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> You must first purchase it!');
+        }
+
+        return $purchased_order;
+    }
+
+
+    /**
+     * Get the first completed order or throw an exception if none exists.
+     *
+     * @param Builder $order
+     * @return Builder
+     * @throws HttpException
+     */
+    private function getCompletedOrderOrFail(Builder $order): Builder
+    {
+        $completed_order = $order->whereStatus(4)
+            ->withoutTrashed()
+            ->cursor();
+
+        if ($completed_order->isEmpty()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
+        }
+
+        return $completed_order;
+    }
+
+    /**
+     * Throw an exception if the user has already reviewed this product.
+     *
+     * @param int $productId
+     * @return void
+     * @throws ValidationException
+     */
+    private function checkReviewExistingOrFail(int $productId): void
+    {
+        $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
+            ->whereHas(PRODUCT_MODEL, static function ($product) use ($productId) {
+                return $product->whereId($productId)->whereStatus(1);
+            })
+            ->where(USER_ID, auth()->id())
+            ->withoutTrashed()
+            ->exists();
+
+        if ($review_exists) {
+            throw ValidationException::withMessages([
+                REVIEW_MODEL.'_exists' => ['You have already '.toPastTense(REVIEW_MODEL).' this '.PRODUCT_MODEL.'. You can edit your '.REVIEW_MODEL.'!'],
+            ]);
+        }
     }
 
     /**

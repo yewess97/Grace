@@ -1,0 +1,75 @@
+/* -----------------================== Empty Wishlist/Cart ==================----------------- */
+.empty-wishlist-cart .empty-wishlist-cart-title {
+    word-spacing: var(--five-pixels);
+}
+
+.empty-wishlist-cart .empty-wishlist-cart-title span:nth-child(even) {
+    color: var(--main-color);
+}
+
+/*********************************************************************/
+
+
+/* -----------------================== Content ==================----------------- */
+.wishlist-main .wishlist .box-content,
+.cart-main .cart .update-cart-form {
+    padding-inline: var(--twenty-pixels);
+}
+
+:is(.wishlist, .cart) :is(.title, ul.products li.product, .beneath-buttons) {
+    padding-block: var(--fifteen-pixels);
+}
+
+:is(.wishlist, .cart) .title .count {
+    border-bottom: var(--one-pixel) solid var(--black-color);
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-img-info {
+    gap: var(--fifteen-pixels);
+    width: 60%;
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-img-info .product-img {
+    background-color: var(--light-gray-color);
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-img-info .product-info > a {
+    color: var(--black-color);
+}
+
+:is(.wishlist, .cart) :is(ul.products li.product :where(.product-img-info .product-info > a:hover, .product-actions .product-remove), .beneath-buttons input, .beneath-buttons a) {
+    color: var(--main-color) !important;
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-actions {
+    gap: var(--fifteen-pixels);
+    width: 20%;
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-actions .product-remove {
+    z-index: 2;
+}
+
+:is(.wishlist, .cart) ul.products li.product .product-total-price {
+    width: 20%;
+}
+
+/*********************************************************************/
+
+
+/* -----------------================== Right Side (Only Cart) ==================----------------- */
+.cart-main .summary .summary-content {
+    top: var(--sixty-pixels);
+}
+
+.cart-main .summary .summary-title {
+    padding-block: var(--ten-pixels);
+}
+
+.cart-main .summary :is(.summary-body, .summary-total) {
+    padding-block: var(--fifteen-pixels);
+}
+
+.cart-main .summary .summary-body {
+    gap: var(--ten-pixels);
+}

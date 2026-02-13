@@ -117,29 +117,30 @@ const User = {
     /**
      * Update the cart content.
      *
+     * @param collection
      * @param data
-     * @param isClearAllCart
+     * @param isClearAllCollection
      * @return {void}
      */
-    updateCartContent: (data, isClearAllCart = false) => {
+    updateUserCollectionContent: (collection, data, isClearAllCollection = false) => {
         const
-            cart_main        = `#${IGrace.CART}_main`,
-            update_cart_main = $(cart_main).html($(data[IGrace.ROW]).find(cart_main).html());
+            collection_main        = `#${collection}_main`,
+            update_collection_main = $(collection_main).html($(data[IGrace.ROW]).find(collection_main).html());
 
-        $(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_ITEMS}`)}`).html(data[IGrace.TOTAL_ITEMS]);
+        $(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`).html(data[IGrace.TOTAL_ITEMS]);
 
         $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
         $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
 
-        const cart_content_update_actions = {
-            true: () => update_cart_main,
+        const collection_content_update_actions = {
+            true: () => update_collection_main,
             false: () => data[IGrace.TOTAL_ITEMS] === 0
-                    ? update_cart_main
-                    : $(`#${IGrace.CART}_content`).html($(data[IGrace.ROW]).html()),
+                    ? update_collection_main
+                    : $(`#${collection}_content`).html($(data[IGrace.ROW]).html()),
         };
 
-        cart_content_update_actions[isClearAllCart]();
+        collection_content_update_actions[isClearAllCollection]();
 
         Common.imageConfig();
     },
@@ -285,6 +286,98 @@ const User = {
     },
 
 
+    /* ---------------------------------- GET PRODUCT DATA REQUEST ---------------------------------- */
+    /**
+     * Get a product's data when quick view it.
+     *
+     * @return {void}
+     */
+    ajaxGetProductDataRequest: () => {
+        $(document).on(IGrace.CLICK, '.quick-view-btn', function (e) {
+            e.preventDefault();
+
+            const
+                target            = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
+                route             = target.data('route'),
+                main_image        = target.data(IGrace.MAIN_IMAGE()),
+                quick_view_modal  = $(`#${IGrace.PRODUCT}_quick_view_modal`);
+
+            // Reset the quick view modal
+            quick_view_modal.find('form').trigger('reset');
+
+            // Clear all dynamic content
+            quick_view_modal.find('input[type="hidden"]').val('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).empty();
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html('');
+            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('');
+
+            // Reset select2 or multi-select
+            quick_view_modal.find('select[multiple]').val(null).trigger('change');
+
+            // Clear any previous form error messages
+            quick_view_modal.find(`.${IGrace.ADD}-${IGrace.ERROR}`).html('');
+
+            // Reset product quantity input
+            quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).val(1).removeAttr('max');
+
+            // Reset the add to cart button
+            if (quick_view_modal.find('.loading-spinner').length) {
+                quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-lg-btn`)
+                    .find('.loading-spinner')
+                    .remove().end()
+                    .prepend($('<i>', {
+                        class: 'ti ti-heart',
+                    }));
+
+                quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-lg-btn`)
+                    .find('.loading-spinner')
+                    .remove().end()
+                    .prepend($('<i>', {
+                        class: 'ti ti-shopping-cart',
+                    }));
+            }
+
+            // Get the product data via AJAX
+            $.get(`${route}?quick_view=true`)
+                .done((data) => {
+                    const product = data[IGrace.PRODUCT];
+
+                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.WISHLIST)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
+                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).html($('<img>', {
+                        src: main_image,
+                        alt: product[IGrace.NAME],
+                    }));
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html(product[IGrace.NAME]);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html(
+                        product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
+                            ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
+                            : ''
+                    );
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
+                    Common.showMultiSelectData({
+                        userType:          IGrace.USER,
+                        collection:        product,
+                        collectionName:    IGrace.PRODUCT,
+                        relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
+                    });
+                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+
+                    Common.imageConfig();
+                    quick_view_modal.modal('show');
+                })
+                .fail(Common.somethingWentWrongError);
+        });
+    },
+
+
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
     /**
      * Create or Update a collection.
@@ -301,7 +394,7 @@ const User = {
                 route              = target.attr('action'),
                 main_page          = target.data('main'),
                 action             = form.split('_')[0],
-                collection_name         = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
+                collection_name    = IGrace.CAPITALIZE(form.split('_')[1] ?? ''),
                 place_order_button = $(`#place_${IGrace.ORDER}_btn`),
                 form_data          = Common.filteredFormData(this),
 
@@ -423,140 +516,63 @@ const User = {
     },
 
 
-    /* ---------------------------------- DELETE REQUEST ---------------------------------- */
+    /* ---------------------------------- CREATE WISHLIST REQUEST ---------------------------------- */
     /**
-     * Delete Item ajax request.
-     *
-     * @param collection
-     * @return {void}
-     */
-    ajaxDeleteRequest: (collection) => {
-        $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.DELETE_COLLECTION(collection))}-form`, function (e) {
-            e.preventDefault();
-
-            const
-                target        = $(this),
-                route         = target.attr('action'),
-                collection_id = target.data(IGrace.ID),
-                reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
-                form_data     = new FormData(target[0]);
-
-            Common.confirmMessage(`${IGrace.DELETE} ${collection === IGrace.CART ? `or decrease the ${IGrace.QUANTITY} of the ${IGrace.PRODUCT} from your ${IGrace.CART}` : `this ${collection}`}?`)
-                .then((deleteConfirmation) => {
-                    if (deleteConfirmation.isConfirmed) {
-                        $.ajax({
-                            url: route,
-                            method: IGrace.DELETE.toUpperCase(),
-                            data: form_data,
-                            success: (data) => {
-                                let success_message = `Your selected ${collection} has been ${IGrace.DELETED()}`;
-
-                                if (collection === IGrace.CART) {
-                                    success_message = data.status === 'decremented'
-                                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
-                                        : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${IGrace.CART}`;
-
-                                    Common.removeRow($(`#${IGrace.CART}_item_${collection_id}`), () =>
-                                        User.updateCartContent(data)
-                                    );
-
-                                    return Common.successMessage(data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
-                                }
-
-                                window.isFormDirty = false;
-
-                                Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
-                            },
-                            error: () => Common.somethingWentWrongError(),
-                        });
-                    }
-                    else if (deleteConfirmation.dismiss === Swal.DismissReason.cancel) {
-                        Common.cancelMessage(`Your ${collection} is safe`);
-                    }
-                });
-        });
-    },
-
-
-    /* ---------------------------------- GET PRODUCT DATA REQUEST ---------------------------------- */
-    /**
-     * Get a product's data when quick view it.
+     * Create Wishlist Items ajax request.
      *
      * @return {void}
      */
-    ajaxGetProductDataRequest: () => {
-        $(document).on(IGrace.CLICK, '.quick-view-btn', function (e) {
+    ajaxCreateWishlistRequest: () => {
+        $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-form`, function (e) {
             e.preventDefault();
 
             const
-                target            = $(this).hasClass('fa-eye') ? $(this).parent() : $(this),
-                route             = target.data('route'),
-                main_image        = target.data(IGrace.MAIN_IMAGE()),
-                quick_view_modal  = $(`#${IGrace.PRODUCT}_quick_view_modal`);
+                target          = $(this),
+                route           = target.attr('action'),
+                wishlist_button = target.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-lg-btn`),
+                form_data       = Common.filteredFormData(this);
 
-            // Reset the quick view modal
-            quick_view_modal.find('form').trigger('reset');
+            $.ajax({
+                url: route,
+                method: IGrace.POST,
+                data: form_data,
+                beforeSend: () => {
+                    wishlist_button.find('i')
+                        .remove().end()
+                        .find('.loading-spinner')
+                        .remove();
 
-            // Clear all dynamic content
-            quick_view_modal.find('input[type="hidden"]').val('');
-            quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).empty();
-            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('');
-            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('');
-            quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html('');
-            quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html('');
-            quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html('');
+                    User.loadingSpinner(target, wishlist_button);
+                },
+                success: (data) => {
+                    const success_message = `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${IGrace.ADDED()} to your ${IGrace.WISHLIST}`;
 
-            // Reset select2 or multi-select
-            quick_view_modal.find('select[multiple]').val(null).trigger('change');
+                    wishlist_button.find('.loading-spinner')
+                        .remove().end()
+                        .prepend($('<i>', {
+                            class: 'ti ti-heart',
+                        }));
 
-            // Clear any previous form error messages
-            quick_view_modal.find(`.${IGrace.ADD}-${IGrace.ERROR}`).html('');
+                    User.updateUserCollectionContent(IGrace.WISHLIST, data);
 
-            // Reset product quantity input
-            quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).val(1).removeAttr('max');
+                    Common.successMessage(IGrace.SUCCESS, success_message);
+                },
+                error: (err) => {
+                    if (err.status === 401) {
+                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
+                    }
 
-            // Reset the add to cart button
-            if (quick_view_modal.find('.loading-spinner').length) {
-                quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-lg-btn`)
-                    .find('.loading-spinner')
-                    .remove().end()
-                    .prepend($('<i>', {
-                        class: 'ti ti-shopping-cart',
-                    }));
-            }
+                    if (err.status === 404) {
+                        return Common.swalResponseJsonErrorMessage(err);
+                    }
 
-            // Get the product data via AJAX
-            $.get(`${route}?quick_view=true`)
-                .done((data) => {
-                    const product = data[IGrace.PRODUCT];
+                    if (err.status === 422) {
+                        return Common.errorMessage(IGrace.ADD, Common.responseJsonError(err));
+                    }
 
-                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).html($('<img>', {
-                        src: main_image,
-                        alt: product[IGrace.NAME],
-                    }));
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html(product[IGrace.NAME]);
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html(
-                        product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
-                            ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
-                            : ''
-                    );
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
-                    Common.showMultiSelectData({
-                        userType:          IGrace.USER,
-                        collection:        product,
-                        collectionName:    IGrace.PRODUCT,
-                        relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
-                    });
-                    quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
-                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
-
-                    Common.imageConfig();
-                    quick_view_modal.modal('show');
-                })
-                .fail(Common.somethingWentWrongError);
+                    Common.somethingWentWrongError();
+                },
+            });
         });
     },
 
@@ -581,7 +597,7 @@ const User = {
             // FormData() accepts only POST method
             if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
 
-            const products = $(`.${IGrace.CLASS(IGrace.CART_PRODUCT())}`).map((_, cartProduct) => {
+            const products = $(`.${IGrace.CART} .${IGrace.PRODUCT}`).map((_, cartProduct) => {
                 const
                     cartProductValueOf = (value) => $(cartProduct).find(`input[name="${IGrace.UPDATE_COLLECTION(IGrace.CART)}_${value}"]`).val(),
 
@@ -642,7 +658,7 @@ const User = {
                     window.isFormDirty = false;
                     $(IGrace.ERROR_ELEMENT(action)).empty();
 
-                    User.updateCartContent(data);
+                    User.updateUserCollectionContent(IGrace.CART, data);
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
@@ -666,34 +682,95 @@ const User = {
     },
 
 
-    /* ---------------------------------- DELETE ALL USER'S CARTS REQUEST ---------------------------------- */
+    /* ---------------------------------- DELETE ALL USER'S COLLECTION REQUEST ---------------------------------- */
     /**
-     * Delete All Cart Items ajax request.
+     * Delete All User Collection Items ajax request.
      *
+     * @param collection
      * @return {void}
      */
-    ajaxDeleteAllCartsRequest: () => {
-        $(document).on(IGrace.CLICK, `#clear_${IGrace.CART}`, function (e) {
+    ajaxDeleteAllUserCollectionRequest: (collection) => {
+        $(document).on(IGrace.CLICK, `#clear_${collection}`, function (e) {
             e.preventDefault();
 
             const route = $(this).attr('href');
 
-            Common.confirmMessage(`clear your ${IGrace.CART} from all ${IGrace.PLURALIZE(IGrace.PRODUCT)}?`)
-                .then((deleteAllCarts) => {
-                    if (deleteAllCarts.isConfirmed) {
+            Common.confirmMessage(`clear your ${collection} from all ${IGrace.PLURALIZE(IGrace.PRODUCT)}?`)
+                .then((deleteAllCollection) => {
+                    if (deleteAllCollection.isConfirmed) {
                         $.ajax({
                             url: route,
                             method: IGrace.DELETE.toUpperCase(),
                             success: (data) => {
-                                User.updateCartContent(data, true);
+                                User.updateUserCollectionContent(collection, data, true);
 
-                                Common.successMessage(IGrace.SUCCESS, `Your ${IGrace.CAPITALIZE(IGrace.CART)} has been cleared`);
+                                Common.successMessage(IGrace.SUCCESS, `Your ${IGrace.CAPITALIZE(collection)} has been cleared`);
                             },
                             error: () => Common.somethingWentWrongError(),
                         });
                     }
                     else if (deleteAllCarts.dismiss === Swal.DismissReason.cancel) {
-                        Common.cancelMessage(`Your ${IGrace.CART} is safe`);
+                        Common.cancelMessage(`Your ${collection} is safe`);
+                    }
+                });
+        });
+    },
+
+
+    /* ---------------------------------- DELETE REQUEST ---------------------------------- */
+    /**
+     * Delete Item ajax request.
+     *
+     * @param collection
+     * @return {void}
+     */
+    ajaxDeleteRequest: (collection) => {
+        $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.DELETE_COLLECTION(collection))}-form`, function (e) {
+            e.preventDefault();
+
+            const
+                target        = $(this),
+                route         = target.attr('action'),
+                collection_id = target.data(IGrace.ID),
+                reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
+                form_data     = new FormData(target[0]),
+
+                userCollectionSuccess = (collection, data) => {
+                    const success_message = data.status && data.status === 'decremented'
+                        ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
+                        : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${collection}`;
+
+                    Common.removeRow($(`#${collection}_item_${collection_id}`), () =>
+                        User.updateUserCollectionContent(collection, data)
+                    );
+
+                    return Common.successMessage(data.status && data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
+                };
+
+            Common.confirmMessage(`${IGrace.DELETE} ${collection === IGrace.CART ? `or decrease the ${IGrace.QUANTITY} of the ${IGrace.PRODUCT} from your ${IGrace.CART}` : `this ${collection}`}?`)
+                .then((deleteConfirmation) => {
+                    if (deleteConfirmation.isConfirmed) {
+                        $.ajax({
+                            url: route,
+                            method: IGrace.DELETE.toUpperCase(),
+                            data: form_data,
+                            success: (data) => {
+                                let success_message = `Your selected ${collection} has been ${IGrace.DELETED()}`;
+
+                                if ($.inArray(collection, [IGrace.WISHLIST, IGrace.CART]) > -1) {
+                                    userCollectionSuccess(IGrace.WISHLIST, data);
+                                    userCollectionSuccess(IGrace.CART, data);
+                                }
+
+                                window.isFormDirty = false;
+
+                                Common.successMessage(IGrace.DELETED(), success_message, reviews_route);
+                            },
+                            error: () => Common.somethingWentWrongError(),
+                        });
+                    }
+                    else if (deleteConfirmation.dismiss === Swal.DismissReason.cancel) {
+                        Common.cancelMessage(`Your ${collection} is safe`);
                     }
                 });
         });

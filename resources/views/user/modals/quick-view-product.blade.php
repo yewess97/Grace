@@ -50,8 +50,12 @@
                                     </div>
                                     {{formError(ADD, CART_MODEL, PRODUCT_QUANTITY_QUICK_VIEW)}}
                                 </div>
-                                {{-- Add To Cart Button --}}
-                                @submitButton(ADD_TO_CART)
+                                <div class="d-flex align-items-center gap-2">
+                                    {{-- Add To Wishlist Button --}}
+                                    @submitButton(ADD_TO_WISHLIST)
+                                    {{-- Add To Cart Button --}}
+                                    @submitButton(ADD_TO_CART)
+                                </div>
                             </div>
                         </article>
                     </div>

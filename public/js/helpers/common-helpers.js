@@ -624,14 +624,14 @@ const Common = {
      * Display the error messages in the given element
      * for the given errors object (returned from the server).
      *
-     * @param element
+     * @param action
      * @param errors
      * @param status
      * @return {void}
      */
-    errorMessage: (element, errors, status = null) => {
+    errorMessage: (action, errors, status = null) => {
         const
-            error_element    = `.${element}-${IGrace.ERROR}`,
+            error_element    = `.${action}-${IGrace.ERROR}`,
             login_btn        = $(`.${IGrace.LOGIN}-btn`),
             show_error_class = `show-${IGrace.ERROR}`,
             margin = Common.urlLastDirectory().includes(IGrace.CHECKOUT)

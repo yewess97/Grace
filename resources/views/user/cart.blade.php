@@ -5,21 +5,9 @@
     {{-- Cart Main --}}
     <main role="main" class="cart-main py-6">
         <div class="container">
-            <div id="cart_main" class="row justify-content-center align-items-center">
+            <div class="row justify-content-center align-items-center">
                 @if (Session()->has(EMPTY_CART))
-                    <div class="col">
-                        <div class="empty-cart d-grid place-items-center gap-5">
-                            <h2 class="empty-cart-title d-grid place-items-center gap-3 fs-1 fw-600">
-                                <span>Your</span>
-                                <span>{{ucfirst(CART_MODEL)}}</span>
-                                <span>is currently</span>
-                                <span>Empty</span>
-                            </h2>
-                            <a href="{{route(PRODUCTS_LIST)}}" type="button" role="link" class="btn">
-                                {{pluralize(ADD_PRODUCT_TITLE)}} Now
-                            </a>
-                        </div>
-                    </div>
+                    <x-empty-wishlist-cart collection="{{CART_MODEL}}"/>
                 @else
                     <div class="main-sides row col-12">
                         <!----======= Left Side =======---->

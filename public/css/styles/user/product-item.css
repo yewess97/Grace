@@ -42,7 +42,7 @@
     bottom: var(--sixteen-pixels);
 }
 
-.products-content .product-item .product-form .product-actions :is(.add-cart-btn, .quick-view-btn) {
+.products-content .product-item .product-form .product-actions :is(.add-cart-btn, .add-wishlist-btn, .quick-view-btn) {
     width: var(--forty-pixels);
     height: var(--forty-pixels);
     margin-right: var(--ten-pixels);
@@ -51,11 +51,11 @@
     visibility: hidden;
 }
 
-.products-content .product-item .product-form .product-actions :is(.add-cart-btn:hover, .quick-view-btn:hover) {
+.products-content .product-item .product-form .product-actions :is(.add-cart-btn:hover, .add-wishlist-btn:hover, .quick-view-btn:hover) {
     background-color: var(--main-color);
 }
 
-.products-content .product-item:hover .product-form .product-actions :is(.add-cart-btn, .quick-view-btn) {
+.products-content .product-item:hover .product-form .product-actions :is(.add-cart-btn, .add-wishlist-btn, .quick-view-btn) {
     opacity: 1;
     visibility: visible;
     -ms-transform: translateY(calc(var(--ten-pixels) * -1));
@@ -67,12 +67,12 @@
     gap: var(--thirty-pixels);
 }
 
-.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .quick-view-btn) {
+.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .add-wishlist-btn, .quick-view-btn) {
     width: var(--thirty-five-pixels);
     height: var(--thirty-five-pixels);
 }
 
-.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item:hover .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .quick-view-btn) {
+.products-main .right-side .products-view-sort[data-grid-main-view="1"] ~ .products .products-content .product-item:hover .product-form .grid-view-single-item .product-actions :is(.add-cart-btn, .add-wishlist-btn, .quick-view-btn) {
     -ms-transform: translateY(0);
     transform: translateY(0);
 }
@@ -99,7 +99,7 @@
 
 
 /* ======================================== Common ======================================== */
-.product-info-btns .add-cart-btn {
+.product-info-btns :is(.add-cart-btn, .add-wishlist-btn) {
     border: var(--main-border);
     background-color: var(--main-color);
     color: var(--white-color);

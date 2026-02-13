@@ -21,7 +21,6 @@ class CartController extends Controller
      *
      * @param CartService $cartService
      * @return void
-     * @throws Throwable
      */
     final public function __construct(private readonly CartService $cartService){}
 
@@ -65,12 +64,12 @@ class CartController extends Controller
      */
     final public function destroy(Cart $cart): JsonResponse
     {
-        $delete_cart = $this->cartService->deleteCart($cart);
+        $cart_deleted = $this->cartService->deleteCart($cart);
 
         $compact_vars = $this->cartService->getCartData();
 
-        return is_array($delete_cart)
-            ? responseWithData([STATUS => $delete_cart[0], ...$compact_vars])
+        return is_array($cart_deleted)
+            ? responseWithData([STATUS => $cart_deleted[0], ...$compact_vars])
             : responseWithData($compact_vars);
     }
 
