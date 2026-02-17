@@ -8,7 +8,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
@@ -43,7 +42,7 @@ class CartController extends Controller
      *
      * @param string $operation
      * @return JsonResponse
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
+     * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function storeOrUpdate(string $operation): JsonResponse
     {

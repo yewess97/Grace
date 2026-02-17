@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
 use App\Notifications\NewReviewAdded;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
@@ -34,12 +33,10 @@ class ReviewService
      *
      * @param string $operation
      * @return Review
-     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
+     * @throws ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
      */
     final public function createOrUpdateReview(string $operation): Review
     {
-        ensureAuthenticated();
-
         $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);
 
         $review_id = request()?->input(UPDATE_REVIEW_ID);

@@ -95,13 +95,12 @@ const User = {
      * Display the login confirmation message,
      * when the user not logged in.
      *
-     * @param message
      * @return {void}
      */
-    confirmLoginMessage: (message) => {
+    confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
             title: `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
-            html: `<p class="fs-8">${message}</p>`,
+            html: `<p class="fs-8">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue</p>`,
             icon: IGrace.WARNING,
             showConfirmButton: true,
             confirmButtonText: `Go to ${IGrace.LOGIN} page`,
@@ -127,11 +126,13 @@ const User = {
             collection_main        = `#${collection}_main`,
             update_collection_main = $(collection_main).html($(data[IGrace.ROW]).find(collection_main).html());
 
-        $(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`).html(data[IGrace.TOTAL_ITEMS]);
+        $.each(($(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`)), (_, totalItems) => $(totalItems).html(data[`${collection}_${IGrace.TOTAL_ITEMS}`]));
 
-        $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
+        if (collection === IGrace.CART) {
+            $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
-        $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
+            $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
+        }
 
         const collection_content_update_actions = {
             true: () => update_collection_main,
@@ -467,7 +468,7 @@ const User = {
                 },
                 error: (err) => {
                     if (err.status === 401) {
-                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
+                        return User.confirmLoginMessage();
                     }
 
                     if (IGrace.IS_IN_ARRAY([400, 403], err.status)) {
@@ -559,7 +560,7 @@ const User = {
                 },
                 error: (err) => {
                     if (err.status === 401) {
-                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
+                        return User.confirmLoginMessage();
                     }
 
                     if (err.status === 404) {
@@ -567,7 +568,7 @@ const User = {
                     }
 
                     if (err.status === 422) {
-                        return Common.errorMessage(IGrace.ADD, Common.responseJsonError(err));
+                        return Common.swalResponseJsonErrorMessage(err, IGrace.WARNING);
                     }
 
                     Common.somethingWentWrongError();
@@ -664,7 +665,7 @@ const User = {
                 },
                 error: (err) => {
                     if (err.status === 401) {
-                        return User.confirmLoginMessage(Common.responseJsonError(err, true));
+                        return User.confirmLoginMessage();
                     }
 
                     if (err.status === 404) {

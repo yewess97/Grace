@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
 use App\Services\WishlistService;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -42,7 +41,7 @@ class WishlistController extends Controller
      * Store a wishlist.
      *
      * @return JsonResponse
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
+     * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function store(): JsonResponse
     {

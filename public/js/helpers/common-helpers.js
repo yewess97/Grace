@@ -793,9 +793,10 @@ const Common = {
      * Display the error message in a sweet alert.
      *
      * @param error
+     * @param icon
      * @return {void}
      */
-    swalResponseJsonErrorMessage: (error) => Common.somethingWentWrongError(Common.responseJsonError(error, true)),
+    swalResponseJsonErrorMessage: (error, icon = IGrace.ERROR) => Common.somethingWentWrongError(Common.responseJsonError(error, true), icon),
 
 
     /**
@@ -804,13 +805,14 @@ const Common = {
      * if confirmed, reload the page.
      *
      * @param message
+     * @param icon
      * @return {void}
      */
-    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") =>
+    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!", icon) =>
         Common.swalWithButtons.fire({
             title:             'Sorry!',
             html:              message,
-            icon:              IGrace.ERROR,
+            icon:              icon,
             showConfirmButton: true,
             confirmButtonText: "Refresh",
         })

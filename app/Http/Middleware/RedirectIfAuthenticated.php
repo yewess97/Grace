@@ -25,7 +25,8 @@ class RedirectIfAuthenticated
     {
         foreach ($guards as $guard) {
             if (auth()->guard($guard)->check()) {
-                return redirect(RouteServiceProvider::PRODUCTS_LIST);
+                return back();
+//                return redirect(RouteServiceProvider::PRODUCTS_LIST);
             }
         }
 

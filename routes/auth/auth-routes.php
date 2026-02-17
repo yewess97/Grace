@@ -6,8 +6,8 @@ use App\Http\Controllers\AddressController,
     App\Http\Controllers\CheckoutController,
     App\Http\Controllers\OrderController,
     App\Http\Controllers\ReviewController,
-    App\Http\Controllers\UserController;
-use App\Http\Controllers\WishlistController;
+    App\Http\Controllers\UserController,
+    App\Http\Controllers\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +46,7 @@ Route::get('/'.CHECKOUT, [CheckoutController::class, 'index'])->name(CHECKOUT);
 
 
 /**
- * User Addresses Routes
+ * User Addresses Route
  */
 Route::controller(AddressController::class)->group(fn() =>
     basicRoute(ADDRESSES_TABLE, USER_ADDRESSES, capitalizeSecond(USER_ADDRESSES))

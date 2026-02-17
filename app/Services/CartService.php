@@ -7,7 +7,6 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
@@ -48,12 +47,10 @@ class CartService
      *
      * @param string $operation
      * @return Cart|Collection|bool|array
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
+     * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
     final public function createOrUpdateCart(string $operation): Cart|Collection|bool|array
     {
-        ensureAuthenticated();
-
         $cart_attributes = [PRODUCT_ID];
 
         $cart_attributes = $this->mergeIfRequestHas($this->getActionNames($operation), $cart_attributes, CART_COMMON_ATTRIBUTES);

@@ -58,25 +58,6 @@ if (!function_exists('canonicalUrl')) {
 }
 
 
-if (!function_exists('ensureAuthenticated')) {
-    /**
-     * Ensure the user is authenticated,
-     * otherwise, throwing an exception.
-     *
-     * @return void
-     * @throws AuthenticationException
-     */
-    function ensureAuthenticated(): void
-    {
-        if (!auth()->check()) {
-            throw new AuthenticationException(
-                'Please '.ucfirst(LOGIN).' to Continue!'
-            );
-        }
-    }
-}
-
-
 if (!function_exists('basicRoute')) {
     /**
      * The basic routes.
@@ -149,16 +130,17 @@ if (!function_exists('generalControllerRoutes')) {
         $restore_model          = RESTORE.'_'.$modelName;
         $singular_urls          = [WISHLIST_MODEL, CART_MODEL];
 
-        $routes = collect()->when($modelName !== REVIEW_MODEL && !isAdminRoute(), static fn(Collection $routesCollection) =>
-            $routesCollection->push(static fn() =>
-                Route::get('/'.kebabAll($modelName).($urlParam ? "/{{$urlParam}}" : ''), 'index')
-                    ->name(
-                        in_array($modelName, $singular_urls, true)
-                            ? $modelName
-                            : pluralize($modelName)
-                    )
+        $routes = collect()
+            ->when(($modelName !== REVIEW_MODEL || $modelName !== WISHLIST_MODEL) && !isAdminRoute(), static fn(Collection $routesCollection) =>
+                $routesCollection->push(static fn() =>
+                    Route::get('/'.kebabAll($modelName).($urlParam ? "/{{$urlParam}}" : ''), 'index')
+                        ->name(
+                            in_array($modelName, $singular_urls, true)
+                                ? $modelName
+                                : pluralize($modelName)
+                        )
+                )
             )
-        )
             ->push(static fn() =>
                 Route::match(['post', 'put'], '/'.kebabAll($create_or_update_model).'/{operation}', STORE_OR_UPDATE)->name($create_or_update_model)
             )

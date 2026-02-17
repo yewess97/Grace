@@ -32,7 +32,7 @@
 
         {{-- Add To Wishlist --}}
         <button type="submit" role="button" title="{{capitalizeAll(ADD_TO_WISHLIST)}}" class="add-wishlist-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{capitalizeAll(ADD_TO_WISHLIST)}}">
-            <i class="ti ti-heart"></i>
+            <i class="fa-regular fa-heart"></i>
         </button>
     @endif
 

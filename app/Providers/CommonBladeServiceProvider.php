@@ -76,8 +76,8 @@ class CommonBladeServiceProvider extends ServiceProvider
                     echo \"
                         <div class='add-wishlist'>
                            <div class='form-group'>
-                               <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-wishlist-btn add-wishlist-lg-btn d-grid place-items-center rounded-1'>
-                                    <i class='ti ti-heart'></i>
+                               <button type='button' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-wishlist-btn add-wishlist-lg-btn d-grid place-items-center rounded-1'>
+                                    <i class='fa-regular fa-heart'></i>
                                </button>
                            </div>
                         </div>

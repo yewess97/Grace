@@ -6,7 +6,6 @@ use App\Models\Review;
 use App\Services\ReviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -39,7 +38,7 @@ class ReviewController extends Controller
      *
      * @param string $operation
      * @return Response
-     * @throws AuthenticationException|ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
+     * @throws ModelNotFoundException|HttpException|ValidationException|CacheInvalidArgumentException
      */
     final public function storeOrUpdate(string $operation): Response
     {

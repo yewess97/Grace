@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Models\Wishlist;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
@@ -42,12 +41,10 @@ class WishlistService
      * Store a wishlist.
      *
      * @return Wishlist
-     * @throws AuthenticationException|ModelNotFoundException|ValidationException|CacheInvalidArgumentException
+     * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException
      */
     final public function createWishlist(): Wishlist
     {
-        ensureAuthenticated();
-
         $product = $this->getProductOrFail();
 
         $wishlist_relations = [

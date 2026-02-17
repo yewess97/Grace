@@ -326,6 +326,10 @@ $(document).ready(() => {
                 .val(max_range);
         }
 
+        if (target.is(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-btn, .fa-heart`)) {
+            target.closest('form').next().submit();
+        }
+
         // Remove the product from the cart
         if (target.hasClass(`${IGrace.CART} ${IGrace.PRODUCT}-remove`)) {
             const cart_product_remove_form = $(`#${IGrace.CART}_${IGrace.PRODUCT}_remove_form`);
