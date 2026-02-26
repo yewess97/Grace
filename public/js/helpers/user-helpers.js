@@ -78,7 +78,7 @@ const User = {
      *
      * @param input
      * @param range
-     * @return {void}
+     * @return {*}
      */
     handlePriceFilter: (input, range) =>
         input.on(IGrace.INPUT, function () {

@@ -42,10 +42,10 @@
                 </article>
 
                 {{-- Wishlist Item Price --}}
-                <article class="product-total-price d-flex justify-content-end">
-                    <p class="new-price fs-6 fw-600 lh-1">@priceFormat($wishlist_item->product->new_price)</p>
+                <article class="product-total-price text-end">
+                    <p class="new-price fs-6 fw-600">@priceFormat($wishlist_item->product->new_price)</p>
                     @oldprice ($wishlist_item->product->old_price, $wishlist_item->product->new_price)
-                        <p class="old-price fs-7 text-decoration-line-through lh-1">@priceFormat($wishlist_item->product->old_price)</p>
+                        <p class="old-price fs-7 text-decoration-line-through">@priceFormat($wishlist_item->product->old_price)</p>
                     @endoldprice
                 </article>
             </li>

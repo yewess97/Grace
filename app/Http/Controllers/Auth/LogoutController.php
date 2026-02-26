@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Services\AuthService;
 use Illuminate\Http\RedirectResponse;
 
@@ -25,6 +24,6 @@ class LogoutController extends Controller
     {
         $this->authService->logoutUser();
 
-        return redirect(RouteServiceProvider::PRODUCTS_LIST);
+        return back();
     }
 }

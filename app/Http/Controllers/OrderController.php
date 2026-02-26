@@ -14,8 +14,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Random\RandomException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
+use Stripe\Exception\ApiErrorException;
 use Throwable;
-use Exception;
 
 class OrderController extends Controller
 {
@@ -42,7 +42,7 @@ class OrderController extends Controller
      * Store an order.
      *
      * @return Response|RedirectResponse|JsonResponse
-     * @throws ValidationException|RandomException|CacheInvalidArgumentException|Throwable|Exception
+     * @throws ValidationException|ApiErrorException|RandomException|Throwable|CacheInvalidArgumentException
      */
     final public function store(): Response|RedirectResponse|JsonResponse
     {

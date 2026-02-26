@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -51,6 +52,27 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     *
+     *
+     * @param $request
+     * @param AuthenticationException $exception
+     * @return JsonResponse|RedirectResponse
+     */
+    protected function unauthenticated($request, AuthenticationException $exception): JsonResponse|RedirectResponse
+    {
+        if ($request->expectsJson()) {
+
+            session(['url.intended' => url()->full()]);
+
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        return redirect()->guest(route(LOGIN));
     }
 
     /**

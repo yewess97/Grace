@@ -57,7 +57,7 @@ if (!function_exists('responseError')) {
      */
     function responseError(string $status): JsonResponse
     {
-        return response()->json(['status' => $status], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json([STATUS => $status], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
 

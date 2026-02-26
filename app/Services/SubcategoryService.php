@@ -2,16 +2,20 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\SubcategoryRequest;
 use App\Models\Subcategory;
 use App\Notifications\NewAdminActionTaken;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
-class SubcategoryService
+class SubcategoryService implements ServiceData
 {
     /**
      * Store or Update a subcategory
@@ -23,30 +27,13 @@ class SubcategoryService
      */
     final public function createOrUpdateSubcategory(string $operation): Subcategory
     {
-        $subcategory_request = new SubcategoryRequest($operation, SUBCATEGORY_MODEL, SUBCATEGORY_ATTRIBUTES);
-
         $subcategory_id = request()?->input(UPDATE_SUBCATEGORY_ID);
 
-        validateAttributes($subcategory_request, $subcategory_id);
+        $validated_subcategory_request = $this->validateRequest($operation, compact(SUBCATEGORY_ID));
 
-        [$name, $main_image] = SUBCATEGORY_ATTRIBUTES;
+        $subcategory = $this->createOrUpdateCollection($validated_subcategory_request, compact(SUBCATEGORY_ID));
 
-        [$name_value, $main_image_value, $related_categories_ids_values] = $subcategory_request->dataValues();
-
-        $main_image_name = storeOrUpdateImage(new Subcategory(), $subcategory_id, MAIN_IMAGE, $main_image_value);
-
-        $subcategory = Subcategory::query()->updateOrCreate(
-            [ID => $subcategory_id],
-            [
-                $name       => $name_value,
-                SLUG        => str($name_value)->slug(),
-                $main_image => $main_image_name,
-            ]
-        );
-
-        createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
-
-        $this->forgetSubcategoryCache();
+        $this->forgetCollectionCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$subcategory, $subcategory->{NAME}], $operation), true);
 
@@ -65,7 +52,7 @@ class SubcategoryService
     {
         $deleted_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME});
 
-        $this->forgetSubcategoryCache();
+        $this->forgetCollectionCache();
 
         return $deleted_subcategory;
     }
@@ -82,7 +69,7 @@ class SubcategoryService
     {
         $deleted_subcategories = removeDeleteOrRestore($subcategories);
 
-        $this->forgetSubcategoryCache();
+        $this->forgetCollectionCache();
 
         return $deleted_subcategories;
     }
@@ -98,7 +85,7 @@ class SubcategoryService
     {
         $restored_subcategory = removeDeleteOrRestore($subcategory, $subcategory->{NAME});
 
-        $this->forgetSubcategoryCache();
+        $this->forgetCollectionCache();
 
         return $restored_subcategory;
     }
@@ -114,18 +101,66 @@ class SubcategoryService
     {
         $restored_subcategories = removeDeleteOrRestore($subcategories);
 
-        $this->forgetSubcategoryCache();
+        $this->forgetCollectionCache();
 
         return $restored_subcategories;
     }
 
     /**
+     * Validate and return the subcateory request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return SubcategoryRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): SubcategoryRequest
+    {
+        $subcategory_request = new SubcategoryRequest($operation, SUBCATEGORY_MODEL, SUBCATEGORY_ATTRIBUTES);
+
+        validateAttributes($subcategory_request, $extra[SUBCATEGORY_ID]);
+
+        return $subcategory_request;
+    }
+
+    /**
+     * Create or Update the subcateory.
+     *
+     * @param FormRequest|SubcategoryRequest $collectionRequest
+     * @param array $extra
+     * @return Subcategory|JsonResponse
+     * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     */
+    final public function createOrUpdateCollection(FormRequest|SubcategoryRequest $collectionRequest, array $extra): Subcategory|JsonResponse
+    {
+        [$name, $main_image] = SUBCATEGORY_ATTRIBUTES;
+
+        [$name_value, $main_image_value, $related_categories_ids_values] = $collectionRequest->dataValues();
+
+        $main_image_name = storeOrUpdateImage(new Subcategory(), $extra[SUBCATEGORY_ID], MAIN_IMAGE, $main_image_value);
+
+        $subcategory = Subcategory::query()->updateOrCreate(
+            [ID => $extra[SUBCATEGORY_ID]],
+            [
+                $name       => $name_value,
+                SLUG        => str($name_value)->slug(),
+                $main_image => $main_image_name,
+            ]
+        );
+
+        createOrUpdateMultipleCollections($subcategory, CATEGORIES_TABLE, $related_categories_ids_values);
+
+        return $subcategory;
+    }
+
+    /**
      * Forget the subcategory cache.
      *
+     * @param Model|Subcategory|null $model
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetSubcategoryCache(): void
+    final public function forgetCollectionCache(Model|Subcategory $model = null): void
     {
         forgetCache([SUBCATEGORIES_PAGINATION_CACHE_KEY, PRODUCTS_PAGINATION_CACHE_KEY, SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
     }

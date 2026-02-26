@@ -11,7 +11,7 @@
                 @else
                     <div class="main-sides row col-12">
                         <!----======= Left Side =======---->
-                        <section class="wishlist pagination-container col-9 px-sm-3">
+                        <section class="wishlist pagination-container">
                             @include(WISHLIST_PAGINATION, [USER_WISHLIST_ITEMS => $user_wishlist_items])
                         </section>
                     </div>

@@ -6,7 +6,6 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -34,17 +33,21 @@ trait LoginHelpers
      */
     private function sendLoginResponse(string $email): JsonResponse
     {
-        Artisan::call('optimize:clear');
-
         request()?->session()->regenerate();
 
         $this->clearLoginAttempts($email);
 
-        $response_with_redirect_to = static fn($redirection) => responseWithData([STATUS => AUTH_SUCCESS, 'redirect_to' => $redirection]);
+        $redirect_to = session()->pull(
+            'url.intended',
+            auth()->user()?->isAdmin
+                ? route(ADMIN_DASHBOARD_ROUTE)
+                : RouteServiceProvider::PRODUCTS_LIST
+        );
 
-        return auth()->user()?->isAdmin
-            ? $response_with_redirect_to(route(ADMIN_DASHBOARD_ROUTE))
-            : $response_with_redirect_to(RouteServiceProvider::PRODUCTS_LIST);
+        return responseWithData([
+            STATUS        => AUTH_SUCCESS,
+            'redirect_to' => $redirect_to,
+        ]);
     }
 
     /**

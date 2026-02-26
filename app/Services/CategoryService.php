@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use App\Models\Product;
@@ -10,6 +11,7 @@ use App\Models\ThumbImage;
 use App\Notifications\NewAdminActionTaken;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
@@ -18,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
-class CategoryService
+class CategoryService implements ServiceData
 {
     /**
      * Store or Update a category
@@ -30,30 +32,13 @@ class CategoryService
      */
     final public function createOrUpdateCategory(string $operation): Category
     {
-        $category_request = new CategoryRequest($operation, CATEGORY_MODEL, CATEGORY_ATTRIBUTES);
-
         $category_id = request()?->input(UPDATE_CATEGORY_ID);
 
-        validateAttributes($category_request, $category_id);
+        $validated_category_request = $this->validateRequest($operation, compact(CATEGORY_ID));
 
-        [$name, $main_image, $banner_image] = CATEGORY_ATTRIBUTES;
+        $category = $this->createOrUpdateCollection($validated_category_request, compact(CATEGORY_ID));
 
-        [$name_value, $main_image_value, $banner_image_value] = $category_request->dataValues();
-
-        $main_image_name   = storeOrUpdateImage(new Category(), $category_id, MAIN_IMAGE,   $main_image_value);
-        $banner_image_name = storeOrUpdateImage(new Category(), $category_id, BANNER_IMAGE, $banner_image_value);
-
-        $category = Category::query()->updateOrCreate(
-            [ID => $category_id],
-            [
-                $name         => $name_value,
-                SLUG          => str($name_value)->slug(),
-                $main_image   => $main_image_name,
-                $banner_image => $banner_image_name,
-            ]
-        );
-
-        $this->forgetCategoryCache();
+        $this->forgetCollectionCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$category, $category->{NAME}], $operation), true);
 
@@ -75,7 +60,7 @@ class CategoryService
 
         $deleted_category = removeDeleteOrRestore($category, $category->{NAME});
 
-        $this->forgetCategoryCache();
+        $this->forgetCollectionCache();
 
         return $deleted_category;
     }
@@ -95,7 +80,7 @@ class CategoryService
 
         $deleted_categories = removeDeleteOrRestore($categories);
 
-        $this->forgetCategoryCache();
+        $this->forgetCollectionCache();
 
         return $deleted_categories;
     }
@@ -111,7 +96,7 @@ class CategoryService
     {
         $restored_category = removeDeleteOrRestore($category, $category->{NAME});
 
-        $this->forgetCategoryCache();
+        $this->forgetCollectionCache();
 
         return $restored_category;
     }
@@ -127,9 +112,66 @@ class CategoryService
     {
         $restored_categories = removeDeleteOrRestore($categories);
 
-        $this->forgetCategoryCache();
+        $this->forgetCollectionCache();
 
         return $restored_categories;
+    }
+
+    /**
+     * Validate and return the category request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return CategoryRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): CategoryRequest
+    {
+        $category_request = new CategoryRequest($operation, CATEGORY_MODEL, CATEGORY_ATTRIBUTES);
+
+        validateAttributes($category_request, $extra[CATEGORY_ID]);
+
+        return $category_request;
+    }
+
+    /**
+     * Create or Update the category.
+     *
+     * @param FormRequest|CategoryRequest $collectionRequest
+     * @param array $extra
+     * @return Category
+     * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     */
+    final public function createOrUpdateCollection(FormRequest|CategoryRequest $collectionRequest, array $extra): Category
+    {
+        [$name, $main_image, $banner_image] = CATEGORY_ATTRIBUTES;
+
+        [$name_value, $main_image_value, $banner_image_value] = $collectionRequest->dataValues();
+
+        $main_image_name   = storeOrUpdateImage(new Category(), $extra[CATEGORY_ID], MAIN_IMAGE,   $main_image_value);
+        $banner_image_name = storeOrUpdateImage(new Category(), $extra[CATEGORY_ID], BANNER_IMAGE, $banner_image_value);
+
+        return Category::query()->updateOrCreate(
+            [ID => $extra[CATEGORY_ID]],
+            [
+                $name         => $name_value,
+                SLUG          => str($name_value)->slug(),
+                $main_image   => $main_image_name,
+                $banner_image => $banner_image_name,
+            ]
+        );
+    }
+
+    /**
+     * Forget the category cache.
+     *
+     * @param Model|null $model
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    final public function forgetCollectionCache(Model $model = null): void
+    {
+        forgetCache([CATEGORIES_PAGINATION_CACHE_KEY, SUBCATEGORIES_PAGINATION_CACHE_KEY, PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY, CATEGORIES_FOR_PRODUCTS_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 
     /**
@@ -138,7 +180,6 @@ class CategoryService
      * @param Category $category
      * @param string $modelClass
      * @return void
-     * @throws CacheInvalidArgumentException
      */
     private function deleteRelatedCollectionItems(Category $category, string $modelClass): void
     {
@@ -168,8 +209,6 @@ class CategoryService
 
                 return $related_collection_item->forceDelete();
             });
-
-        $this->forgetCategoryCache();
     }
 
     /**
@@ -193,16 +232,5 @@ class CategoryService
         }
 
         Storage::delete(array_filter($images_paths));
-    }
-
-    /**
-     * Forget the category cache.
-     *
-     * @return void
-     * @throws CacheInvalidArgumentException
-     */
-    private function forgetCategoryCache(): void
-    {
-        forgetCache([CATEGORIES_PAGINATION_CACHE_KEY, SUBCATEGORIES_PAGINATION_CACHE_KEY, PRODUCTS_PAGINATION_CACHE_KEY, CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY, CATEGORIES_FOR_PRODUCTS_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }

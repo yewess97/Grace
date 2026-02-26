@@ -129,6 +129,6 @@ class WishlistService
      */
     private function forgetWishlistCache(): void
     {
-        forgetCache(WISHLISTS_TABLE);
+        forgetCache(WISHLISTS_CACHE_KEY);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Notifications\NewAdminActionTaken;
@@ -9,7 +10,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +24,7 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
-class ProductService
+class ProductService implements ServiceData
 {
     /**
      * Get the product details.
@@ -68,80 +72,13 @@ class ProductService
      */
     final public function createOrUpdateProduct(string $operation): Product
     {
-        $product_attributes = PRODUCT_ATTRIBUTES;
-        $thumb_image_input_name = "{$operation}_".PRODUCT_MODEL."_".THUMB_IMAGE;
-
-        if (request()?->hasFile($thumb_image_input_name)) {
-            $product_attributes[] = THUMB_IMAGE;
-        }
-
-        $product_request = new ProductRequest($operation, PRODUCT_MODEL, $product_attributes);
-
         $product_id = request()?->input(UPDATE_PRODUCT_ID);
 
-        validateAttributes($product_request, $product_id);
+        $validated_product_request = $this->validateRequest($operation, compact(PRODUCT_ID));
 
-        [$name, $short_description, $long_description, $main_image, $related_categories_ids, $related_subcategories_ids, $sizes, $old_price, $new_price, $quantity, $status] = $product_attributes;
+        $product = $this->createOrUpdateCollection($validated_product_request, compact('operation', PRODUCT_ID));
 
-        [$name_value, $short_description_value, $long_description_value, $main_image_value, $related_categories_ids_values, $related_subcategories_ids_values, $sizes_values, $old_price_value, $new_price_value, $quantity_value, $status_value] = $product_request->dataValues();
-
-        $main_image_name = storeOrUpdateImage(new Product(), $product_id, MAIN_IMAGE, $main_image_value);
-
-        $product = Product::query()->updateOrCreate(
-            [ID => $product_id],
-            [
-                $name              => $name_value,
-                SLUG               => str($name_value)->slug(),
-                $short_description => $short_description_value,
-                $long_description  => $long_description_value,
-                $main_image        => $main_image_name,
-                $old_price         => $old_price_value,
-                $new_price         => $new_price_value,
-                $quantity          => $quantity_value,
-                $status            => $status_value,
-            ]);
-
-        $new_product_id = [PRODUCT_ID => $product->{ID}];
-
-        /*---------------------------- One to Many Relationships ----------------------------*/
-        // Product Thumbnail Images
-        if (Arr::last($product_attributes) === THUMB_IMAGE) {
-            $this->storeThumbImages($product, $new_product_id, $thumb_image_input_name);
-//            $thumb_images = request()?->file($thumb_image_input_name);
-//            $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($new_product_id) {
-//                $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
-//                $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
-//
-//                return [
-//                    THUMB_IMAGE => $thumb_image_name,
-//                    ...$new_product_id
-//                ];
-//            }, $thumb_images);
-//
-//            $product->{THUMB_IMAGES}()->upsert($thumb_images_data, [THUMB_IMAGE, PRODUCT_ID]);
-        }
-
-        // Product Sizes
-        $sizes_values = array_filter((array) $sizes_values);
-        $this->storeSizes($product, $new_product_id, $sizes_values);
-//        $sizes_values = array_filter((array) $sizes_values);
-//        array_walk($sizes_values, static function (&$size_value) use ($new_product_id) {
-//            $size_value = [
-//                SIZE => $size_value,
-//                ...$new_product_id
-//            ];
-//        });
-//        $product->{SIZES}()->delete();
-//        $product->{SIZES}()->createMany($sizes_values);
-
-        /*---------------------------- Many to Many Relationships ----------------------------*/
-        // Product Related Categories
-        createOrUpdateMultipleCollections($product, CATEGORIES_TABLE, $related_categories_ids_values);
-
-        // Product Related Subcategories
-        createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
-
-        $this->forgetProductCache($product);
+        $this->forgetCollectionCache($product);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$product, $product->{NAME}], $operation), true);
 
@@ -160,7 +97,7 @@ class ProductService
     {
         $deleted_product = removeDeleteOrRestore($product, $product->{NAME});
 
-        $this->forgetProductCache($product);
+        $this->forgetCollectionCache($product);
 
         return $deleted_product;
     }
@@ -177,7 +114,7 @@ class ProductService
     {
         $deleted_products = removeDeleteOrRestore($products);
 
-        $this->forgetProductCache($products);
+        $this->forgetCollectionCache($products);
 
         return $deleted_products;
     }
@@ -193,7 +130,7 @@ class ProductService
     {
         $restored_product = removeDeleteOrRestore($product, $product->{NAME});
 
-        $this->forgetProductCache($product);
+        $this->forgetCollectionCache($product);
 
         return $restored_product;
     }
@@ -209,9 +146,98 @@ class ProductService
     {
         $restored_products = removeDeleteOrRestore($products);
 
-        $this->forgetProductCache($products);
+        $this->forgetCollectionCache($products);
 
         return $restored_products;
+    }
+
+    /**
+     * Validate and return the product request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return ProductRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): ProductRequest
+    {
+        $product_request = new ProductRequest($operation, PRODUCT_MODEL, $product_attributes);
+
+        validateAttributes($product_request, $extra[PRODUCT_ID]);
+
+        return $product_request;
+    }
+
+    /**
+     * Create or Update the product.
+     *
+     * @param FormRequest|ProductRequest $collectionRequest
+     * @param array $extra
+     * @return Product|JsonResponse
+     * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     */
+    final public function createOrUpdateCollection(FormRequest|ProductRequest $collectionRequest, array $extra): Product|JsonResponse
+    {
+        $product_attributes     = PRODUCT_ATTRIBUTES;
+        $thumb_image_input_name = "{$extra['operation']}_".PRODUCT_MODEL."_".THUMB_IMAGE;
+
+        if (request()?->hasFile($thumb_image_input_name)) {
+            $product_attributes[] = THUMB_IMAGE;
+        }
+
+        [$name, $short_description, $long_description, $main_image, $related_categories_ids, $related_subcategories_ids, $sizes, $old_price, $new_price, $quantity, $status] = $product_attributes;
+
+        [$name_value, $short_description_value, $long_description_value, $main_image_value, $related_categories_ids_values, $related_subcategories_ids_values, $sizes_values, $old_price_value, $new_price_value, $quantity_value, $status_value] = $collectionRequest->dataValues();
+
+        $main_image_name = storeOrUpdateImage(new Product(), $extra[PRODUCT_ID], MAIN_IMAGE, $main_image_value);
+
+        $product = Product::query()->updateOrCreate(
+            [ID => $extra[PRODUCT_ID]],
+            [
+                $name              => $name_value,
+                SLUG               => str($name_value)->slug(),
+                $short_description => $short_description_value,
+                $long_description  => $long_description_value,
+                $main_image        => $main_image_name,
+                $old_price         => $old_price_value,
+                $new_price         => $new_price_value,
+                $quantity          => $quantity_value,
+                $status            => $status_value,
+            ]);
+
+        $new_product_id = [PRODUCT_ID => $product->{ID}];
+
+        /*---------------------------- One to Many Relationships ----------------------------*/
+        // Product Thumbnail Images
+        if (Arr::last($product_attributes) === THUMB_IMAGE) {
+            $this->storeThumbImages($product, $new_product_id, $thumb_image_input_name);
+        }
+
+        // Product Sizes
+        $sizes_values = array_filter((array) $sizes_values);
+        $this->storeSizes($product, $new_product_id, $sizes_values);
+
+        /*---------------------------- Many to Many Relationships ----------------------------*/
+        // Product Related Categories
+        createOrUpdateMultipleCollections($product, CATEGORIES_TABLE, $related_categories_ids_values);
+
+        // Product Related Subcategories
+        createOrUpdateMultipleCollections($product, SUBCATEGORIES_TABLE, $related_subcategories_ids_values);
+
+        return $product;
+    }
+
+    /**
+     * Forget the product cache.
+     *
+     * @param Model|Product|null $model
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    final public function forgetCollectionCache(Model|Product $model = null): void
+    {
+        forgetCache(PRODUCT_MODEL, $model, SLUG);
+        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_CACHE_KEY]);
     }
 
     /**
@@ -221,7 +247,7 @@ class ProductService
      * @param array $productAttributes
      * @param string $inputName
      * @return void
-     * @throws RandomException
+     * @throws ServiceUnavailableHttpException|RandomException
      */
     private function storeThumbImages(Product $product, array $productAttributes, string $inputName): void
     {
@@ -257,18 +283,5 @@ class ProductService
         });
         $product->{SIZES}()->delete();
         $product->{SIZES}()->createMany($sizesValues);
-    }
-
-    /**
-     * Forget the product cache.
-     *
-     * @param Product $product
-     * @return void
-     * @throws CacheInvalidArgumentException
-     */
-    private function forgetProductCache(Product $product): void
-    {
-        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_TABLE]);
-        forgetCache(PRODUCT_MODEL, $product, SLUG);
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
 class RegisterController extends Controller
@@ -34,8 +35,8 @@ class RegisterController extends Controller
         $auth_action         = REGISTER;
         $register_user_error = static fn(string $attributeName) => formError(REGISTER, USER_MODEL, $attributeName);
 
-        return auth()->check() 
-            ? to_route('home') 
+        return auth()->check()
+            ? to_route('home')
             : showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, REGISTER_USER_ERROR));
     }
 
@@ -43,7 +44,7 @@ class RegisterController extends Controller
      * Register a new user.
      *
      * @return JsonResponse|Response
-     * @throws ValidationException
+     * @throws ValidationException|CacheInvalidArgumentException
      */
     final public function register(): JsonResponse|Response
     {

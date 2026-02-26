@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\AddressRequest;
 use App\Models\Address;
 use App\Models\User;
@@ -10,6 +11,8 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
@@ -17,7 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
-class AddressService {
+class AddressService implements ServiceData
+{
     /**
      * Get the detailed data of a specified user's addresses.
      *
@@ -64,33 +68,13 @@ class AddressService {
      */
     final public function createOrUpdateAddress(string $operation): Address
     {
-        $address_request = new AddressRequest($operation, ADDRESS_MODEL, ADDRESS_FILLABLE_ATTRIBUTES);
+        $address_id = request()?->input(UPDATE_ADDRESS_ID);
 
-        $address_id        = request()?->input(UPDATE_ADDRESS_ID);
-        $decrypted_user_id = decrypt(request()?->input($address_request->dataKeyOf(USER_ID)));
+        $validated_address_request = $this->validateRequest($operation);
 
-        request()?->merge([$address_request->dataKeyOf(USER_ID) => $decrypted_user_id]);
+        $address = $this->createOrUpdateCollection($validated_address_request, compact(ADDRESS_ID));
 
-        validateAttributes($address_request);
-
-        [$address1, $address2, $city, $state, $country, $postal_code, $user_id] = ADDRESS_FILLABLE_ATTRIBUTES;
-
-        [$address1_value, $address2_value, $city_value, $state_value, $country_value, $postal_code_value, $user_id_value] = $address_request->dataValues();
-
-        $address = Address::query()->updateOrCreate(
-            [ID => $address_id],
-            [
-                $address1    => $address1_value,
-                $address2    => $address2_value,
-                $city        => $city_value,
-                $state       => $state_value,
-                $country     => $country_value,
-                $postal_code => $postal_code_value,
-                $user_id     => $user_id_value,
-            ]
-        );
-
-        $this->forgetAddressCache();
+        $this->forgetCollectionCache();
 
         sendNotificationToAdmins(new NewAdminActionTaken([$address, $address->{ADDRESS1}], $operation), true);
 
@@ -108,7 +92,7 @@ class AddressService {
     {
         $deleted_address = removeDeleteOrRestore($address, $address->{ADDRESS1});
 
-        $this->forgetAddressCache();
+        $this->forgetCollectionCache();
 
         return $deleted_address;
     }
@@ -124,7 +108,7 @@ class AddressService {
     {
         $deleted_addresses = removeDeleteOrRestore($addresses);
 
-        $this->forgetAddressCache();
+        $this->forgetCollectionCache();
 
         return $deleted_addresses;
     }
@@ -140,7 +124,7 @@ class AddressService {
     {
         $restored_address = removeDeleteOrRestore($address, $address->{ADDRESS1});
 
-        $this->forgetAddressCache();
+        $this->forgetCollectionCache();
 
         return $restored_address;
     }
@@ -156,18 +140,66 @@ class AddressService {
     {
         $restored_addresses = removeDeleteOrRestore($addresses);
 
-        $this->forgetAddressCache();
+        $this->forgetCollectionCache();
 
         return $restored_addresses;
     }
 
     /**
+     * Validate and return the address request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return AddressRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): AddressRequest
+    {
+        $address_request   = new AddressRequest($operation, ADDRESS_MODEL, ADDRESS_FILLABLE_ATTRIBUTES);
+        $decrypted_user_id = decrypt(request()?->input($address_request->dataKeyOf(USER_ID)));
+
+        request()?->merge([$address_request->dataKeyOf(USER_ID) => $decrypted_user_id]);
+
+        validateAttributes($address_request);
+
+        return $address_request;
+    }
+
+    /**
+     * Create or Update the address.
+     *
+     * @param FormRequest|AddressRequest $collectionRequest
+     * @param array $extra
+     * @return Address
+     */
+    final public function createOrUpdateCollection(FormRequest|AddressRequest $collectionRequest, array $extra): Address
+    {
+        [$address1, $address2, $city, $state, $country, $postal_code, $user_id] = ADDRESS_FILLABLE_ATTRIBUTES;
+
+        [$address1_value, $address2_value, $city_value, $state_value, $country_value, $postal_code_value, $user_id_value] = $collectionRequest->dataValues();
+
+        return Address::query()->updateOrCreate(
+            [ID => $extra[ADDRESS_ID]],
+            [
+                $address1    => $address1_value,
+                $address2    => $address2_value,
+                $city        => $city_value,
+                $state       => $state_value,
+                $country     => $country_value,
+                $postal_code => $postal_code_value,
+                $user_id     => $user_id_value,
+            ]
+        );
+    }
+
+    /**
      * Forget the address cache.
      *
+     * @param Model|null $model
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetAddressCache(): void
+    final public function forgetCollectionCache(Model $model = null): void
     {
         forgetCache([ADDRESSES_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY]);
     }

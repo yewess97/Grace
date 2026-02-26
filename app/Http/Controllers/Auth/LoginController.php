@@ -35,8 +35,8 @@ class LoginController extends Controller
         $auth_action      = LOGIN;
         $login_user_error = static fn(string $attributeName) => formError(LOGIN, USER_MODEL, $attributeName);
 
-        return auth()->check() 
-            ? to_route('home') 
+        return auth()->check()
+            ? to_route('home')
             : showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, LOGIN_USER_ERROR));
     }
 
@@ -53,12 +53,12 @@ class LoginController extends Controller
 
     /**
      * Redirect the user to the social provider authentication page.
-     * 
+     *
      * @param string $provider
      * @return JsonResponse
      * @throws InvalidArgumentException|RuntimeException
      */
-    final public function redirectToProvider($provider): JsonResponse
+    final public function redirectToProvider(string $provider): JsonResponse
     {
         return $this->authService->redirectToSocialProvider($provider);
     }
@@ -69,7 +69,7 @@ class LoginController extends Controller
      * @param string $provider
      * @return RedirectResponse
      */
-    final public function handleProviderCallback($provider): RedirectResponse
+    final public function handleProviderCallback(string $provider): RedirectResponse
     {
         return $this->authService->handleSocialProviderCallback($provider);
     }

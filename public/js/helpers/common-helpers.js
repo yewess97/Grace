@@ -473,7 +473,7 @@ const Common = {
      * Arrange the table rows.
      *
      * @param startIndex
-     * @return {void}
+     * @return {*}
      */
     arrangeTableRows: (startIndex = 0) =>
         $.each(($(".table tbody tr")), (key, row) => $(row).find(`.${IGrace.ROW}-num > p`).html(startIndex + (++key))),
@@ -538,7 +538,7 @@ const Common = {
     /**
      * Warn the user before leaving/refreshing the form
      *
-     * @returns {void}
+     * @returns {*|jQuery}
      */
     warnBeforeLeaving: () =>
         $(window).on("beforeunload", function (e) {
@@ -703,7 +703,7 @@ const Common = {
      * @param status
      * @param message
      * @param extra
-     * @return {void}
+     * @return {*}
      */
     successMessage: (status, message, extra = null) => {
         const
@@ -776,7 +776,7 @@ const Common = {
      * Display the cancelation message when canceled.
      *
      * @param message
-     * @return {void}
+     * @return {*}
      */
     cancelMessage: (message) =>
         Swal.fire({
@@ -793,10 +793,9 @@ const Common = {
      * Display the error message in a sweet alert.
      *
      * @param error
-     * @param icon
-     * @return {void}
+     * @return {*}
      */
-    swalResponseJsonErrorMessage: (error, icon = IGrace.ERROR) => Common.somethingWentWrongError(Common.responseJsonError(error, true), icon),
+    swalResponseJsonErrorMessage: (error) => Common.somethingWentWrongError(Common.responseJsonError(error, true)),
 
 
     /**
@@ -805,14 +804,13 @@ const Common = {
      * if confirmed, reload the page.
      *
      * @param message
-     * @param icon
-     * @return {void}
+     * @return {any}
      */
-    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!", icon) =>
+    somethingWentWrongError: (message = "Something went wrong. <br> Please try again later!") =>
         Common.swalWithButtons.fire({
             title:             'Sorry!',
             html:              message,
-            icon:              icon,
+            icon:              IGrace.ERROR,
             showConfirmButton: true,
             confirmButtonText: "Refresh",
         })
@@ -829,7 +827,7 @@ const Common = {
      * after closing it without submitting the form.
      *
      * @param role
-     * @return {void}
+     * @return {*|jQuery}
      */
     removeErrorsWhenEditModelHides: (role) =>
         $(document).on('hidden.bs.modal', `.${role}-${IGrace.EDIT}-modal`, function (e) {
@@ -879,7 +877,7 @@ const Common = {
      * Error response for search/filter.
      *
      * @param imageSrc
-     * @return {void}
+     * @return {*|jQuery}
      */
     searchFilterErrorResponse: (imageSrc) =>
         $('.search-table').html(
@@ -1394,6 +1392,8 @@ const Common = {
                 console.error('Failed to parse SSE message: ', error);
             }
         };
+
+        source.onerror = () => source.close();
     },
 
 

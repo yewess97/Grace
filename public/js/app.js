@@ -326,12 +326,18 @@ $(document).ready(() => {
                 .val(max_range);
         }
 
+        // Submit the wishlist's form
         if (target.is(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-btn, .fa-heart`)) {
             target.closest('form').next().submit();
         }
 
+        // Remove the product from the wishlist
+        if (target.is(`.${IGrace.WISHLIST} .${IGrace.PRODUCT}-remove`)) {
+            $(`#${IGrace.WISHLIST}_${IGrace.PRODUCT}_remove_form`).attr('action', target.data('route')).submit();
+        }
+
         // Remove the product from the cart
-        if (target.hasClass(`${IGrace.CART} ${IGrace.PRODUCT}-remove`)) {
+        if (target.is(`.${IGrace.CART} .${IGrace.PRODUCT}-remove`)) {
             const cart_product_remove_form = $(`#${IGrace.CART}_${IGrace.PRODUCT}_remove_form`);
             cart_product_remove_form.attr('action', target.data('route')).submit();
             let cartProductInfo = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));

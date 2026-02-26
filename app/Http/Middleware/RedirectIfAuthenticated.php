@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +25,6 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (auth()->guard($guard)->check()) {
                 return back();
-//                return redirect(RouteServiceProvider::PRODUCTS_LIST);
             }
         }
 

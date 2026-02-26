@@ -128,7 +128,7 @@ class UserService
             ->withTrashed()
             ->cursor()
             ->each(static fn(Review $review) =>
-                app(ReviewService::class)->forgetReviewCache($review)
+                app(ReviewService::class)->forgetCollectionCache($review)
             );
 
         forgetCache([USERS_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY, USER_ORDERS_PAGINATION_CACHE_KEY, USER_MODEL]);

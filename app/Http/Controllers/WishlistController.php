@@ -31,9 +31,11 @@ class WishlistController extends Controller
      */
     final public function index(): Application|Factory|View|JsonResponse
     {
+        $user_wishlist_items = userCollectionsData()[WISHLIST_MODEL][ITEMS];
+
         return request()?->ajax()
-            ? ajaxPaginationResponse(userCollectionsData()[WISHLIST_MODEL][ITEMS], WISHLIST_PAGINATION, USER_WISHLIST_ITEMS)
-            : showView(USER_WISHLIST_VIEW);
+            ? ajaxPaginationResponse($user_wishlist_items, WISHLIST_PAGINATION, USER_WISHLIST_ITEMS)
+            : showView(USER_WISHLIST_VIEW, compact(USER_WISHLIST_ITEMS));
     }
 
 

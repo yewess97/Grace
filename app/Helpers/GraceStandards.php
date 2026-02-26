@@ -263,17 +263,17 @@ define("MAX_PRICE",                   'max_'.PRICE);
 /**
  * Wishlist Standards.
  */
-define("ADD_TO_WISHLIST",      ADD.' to '.WISHLIST_MODEL);
-define("CREATE_WISHLIST",      CREATE.'_'.WISHLIST_MODEL);
-define("USER_WISHLIST_ITEMS",  USER_MODEL.'_'.WISHLIST_MODEL.'_items');
-define("EMPTY_WISHLIST",       'empty_'.WISHLIST_MODEL);
+define("ADD_TO_WISHLIST",     ADD.' to '.WISHLIST_MODEL);
+define("CREATE_WISHLIST",     CREATE.'_'.WISHLIST_MODEL);
+define("USER_WISHLIST_ITEMS", USER_MODEL.'_'.WISHLIST_MODEL.'_items');
+define("EMPTY_WISHLIST",      'empty_'.WISHLIST_MODEL);
 
 /**
  * Cart Standards.
  */
-define("ADD_TO_CART",      ADD.' to '.CART_MODEL);
-define("USER_CART_ITEMS",  USER_MODEL.'_'.CART_MODEL.'_items');
-define("EMPTY_CART",       'empty_'.CART_MODEL);
+define("ADD_TO_CART",     ADD.' to '.CART_MODEL);
+define("USER_CART_ITEMS", USER_MODEL.'_'.CART_MODEL.'_items');
+define("EMPTY_CART",      'empty_'.CART_MODEL);
 
 /**
  * Checkout Standards.
@@ -310,6 +310,8 @@ define("REVIEW_RATING",     REVIEW_MODEL.'_'.RATING);
 define("CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY", CATEGORIES_TABLE.'_for'.SUBCATEGORIES_TABLE);
 define("CATEGORIES_FOR_PRODUCTS_CACHE_KEY",      CATEGORIES_TABLE.'_for'.PRODUCTS_TABLE);
 define("SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY",   SUBCATEGORIES_TABLE.'_for'.PRODUCTS_TABLE);
+define("WISHLISTS_CACHE_KEY",                    WISHLISTS_TABLE.'_'.auth()->id());
+define("CARTS_CACHE_KEY",                        CARTS_TABLE.'_'.auth()->id());
 
 #################################### End Other Standards ####################################
 

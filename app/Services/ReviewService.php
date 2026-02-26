@@ -2,20 +2,25 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\ReviewRequest;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
 use App\Notifications\NewReviewAdded;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
-class ReviewService
+class ReviewService implements ServiceData
 {
     /**
      * Get the reviews.
@@ -37,34 +42,22 @@ class ReviewService
      */
     final public function createOrUpdateReview(string $operation): Review
     {
-        $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);
-
         $review_id = request()?->input(UPDATE_REVIEW_ID);
 
-        validateAttributes($review_request);
+        $validated_review_request = $this->validateRequest($operation);
 
-        [$rating, $title, $body_text, $product_id] = REVIEW_ATTRIBUTES;
-
-        [$rating_value, $title_value, $body_text_value, $product_id_value] = $review_request->dataValues();
+        $product_id_value = Arr::last($validated_review_request->dataValues());
 
         $product         = $this->getProductOrFail($product_id_value);
         $order_purchased = $this->getPurchasedOrderOrFail($product);
-        $order_completed = $this->getCompletedOrderOrFail($order_purchased);
 
-        $this->checkReviewExistingOrFail($product_id_value);
+        $this->getCompletedOrderOrFail($order_purchased);
 
-        $review = Review::query()->updateOrCreate(
-            [ID => $review_id],
-            [
-                $rating     => $rating_value,
-                $title      => $title_value,
-                $body_text  => $body_text_value,
-                $product_id => $product_id_value,
-                USER_ID     => auth()->id(),
-            ]
-        );
+        $this->checkReviewExistingOrFail($review_id, $product_id_value);
 
-        $this->forgetReviewCache($review);
+        $review = $this->createOrUpdateCollection($validated_review_request, compact(REVIEW_ID));
+
+        $this->forgetCollectionCache($review);
 
         sendNotificationToAdmins(new NewReviewAdded($review));
 
@@ -82,7 +75,7 @@ class ReviewService
     {
         $deleted_review = removeDeleteOrRestore($review, $review->{TITLE});
 
-        $this->forgetReviewCache($review);
+        $this->forgetCollectionCache($review);
 
         return $deleted_review;
     }
@@ -98,7 +91,7 @@ class ReviewService
     {
         $deleted_reviews = removeDeleteOrRestore($reviews);
 
-        $this->forgetReviewCache($reviews);
+        $this->forgetCollectionCache($reviews);
 
         return $deleted_reviews;
     }
@@ -114,7 +107,7 @@ class ReviewService
     {
         $restored_review = removeDeleteOrRestore($review, $review->{TITLE});
 
-        $this->forgetReviewCache($review);
+        $this->forgetCollectionCache($review);
 
         return $restored_review;
     }
@@ -130,9 +123,73 @@ class ReviewService
     {
         $restored_reviews = removeDeleteOrRestore($reviews);
 
-        $this->forgetReviewCache($reviews);
+        $this->forgetCollectionCache($reviews);
 
         return $restored_reviews;
+    }
+
+    /**
+     * Validate and return the review request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return ReviewRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): ReviewRequest
+    {
+        $review_request = new ReviewRequest($operation, REVIEW_MODEL, REVIEW_ATTRIBUTES);
+
+        validateAttributes($review_request);
+
+        return $review_request;
+    }
+
+    /**
+     * Create or Update the review.
+     *
+     * @param FormRequest|ReviewRequest $collectionRequest
+     * @param array $extra
+     * @return Review|JsonResponse
+     */
+    final public function createOrUpdateCollection(FormRequest|ReviewRequest $collectionRequest, array $extra): Review|JsonResponse
+    {
+        [$rating, $title, $body_text, $product_id] = REVIEW_ATTRIBUTES;
+
+        [$rating_value, $title_value, $body_text_value, $product_id_value] = $collectionRequest->dataValues();
+
+        return Review::query()->updateOrCreate(
+            [ID => $extra[REVIEW_ID]],
+            [
+                $rating     => $rating_value,
+                $title      => $title_value,
+                $body_text  => $body_text_value,
+                $product_id => $product_id_value,
+                USER_ID     => auth()->id(),
+            ]
+        );
+    }
+
+    /**
+     * Forget the review cache.
+     *
+     * @param Model|Review|null $model
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    final public function forgetCollectionCache(Model|Review $model = null): void
+    {
+        forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $model, RATING, [
+            'relation' => PRODUCT_MODEL,
+            'relation_only_columns' => [
+                PRODUCT_MODEL => [ID, SLUG],
+            ],
+            'unique_by'  => SLUG,
+            'cache_keys' => [
+                static fn($product) => PRODUCT_MODEL.'_'.$product[SLUG],
+                static fn($product) => AVERAGE_RATE.'_'.$product[ID],
+            ],
+        ]);
     }
 
     /**
@@ -183,10 +240,10 @@ class ReviewService
      * Get the first completed order or throw an exception if none exists.
      *
      * @param Builder $order
-     * @return Builder
+     * @return void
      * @throws HttpException
      */
-    private function getCompletedOrderOrFail(Builder $order): Builder
+    private function getCompletedOrderOrFail(Builder $order): void
     {
         $completed_order = $order->whereStatus(4)
             ->withoutTrashed()
@@ -195,18 +252,16 @@ class ReviewService
         if ($completed_order->isEmpty()) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'To be able to '.REVIEW_MODEL.' this '.PRODUCT_MODEL.', <br> Your order should be completed!');
         }
-
-        return $completed_order;
     }
 
     /**
      * Throw an exception if the user has already reviewed this product.
      *
+     * @param int $review_id
      * @param int $productId
      * @return void
-     * @throws ValidationException
      */
-    private function checkReviewExistingOrFail(int $productId): void
+    private function checkReviewExistingOrFail(int $review_id, int $productId): void
     {
         $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
             ->whereHas(PRODUCT_MODEL, static function ($product) use ($productId) {
@@ -221,27 +276,5 @@ class ReviewService
                 REVIEW_MODEL.'_exists' => ['You have already '.toPastTense(REVIEW_MODEL).' this '.PRODUCT_MODEL.'. You can edit your '.REVIEW_MODEL.'!'],
             ]);
         }
-    }
-
-    /**
-     * Forget the review cache.
-     *
-     * @param Review $review
-     * @return void
-     * @throws CacheInvalidArgumentException
-     */
-    final public function forgetReviewCache(Review $review): void
-    {
-        forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $review, RATING, [
-            'relation' => PRODUCT_MODEL,
-            'relation_only_columns' => [
-                PRODUCT_MODEL => [ID, SLUG],
-            ],
-            'unique_by'  => SLUG,
-            'cache_keys' => [
-                static fn($product) => PRODUCT_MODEL.'_'.$product[SLUG],
-                static fn($product) => AVERAGE_RATE.'_'.$product[ID],
-            ],
-        ]);
     }
 }

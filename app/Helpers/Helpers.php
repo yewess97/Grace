@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewUserRegistered;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -563,12 +562,12 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
         $collections_config = [
             CART_MODEL => [
                 'model'             => Cart::class,
-                'cache_key'         => CARTS_TABLE,
+                'cache_key'         => CARTS_CACHE_KEY,
                 'empty_session_key' => EMPTY_CART,
             ],
             WISHLIST_MODEL => [
                 'model'             => Wishlist::class,
-                'cache_key'         => WISHLISTS_TABLE,
+                'cache_key'         => WISHLISTS_CACHE_KEY,
                 'empty_session_key' => EMPTY_WISHLIST,
             ],
         ];
@@ -583,13 +582,14 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
                     ->toArray()
             );
 
-            $collection = $config['model']::query()
-                ->whereIn(ID, $collection_ids)
-                ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
+            $collection = static fn() =>
+                $config['model']::query()
+                    ->whereIn(ID, $collection_ids)
+                    ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
 
             $items = Route::currentRouteName() === $type
-                ? $collection->fastPaginate(5)
-                : $collection->cursor();
+                ? $collection()->fastPaginate(5)
+                : $collection()->cursor();
 
             $items->isEmpty()
                 ? session()->flash($config['empty_session_key'])
@@ -598,13 +598,13 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
             $collection_data = [
                 ITEMS => $items,
                 TOTAL_ITEMS => $type === CART_MODEL
-                    ? $collection->sum(PRODUCT_QUANTITY)
-                    : $collection->count(),
+                    ? $collection()->sum(PRODUCT_QUANTITY)
+                    : $collection()->count(),
             ];
 
             // Add total_cost only for cart
             if ($type === CART_MODEL) {
-                $collection_data[TOTAL_COST] = $collection->cursor()
+                $collection_data[TOTAL_COST] = $collection()->cursor()
                     ->sum(static fn($item) => $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY});
             }
 

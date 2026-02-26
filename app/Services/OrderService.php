@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\ServiceData;
 use App\Http\Requests\OrderRequest;
 use App\Mail\OrderMail;
 use App\Models\Cart;
@@ -11,9 +12,12 @@ use App\Notifications\NewOrderPlaced;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\LazyCollection;
@@ -27,7 +31,8 @@ use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 use Exception;
 
-class OrderService {
+class OrderService implements ServiceData
+{
     /**
      * Get the detailed data of a specified order.
      *
@@ -52,7 +57,7 @@ class OrderService {
      * Store an order.
      *
      * @return RedirectResponse|JsonResponse|int
-     * @throws ValidationException|RandomException|CacheInvalidArgumentException|Throwable|Exception
+     * @throws ValidationException|ApiErrorException|RandomException|Throwable|CacheInvalidArgumentException
      */
     final public function createOrder(): RedirectResponse|JsonResponse|int
     {
@@ -67,57 +72,25 @@ class OrderService {
                     ->setStatusCode(Response::HTTP_BAD_REQUEST);
             }
 
-            $create_order_attributes = [STATUS, ADDRESS_ID, PAYMENT_METHOD];
+            $validated_order_request = $this->validateRequest(ADD);
 
-            $order_request = new OrderRequest(ADD, ORDER_MODEL, $create_order_attributes);
+            $order = $this->createOrUpdateCollection($validated_order_request, compact(PAYMENT_STATUS));
 
-            validateAttributes($order_request);
-
-            [$status, $address_id, $payment_method] = $create_order_attributes;
-
-            [$status_value, $address_id_value, $payment_method_value] = $order_request->dataValues();
-
-            $user_cart_items  = userCollectionsData()[CART_MODEL][ITEMS];
-            $order_total_cost = userCollectionsData()[CART_MODEL][TOTAL_COST];
-
-            if ($user_cart_items->isEmpty()) {
-                throw ValidationException::withMessages([
-                    'You have already placed this '.ORDER_MODEL.'. <br> Please check your '.CART_MODEL.' or add some '.PRODUCTS_TABLE.' to it.',
-                ])->status(Response::HTTP_BAD_REQUEST);
-            }
-
-            $stripe = new StripeClient(config('services.stripe.secret'));
-
-            if ((is_null($payment_status) || !$payment_status === 'succeeded') && (int) $payment_method_value === 1) {
-                return $this->stripePayment($stripe, $user_cart_items, $order_request->data());
-            }
-
-            $order = Order::query()->create([
-                TRACKING_NUM    => 'GR'.random_int(11111, 99999),
-                NUM_ITEMS       => $user_cart_items->sum(PRODUCT_QUANTITY),
-                TOTAL_COST      => $order_total_cost,
-                $status         => $status_value,
-                $payment_method => $payment_method_value,
-                PAYMENT_ID      => request()?->input(PAYMENT_ID),
-                USER_ID         => auth()->id(),
-                $address_id     => $address_id_value,
-            ]);
-
-            $this->createOrderItems($user_cart_items, $order);
+            $this->createOrderItems($this->getUserCartItems(), $order);
 
             DB::commit();
 
             Mail::to(auth()->user()?->{EMAIL})->send(new OrderMail($order));
 
-            $this->forgetOrderCache($order);
+            $this->forgetCollectionCache($order);
 
             sendNotificationToAdmins(new NewOrderPlaced($order));
 
-            $destroy_cart_items = Cart::destroy($user_cart_items->pluck(ID)->toArray());
+            $destroy_cart_items = Cart::destroy($this->getUserCartItems()->pluck(ID)->toArray());
 
-            forgetCache(CARTS_TABLE);
+            forgetCache(CARTS_CACHE_KEY);
 
-            if ((int) $payment_method_value === 1 && $payment_status === 'succeeded') {
+            if ((int) Arr::last($validated_order_request->dataValues()) === 1 && $payment_status === 'succeeded') {
                 return to_route(ORDER_DETAILS, [TRACKING_NUM => $order->{TRACKING_NUM}])
                     ->with('orderPlaced', 'Your '.ORDER_MODEL.' has been placed successfully!');
             }
@@ -149,11 +122,11 @@ class OrderService {
 
         $order = Order::query()->findOrFail($order_id, [ID, TRACKING_NUM, STATUS]);
 
-        $this->forgetOrderCache($order);
+        $this->forgetCollectionCache($order);
 
         $update_order = $order->update([STATUS => $status_value]);
 
-        $this->forgetOrderCache($order);
+        $this->forgetCollectionCache($order);
 
         sendNotificationToAdmins(new NewAdminActionTaken([$order, $order->{TRACKING_NUM}], UPDATE), true);
 
@@ -171,7 +144,7 @@ class OrderService {
     {
         $deleted_order = removeDeleteOrRestore($order, $order->{TRACKING_NUM});
 
-        $this->forgetOrderCache($order);
+        $this->forgetCollectionCache($order);
 
         return $deleted_order;
     }
@@ -187,7 +160,7 @@ class OrderService {
     {
         $deleted_orders = removeDeleteOrRestore($orders);
 
-        $this->forgetOrderCache($orders);
+        $this->forgetCollectionCache($orders);
 
         return $deleted_orders;
     }
@@ -203,7 +176,7 @@ class OrderService {
     {
         $restored_order = removeDeleteOrRestore($order, $order->{TRACKING_NUM});
 
-        $this->forgetOrderCache($order);
+        $this->forgetCollectionCache($order);
 
         return $restored_order;
     }
@@ -219,9 +192,94 @@ class OrderService {
     {
         $restored_orders = removeDeleteOrRestore($orders);
 
-        $this->forgetOrderCache($orders);
+        $this->forgetCollectionCache($orders);
 
         return $restored_orders;
+    }
+
+    /**
+     * Validate and return the order request.
+     *
+     * @param string $operation
+     * @param array $extra
+     * @return OrderRequest
+     * @throws ValidationException
+     */
+    final public function validateRequest(string $operation, array $extra = []): OrderRequest
+    {
+        $create_order_attributes = [STATUS, ADDRESS_ID, PAYMENT_METHOD];
+
+        $order_request = new OrderRequest($operation, ORDER_MODEL, $create_order_attributes);
+
+        validateAttributes($order_request);
+
+        return $order_request;
+    }
+
+    /**
+     * Create or Update the order.
+     *
+     * @param FormRequest|OrderRequest $collectionRequest
+     * @param array $extra
+     * @return Order|JsonResponse
+     * @throws ApiErrorException|RandomException|Throwable
+     */
+    final public function createOrUpdateCollection(FormRequest|OrderRequest $collectionRequest, array $extra): Order|JsonResponse
+    {
+        [$status, $address_id, $payment_method] = $create_order_attributes;
+
+        [$status_value, $address_id_value, $payment_method_value] = $collectionRequest->dataValues();
+
+        $stripe = new StripeClient(config('services.stripe.secret'));
+
+        if ((is_null($extra[PAYMENT_STATUS]) || !$extra[PAYMENT_STATUS] === 'succeeded') && (int) $payment_method_value === 1) {
+            return $this->stripePayment($stripe, $this->getUserCartItems(), $collectionRequest->data());
+        }
+
+        return Order::query()->create([
+            TRACKING_NUM    => 'GR'.random_int(11111, 99999),
+            NUM_ITEMS       => $this->getUserCartItems()->sum(PRODUCT_QUANTITY),
+            TOTAL_COST      => userCollectionsData()[CART_MODEL][TOTAL_COST],
+            $status         => $status_value,
+            $payment_method => $payment_method_value,
+            PAYMENT_ID      => request()?->input(PAYMENT_ID),
+            USER_ID         => auth()->id(),
+            $address_id     => $address_id_value,
+        ]);
+    }
+
+    /**
+     * Forget the order cache.
+     *
+     * @param Model|Order|null $model
+     * @return void
+     * @throws CacheInvalidArgumentException
+     */
+    final public function forgetCollectionCache(Model|Order $model = null): void
+    {
+        forgetCache(ORDERS_PAGINATION_CACHE_KEY, $model, STATUS);
+        forgetCache(USER_ORDERS_PAGINATION_CACHE_KEY);
+        forgetCache(ORDER_DETAILS);
+    }
+
+    /**
+     * Ensure the cart is not empty,
+     * and get the user's cart items.
+     *
+     * @return LazyCollection
+     * @throws Throwable
+     */
+    private function getUserCartItems(): LazyCollection
+    {
+        $user_cart_items = userCollectionsData()[CART_MODEL][ITEMS];
+
+        if ($user_cart_items->isEmpty()) {
+            throw ValidationException::withMessages([
+                'You have already placed this '.ORDER_MODEL.'. <br> Please check your '.CART_MODEL.' or add some '.PRODUCTS_TABLE.' to it.',
+            ])->status(Response::HTTP_BAD_REQUEST);
+        }
+
+        return $user_cart_items;
     }
 
     /**
@@ -296,19 +354,5 @@ class OrderService {
                 ORDER_ID            => $order->getKey(),
             ]);
         });
-    }
-
-    /**
-     * Forget the order cache.
-     *
-     * @param Order $order
-     * @return void
-     * @throws CacheInvalidArgumentException
-     */
-    private function forgetOrderCache(Order $order): void
-    {
-        forgetCache(ORDERS_PAGINATION_CACHE_KEY, $order, STATUS);
-        forgetCache(USER_ORDERS_PAGINATION_CACHE_KEY);
-        forgetCache(ORDER_DETAILS);
     }
 }

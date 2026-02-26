@@ -158,27 +158,23 @@ class AuthService {
     /**
      * Logout the user.
      *
-     * @return null
-     * @throws CacheInvalidArgumentException
+     * @return void
      */
-    final public function logoutUser(): null
+    final public function logoutUser(): void
     {
-        $user = $this->guard()->user();
+        $guard = $this->guard();
+        $user = $guard->user();
 
-        $this->guard()->logout();
+        $guard->logout();
 
-        if (assert($user instanceof User)) {
-            $user->{'remember_token'} = null;
-            $user->save();
-
-            cache()->delete('is_online_'.$user->{ID});
+        if ($user) {
+            cache()->forget('is_online_'.$user->getKey());
         }
 
-        return request()?->session()
-            ->flush()
-            ?->invalidate()
-            ->regenerateToken();
+        request()?->session()->invalidate();
+        request()?->session()->regenerateToken();
     }
+
 
     /**
      * Mailing the user to reset his/her password.

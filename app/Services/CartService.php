@@ -27,6 +27,7 @@ class CartService
         $cart_total_items = userCollectionsData()[CART_MODEL][TOTAL_ITEMS];
         $total_cost       = userCollectionsData()[CART_MODEL][TOTAL_COST];
         $row_compact_vars = compact(USER_CART_ITEMS, CART_TOTAL_ITEMS, TOTAL_COST);
+
         $row_view = $cart_total_items === 0
             ? USER_CART_VIEW
             : CART_CONTENT_PARTIAL;
@@ -307,6 +308,6 @@ class CartService
      */
     private function forgetCartCache(): void
     {
-        forgetCache(CARTS_TABLE);
+        forgetCache(CARTS_CACHE_KEY);
     }
 }
