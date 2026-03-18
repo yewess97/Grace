@@ -40,18 +40,20 @@ class WishlistController extends Controller
 
 
     /**
-     * Store a wishlist.
+     * Store or Delete a wishlist.
      *
      * @return JsonResponse
      * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException|Throwable
      */
-    final public function store(): JsonResponse
+    final public function storeOrDelete(): JsonResponse
     {
-        $this->wishlistService->createWishlist();
+        $create_or_delete_wishlist = $this->wishlistService->createOrDeleteWishlist();
+        $last_page                 = getLastPage(new Wishlist(), 5);
+        $get_wishlist_data         = $this->wishlistService->getWishlistData([LAST_PAGE => $last_page]);
 
-        $last_page = getLastPage(new Wishlist(), 5);
+        $response_data = [...$create_or_delete_wishlist[0], ...$create_or_delete_wishlist[ID], ...$get_wishlist_data];
 
-        return responseWithData($this->wishlistService->getWishlistData([LAST_PAGE => $last_page]));
+        return responseWithData($response_data);
     }
 
     /**

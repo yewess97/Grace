@@ -24,6 +24,17 @@ class DBServiceProvider extends ServiceProvider
         );
 
         /**
+         * Get the unique countries names of the user.
+         *
+         * @return Builder
+         */
+        Builder::macro('userCountries', fn() =>
+            $this->select(COUNTRY, USER_ID)
+                ->distinct(COUNTRY)
+                ->groupBy(COUNTRY, USER_ID)
+        );
+
+        /**
          * Dates Filter.
          *
          * @param array $dates
@@ -48,7 +59,7 @@ class DBServiceProvider extends ServiceProvider
          * @return double
          */
         Builder::macro('statisticsInLast24Hours', function () {
-            $last_24_hours = now()->subHours(24);
+            $last_24_hours              = now()->subHours(24);
             $orders_count_based_on_time = static fn(Builder $order, string $operator) => $order->whereTime(DATES[0], $operator,  $last_24_hours)->count();
 
             $last_24_hours_orders_count = $orders_count_based_on_time($this, '<');

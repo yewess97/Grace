@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -55,17 +56,24 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     *
+     * Redirect to the login page if user is unauthenticated,
+     * then return back to the intended url or the products list.
      *
      * @param $request
      * @param AuthenticationException $exception
      * @return JsonResponse|RedirectResponse
      */
-    protected function unauthenticated($request, AuthenticationException $exception): JsonResponse|RedirectResponse
+    final public function unauthenticated($request, AuthenticationException $exception): JsonResponse|RedirectResponse
     {
         if ($request->expectsJson()) {
+            $current_full_url = url()->full();
 
-            session(['url.intended' => url()->full()]);
+            $full_url = str_contains($current_full_url, kebabAll(CREATE_DELETE_WISHLIST))
+            || str_contains($current_full_url, kebabAll(CREATE_UPDATE_CART))
+                ? RouteServiceProvider::PRODUCTS_LIST
+                : $current_full_url;
+
+            session(['url.intended' => $full_url]);
 
             return response()->json([
                 'message' => 'Unauthenticated'

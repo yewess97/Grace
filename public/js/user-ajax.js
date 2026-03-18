@@ -63,7 +63,7 @@ Common.ajaxRestoreMultipleRequest(IGrace.PLURALIZE(IGrace.ADDRESS));
 
 
 /* ---------------------------------- PRODUCT QUICK VIEW DATA ---------------------------------- */
-User.ajaxGetProductDataRequest();
+User.ajaxQuickViewProductRequest();
 
 /* ---------------------------------- END PRODUCT QUICK VIEW DATA ---------------------------------- */
 

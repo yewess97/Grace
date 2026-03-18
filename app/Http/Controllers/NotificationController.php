@@ -19,7 +19,7 @@ class NotificationController extends Controller
         header('X-Accel-Buffering: no'); // For nginx, to disable buffering
 
         $unread_notification = auth()->user()
-            ->unreadNotifications()
+            ?->unreadNotifications()
             ->first([ID, 'data', DATES[0]]);
 
         echo (
@@ -48,7 +48,7 @@ class NotificationController extends Controller
     final public function markAsRead(): JsonResponse
     {
         auth()->user()
-            ->unreadNotifications()
+            ?->unreadNotifications()
             ->whereId(request()?->input(ID))
             ->first([ID, 'read_at'])
             ?->markAsRead();
@@ -63,7 +63,7 @@ class NotificationController extends Controller
      */
     final public function markAllAsRead(): JsonResponse
     {
-        $unread_notifications = auth()->user()->unreadNotifications;
+        $unread_notifications = auth()->user()?->unreadNotifications;
 
         $unread_notifications->markAsRead();
 

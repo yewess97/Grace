@@ -308,6 +308,6 @@ class CartService
      */
     private function forgetCartCache(): void
     {
-        forgetCache(CARTS_CACHE_KEY);
+        forgetCache(CARTS_TABLE.'_'.auth()->id());
     }
 }

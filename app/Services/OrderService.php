@@ -88,7 +88,7 @@ class OrderService implements ServiceData
 
             $destroy_cart_items = Cart::destroy($this->getUserCartItems()->pluck(ID)->toArray());
 
-            forgetCache(CARTS_CACHE_KEY);
+            forgetCache(CARTS_TABLE.'_'.auth()->id());
 
             if ((int) Arr::last($validated_order_request->dataValues()) === 1 && $payment_status === 'succeeded') {
                 return to_route(ORDER_DETAILS, [TRACKING_NUM => $order->{TRACKING_NUM}])

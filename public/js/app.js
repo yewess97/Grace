@@ -327,8 +327,12 @@ $(document).ready(() => {
         }
 
         // Submit the wishlist's form
-        if (target.is(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.WISHLIST))}-btn, .fa-heart`)) {
-            target.closest('form').next().submit();
+        if (target.is(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-btn, .fa-heart`)) {
+            e.preventDefault();
+
+            target.closest('form')
+                .next()
+                .submit();
         }
 
         // Remove the product from the wishlist

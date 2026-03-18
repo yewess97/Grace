@@ -21,7 +21,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route as Routing;
@@ -560,15 +559,15 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
     function userCollectionsData(array $vars = []): array
     {
         $collections_config = [
-            CART_MODEL => [
-                'model'             => Cart::class,
-                'cache_key'         => CARTS_CACHE_KEY,
-                'empty_session_key' => EMPTY_CART,
-            ],
             WISHLIST_MODEL => [
                 'model'             => Wishlist::class,
-                'cache_key'         => WISHLISTS_CACHE_KEY,
+                'cache_key'         => WISHLISTS_TABLE.'_'.auth()->id(),
                 'empty_session_key' => EMPTY_WISHLIST,
+            ],
+            CART_MODEL => [
+                'model'             => Cart::class,
+                'cache_key'         => CARTS_TABLE.'_'.auth()->id(),
+                'empty_session_key' => EMPTY_CART,
             ],
         ];
 
@@ -582,30 +581,34 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
                     ->toArray()
             );
 
-            $collection = static fn() =>
-                $config['model']::query()
-                    ->whereIn(ID, $collection_ids)
-                    ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
-
-            $items = Route::currentRouteName() === $type
-                ? $collection()->fastPaginate(5)
-                : $collection()->cursor();
-
-            $items->isEmpty()
+            empty($collection_ids)
                 ? session()->flash($config['empty_session_key'])
                 : session()->forget($config['empty_session_key']);
 
+            $collection = $config['model']::query()
+                ->whereIn(ID, $collection_ids)
+                ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
+
+            $items = Route::currentRouteName() === $type
+                ? $collection->fastPaginate(5)
+                : $collection->cursor();
+
+            $total_items = $type === CART_MODEL
+                ? $collection->sum(PRODUCT_QUANTITY)
+                : count($collection_ids);
+
             $collection_data = [
-                ITEMS => $items,
-                TOTAL_ITEMS => $type === CART_MODEL
-                    ? $collection()->sum(PRODUCT_QUANTITY)
-                    : $collection()->count(),
+                ITEMS       => $items,
+                TOTAL_ITEMS => $total_items,
             ];
 
-            // Add total_cost only for cart
             if ($type === CART_MODEL) {
-                $collection_data[TOTAL_COST] = $collection()->cursor()
-                    ->sum(static fn($item) => $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY});
+                $total_cost = $collection->cursor()
+                    ->sum(static fn($item) =>
+                        $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY}
+                    );
+
+                $collection_data[TOTAL_COST] = $total_cost;
             }
 
             $compact_vars[$type] = $collection_data;
@@ -618,18 +621,36 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
 }
 
 
-if (!function_exists(ADDRESS_MODEL.ucfirst(COUNTRY))) {
+if (!function_exists(WISHLIST_MODEL.ucfirst(TITLE).'Icon')) {
     /**
-     * Get the user's address country(ies).
+     * Check if the product item exists in the user's wishlist,
+     * So, return the title or icon of the wishlist button.
      *
-     * @param HasMany $address
-     * @return HasMany
+     * @param int $productId
+     * @param string $property
+     * @return string
+     * @throws InvalidArgumentException
      */
-    function addressCountry(HasMany $address): HasMany
+    function wishlistTitleIcon(int $productId, string $property): string
     {
-        return $address->select(COUNTRY, USER_ID)
-            ->distinct(COUNTRY)
-            ->groupBy(COUNTRY, USER_ID);
+        match($property) {
+            TITLE, 'icon' => null,
+            default => throw new InvalidArgumentException('Property must be either "'.TITLE.'" or "icon"')
+        };
+
+        $wishlist_product_exists = Wishlist::query()->whereHasAuthUser()
+            ->where(PRODUCT_ID, $productId)
+            ?->exists();
+
+        if ($wishlist_product_exists) {
+            return $property === TITLE
+                ? capitalizeAll(REMOVE.' from '.WISHLIST_MODEL)
+                : 'solid';
+        }
+
+        return $property === TITLE
+            ? capitalizeAll(ADD.' to '.WISHLIST_MODEL)
+            : 'regular';
     }
 }
 

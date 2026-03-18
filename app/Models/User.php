@@ -85,7 +85,7 @@ class User extends Authenticatable implements IGrace
         return static::query()->select(USER_SELECTED_ATTRIBUTES)
             ->with([
                 ORDERS_TABLE,
-                ADDRESSES_TABLE => static fn(HasMany $address) => addressCountry($address),
+                ADDRESSES_TABLE => static fn(HasMany $address) => $address->userCountries(),
             ])
             ->findOrFail($id ?? auth()->id());
     }
@@ -102,5 +102,10 @@ class User extends Authenticatable implements IGrace
     final public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    final public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }

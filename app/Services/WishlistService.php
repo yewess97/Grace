@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Throwable;
 
@@ -38,12 +37,12 @@ class WishlistService
     }
 
     /**
-     * Store a wishlist.
+     * Store or Delete a wishlist.
      *
-     * @return Wishlist
-     * @throws ModelNotFoundException|ValidationException|CacheInvalidArgumentException
+     * @return Wishlist|array
+     * @throws ModelNotFoundException|CacheInvalidArgumentException
      */
-    final public function createWishlist(): Wishlist
+    final public function createOrDeleteWishlist(): Wishlist|array
     {
         $product = $this->getProductOrFail();
 
@@ -55,16 +54,24 @@ class WishlistService
         $first_found_wishlist_item = Wishlist::query()->firstWhere($wishlist_relations);
 
         if ($first_found_wishlist_item) {
-            throw ValidationException::withMessages([
-                PRODUCT_ID => ['This '.PRODUCT_MODEL.' is already in your '.WISHLIST_MODEL],
-            ]);
+            $this->deleteWishlist($first_found_wishlist_item);
+
+            $this->forgetWishlistCache();
+
+            return [
+                [STATUS => toPastTense(DELETE)],
+                ID      => [PRODUCT_ID => $product->getKey()],
+            ];
         }
 
-        $created_wishlist = Wishlist::query()->create($wishlist_relations);
+        Wishlist::query()->create($wishlist_relations);
 
         $this->forgetWishlistCache();
 
-        return $created_wishlist;
+        return [
+            [STATUS => toPastTense(CREATE)],
+            ID      => [PRODUCT_ID => $product->getKey()],
+        ];
     }
 
     /**
@@ -110,7 +117,7 @@ class WishlistService
      */
     private function getProductOrFail(): Product
     {
-        $product = Product::query()->whereId(request()?->input(ADD.'_'.WISHLIST_MODEL.'_'.PRODUCT_ID))
+        $product = Product::query()->whereId(request()?->input(ADD.'_'.REMOVE.'_'.WISHLIST_MODEL.'_'.PRODUCT_ID))
             ->whereStatus(1)
             ->first([ID, NAME, SLUG, MAIN_IMAGE, NEW_PRICE, STATUS]);
 
@@ -129,6 +136,6 @@ class WishlistService
      */
     private function forgetWishlistCache(): void
     {
-        forgetCache(WISHLISTS_CACHE_KEY);
+        forgetCache([WISHLISTS_TABLE.'_'.auth()->id(), HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }

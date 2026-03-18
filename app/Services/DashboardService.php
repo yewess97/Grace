@@ -63,7 +63,7 @@ class DashboardService
             5,
             User::query()
                     ->select(USER_SELECTED_ATTRIBUTES)
-                    ->with([ADDRESSES_TABLE => static fn(HasMany $address) => addressCountry($address)])
+                    ->with([ADDRESSES_TABLE => static fn(HasMany $address) => $address->userCountries()])
                     ->whereHas(ORDERS_TABLE, static fn() => $fulfilled_orders)
                     ->withCount([ORDERS_TABLE => static fn() => $fulfilled_orders]),
         );

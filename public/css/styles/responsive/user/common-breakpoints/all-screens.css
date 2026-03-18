@@ -156,7 +156,7 @@
         bottom: 0;
     }
 
-    .products-content .product-item .product-form .product-img .product-actions :is(.add-cart-btn, .add-wishlist-btn, .quick-view-btn) {
+    .products-content .product-item .product-form .product-img .product-actions :is(.add-cart-btn, .add-remove-wishlist-btn, .quick-view-btn) {
         width: var(--thirty-pixels);
         height: var(--thirty-pixels);
         font-size: var(--fourteen-pixels) !important;

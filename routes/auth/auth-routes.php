@@ -30,7 +30,7 @@ Route::post('/'.LOGOUT, [LogoutController::class, LOGOUT])->name(LOGOUT);
  * Wishlist Routes
  */
 generalControllerRoutes(WishlistController::class, WISHLIST_MODEL);
-Route::post('/'.kebabAll(CREATE_WISHLIST), [WishlistController::class, 'store'])->name(CREATE_WISHLIST);
+Route::post('/'.kebabAll(CREATE_DELETE_WISHLIST), [WishlistController::class, STORE_OR_DELETE])->name(CREATE_DELETE_WISHLIST);
 
 
 /**

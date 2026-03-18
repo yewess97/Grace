@@ -37,9 +37,9 @@ class ProductService implements ServiceData
     {
         $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 1800, static fn() =>
             Product::query()->with([
+                WISHLISTS_TABLE,
                 REVIEWS_TABLE => static fn(HasMany $reviews) =>
-                    $reviews->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed()
-                ),
+                    $reviews->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed()),
                 SIZES => static fn(HasMany $sizes) => $sizes->select(SIZE, PRODUCT_ID),
             ])
                 ->whereSlug($productSlug)
@@ -55,7 +55,7 @@ class ProductService implements ServiceData
 
         if (request()?->ajax()) {
             return request()?->input(QUICK_VIEW)
-                ? compact(PRODUCT_MODEL)
+                ? getReviews($product->{ID}) + compact(PRODUCT_MODEL)
                 : view(REVIEWS_COMPONENT, getReviews($product->{ID}) + compact(PRODUCT_MODEL, PRODUCT_MODEL.ucfirst(SLUG)))->render();
         }
 
@@ -237,7 +237,7 @@ class ProductService implements ServiceData
     final public function forgetCollectionCache(Model|Product $model = null): void
     {
         forgetCache(PRODUCT_MODEL, $model, SLUG);
-        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_CACHE_KEY]);
+        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_TABLE.'_'.auth()->id()]);
     }
 
     /**

@@ -67,29 +67,35 @@ class CommonBladeServiceProvider extends ServiceProvider
         /**
          * Submit Button.
          *
-         * @param string $btnName
+         * @param string $submitBtnArgs
          * @return string
          */
-        Blade::directive('submitButton', static fn(string $btnName) =>
+        Blade::directive('submitButton', static fn(string $submitBtnArgs) =>
             "<?php
-                if (str_contains($btnName, WISHLIST_MODEL)) {
+                \$__btn_name = [$submitBtnArgs][0];
+
+                if (str_contains(\$__btn_name, WISHLIST_MODEL)) {
+                    \$__product_id   = [$submitBtnArgs][1] ?? null;
+                    \$__title        = wishlistTitleIcon(\$__product_id, TITLE);
+                    \$__filling_icon = wishlistTitleIcon(\$__product_id, 'icon');
+
                     echo \"
-                        <div class='add-wishlist'>
+                        <div class='add-remove-wishlist'>
                            <div class='form-group'>
-                               <button type='button' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-wishlist-btn add-wishlist-lg-btn d-grid place-items-center rounded-1'>
-                                    <i class='fa-regular fa-heart'></i>
+                               <button type='button' role='button' title='\$__title' class='btn add-remove-wishlist-btn add-remove-wishlist-lg-btn d-grid place-items-center rounded-1'>
+                                    <i class='fa-\$__filling_icon fa-heart'></i>
                                </button>
                            </div>
                         </div>
                     \";
                 }
-                elseif (str_contains($btnName, CART_MODEL)) {
+                elseif (str_contains(\$__btn_name, CART_MODEL)) {
                     echo \"
                         <div class='add-cart'>
                            <div class='form-group'>
-                               <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'>
+                               <button type='submit' role='button' title='\".capitalizeAll(\$__btn_name).\"' class='btn add-cart-btn add-cart-lg-btn d-flex justify-content-center align-items-center gap-2 rounded-1'>
                                     <i class='ti ti-shopping-cart'></i>
-                                    <span>\".capitalizeAll($btnName).\"</span>
+                                    <span>\".capitalizeAll(\$__btn_name).\"</span>
                                </button>
                            </div>
                         </div>
@@ -98,7 +104,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 else {
                     echo \"
                         <div class='modal-footer p-2'>
-                            <button type='submit' role='button' title='\".capitalizeAll($btnName).\"' class='btn'>\".capitalizeAll($btnName).\"</button>
+                            <button type='submit' role='button' title='\".capitalizeAll(\$__btn_name).\"' class='btn'>\".capitalizeAll(\$__btn_name).\"</button>
                         </div>
                     \";
                 }
@@ -108,14 +114,14 @@ class CommonBladeServiceProvider extends ServiceProvider
         /**
          * Back Button to a specified route or to the previous page.
          *
-         * @param string $title
+         * @param string $backBtnArgs
          * @return string
          */
-        Blade::directive('backTo', static fn(string $backArgs) =>
+        Blade::directive('backTo', static fn(string $backBtnArgs) =>
             "<?php
-                \$__title        = [$backArgs][0];
-                \$__route        = [$backArgs][1] ?? null;
-                \$__query_params = [$backArgs][2] ?? null;
+                \$__title        = [$backBtnArgs][0];
+                \$__route        = [$backBtnArgs][1] ?? null;
+                \$__query_params = [$backBtnArgs][2] ?? null;
 
                 \$__url = isset(\$__route)
                     ? route(\$__route, \$__query_params)
@@ -179,13 +185,13 @@ class CommonBladeServiceProvider extends ServiceProvider
         /**
          * Collection Buttons.
          *
-         * @param string $buttonsArgs
+         * @param string $collectionButtonsArgs
          * @return string
          */
-        Blade::directive('collectionButtons', static fn(string $buttonsArgs) =>
+        Blade::directive('collectionButtons', static fn(string $collectionButtonsArgs) =>
             "<?php
-                [\$__table_name, \$__route] = [$buttonsArgs];
-                \$__query_params            = [$buttonsArgs][2] ?? [];
+                [\$__table_name, \$__route] = [$collectionButtonsArgs];
+                \$__query_params            = [$collectionButtonsArgs][2] ?? [];
                 \$__main_buttons_class      = 'col-md-4';
                 \$__button_class            = 'btn d-flex justify-content-center align-items-center gap-2';
 

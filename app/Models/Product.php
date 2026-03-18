@@ -226,4 +226,9 @@ class Product extends Model implements IGrace, HasImages
     {
         return $this->hasMany(Review::class);
     }
+
+    final public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

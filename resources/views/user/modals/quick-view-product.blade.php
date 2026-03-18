@@ -28,6 +28,9 @@
                                 <span>Availability:</span>
                                 <span class="text-main"></span>
                             </h2>
+
+                            <div class="product-info-rating"></div>
+
                             {{-- Product Quick View Short Description --}}
                             <p class="product-info-short-description fs-7 text-muted"></p>
                             {{-- Product Quick View Buttons --}}
@@ -51,8 +54,8 @@
                                     {{formError(ADD, CART_MODEL, PRODUCT_QUANTITY_QUICK_VIEW)}}
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    {{-- Add To Wishlist Button --}}
-                                    @submitButton(ADD_TO_WISHLIST)
+                                    {{-- Add To/Remove From Wishlist Button --}}
+                                    @submitButton(WISHLIST_MODEL, $product->id)
                                     {{-- Add To Cart Button --}}
                                     @submitButton(ADD_TO_CART)
                                 </div>
@@ -60,6 +63,8 @@
                         </article>
                     </div>
                 </form>
+                {{-- Add or Remove Wishlist Form --}}
+                <x-add-remove-wishlist-form product_id="{{$product->id}}" />
             </div>
         </div>
     </div>

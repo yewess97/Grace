@@ -165,6 +165,7 @@ const IGrace = {
     FILTER_PRODUCTS_SORT    : () => `${IGrace.FILTER_PRODUCTS()}_sort`,
     FILTER_PRODUCTS_FORM    : () => `${IGrace.FILTER_PRODUCTS()}_form`,
     FILTER_ORDERS           : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.ORDER)}`,
+    ADD_REMOVE_WISHLIST     : () => `${IGrace.ADD}_${IGrace.REMOVE}_${IGrace.WISHLIST}`,
 
     /*################################### End Common Attributes ###################################*/
 
