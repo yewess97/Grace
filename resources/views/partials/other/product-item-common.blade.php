@@ -31,7 +31,7 @@
         </button>
 
         {{-- Add To/Remove From Wishlist Button --}}
-        <button type="button" role="button" title="{{wishlistTitleIcon($product->id, TITLE)}}" class="add-remove-wishlist-btn add-remove-wishlist-lg-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{wishlistTitleIcon($product->id, TITLE)}}">
+        <button type="button" role="button" title="{{wishlistTitleIcon($product->id, TITLE)}}" class="add-remove-wishlist-btn add-remove-wishlist-lg-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" aria-label="{{wishlistTitleIcon($product->id, TITLE)}}" data-id="{{$product->id}}">
             <i class="fa-{{wishlistTitleIcon($product->id, 'icon')}} fa-heart"></i>
         </button>
     @endif

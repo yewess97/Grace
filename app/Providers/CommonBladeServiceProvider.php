@@ -75,7 +75,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 \$__btn_name = [$submitBtnArgs][0];
 
                 if (str_contains(\$__btn_name, WISHLIST_MODEL)) {
-                    \$__product_id   = [$submitBtnArgs][1] ?? null;
+                    \$__product_id   = [$submitBtnArgs][1];
                     \$__title        = wishlistTitleIcon(\$__product_id, TITLE);
                     \$__filling_icon = wishlistTitleIcon(\$__product_id, 'icon');
 

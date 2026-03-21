@@ -367,9 +367,11 @@ const User = {
                     });
                     quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}, .${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('title', `${is_product_in_wishlist ? IGrace.CAPITALIZE(IGrace.REMOVE)+' From' : IGrace.CAPITALIZE(IGrace.ADD)+' To'} ${IGrace.CAPITALIZE(IGrace.WISHLIST)}`);
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn > i`)
                         .removeClass('fa-regular fa-solid')
                         .addClass(is_product_in_wishlist ? 'fa-solid' : 'fa-regular');
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('data-id', product[IGrace.ID]);
 
                     Common.imageConfig();
                     quick_view_modal.modal('show');
@@ -528,62 +530,68 @@ const User = {
             e.preventDefault();
 
             const
-                target          = $(this),
-                route           = target.attr('action'),
-                wishlist_button = target.prev().find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`),
-                product_id      = target.find(`#${IGrace.ADD_REMOVE_WISHLIST()}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(),
-                form_data       = Common.filteredFormData(this);
+                target           = $(this),
+                route            = target.attr('action'),
+                wishlist_buttons = $(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`),
+                product_id       = +target.find(`#${IGrace.ADD_REMOVE_WISHLIST()}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(),
+                form_data        = Common.filteredFormData(this),
 
-            console.log(target);
+                getProductWishlistButtons = () => wishlist_buttons.filter((_, wishlist_button) => $(wishlist_button).data(IGrace.ID) === product_id),
+
+                showLoadingSpinners = () => {
+                    $.each((getProductWishlistButtons()), (_, wishlist_button) => {
+                        const wishlist_btn = $(wishlist_button);
+
+                        wishlist_btn.find('i').remove();
+
+                        User.loadingSpinner(target, wishlist_btn);
+                    });
+                },
+
+                updateWishlistButtonIcons = (iconType) => {
+                    $.each((getProductWishlistButtons()), (_, wishlist_button) => {
+                        const wishlist_btn = $(wishlist_button);
+
+                        wishlist_btn.find('.loading-spinner').remove();
+
+                        wishlist_btn.find('i').length
+                            ? wishlist_btn.find('i').attr('class', `fa-${iconType} fa-heart`)
+                            : wishlist_btn.prepend($('<i>', { class: `fa-${iconType} fa-heart` }));
+                    });
+                };
 
             $.ajax({
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => {
-                    wishlist_button.find('i')
-                        .remove().end()
-                        .find('.loading-spinner')
-                        .remove();
-
-                    User.loadingSpinner(target, wishlist_button);
-                },
+                beforeSend: showLoadingSpinners,
                 success: (data) => {
-                    const wishlist_action = {
-                        true: () => {
-                            const wishlist_config = {
-                                [IGrace.DELETED()]: {
-                                    action: `${IGrace.DELETED()} from`,
-                                    icon: 'regular'
-                                },
-                                [IGrace.ADDED()]: {
-                                    action: `${IGrace.ADDED()} to`,
-                                    icon: 'solid'
-                                }
-                            };
-
-                            const current_action = data.status === IGrace.DELETED()
-                                ? wishlist_config[IGrace.DELETED()]
-                                : wishlist_config[IGrace.ADDED()];
-
-                            wishlist_button.find('.loading-spinner')
-                                .remove().end()
-                                .prepend($('<i>', {
-                                    class: `fa-${current_action.icon} fa-heart`
-                                }));
-
-                            User.updateUserCollectionContent(IGrace.WISHLIST, data);
-
-                            const success_message = `The ${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${current_action.action} your ${IGrace.WISHLIST}`;
-
-                            Common.successMessage(IGrace.SUCCESS, success_message);
+                    const wishlist_config = {
+                        [IGrace.DELETED()]: {
+                            action: `${IGrace.DELETED()} from`,
+                            icon: 'regular'
                         },
-                        false: () => Common.somethingWentWrongError(),
+                        [IGrace.ADDED()]: {
+                            action: `${IGrace.ADDED()} to`,
+                            icon: 'solid'
+                        }
                     };
 
-                    (wishlist_action[data[IGrace.COLLECTION_ID(IGrace.PRODUCT)] === parseInt(product_id)])();
+                    const current_action = data.status === IGrace.DELETED()
+                        ? wishlist_config[IGrace.DELETED()]
+                        : wishlist_config[IGrace.ADDED()];
+
+                    updateWishlistButtonIcons(current_action.icon);
+
+                    User.updateUserCollectionContent(IGrace.WISHLIST, data);
+
+                    const success_message = `The ${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been ${current_action.action} your ${IGrace.WISHLIST}`;
+
+                    Common.successMessage(IGrace.SUCCESS, success_message);
                 },
                 error: (err) => {
+                    updateWishlistButtonIcons('regular');
+
                     if (err.status === 401) {
                         return User.confirmLoginMessage();
                     }
@@ -735,7 +743,7 @@ const User = {
                             error: () => Common.somethingWentWrongError(),
                         });
                     }
-                    else if (deleteAllCarts.dismiss === Swal.DismissReason.cancel) {
+                    else if (deleteAllCollection.dismiss === Swal.DismissReason.cancel) {
                         Common.cancelMessage(`Your ${collection} is safe`);
                     }
                 });

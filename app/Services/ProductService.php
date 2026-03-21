@@ -51,6 +51,8 @@ class ProductService implements ServiceData
             throw new ModelNotFoundException("This ".PRODUCT_MODEL." is not found!");
         }
 
+        $this->forgetCollectionCache($product);
+
         $add_cart_product_error = static fn(string $attributeName) => formError(ADD, CART_MODEL, $attributeName);
 
         if (request()?->ajax()) {
@@ -237,7 +239,7 @@ class ProductService implements ServiceData
     final public function forgetCollectionCache(Model|Product $model = null): void
     {
         forgetCache(PRODUCT_MODEL, $model, SLUG);
-        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, CARTS_TABLE.'_'.auth()->id()]);
+        forgetCache([PRODUCTS_PAGINATION_CACHE_KEY, REVIEWS_PAGINATION_CACHE_KEY, HOME_PRODUCTS, PRODUCTS_TABLE, WISHLISTS_TABLE.'_'.auth()->id(), CARTS_TABLE.'_'.auth()->id()]);
     }
 
     /**

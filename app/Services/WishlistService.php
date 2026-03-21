@@ -136,6 +136,7 @@ class WishlistService
      */
     private function forgetWishlistCache(): void
     {
+        forgetCache(PRODUCT_MODEL, $this->getProductOrFail(), SLUG);
         forgetCache([WISHLISTS_TABLE.'_'.auth()->id(), HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }
