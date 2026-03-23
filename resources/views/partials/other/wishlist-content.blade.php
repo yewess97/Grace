@@ -30,10 +30,15 @@
 
                 {{-- Wishlist Product Actions --}}
                 <article class="product-actions d-grid place-items-center">
+                    {{-- Add Product to Cart --}}
                     @if ($wishlist_item->{PRODUCT_MODEL}->{STATUS} === 1)
-                        <div class="cart-product-quantity d-flex align-items-center">
-
-                        </div>
+                        <form role="form" action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" class="add-cart-form">
+                            @csrf
+                            <input type="hidden" name="add_cart_product_id" value="{{$wishlist_item->product->id}}">
+                            <button type="submit" role="button" title="{{capitalizeAll(ADD_TO_CART)}}" class="product-add-to-cart text-decoration-underline bg-transparent border-0" aria-label="{{capitalizeAll(ADD_TO_CART)}}">
+                                {{capitalizeAll(ADD_TO_CART)}}
+                            </button>
+                        </form>
                     @else
                         <p>The {{ucfirst(PRODUCT_MODEL)}} is Out Of Stock</p>
                     @endif

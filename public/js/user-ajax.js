@@ -71,7 +71,7 @@ User.ajaxQuickViewProductRequest();
 /* ---------------------------------- WISHLIST ---------------------------------- */
 
 // Add wishlist
-User.ajaxCreateWishlistRequest();
+User.ajaxCreateDeleteWishlistRequest();
 
 // Delete wishlist
 User.ajaxDeleteRequest(IGrace.WISHLIST);

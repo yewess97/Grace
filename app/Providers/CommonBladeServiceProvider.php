@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use http\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -69,20 +70,39 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @param string $submitBtnArgs
          * @return string
+         * @throws InvalidArgumentException
          */
         Blade::directive('submitButton', static fn(string $submitBtnArgs) =>
             "<?php
                 \$__btn_name = [$submitBtnArgs][0];
 
                 if (str_contains(\$__btn_name, WISHLIST_MODEL)) {
-                    \$__product_id   = [$submitBtnArgs][1];
-                    \$__title        = wishlistTitleIcon(\$__product_id, TITLE);
-                    \$__filling_icon = wishlistTitleIcon(\$__product_id, 'icon');
+                    \$__product_id    = [$submitBtnArgs][1];
+                    \$__filling_icon  = wishlistTitleIcon(\$__product_id, 'icon');
+                    \$__is_quick_view = ([$submitBtnArgs][2] ?? null) === QUICK_VIEW;
+
+                    if (is_null(\$__product_id)) {
+                        throw new InvalidArgumentException(capitalizeFirst(PRODUCT_ID).' is required for '.WISHLIST_MODEL.' button');
+                    }
+
+                    \$__btn_attributes = [
+                        TITLE        => wishlistTitleIcon(\$__product_id, TITLE),
+                        'aria-label' => wishlistTitleIcon(\$__product_id, TITLE),
+                        'data-id'    => \$__product_id,
+                    ];
+
+                    if (\$__is_quick_view) {
+                        unset(\$__btn_attributes['data-id']);
+                    }
+
+                    \$__btn_attributes_string = collect(\$__btn_attributes)
+                        ->map(static fn(string \$__value, string \$__key) => \"{\$__key}='{\$__value}'\")
+                        ->implode(' ');
 
                     echo \"
                         <div class='add-remove-wishlist'>
                            <div class='form-group'>
-                               <button type='button' role='button' title='\$__title' class='btn add-remove-wishlist-btn add-remove-wishlist-lg-btn d-grid place-items-center rounded-1'>
+                               <button type='button' role='button' class='btn add-remove-wishlist-btn add-remove-wishlist-lg-btn d-grid place-items-center rounded-1' \$__btn_attributes_string>
                                     <i class='fa-\$__filling_icon fa-heart'></i>
                                </button>
                            </div>
@@ -116,12 +136,17 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @param string $backBtnArgs
          * @return string
+         * @throws InvalidArgumentException
          */
         Blade::directive('backTo', static fn(string $backBtnArgs) =>
             "<?php
                 \$__title        = [$backBtnArgs][0];
                 \$__route        = [$backBtnArgs][1] ?? null;
                 \$__query_params = [$backBtnArgs][2] ?? null;
+
+                if (is_null(\$__title)) {
+                    throw new InvalidArgumentException(ucfirst(TITLE).' is required for the \'back\' button');
+                }
 
                 \$__url = isset(\$__route)
                     ? route(\$__route, \$__query_params)
@@ -142,6 +167,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @param string $searchArgs
          * @return string
+         * @throws InvalidArgumentException
          */
         Blade::directive('search', static fn(string $searchArgs) =>
             "<?php
@@ -152,6 +178,10 @@ class CommonBladeServiceProvider extends ServiceProvider
                     SEARCH_ADDRESSES => 'flex-fill',
                     default          => 'col-12 col-lg-6 col-md-6',
                 };
+
+                if (is_null(\$__table)) {
+                    throw new InvalidArgumentException('Table name is required for the searching process');
+                }
 
                 echo
                 \"
@@ -187,6 +217,7 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @param string $collectionButtonsArgs
          * @return string
+         * @throws InvalidArgumentException
          */
         Blade::directive('collectionButtons', static fn(string $collectionButtonsArgs) =>
             "<?php
@@ -194,6 +225,10 @@ class CommonBladeServiceProvider extends ServiceProvider
                 \$__query_params            = [$collectionButtonsArgs][2] ?? [];
                 \$__main_buttons_class      = 'col-md-4';
                 \$__button_class            = 'btn d-flex justify-content-center align-items-center gap-2';
+
+                if (is_null(\$__table_name) || is_null(\$__route)) {
+                    throw new InvalidArgumentException('Table name or route is required for the button');
+                }
 
                 \$__get_title = static function (string \$__needle, array \$__haystack) use (\$__query_params) {
                     return ucfirst(array_search((int) \$__query_params[\$__needle], \$__haystack, true)).'_';
@@ -345,10 +380,15 @@ class CommonBladeServiceProvider extends ServiceProvider
          *
          * @param string $emptyArgs
          * @return string
+         * @throws InvalidArgumentException
          */
         Blade::directive('noResults', static fn(string $emptyArgs) =>
             "<?php
                 [\$__table_name, \$__colspan] = [$emptyArgs];
+
+                if (is_null(\$__table_name) || is_null(\$__colspan)) {
+                    throw new InvalidArgumentException('Table name or columns span number is required for the \'no results\' of the table');
+                }
 
                 in_array(Route::currentRouteName(), [ADMIN_DASHBOARD_ROUTE, PROFILE], true)
                     ? ++\$__colspan

@@ -115,7 +115,7 @@ const User = {
 
 
     /**
-     * Update the cart content.
+     * Update the user collection (wishlist/cart) content.
      *
      * @param collection
      * @param data
@@ -368,10 +368,10 @@ const User = {
                     quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}, .${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('title', `${is_product_in_wishlist ? IGrace.CAPITALIZE(IGrace.REMOVE)+' From' : IGrace.CAPITALIZE(IGrace.ADD)+' To'} ${IGrace.CAPITALIZE(IGrace.WISHLIST)}`);
+                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('data-id', product[IGrace.ID]);
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn > i`)
                         .removeClass('fa-regular fa-solid')
                         .addClass(is_product_in_wishlist ? 'fa-solid' : 'fa-regular');
-                    quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('data-id', product[IGrace.ID]);
 
                     Common.imageConfig();
                     quick_view_modal.modal('show');
@@ -521,11 +521,11 @@ const User = {
 
     /* ---------------------------------- CREATE WISHLIST REQUEST ---------------------------------- */
     /**
-     * Create Wishlist Items ajax request.
+     * Create or Delete Wishlist Items ajax request.
      *
      * @return {void}
      */
-    ajaxCreateWishlistRequest: () => {
+    ajaxCreateDeleteWishlistRequest: () => {
         $(document).on(IGrace.SUBMIT, `.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-form`, function (e) {
             e.preventDefault();
 
@@ -536,7 +536,9 @@ const User = {
                 product_id       = +target.find(`#${IGrace.ADD_REMOVE_WISHLIST()}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(),
                 form_data        = Common.filteredFormData(this),
 
-                getProductWishlistButtons = () => wishlist_buttons.filter((_, wishlist_button) => $(wishlist_button).data(IGrace.ID) === product_id),
+                getProductWishlistButtons = () => wishlist_buttons.filter((_, wishlist_button) =>
+                    $(wishlist_button).data(IGrace.ID) === product_id
+                ),
 
                 showLoadingSpinners = () => {
                     $.each((getProductWishlistButtons()), (_, wishlist_button) => {
@@ -548,11 +550,19 @@ const User = {
                     });
                 },
 
-                updateWishlistButtonIcons = (iconType) => {
+                updateWishlistButtonIcons = (action, iconType) => {
                     $.each((getProductWishlistButtons()), (_, wishlist_button) => {
                         const wishlist_btn = $(wishlist_button);
 
                         wishlist_btn.find('.loading-spinner').remove();
+
+                        const wishlist_btn_action = `${action.includes(IGrace.ADDED()) ? IGrace.CAPITALIZE(IGrace.REMOVE)+' From' : IGrace.CAPITALIZE(IGrace.ADD)+' To'} ${IGrace.CAPITALIZE(IGrace.WISHLIST)}`;
+
+                        wishlist_btn.attr({
+                            'title':                   wishlist_btn_action,
+                            'aria-label':              wishlist_btn_action,
+                            'data-mdb-original-title': wishlist_btn_action,
+                        });
 
                         wishlist_btn.find('i').length
                             ? wishlist_btn.find('i').attr('class', `fa-${iconType} fa-heart`)
@@ -581,7 +591,7 @@ const User = {
                         ? wishlist_config[IGrace.DELETED()]
                         : wishlist_config[IGrace.ADDED()];
 
-                    updateWishlistButtonIcons(current_action.icon);
+                    updateWishlistButtonIcons(current_action.action, current_action.icon);
 
                     User.updateUserCollectionContent(IGrace.WISHLIST, data);
 
@@ -590,7 +600,7 @@ const User = {
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
                 error: (err) => {
-                    updateWishlistButtonIcons('regular');
+                    updateWishlistButtonIcons(IGrace.DELETED(), 'regular');
 
                     if (err.status === 401) {
                         return User.confirmLoginMessage();

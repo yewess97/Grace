@@ -37,7 +37,7 @@
     color: var(--black-color);
 }
 
-:is(.wishlist, .cart) :is(ul.products li.product :where(.product-img-info .product-info > a:hover, .product-actions .product-remove), .beneath-buttons input, .beneath-buttons a) {
+:is(.wishlist, .cart) :is(ul.products li.product :where(.product-img-info .product-info > a:hover, .product-actions :where(.product-add-to-cart, .product-remove)), .beneath-buttons input, .beneath-buttons a) {
     color: var(--main-color) !important;
 }
 

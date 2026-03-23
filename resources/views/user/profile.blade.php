@@ -18,7 +18,14 @@
                                 <h6 class="fs-8 fw-600">My Account</h6>
                             </article>
                             <article class="my-account-addresses">
-                                <a href="{{route(USER_ADDRESSES, [ID => encrypt($user->{ID})])}}" role="link" class="text-main">View My {{ucfirst(ADDRESSES_TABLE)}}</a>
+                                <a href="{{route(USER_ADDRESSES, [ID => encrypt($user->{ID})])}}" role="link" class="text-main">
+                                    View My {{ucfirst(ADDRESSES_TABLE)}}
+                                </a>
+                            </article>
+                            <article class="my-account-wishlist">
+                                <a href="{{route(WISHLIST_MODEL)}}" role="link" class="text-main">
+                                    My {{ucfirst(WISHLIST_MODEL)}}
+                                </a>
                             </article>
                             <article class="my-account-logout">
                                 <form action="{{route(LOGOUT)}}" method="post" role="form">

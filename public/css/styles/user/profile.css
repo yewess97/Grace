@@ -11,7 +11,7 @@
     gap: var(--thirty-pixels);
 }
 
-.profile-main .top-side ul.profile-account-details li.my-account .my-account-addresses {
+.profile-main .top-side ul.profile-account-details li.my-account :is(.my-account-addresses, .my-account-wishlist) {
     margin-bottom: var(--seven-pixels);
 }
 

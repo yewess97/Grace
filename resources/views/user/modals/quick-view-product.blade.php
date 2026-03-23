@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
                                     {{-- Add To/Remove From Wishlist Button --}}
-                                    @submitButton(WISHLIST_MODEL, $product->id)
+                                    @submitButton(WISHLIST_MODEL, $product->id, QUICK_VIEW)
                                     {{-- Add To Cart Button --}}
                                     @submitButton(ADD_TO_CART)
                                 </div>
