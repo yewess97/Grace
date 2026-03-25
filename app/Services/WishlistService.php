@@ -83,9 +83,12 @@ class WishlistService
      */
     final public function deleteWishlist(Wishlist $wishlist): bool
     {
+        $product_id = Wishlist::query()->whereId($wishlist->getKey())
+            ->value(PRODUCT_ID);
+
         $deleted_wishlist = removeDeleteOrRestore($wishlist);
 
-        $this->forgetWishlistCache();
+        $this->forgetWishlistCache($product_id);
 
         return $deleted_wishlist;
     }
@@ -98,13 +101,18 @@ class WishlistService
      */
     final public function deleteAllWishlists(): int
     {
-        $delete_user_wishlists_ids = Wishlist::query()->whereHasAuthUser()
-            ->pluck(ID)
-            ->toArray();
+        $wishlists = Wishlist::query()->whereHasAuthUser()
+            ->get([ID, PRODUCT_ID]);
 
-        $deleted_wishlists = Wishlist::destroy($delete_user_wishlists_ids);
+        if ($wishlists->isEmpty()) {
+            return 0;
+        }
 
-        $this->forgetWishlistCache();
+        $deleted_wishlists = Wishlist::destroy($wishlists->modelKeys());
+
+        $wishlists->pluck(PRODUCT_ID)
+            ->unique()
+            ->each(fn(int $product_id) => $this->forgetWishlistCache($product_id));
 
         return $deleted_wishlists;
     }
@@ -112,12 +120,15 @@ class WishlistService
     /**
      * Get the product or throw an exception in case not found.
      *
+     * @param int|null $productId
      * @return Product
      * @throws ModelNotFoundException
      */
-    private function getProductOrFail(): Product
+    private function getProductOrFail(int $productId = null): Product
     {
-        $product = Product::query()->whereId(request()?->input(ADD.'_'.REMOVE.'_'.WISHLIST_MODEL.'_'.PRODUCT_ID))
+        $product_id = request()?->input(ADD.'_'.REMOVE.'_'.WISHLIST_MODEL.'_'.PRODUCT_ID) ?? $productId;
+
+        $product = Product::query()->whereId($product_id)
             ->whereStatus(1)
             ->first([ID, NAME, SLUG, MAIN_IMAGE, NEW_PRICE, STATUS]);
 
@@ -131,12 +142,13 @@ class WishlistService
     /**
      * Forget the cart cache.
      *
+     * @param int|null $productId
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetWishlistCache(): void
+    private function forgetWishlistCache(int $productId = null): void
     {
-        forgetCache(PRODUCT_MODEL, $this->getProductOrFail(), SLUG);
+        forgetCache(PRODUCT_MODEL, $this->getProductOrFail($productId), SLUG);
         forgetCache([WISHLISTS_TABLE.'_'.auth()->id(), HOME_PRODUCTS, PRODUCTS_TABLE]);
     }
 }

@@ -1230,7 +1230,7 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
         if ($model instanceof HasImages) {
             deleteImages($model, $selected_ids);
         }
-
+dd('fuck');
         $force_deleted_ids = $selected_collections->forceDelete();
 
         $send_notification_to_admins(DELETE);
