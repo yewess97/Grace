@@ -123,9 +123,15 @@ const User = {
      * @return {void}
      */
     updateUserCollectionContent: (collection, data, isClearAllCollection = false) => {
-        const
-            collection_main        = `#${collection}_main`,
-            update_collection_main = $(collection_main).html($(data[IGrace.ROW]).find(collection_main).html());
+        const collection_main = `.${collection}-main`;
+
+        let new_content = $(data[IGrace.ROW]).find(collection_main);
+
+        if (!new_content.length) {
+            new_content = $(data[IGrace.ROW]).filter(collection_main);
+        }
+
+        const update_collection_main = $(collection_main).html(new_content.html());
 
         $.each(($(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`)), (_, totalItems) => $(totalItems).html(data[`${collection}_${IGrace.TOTAL_ITEMS}`]));
 

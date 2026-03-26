@@ -101,16 +101,16 @@ class WishlistService
      */
     final public function deleteAllWishlists(): int
     {
-        $wishlists = Wishlist::query()->whereHasAuthUser()
+        $user_wishlists = Wishlist::query()->whereHasAuthUser()
             ->get([ID, PRODUCT_ID]);
 
-        if ($wishlists->isEmpty()) {
+        if ($user_wishlists->isEmpty()) {
             return 0;
         }
 
-        $deleted_wishlists = Wishlist::destroy($wishlists->modelKeys());
+        $deleted_wishlists = Wishlist::destroy($user_wishlists->modelKeys());
 
-        $wishlists->pluck(PRODUCT_ID)
+        $user_wishlists->pluck(PRODUCT_ID)
             ->unique()
             ->each(fn(int $product_id) => $this->forgetWishlistCache($product_id));
 

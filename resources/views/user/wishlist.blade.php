@@ -6,7 +6,7 @@
     <main role="main" class="wishlist-main py-6">
         <div class="container">
             <div class="row justify-content-center align-items-center">
-                @if (Session()->has(EMPTY_WISHLIST))
+                @if (session()->has(EMPTY_WISHLIST))
                     <x-empty-wishlist-cart collection="{{WISHLIST_MODEL}}"/>
                 @else
                     <div class="main-sides row col-12">
