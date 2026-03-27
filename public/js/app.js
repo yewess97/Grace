@@ -1,6 +1,7 @@
 'use strict';
 
 import { IGrace, Common, User } from "./helpers/user-helpers.js";
+import "./helpers/plugins.js";
 
 
 $(document).ready(() => {
@@ -58,30 +59,29 @@ $(document).ready(() => {
         : $('.nav-search').children().remove();
 
     // Configure the carousels
-    User.carouselSliderConfig({
-        element:           $('.home-carousel'),
+    $('.home-carousel').carouselSlider({
         displayItemsCount: 1,
         nav:               false,
         dots:              true,
     });
-    User.carouselSliderConfig({
-        element:           $(`.customers-${IGrace.PLURALIZE(IGrace.REVIEW)}-carousel`),
+
+    $(`.customers-${IGrace.PLURALIZE(IGrace.REVIEW)}-carousel`).carouselSlider({
         displayItemsCount: customers_reviews_display_items_count,
         nav:               false,
         dots:              true,
         autoplay:          false,
     });
-    User.carouselSliderConfig({
-        element:           $('.partners-carousel'),
+
+    $('.partners-carousel').carouselSlider({
         displayItemsCount: partners_display_items_count,
     });
-    User.carouselSliderConfig({
-        element:           $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.THUMB_IMAGE()))}-carousel`),
+
+    $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.THUMB_IMAGE()))}-carousel`).carouselSlider({
         displayItemsCount: 4,
         autoplay:          false,
     });
-    User.carouselSliderConfig({
-        element: $('.related-products-carousel'),
+
+    $(`.related-${IGrace.PLURALIZE(IGrace.PRODUCT)}-carousel`).carouselSlider({
         displayItemsCount: related_products_display_items_count,
     });
 
@@ -355,35 +355,35 @@ $(document).ready(() => {
         }
 
         // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
-        User.handleFilterProductsMultiItemsWithHiddenInput({
-            target:                  target,
+        target.filterProductsMultiItems({
             multiSelectedValuesList: filter_products_categories_values,
             relation:                IGrace.PLURALIZE(IGrace.CATEGORY),
         });
-        User.handleFilterProductsMultiItemsWithHiddenInput({
-            target:                  target,
+
+        target.filterProductsMultiItems({
             multiSelectedValuesList: filter_products_subcategories_values,
             relation:                IGrace.PLURALIZE(IGrace.SUBCATEGORY),
         });
-        User.handleFilterProductsMultiItemsWithHiddenInput({
-            target:                  target,
+
+        target.filterProductsMultiItems({
             multiSelectedValuesList: filter_products_sizes_values,
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
 
-        Common.handleSelectAllMultiItemsWithHiddenInput({
-            ...common_select_all_multi_items,
+        target.selectAllMultiItems({
+            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
             multiSelectedValuesList: add_multi_selected_product_sizes_quick_view_values,
             relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
         });
-        Common.handleSelectAllMultiItemsWithHiddenInput({
-            ...common_select_all_multi_items,
+
+        target.selectAllMultiItems({
+            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
             multiSelectedValuesList: add_multi_selected_product_sizes_values,
             relation:                IGrace.PRODUCT_SIZE(),
         });
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
-        Common.checkRowsConfig(target);
+        target.checkRows();
     });
 
     // Count the number of characters of the review body

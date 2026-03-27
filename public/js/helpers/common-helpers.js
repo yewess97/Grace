@@ -56,43 +56,6 @@ const Common = {
 
 
     /**
-     * Configure the "rows checking" settings.
-     *
-     * @param target
-     * @return {void}
-     */
-    checkRowsConfig: (target) => {
-        const
-            check_all = $('#check_all'),
-            check_row = $(`.check-${IGrace.ROW}`);
-
-        // Check/Uncheck the (check_all) checkbox and checkboxes in the table
-        if (target.is('#custom_check_all')) {
-            const is_checked_all = check_all.is(':checked');
-
-            if (check_all.is(':indeterminate')) {
-                check_all.prop('indeterminate', false);
-            }
-
-            check_all.prop('checked', !is_checked_all);
-            check_row.prop('checked', !is_checked_all);
-        }
-
-        // Check/Uncheck the target checkbox in the table and (check_all) checkbox
-        if (target.hasClass(`custom-check-${IGrace.ROW}`)) {
-            target.prev().prop('checked', !target.prev().is(':checked'));
-
-            const checked_count = check_row.filter(':checked').length;
-
-            check_all.prop({
-                'checked':       checked_count === check_row.length,
-                'indeterminate': checked_count > 0 && checked_count < check_row.length,
-            });
-        }
-    },
-
-
-    /**
      * Configure the "form multiselect" settings.
      *
      * @param actionCollection
@@ -272,59 +235,6 @@ const Common = {
 
         all_multi_related_collection.first().val(multi_selected_related_collection_values);
         related_collection_hidden_input.val(multi_selected_related_collection_values);
-    },
-
-
-    /**
-     * Handle the select-all checkbox for multiple items with hidden input.
-     *
-     * @param args
-     * @return {void}
-     */
-    handleSelectAllMultiItemsWithHiddenInput: (args) => {
-        let { target, actionCollection, multiSelectedValuesList, relation } = args;
-
-        if (!target.is(`input[name="${actionCollection}_${relation}[]"]`)) return;
-
-        const
-            is_checked              = target.is(':checked'),
-            is_select_all           = target.next().html().includes('All'),
-            all_items               = target.parents('.items').find('input[type="checkbox"]'),
-            select_all_checkbox     = all_items.first(),
-            related_collection_hidden_input = target.parents('.filter-multi-select').next();
-
-        const check_actions = {
-            true: () => {
-                const select_actions = {
-                    true: () => {
-                        multiSelectedValuesList.length = 0;
-                        select_all_checkbox.val('');
-                        related_collection_hidden_input.val('');
-
-                        $.each((all_items), (_, selected_item) => multiSelectedValuesList.push($(selected_item).val() || ''));
-
-                        select_all_checkbox.next().html('Unselect All');
-                    },
-                    false: () => multiSelectedValuesList.push(target.val()),
-                };
-
-                select_actions[is_select_all]();
-            },
-            false: () => {
-                is_select_all
-                    ? multiSelectedValuesList.length = 0
-                    : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
-
-                select_all_checkbox.next().html('Select All');
-            },
-        };
-
-        check_actions[is_checked]();
-
-        multiSelectedValuesList = multiSelectedValuesList.filter(Boolean).join(','); // filter(Boolean) removes empty values
-
-        select_all_checkbox.val(multiSelectedValuesList);
-        related_collection_hidden_input.val(multiSelectedValuesList);
     },
 
 

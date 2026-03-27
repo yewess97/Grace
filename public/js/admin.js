@@ -1,6 +1,7 @@
 'use strict';
 
 import { IGrace, Common, Admin } from "./helpers/admin-helpers.js";
+import "./helpers/plugins.js";
 
 
 $(document).ready(() => {
@@ -208,21 +209,7 @@ $(document).ready(() => {
             nav_menu_toggler = $(`.${nav_menu}-toggler > i`),
             nav_menu_item_rotate_icon = `${nav_menu_item}-rotate-icon`,
             nav_menu_close = `.${nav_menu}-close`,
-            nav_menu_overlay = `.${nav_menu}-overlay`,
-            add_product = IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            update_product = IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            related_categories = IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-            related_subcategories = IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-            sizes = IGrace.PLURALIZE(IGrace.SIZE),
-
-            add_operation_args = {
-                target: target,
-                actionCollection: add_product,
-            },
-            update_operation_args = {
-                target: target,
-                actionCollection: update_product,
-            };
+            nav_menu_overlay = `.${nav_menu}-overlay`;
 
         // Active the responsive nav menu and overlay
         if (target.is(nav_menu_toggler)) {
@@ -279,63 +266,63 @@ $(document).ready(() => {
 
         // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
         if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...add_operation_args,
-                actionCollection: IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
+            // Adding Operation
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
                 multiSelectedValuesList: add_multi_selected_related_categories_values,
-                relation: related_categories,
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
 
-            update_multi_selected_related_categories_values = $('input[name="update_subcategory_related_categories[]"]:hidden').val().split(',');
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...update_operation_args,
-                actionCollection: IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
-                multiSelectedValuesList: update_multi_selected_related_categories_values,
-                relation: related_categories,
+            // Updating Operation
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
+                multiSelectedValuesList: $('input[name="update_subcategory_related_categories[]"]:hidden').val().split(','),
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
         }
 
         if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...add_operation_args,
+            // Adding Operation
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: add_multi_selected_related_categories_values,
-                relation: related_categories,
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...add_operation_args,
+
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: add_multi_selected_related_subcategories_values,
-                relation: related_subcategories,
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
             });
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...add_operation_args,
+
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: add_multi_selected_sizes_values,
-                relation: sizes,
+                relation:                IGrace.PLURALIZE(IGrace.SIZE),
             });
 
-            update_multi_selected_related_categories_values = $('input[name="update_product_related_categories[]"]:hidden').val().split(',');
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...update_operation_args,
-                multiSelectedValuesList: update_multi_selected_related_categories_values,
-                relation: related_categories,
+            // Updating Operation
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                multiSelectedValuesList: $('input[name="update_product_related_categories[]"]:hidden').val().split(','),
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
 
-            update_multi_selected_related_subcategories_values = $('input[name="update_product_related_subcategories[]"]:hidden').val().split(',');
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...update_operation_args,
-                multiSelectedValuesList: update_multi_selected_related_subcategories_values,
-                relation: related_subcategories,
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                multiSelectedValuesList: $('input[name="update_product_related_subcategories[]"]:hidden').val().split(','),
+                relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
             });
 
-            update_multi_selected_sizes_values = $('input[name="update_product_sizes[]"]:hidden').val().split(',');
-            Common.handleSelectAllMultiItemsWithHiddenInput({
-                ...update_operation_args,
-                multiSelectedValuesList: update_multi_selected_sizes_values,
-                relation: sizes,
+            target.selectAllMultiItems({
+                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                multiSelectedValuesList: $('input[name="update_product_sizes[]"]:hidden').val().split(','),
+                relation:                IGrace.PLURALIZE(IGrace.SIZE),
             });
         }
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
-        Common.checkRowsConfig(target);
+        target.checkRows();
     });
 
     /* ---------=========== End Click Action ===========--------- */

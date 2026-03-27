@@ -7,38 +7,6 @@ import "./plugins.js";
 const User = {
 
     /**
-     * Configure the carousel slider.
-     *
-     * @param args
-     * @return {void}
-     */
-    carouselSliderConfig: (args) => {
-        const { element, displayItemsCount, nav = true, dots = false, autoplay = true } = args;
-
-        element.owlCarousel({
-            items:              displayItemsCount,
-            rewind:             true,
-            margin:             10,
-            nav:                nav,
-            navText:            ['<i class= "fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
-            dots:               dots,
-            autoplay:           autoplay,
-            autoplayTimeout:    4000,
-            autoplayHoverPause: true,
-        });
-
-        $('.owl-nav button').attr('type', 'button');
-        $('.owl-nav .owl-prev').attr('title', 'Go to Previous');
-        $('.owl-nav .owl-next').attr('title', 'Go to Next');
-
-        $('.owl-dot').attr({
-            type:  'button',
-            title: 'Go to Slider'
-        });
-    },
-
-
-    /**
      * Change the products view.
      *
      * @return {void}
@@ -48,29 +16,6 @@ const User = {
         $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-content`)
             .removeClass((_, className) => (className.match(/\brow-cols-md-\S+/g) || []).join(' '))
             .addClass(`row-cols-md-${$(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`).attr('data-grid-main-view')}`);
-    },
-
-
-    /**
-     * Handle the chosen filter products multiple items with hidden input.
-     *
-     * @param args
-     * @return {void}
-     */
-    handleFilterProductsMultiItemsWithHiddenInput: (args) => {
-        let { target, multiSelectedValuesList, relation } = args;
-
-        if (!target.is(`input[name="${IGrace.FILTER_PRODUCTS()}_${relation}[]"]`)) return;
-
-        const filter_collection_hidden_input = target.parents('.filter-content').next();
-
-        target.is(':checked')
-            ? multiSelectedValuesList.push(target.val())
-            : multiSelectedValuesList.splice($.inArray(target.val(), multiSelectedValuesList), 1);
-
-        multiSelectedValuesList = multiSelectedValuesList.filter(Boolean).join(','); // filter(Boolean) removes empty values
-
-        filter_collection_hidden_input.val(multiSelectedValuesList);
     },
 
 

@@ -238,10 +238,11 @@ define("SUBCATEGORIES_PRODUCTS_COUNT", SUBCATEGORIES_TABLE.'_'.PRODUCTS_TABLE.'_
 /**
  * User Standards.
  */
-define("FULL_NAME",      'full_'.NAME);
-define("PROFILE",        'profile');
-define("USER_ADDRESSES", USER_MODEL.'_'.ADDRESSES_TABLE);
-define("UPDATE_ADDRESS", UPDATE.'_'.ADDRESS_MODEL);
+define("FULL_NAME",              'full_'.NAME);
+define("PROFILE",                'profile');
+define("USER_ADDRESSES",         USER_MODEL.'_'.ADDRESSES_TABLE);
+define("UPDATE_ADDRESS",         UPDATE.'_'.ADDRESS_MODEL);
+define("USERS_PAGINATION_ROUTE", USERS_TABLE.'_pagination_route');
 
 /**
  * Products Standards.
@@ -254,12 +255,10 @@ define("PRODUCT_DETAILS",             PRODUCT_MODEL.'_details');
 define("PRODUCT_SIZE_QUICK_VIEW",     PRODUCT_SIZE.'_'.QUICK_VIEW);
 define("PRODUCT_QUANTITY_QUICK_VIEW", PRODUCT_QUANTITY.'_'.QUICK_VIEW);
 define("PRODUCTS_PRICES",             PRODUCTS_TABLE.'_'.pluralize(PRICE));
-define("PRODUCTS_PAGINATION_ROUTE",   PRODUCTS_TABLE.'_pagination_route');
-define("USERS_PAGINATION_ROUTE",      USERS_TABLE.'_pagination_route');
-define("ORDERS_PAGINATION_ROUTE",     ORDERS_TABLE.'_pagination_route');
 define("SORT",                        'sort');
 define("MIN_PRICE",                   'min_'.PRICE);
 define("MAX_PRICE",                   'max_'.PRICE);
+define("PRODUCTS_PAGINATION_ROUTE",   PRODUCTS_TABLE.'_pagination_route');
 
 /**
  * Wishlist Standards.
@@ -285,17 +284,18 @@ define("CHECKOUT_PAYMENT",        CHECKOUT.'_'.PAYMENT);
 /**
  * Order Standards.
  */
-define("USER_ORDERS",        USER_MODEL.'_'.ORDERS_TABLE);
-define("CREATE_ORDER",       CREATE.'_'.ORDER_MODEL);
-define("UPDATE_ORDER",       UPDATE.'_'.ORDER_MODEL);
-define("PAYMENT_METHOD",     PAYMENT.'_method');
-define("PAYMENT_ID",         collectionId(PAYMENT));
-define("PAYMENT_STATUS",     PAYMENT.'_'.STATUS);
-define("ORDER_DETAILS",      ORDER_MODEL.'_details');
-define("ORDER_PRODUCT_SIZE", ORDER_MODEL.'_'.PRODUCT_SIZE);
-define("ORDER_USER_NAME",    ORDER_MODEL.'_'.USER_MODEL.'_'.NAME);
-define("START_DATE",         'start_date');
-define("END_DATE",           'end_date');
+define("USER_ORDERS",             USER_MODEL.'_'.ORDERS_TABLE);
+define("CREATE_ORDER",            CREATE.'_'.ORDER_MODEL);
+define("UPDATE_ORDER",            UPDATE.'_'.ORDER_MODEL);
+define("PAYMENT_METHOD",          PAYMENT.'_method');
+define("PAYMENT_ID",              collectionId(PAYMENT));
+define("PAYMENT_STATUS",          PAYMENT.'_'.STATUS);
+define("ORDER_DETAILS",           ORDER_MODEL.'_details');
+define("ORDER_PRODUCT_SIZE",      ORDER_MODEL.'_'.PRODUCT_SIZE);
+define("ORDER_USER_NAME",         ORDER_MODEL.'_'.USER_MODEL.'_'.NAME);
+define("START_DATE",              'start_date');
+define("END_DATE",                'end_date');
+define("ORDERS_PAGINATION_ROUTE", ORDERS_TABLE.'_pagination_route');
 
 /**
  * Review Standards.
