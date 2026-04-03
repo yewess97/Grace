@@ -1,7 +1,8 @@
 'use strict';
 
 import { IGrace, Common, User } from "./helpers/user-helpers.js";
-import "./helpers/plugins.js";
+import "./helpers/common-plugins.js";
+import "./helpers/user-plugins.js";
 
 
 $(document).ready(() => {
@@ -88,23 +89,6 @@ $(document).ready(() => {
     /* ---------=========== End Carousel Config ============--------- */
 
 
-    /* ---------=========== Handle Price Filter ============--------- */
-    const
-        price_inputs = $(`.price-input input[type="number"]`),
-        price_ranges = $(`.price-range input[type="range"]`);
-
-    const
-        min_price = parseFloat(price_inputs.first().val()),
-        max_price = parseFloat(price_inputs.last().val()),
-        min_range = parseFloat(price_ranges.first().val()),
-        max_range = parseFloat(price_ranges.last().val());
-
-    User.handlePriceFilter(price_inputs, price_ranges);
-    User.handlePriceFilter(price_ranges, price_inputs);
-
-    /* ---------=========== End Handle Price Filter ============--------- */
-
-
     // Change the products main view
     if (products_main_view.length) {
         User.changeProductsView();
@@ -138,7 +122,10 @@ $(document).ready(() => {
 
     /* ---------=========== Change (Input) Action ============--------- */
     $(document).on(IGrace.INPUT, (e) => {
-        const target = $(e.target);
+        const
+            target       = $(e.target),
+            price_inputs = '.price-input input[type="number"]',
+            price_ranges = '.price-range input[type="range"]';
 
         // Submit the "filter products form" when the "sort select" is changed
         if (target.is(`select#${IGrace.FILTER_PRODUCTS_SORT()}`)) {
@@ -146,6 +133,22 @@ $(document).ready(() => {
                 .val(target.val())
                 .end()
                 .submit();
+        }
+
+        // Syncs price inputs with range sliders
+        if (target.is(price_inputs) ||target.is(price_ranges)) {
+            const
+                price_range_container = target.closest('.filter-content'),
+                inputs                = price_range_container.find(price_inputs),
+                ranges                = price_range_container.find(price_ranges);
+
+            if (target.is(price_inputs)) {
+                inputs.handlePriceRangeFilter({ selectors: ranges });
+            }
+
+            if (target.is(price_ranges)) {
+                ranges.handlePriceRangeFilter({ selectors: inputs });
+            }
         }
 
         /**
@@ -191,7 +194,7 @@ $(document).ready(() => {
                 }
 
                 // Show or hide the number of selected items when selecting multiple items
-                Common.showHideMultiSelectedItems($(mutation.target));
+                $(mutation.target).showHideMultiSelectedItems();
             }
         });
     });
@@ -247,11 +250,6 @@ $(document).ready(() => {
         const
             quantity_input           = target.parent().find(`.${IGrace.QUANTITY}-input`),
             current_quantity_value   = +quantity_input.val();
-
-        const common_select_all_multi_items = {
-            target:           target,
-            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
-        };
 
         // Active the responsive nav menu and overlay
         if (target.is(nav_menu_toggler)) {
@@ -309,21 +307,8 @@ $(document).ready(() => {
 
         // Clear the products filter
         if (target.hasClass(`clear-${IGrace.FILTER}`)) {
-            $(`.${IGrace.FILTER}-checkbox`).prop('checked', false);
-
-            $('input[type="hidden"]').val('');
-
-            price_inputs.first()
-                .val(min_price)
-                .end()
-                .last()
-                .val(max_price);
-
-            price_ranges.first()
-                .val(min_range)
-                .end()
-                .last()
-                .val(max_range);
+            target.closest('form')[0].reset();
+            $('input[type="hidden"]').removeAttr('value');
         }
 
         // Submit the wishlist's form
@@ -387,18 +372,19 @@ $(document).ready(() => {
     });
 
     // Count the number of characters of the review body
-    Common.charsCounter(`${IGrace.REVIEW}-${IGrace.CLASS(IGrace.BODY_TEXT)}`);
+    $(`.${IGrace.REVIEW}-${IGrace.CLASS(IGrace.BODY_TEXT)}`).charsCounter();
 
     // Set up the form multiselect settings
     const
-        add_cart_product_sizes_quick_view = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`),
-        add_cart_product_sizes = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`);
+        add_cart_product_sizes            = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`),
+        add_cart_product_sizes_quick_view = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`);
+
+    if (add_cart_product_sizes.length) {
+        add_cart_product_sizes.formMultiSelectConfig();
+    }
 
     if (add_cart_product_sizes_quick_view.length) {
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.CART), IGrace.PRODUCT_SIZE_QUICK_VIEW());
-    }
-    if (add_cart_product_sizes.length) {
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.CART), IGrace.PRODUCT_SIZE());
+        add_cart_product_sizes_quick_view.formMultiSelectConfig();
     }
 
     // Set up the form select settings

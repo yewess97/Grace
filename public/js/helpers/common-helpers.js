@@ -3,6 +3,7 @@
 import { IGrace } from "./IGrace.js";
 import { Admin } from "./admin-helpers.js";
 import { User } from "./user-helpers.js";
+import "./common-plugins.js";
 
 
 const Common = {
@@ -53,83 +54,6 @@ const Common = {
      * @return {number}
      */
     currentPageNumber: () => $('.page-item.active').find('.page-link').html() || 1,
-
-
-    /**
-     * Configure the "form multiselect" settings.
-     *
-     * @param actionCollection
-     * @param relation
-     * @return {void}
-     */
-    formMultiSelectConfig: (actionCollection, relation) => {
-        const element = $(`#${actionCollection}_${relation}`);
-
-        relation = relation.split('_');
-        relation = relation.length > 1
-            ? relation[1]
-            : relation[0];
-
-        element.filterMultiSelect({
-            placeholderText:           `Select ${IGrace.CAPITALIZE(relation)}`,
-            filterText:                'Search...',
-            selectAllText:             'Select All',
-            selectionLimit:            0,
-            caseSensitive:             false,
-            allowEnablingAndDisabling: false,
-        });
-
-        element.removeClass('dropdown');
-
-        $('.filter.dropdown-item > input').attr('name', `search_${relation}`);
-    },
-
-
-    /**
-     * Show or hide the number of selected items when selecting multiple items.
-     *
-     * @param target
-     * @return {void}
-     */
-    showHideMultiSelectedItems: (target) => {
-        if (!target.hasClass('selected-items')) return;
-
-        const
-            num_selected_items_element           = target.prevAll(':eq(1)'),
-            selected_items_length                = target.children().length,
-            multiselect                          = target.parents('.filter-multi-select'),
-            multiselect_label                    = multiselect.prev(),
-            multiselect_items                    = target.parent().next().find('.items'),
-            multiselect_max_num_items            = multiselect_items.children().length - 1,
-            multiselect_hidden_input             = multiselect.next(),
-            select_all                           = multiselect_items.find('.custom-control:first-child'),
-            select_all_label                     = select_all.find('.custom-control-label'),
-            select_all_checkbox                  = select_all.find('.custom-checkbox'),
-            is_hidden                            = selected_items_length > 3,
-            multiselect_related_collection_label = [IGrace.CATEGORY, IGrace.SUBCATEGORY].some((collection) =>
-                multiselect_label.html().includes(IGrace.CAPITALIZE(IGrace.PLURALIZE(collection)))),
-            top_value = (multiselect_related_collection_label && selected_items_length > 0 && selected_items_length <= 3)
-                ? '7%'
-                : '18%';
-
-
-        multiselect_label.css('top', top_value);
-
-        target.attr('hidden', is_hidden);
-
-        num_selected_items_element.attr('hidden', !is_hidden)
-            .removeClass('mr-2')
-            .addClass('me-2');
-
-        select_all_label.html(selected_items_length === multiselect_max_num_items ? 'Unselect All' : 'Select All');
-
-        if (selected_items_length === 1) {
-            select_all_checkbox.val(`${multiselect_hidden_input.val()},`);
-            multiselect_hidden_input.val(`${multiselect_hidden_input.val()},`);
-        }
-
-        num_selected_items_element.html(`${selected_items_length}/${multiselect_max_num_items} Selected items`);
-    },
 
 
     /**
@@ -220,7 +144,7 @@ const Common = {
                 .attr('selected', true));
         }
 
-        Common.formMultiSelectConfig(action_collection, relational_collection);
+        $(`#${select_element_id}`).formMultiSelectConfig();
         Common.formSelectConfig();
 
         related_collection_element.remove();
@@ -282,32 +206,6 @@ const Common = {
 
                 return formData;
             }, new FormData());
-    },
-
-
-    /**
-     * Count the characters in a textarea.
-     *
-     * @param textArea
-     * @return {void}
-     */
-    charsCounter: (textArea) => {
-        $(document).on(IGrace.KEYUP, `.${textArea}`, function (e) {
-            e.preventDefault();
-
-            const
-                target     = $(this),
-                text_value = target.val(),
-                counter    = target.attr('maxlength') - text_value.length;
-
-            let counter_element = textArea.includes(IGrace.REVIEW)
-                ? target.parents().eq(1).next().next().find('> .chars-counter')
-                : target.parent().next().addClass('mt-3 mb-2');
-
-            counter_element.text(text_value ? `${counter} characters remaining` : '');
-
-            if ($.isEmptyObject(text_value)) counter_element.removeClass('mt-3 mb-2');
-        });
     },
 
 
@@ -1324,7 +1222,7 @@ const Common = {
                 url    = `${route}${Common.routeParamsSeperator(route)}page=${page}`;
 
             if (route.includes(`${IGrace.FILTER}-${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) {
-                return User.ajaxFilterProducts({route: url});
+                return User.ajaxFilterProducts({ route: url });
             }
 
             $.get(url)

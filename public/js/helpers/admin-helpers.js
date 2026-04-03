@@ -282,7 +282,6 @@ const Admin = {
             maxSizeError:  'There is a thumbnail image exceeds allowed size, Max size is', // maximum uploaded file size error
             maxFile:       10, // maximum number of uploaded files
             maxFileError:  'Thumbnail images number exceeds upload limit, Max limit is', // maximum number of uploaded files error
-
         };
 
         $(`#${action}_${IGrace.PLURALIZE(IGrace.THUMB_IMAGE())}`).aksFileUpload(thumb_images_options);
@@ -315,11 +314,11 @@ const Admin = {
                 .next()
                 .val(target.val());
 
-            target.next()
-                .find('div:first-child')
-                .parents()
-                .eq(1)
-                .remove();
+            setTimeout(() =>
+                target.next()
+                    .find('div')
+                    .remove()
+                , 10);
         }
     },
 

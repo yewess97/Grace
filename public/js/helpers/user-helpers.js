@@ -1,7 +1,8 @@
 'use strict';
 
 import { IGrace, Common } from "./common-helpers.js";
-import "./plugins.js";
+import "./common-plugins.js";
+import "./user-plugins.js";
 
 
 const User = {
@@ -17,24 +18,6 @@ const User = {
             .removeClass((_, className) => (className.match(/\brow-cols-md-\S+/g) || []).join(' '))
             .addClass(`row-cols-md-${$(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`).attr('data-grid-main-view')}`);
     },
-
-
-    /**
-     * Handle the inputs & range of the price filter.
-     *
-     * @param input
-     * @param range
-     * @return {*}
-     */
-    handlePriceFilter: (input, range) =>
-        input.on(IGrace.INPUT, function () {
-            let [min_value, max_value] = input.map((_, element) => parseFloat($(element).val()));
-
-            if (min_value > max_value) [min_value, max_value] = [max_value, min_value];
-
-            range.eq(0).val(min_value);
-            range.eq(1).val(max_value);
-        }),
 
 
     /**
@@ -127,27 +110,6 @@ const User = {
     },
 
 
-    /**
-     * Display a loading spinner.
-     *
-     * @param target
-     * @param element
-     * @param {boolean} isDisabled
-     * @return {void}
-     */
-    loadingSpinner: (target, element, isDisabled = false) => {
-        if (isDisabled) element.prop('disabled', true);
-
-        element.prepend($('<img>', {
-            src: target.data('loading_spinner'),
-            alt: 'Loading',
-            class: 'img-fluid loading-spinner',
-            width: 30,
-            height: 30,
-        }));
-    },
-
-
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
     /**
      * Auth ajax request.
@@ -168,7 +130,10 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => User.loadingSpinner(target, target.find(`.${IGrace.LOGIN}-btn`), true),
+                beforeSend: () => target.loadingSpinner({
+                    element:    target.find(`.${IGrace.LOGIN}-btn`),
+                    isDisabled: true,
+                }),
                 success: (data) => {
                     let success_message;
 
@@ -376,7 +341,10 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => User.loadingSpinner(target, place_order_button, true),
+                beforeSend: () => target.loadingSpinner({
+                    element:    place_order_button,
+                    isDisabled: true,
+                }),
                 success: (data) => {
                     if ($.inArray(data.status, [`auth_${IGrace.SUCCESS}`, 'stripe_session_created']) > -1) {
                         window.isFormDirty = false;
@@ -497,7 +465,7 @@ const User = {
 
                         wishlist_btn.find('i').remove();
 
-                        User.loadingSpinner(target, wishlist_btn);
+                        target.loadingSpinner({ element: wishlist_btn });
                     });
                 },
 
@@ -629,7 +597,7 @@ const User = {
                         .find('.loading-spinner')
                         .remove();
 
-                    User.loadingSpinner(target, cart_button);
+                    target.loadingSpinner({ element: cart_button });
                 },
                 success: (data) => {
                     let success_message = action === IGrace.ADD

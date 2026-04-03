@@ -1,7 +1,7 @@
 'use strict';
 
 import { IGrace, Common, Admin } from "./helpers/admin-helpers.js";
-import "./helpers/plugins.js";
+import "./helpers/common-plugins.js";
 
 
 $(document).ready(() => {
@@ -170,7 +170,7 @@ $(document).ready(() => {
                 });
 
                 // Show or hide the number of selected items when selecting multiple items
-                Common.showHideMultiSelectedItems(target);
+                target.showHideMultiSelectedItems();
 
                 // Remove the 'show' class from any list in the closed nav menu
                 if (target.is(`.${nav_menu}.close .${nav_menu_list_item} .nav-submenu-list`)
@@ -335,8 +335,8 @@ $(document).ready(() => {
     $.each(($(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}, .${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`)), (_, description_text) => $('<pre>').html($(description_text).html()).appendTo(description_text));
 
     // Count the number of characters of the product short and long descriptions
-    Common.charsCounter(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`);
-    Common.charsCounter(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`);
+    $(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).charsCounter();
+    $(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`).charsCounter();
 
     // Add (active) class on the first child of the carousel item
     $('.carousel-item:first-child').addClass('active');
@@ -368,13 +368,13 @@ $(document).ready(() => {
 
     // Set up the form multiselect settings
     if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY), IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()));
+        $(`#${IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`).formMultiSelectConfig();
     }
 
     if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.PRODUCT), IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()));
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.PRODUCT), IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()));
-        Common.formMultiSelectConfig(IGrace.ADD_COLLECTION(IGrace.PRODUCT), IGrace.PLURALIZE(IGrace.SIZE));
+        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`).formMultiSelectConfig();
+        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY())}`).formMultiSelectConfig();
+        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.SIZE)}`).formMultiSelectConfig();
     }
 
     // Set up the form select settings
