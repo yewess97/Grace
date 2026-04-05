@@ -11,7 +11,7 @@ import { IGrace } from "./IGrace.js";
 $.fn.checkRows = function() {
     return this.each(function() {
         const
-            target = $(this),
+            target    = $(this),
             check_all = $('#check_all'),
             check_row = $(`.check-${IGrace.ROW}`);
 
@@ -49,9 +49,9 @@ $.fn.checkRows = function() {
  */
 $.fn.formMultiSelectConfig = function() {
     return this.each(function() {
-        const element = $(this);
+        const target = $(this);
 
-        let relation = element.prop(IGrace.ID)
+        let relation = target.prop(IGrace.ID)
             .split('_')
             .slice(2)
             .join('_')
@@ -62,7 +62,7 @@ $.fn.formMultiSelectConfig = function() {
             : relation[0];
 
         // Initialize filterMultiSelect
-        element.filterMultiSelect({
+        target.filterMultiSelect({
             placeholderText:           `Select ${IGrace.CAPITALIZE(relation)}`,
             filterText:                'Search...',
             selectAllText:             'Select All',
@@ -72,7 +72,7 @@ $.fn.formMultiSelectConfig = function() {
         });
 
         // Remove dropdown class
-        element.removeClass('dropdown');
+        target.removeClass('dropdown');
 
         // Update search input name
         $('.filter.dropdown-item > input').attr('name', `search_${relation}`);
@@ -89,7 +89,9 @@ $.fn.showHideMultiSelectedItems = function() {
     return this.each(function() {
         const target = $(this);
 
-        if (!target.hasClass('selected-items')) return;
+        if (!target.hasClass('selected-items')) {
+            return;
+        }
 
         const related_collections = [IGrace.CATEGORY, IGrace.SUBCATEGORY];
 
@@ -147,17 +149,17 @@ $.fn.charsCounter = function () {
             e.preventDefault();
 
             const
-                element    = $(this),
-                text_value = element.val() || '',
-                max_length = element.attr('maxlength') || 0,
+                target     = $(this),
+                text_value = target.val() || '',
+                max_length = target.attr('maxlength') || 0,
                 counter    = max_length - text_value.length,
 
-                counter_element = element.prop('class').includes(IGrace.REVIEW)
-                    ? element.parents().eq(1)
+                counter_element = target.prop('class').includes(IGrace.REVIEW)
+                    ? target.parents().eq(1)
                         .next()
                         .next()
                         .find('> .chars-counter')
-                    : element.parent()
+                    : target.parent()
                         .next()
                         .addClass('mt-3 mb-2');
 
@@ -185,13 +187,15 @@ $.fn.selectAllMultiItems = function(options) {
     return this.each(function() {
         const target = $(this);
 
-        if (!target.is(`input[name="${settings.actionCollection}_${settings.relation}[]"]`)) return;
+        if (!target.is(`input[name="${settings.actionCollection}_${settings.relation}[]"]`)) {
+            return;
+        }
 
         const
-            is_checked = target.is(':checked'),
-            is_select_all = target.next().html().includes('All'),
-            all_items = target.parents('.items').find('input[type="checkbox"]'),
-            select_all_checkbox = all_items.first(),
+            is_checked                      = target.is(':checked'),
+            is_select_all                   = target.next().html().includes('All'),
+            all_items                       = target.parents('.items').find('input[type="checkbox"]'),
+            select_all_checkbox             = all_items.first(),
             related_collection_hidden_input = target.parents('.filter-multi-select').next();
 
         let selected_values = settings.multiSelectedValuesList;

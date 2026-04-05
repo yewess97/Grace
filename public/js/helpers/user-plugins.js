@@ -23,9 +23,9 @@ $.fn.carouselSlider = function(options) {
     }, options);
 
     return this.each(function() {
-        const element = $(this);
+        const target = $(this);
 
-        element.owlCarousel({
+        target.owlCarousel({
             items:              settings.displayItemsCount,
             rewind:             settings.rewind,
             margin:             settings.margin,
@@ -37,10 +37,10 @@ $.fn.carouselSlider = function(options) {
             autoplayHoverPause: settings.autoplayHoverPause
         });
 
-        element.find('.owl-nav button').attr('type', 'button');
-        element.find('.owl-nav .owl-prev').attr('title', 'Go to Previous');
-        element.find('.owl-nav .owl-next').attr('title', 'Go to Next');
-        element.find('.owl-dot').attr({
+        target.find('.owl-nav button').attr('type', 'button');
+        target.find('.owl-nav .owl-prev').attr('title', 'Go to Previous');
+        target.find('.owl-nav .owl-next').attr('title', 'Go to Next');
+        target.find('.owl-dot').attr({
             type:  'button',
             title: 'Go to Slider'
         });
@@ -64,7 +64,9 @@ $.fn.filterProductsMultiItems = function(options) {
         const target                         = $(this);
         const filter_collection_hidden_input = target.parents('.filter-content').next();
 
-        if (!target.is(`input[name="${IGrace.FILTER_PRODUCTS()}_${settings.relation}[]"]`)) return;
+        if (!target.is(`input[name="${IGrace.FILTER_PRODUCTS()}_${settings.relation}[]"]`)) {
+            return;
+        }
 
         let selected_values = settings.multiSelectedValuesList;
 
@@ -116,16 +118,21 @@ $.fn.handlePriceRangeFilter = function (options) {
 /**
  * Handles the ratings update dynamically.
  *
- * @param rating
+ * @param options
  * @return {*}
  */
-$.fn.starRating = function(rating) {
-    return this.each(function() {
-        const container   = $(this).empty();
-        const filled_star = '<span class="position-relative fs-4 star-fill" aria-label="Filled Star">★</span>';
-        const empty_star  = '<span class="position-relative fs-4 star-empty" aria-label="Empty Star">☆</span>';
+$.fn.starRating = function(options) {
+    const settings = $.extend({
+        rating: null,
+    }, options);
 
-        container.html(filled_star.repeat(rating) + empty_star.repeat(5 - rating));
+    return this.each(function() {
+        const
+            target      = $(this),
+            filled_star = '<span class="position-relative fs-4 star-fill" aria-label="Filled Star">★</span>',
+            empty_star  = '<span class="position-relative fs-4 star-empty" aria-label="Empty Star">☆</span>';
+
+        target.empty().html(filled_star.repeat(settings.rating) + empty_star.repeat(5 - settings.rating));
     });
 };
 
@@ -145,13 +152,15 @@ $.fn.loadingSpinner = function(options) {
     return this.each(function() {
         const target = $(this);
 
-        if (settings.isDisabled) settings.element.prop('disabled', true);
+        if (settings.isDisabled) {
+            settings.element.prop('disabled', true);
+        }
 
         settings.element.prepend($('<img>', {
-            src: target.data('loading_spinner'),
-            alt: 'Loading',
-            class: 'img-fluid loading-spinner',
-            width: 30,
+            src:    target.data('loading_spinner'),
+            alt:    'Loading',
+            class:  'img-fluid loading-spinner',
+            width:  30,
             height: 30,
         }));
     });

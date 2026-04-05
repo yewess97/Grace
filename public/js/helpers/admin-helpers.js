@@ -1,6 +1,6 @@
 'use strict';
 
-import {Common, IGrace} from "./common-helpers.js";
+import { IGrace, Common } from "./common-helpers.js";
 
 
 const Admin = {
@@ -25,7 +25,7 @@ const Admin = {
 
 
     /**
-     * Add or Remove (close) class and save the action in the session storage.
+     * Handles the nav menu open/close functionality and save the action in the session storage.
      *
      * @param navMenu
      * @param action
@@ -44,29 +44,6 @@ const Admin = {
     },
 
 
-    /**
-     * Add a "responsive_" prefix to a specified attribute of given elements.
-     *
-     * @param args
-     * @return {void}
-     */
-    addResponsivePrefix: (args) => {
-        const { elements, attribute = IGrace.ID, callback = null } = args;
-
-        $.each((elements), (_, element) => {
-            const element_value = $(element).attr(attribute);
-
-            if (element_value) {
-                const element_new_value = callback
-                    ? callback(element_value)
-                    : `responsive_${element_value}`;
-
-                return $(element).attr(attribute, element_new_value);
-            }
-        });
-    },
-
-
     /* ---------------------------------- GOOGLE CHARTS ---------------------------------- */
     /**
      * Get the chart data.
@@ -79,7 +56,9 @@ const Admin = {
 
         const dashboard_main = $(`.${IGrace.DASHBOARD}-main`);
 
-        if (!dashboard_main.length) return [];
+        if (!dashboard_main.length) {
+            return [];
+        }
 
         return JSON.parse(element.getAttribute(`data-${IGrace.PLURALIZE(dataKey)}`))
             .map((item) => ([
@@ -229,7 +208,7 @@ const Admin = {
      * @param imageType
      * @return {void}
      */
-    setImage: (actionCollection, imageType = IGrace.MAIN_IMAGE()) => {
+    setImageConfig: (actionCollection, imageType = IGrace.MAIN_IMAGE()) => {
         let image = `#${actionCollection}_${imageType}`;
 
         const
@@ -268,7 +247,7 @@ const Admin = {
      * @param action
      * @return {void}
      */
-    setThumbImages: (action) => {
+    setThumbImagesConfig: (action) => {
         const thumb_image = `#${action}_${IGrace.PRODUCT}_${IGrace.THUMB_IMAGE()}`;
 
         const thumb_images_options = {
@@ -292,34 +271,6 @@ const Admin = {
             .addClass('cursor-pointer');
 
         $(thumb_image).attr('accept', '.png, .jpg, .jpeg');
-    },
-
-
-    /**
-     * Set the image value to the hidden input automatically when adding a new collection,
-     * and remove the image preview when changing the image.
-     *
-     * @param args
-     * @return {void}
-     */
-    imageConfig: (args) => {
-        const { target, collection, imageType = IGrace.MAIN_IMAGE() } = args;
-
-        const is_add_or_update_collection_image = [IGrace.ADD_COLLECTION(collection), IGrace.UPDATE_COLLECTION(collection)]
-            .some((action) => target.is(`#${action}_${imageType}`));
-
-        if (is_add_or_update_collection_image) {
-            target.parents()
-                .eq(1)
-                .next()
-                .val(target.val());
-
-            setTimeout(() =>
-                target.next()
-                    .find('div')
-                    .remove()
-                , 10);
-        }
     },
 
 
@@ -354,36 +305,6 @@ const Admin = {
     },
 
 
-    /**
-     * Show or Hide the image preview when adding/updating a collection.
-     *
-     * @param args
-     * @return {void}
-     */
-    showHideImagePreview: (args) => {
-        const { target, actionCollection, imageType = IGrace.MAIN_IMAGE() } = args;
-
-        if (target.hasClass(`${IGrace.CLASS(actionCollection)}-${IGrace.CLASS(imageType)}-content`)) {
-            setTimeout(() => {
-                const image_preview = $(`#${actionCollection}_${imageType}_preview`);
-
-                if (target.find('div').length > 0) {
-                    return image_preview.addClass('d-none');
-                }
-
-                target.prev().val('');
-
-                target.parents()
-                    .eq(1)
-                    .next()
-                    .val('');
-
-                image_preview.removeClass('d-none');
-            }, 100);
-        }
-    },
-
-
 
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
     /**
@@ -405,7 +326,9 @@ const Admin = {
             let main_page = target.data('main');
 
             // FormData() accepts only POST method
-            if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
+            if (action === IGrace.UPDATE) {
+                form_data.append('_method', IGrace.PUT);
+            }
 
             $.ajax({
                 url: route,
@@ -691,7 +614,7 @@ const Admin = {
                 form_data          = new FormData(filter_form[0]),
                 dashboard_main     = `.${IGrace.DASHBOARD}-main`,
                 no_results_img_src = filter_form.data('no_results'),
-                update_route = (route, form_data) => {
+                updateRoute = (route, form_data) => {
                     return function(params) {
                         if (typeof params === 'string') params = [params];
 
@@ -703,7 +626,7 @@ const Admin = {
                     };
                 },
 
-                add_params = update_route(filter_form.attr('action'), form_data);
+                add_params = updateRoute(filter_form.attr('action'), form_data);
 
             let url = filter_form.attr('action');
 

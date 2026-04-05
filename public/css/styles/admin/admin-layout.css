@@ -157,7 +157,7 @@
     left: var(--fifty-pixels);
     margin-top: calc(var(--sixteen-pixels) * -1);
     padding: var(--twenty-pixels);
-    background-color: #171529;
+    background-color: #171529 !important;
     border-radius: 0 var(--ten-pixels) var(--ten-pixels) 0;
     opacity: 1;
     visibility: visible;

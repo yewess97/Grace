@@ -288,24 +288,6 @@ const Common = {
 
 
     /**
-     * Remove row with animation and update the content.
-     *
-     * @param element
-     * @param callBack
-     * @return {void}
-     */
-    removeRow: (element, callBack = null) => {
-        element.css({ transition: "opacity 0.5s", opacity: 0 });
-
-        setTimeout(() => {
-            element.remove();
-
-            if (callBack) callBack();
-        }, 500);
-    },
-
-
-    /**
      * Update the table rows after
      * add, delete, restore, or pagination.
      *

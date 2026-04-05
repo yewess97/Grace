@@ -3,10 +3,16 @@
 import { IGrace } from "./IGrace.js";
 
 
-$.fn.imageConfig = function(options) {
+/**
+ * Handles the image preview configurations when changing the image.
+ *
+ * @param options
+ * @return {*}
+ */
+$.fn.imagePreviewConfig = function (options) {
     const settings = $.extend({
         collection: null,
-        imageType:  IGrace.MAIN_IMAGE,
+        imageType:  IGrace.MAIN_IMAGE(),
     }, options);
 
     return this.each(function () {
@@ -21,11 +27,45 @@ $.fn.imageConfig = function(options) {
                 .next()
                 .val(target.val());
 
-            setTimeout(() =>
-                    target.next()
-                        .find('div')
-                        .remove()
-                , 10);
+            target.next()
+                .find('label')
+                .next()
+                .remove();
+        }
+    });
+};
+
+
+/**
+ * Handles the image preview visibility when updating a collection.
+ *
+ * @param options
+ * @return {*}
+ */
+$.fn.showHideImagePreview = function(options) {
+    const settings = $.extend({
+        collection: null,
+        imageType:  IGrace.MAIN_IMAGE(),
+    }, options);
+
+    return this.each(function () {
+        const target = $(this);
+
+        if (target.hasClass(`${IGrace.CLASS(IGrace.UPDATE_COLLECTION(settings.collection))}-${IGrace.CLASS(settings.imageType)}-content`)) {
+            const image_preview = $(`#${IGrace.UPDATE_COLLECTION(settings.collection)}_${settings.imageType}_preview`);
+
+            if (target.find('div').length > 0) {
+                return image_preview.addClass('d-none');
+            }
+
+            target.prev().val('');
+
+            target.parents()
+                .eq(1)
+                .next()
+                .val('');
+
+            image_preview.removeClass('d-none');
         }
     });
 };

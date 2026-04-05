@@ -273,7 +273,7 @@ const User = {
                             : ''
                     );
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
-                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.RATING}`).starRating(data['average_rate']);
+                    quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.RATING}`).starRating({ rating: data['average_rate'] });
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
                     Common.showMultiSelectData({
                         userType:          IGrace.USER,
@@ -692,20 +692,24 @@ const User = {
             e.preventDefault();
 
             const
-                target        = $(this),
-                route         = target.attr('action'),
-                collection_id = target.data(IGrace.ID),
-                reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
-                form_data     = new FormData(target[0]),
+                target          = $(this),
+                route           = target.attr('action'),
+                collection_id   = target.data(IGrace.ID),
+                collection_item = $(`#${collection}_item_${collection_id}`),
+                reviews_route   = target.data(IGrace.PLURALIZE(IGrace.REVIEW)),
+                form_data       = new FormData(target[0]),
 
                 userCollectionSuccess = (collection, data) => {
                     const success_message = data.status && data.status === 'decremented'
                         ? `${IGrace.CAPITALIZE(IGrace.PRODUCT_QUANTITY().replace('_', ' '))} has been decreased by one from your ${IGrace.CART}`
                         : `${IGrace.CAPITALIZE(IGrace.PRODUCT)} has been removed from your ${collection}`;
 
-                    Common.removeRow($(`#${collection}_item_${collection_id}`), () =>
-                        User.updateUserCollectionContent(collection, data)
-                    );
+                    collection_item.css({ transition: "opacity 0.5s", opacity: 0 });
+
+                    setTimeout(() => {
+                        collection_item.remove();
+                        User.updateUserCollectionContent(collection, data);
+                    }, 500);
 
                     return Common.successMessage(data.status && data.status === 'decremented' ? 'Decreased' : IGrace.DELETED(), success_message);
                 };
