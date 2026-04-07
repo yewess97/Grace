@@ -1,2 +1,14 @@
 User-agent: *
-Disallow:
+Disallow: /admin/*
+Disallow: /login
+Disallow: /register
+Disallow: /password
+Disallow: /api/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /storage/
+Disallow: /vendor/
+
+Allow: /
+
+Sitemap: https://www.grace-glossy.com/sitemap.xml

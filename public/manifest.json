@@ -1,0 +1,51 @@
+{
+    "name": "Grace Glossy Fashion",
+    "short_name": "Grace",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#d3215a",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icons/icon-72x75.png",
+            "sizes": "72x75",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-96x100.png",
+            "sizes": "96x100",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-129x133.png",
+            "sizes": "129x133",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-144x150.png",
+            "sizes": "144x150",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-152x158.png",
+            "sizes": "152x158",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-192x200.png",
+            "sizes": "192x200",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-384x400.png",
+            "sizes": "384x400",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512x533.png",
+            "sizes": "512x533",
+            "type": "image/png"
+        }
+    ]
+}
