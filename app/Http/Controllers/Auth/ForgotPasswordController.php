@@ -33,8 +33,8 @@ class ForgotPasswordController extends Controller
     {
         $forgot_password_user_error = static fn(string $attributeName) => formError(FORGOT_PASSWORD, USER_MODEL, $attributeName);
 
-        return auth()->check() 
-            ? to_route('home') 
+        return auth()->check()
+            ? to_route('home')
             : showView(FORGOT_PASSWORD_VIEW, compact(FORGOT_PASSWORD_USER_ERROR));
     }
 

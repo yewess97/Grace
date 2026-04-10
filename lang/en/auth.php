@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'The '.ucfirst(PASSWORD).' is invalid. Please try again!',
+    'failed'   => 'The '.ucfirst(PASSWORD).' is invalid. Please try again!',
     'throttle' => 'Too many '.LOGIN.' attempts. Please try again in :seconds seconds',
 
 ];

@@ -25,10 +25,8 @@ class ErrorSessionStart
     {
         $response = $next($request);
 
-        if ($response->exception instanceof HttpExceptionInterface) {
-            return app(StartSession::class)->handle($request, fn($req) => $next($req));
-        }
-
-        return $response;
+        return $response->exception instanceof HttpExceptionInterface
+            ? app(StartSession::class)->handle($request, fn($req) => $next($req))
+            : $response;
     }
 }

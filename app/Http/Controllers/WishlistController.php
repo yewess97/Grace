@@ -65,7 +65,7 @@ class WishlistController extends Controller
      */
     final public function destroy(Wishlist $wishlist): JsonResponse
     {
-        $wishlist_deleted = $this->wishlistService->deleteWishlist($wishlist);
+        $this->wishlistService->deleteWishlist($wishlist);
 
         $compact_vars = $this->wishlistService->getWishlistData();
 

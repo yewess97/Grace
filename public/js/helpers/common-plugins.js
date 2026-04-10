@@ -228,7 +228,7 @@ $.fn.selectAllMultiItems = function(options) {
 
         check_actions[is_checked]();
 
-        selected_values = selected_values.filter(Boolean).join(','); // filter(Boolean) removes empty values
+        selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 
         select_all_checkbox.val(selected_values);
         related_collection_hidden_input.val(selected_values);

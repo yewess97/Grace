@@ -255,6 +255,7 @@ define("PRODUCT_DETAILS",             PRODUCT_MODEL.'_details');
 define("PRODUCT_SIZE_QUICK_VIEW",     PRODUCT_SIZE.'_'.QUICK_VIEW);
 define("PRODUCT_QUANTITY_QUICK_VIEW", PRODUCT_QUANTITY.'_'.QUICK_VIEW);
 define("PRODUCTS_PRICES",             PRODUCTS_TABLE.'_'.pluralize(PRICE));
+define("PRODUCT_ATTRIBUTES_VAR_NAME", PRODUCT_MODEL.'_attributes');
 define("SORT",                        'sort');
 define("MIN_PRICE",                   'min_'.PRICE);
 define("MAX_PRICE",                   'max_'.PRICE);

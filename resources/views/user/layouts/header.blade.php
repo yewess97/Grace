@@ -221,11 +221,11 @@
                             <a href="{{route(REGISTER)}}" role="link" class="d-block fs-7">{{ucfirst(REGISTER)}}</a>
                         @else
                             <a href="{{route(PROFILE)}}" role="link" id="profile" class="d-block fs-7">My {{ucfirst(PROFILE)}}</a>
-                            @admin()
+                            @if (auth()->user()?->isAdmin)
                                 <a href="{{route(ADMIN_DASHBOARD_ROUTE)}}" target="_blank" role="link" class="d-block fs-7">
                                     {{capitalizeAll(ADMIN_DASHBOARD_ROUTE)}}
                                 </a>
-                            @endadmin
+                            @endif
                             <hr class="dropdown-divider m-0 text-danger">
                             <form action="{{route(LOGOUT)}}" method="post" role="form">
                                 @csrf

@@ -35,8 +35,8 @@ class ResetPasswordController extends Controller
         $email                     = request()?->input(EMAIL);
         $reset_password_user_error = static fn(string $attributeName) => formError(RESET_PASSWORD, USER_MODEL, $attributeName);
 
-        return auth()->check() 
-            ? to_route('home') 
+        return auth()->check()
+            ? to_route('home')
             : showView(RESET_PASSWORD_VIEW, compact(RESET_PASSWORD_USER_ERROR, TOKEN, EMAIL));
     }
 

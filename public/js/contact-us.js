@@ -35,24 +35,26 @@ $(document).ready(() => {
                     value = fields[field].val(),
                     error = conditions.find(({ condition }) => condition(value));
 
-                if (error) errors[field] = [error.msg];
+                if (error) {
+                    errors[field] = [error.msg];
+                }
 
                 return errors;
             }, {});
 
         // Define validation rules dynamically
         const rules = [
-            { field: 'add_contact_name', conditions: [
+            { field: IGrace.ADD_COLLECTION('contact_name'), conditions: [
                     { condition: (value) => !value, msg: 'Name is required' },
                     { condition: (value) => !regex.add_contact_name.test(value), msg: 'Name must be only characters' },
                     { condition: (value) => value.length <= 2, msg: 'Name must be at least 2 characters' },
                     { condition: (value) => value.length > 50, msg: 'Name must be less than 50 characters' }
                 ]},
-            { field: 'add_contact_email', conditions: [
+            { field: IGrace.ADD_COLLECTION('contact_email'), conditions: [
                     { condition: (value) => !value, msg: 'Email is required' },
                     { condition: (value) => !regex.add_contact_email.test(value), msg: 'Invalid Email Format' }
                 ]},
-            { field: 'add_contact_message', conditions: [
+            { field: IGrace.ADD_COLLECTION('contact_message'), conditions: [
                     { condition: (value) => !value, msg: 'Message is required' },
                     { condition: (value) => value.length < 2, msg: 'Message must be at least 2 characters' }
                 ]}
@@ -65,12 +67,14 @@ $(document).ready(() => {
         Common.errorMessage(IGrace.ADD, errors);
 
         // Stop the form submission if there are invalid fields
-        if (Object.keys(errors).length) return;
+        if (Object.keys(errors).length) {
+            return;
+        }
 
 
         /* ---------------------------------- SEND EMAIL ---------------------------------- */
         const
-            service_id = 'service_ri1slgn',
+            service_id  = 'service_ri1slgn',
             template_id = 'template_5xiszts',
             params = {
                 name:    fields.add_contact_name.val(),

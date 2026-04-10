@@ -118,8 +118,8 @@ class AdminController extends Controller
             $query->with([
                 ...$this->relatedCategories(),
                 SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) => $subcategory->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
-                THUMB_IMAGES => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                SIZES => static fn(HasMany $size) => $size->select(SIZE, PRODUCT_ID),
+                THUMB_IMAGES        => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                SIZES               => static fn(HasMany $size)       => $size->select(SIZE, PRODUCT_ID),
             ])
         );
 
@@ -163,7 +163,7 @@ class AdminController extends Controller
 
         $users_pagination_route = match (Route::currentRouteName()) {
             SEARCH_USERS => SEARCH_USERS,
-            default       => ADMIN_USERS_ROUTE,
+            default      => ADMIN_USERS_ROUTE,
         };
 
         return request()?->ajax()

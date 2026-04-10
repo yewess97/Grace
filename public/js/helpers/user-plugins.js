@@ -74,7 +74,7 @@ $.fn.filterProductsMultiItems = function(options) {
             ? selected_values.push(target.val())
             : selected_values.splice($.inArray(target.val(), selected_values), 1);
 
-        selected_values = selected_values.filter(Boolean).join(','); // filter(Boolean) removes empty values
+        selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 
         filter_collection_hidden_input.val(selected_values);
     });

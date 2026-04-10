@@ -15,15 +15,6 @@ class UserBladeServiceProvider extends ServiceProvider
     final public function boot(): void
     {
         /**
-         * Check if the user is admin.
-         *
-         *  @return bool
-         */
-        Blade::if('admin', static fn() =>
-            auth()->user()?->isAdmin
-        );
-
-        /**
          * Check if the old price is neither equal to zero nor to the new price of the product.
          *
          * @param mixed $oldPrice

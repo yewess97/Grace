@@ -33,6 +33,8 @@ use Exception;
 
 class OrderService implements ServiceData
 {
+    private array $create_order_attributes = [STATUS, ADDRESS_ID, PAYMENT_METHOD];
+
     /**
      * Get the detailed data of a specified order.
      *
@@ -207,9 +209,7 @@ class OrderService implements ServiceData
      */
     final public function validateRequest(string $operation, array $extra = []): OrderRequest
     {
-        $create_order_attributes = [STATUS, ADDRESS_ID, PAYMENT_METHOD];
-
-        $order_request = new OrderRequest($operation, ORDER_MODEL, $create_order_attributes);
+        $order_request = new OrderRequest($operation, ORDER_MODEL, $this->create_order_attributes);
 
         validateAttributes($order_request);
 
@@ -226,7 +226,7 @@ class OrderService implements ServiceData
      */
     final public function createOrUpdateCollection(FormRequest|OrderRequest $collectionRequest, array $extra): Order|JsonResponse
     {
-        [$status, $address_id, $payment_method] = $create_order_attributes;
+        [$status, $address_id, $payment_method] = $this->create_order_attributes;
 
         [$status_value, $address_id_value, $payment_method_value] = $collectionRequest->dataValues();
 
@@ -293,14 +293,14 @@ class OrderService implements ServiceData
      */
     private function stripePayment(StripeClient $stripe, LazyCollection $userCartItems, array $orderData): JsonResponse
     {
-        $line_items = $userCartItems->map(static fn(Cart $cart_item) =>
+        $line_items = $userCartItems->map(static fn(Cart $cartItem) =>
         [
             'price_data' => [
                 'currency'     => 'egp',
-                'product_data' => [NAME => $cart_item->{PRODUCT_MODEL}->{NAME}],
-                'unit_amount'  => (int) $cart_item->{PRODUCT_MODEL}->{NEW_PRICE} * 100,
+                'product_data' => [NAME => $cartItem->{PRODUCT_MODEL}->{NAME}],
+                'unit_amount'  => (int) $cartItem->{PRODUCT_MODEL}->{NEW_PRICE} * 100,
             ],
-            QUANTITY => (int) $cart_item->{PRODUCT_QUANTITY},
+            QUANTITY => (int) $cartItem->{PRODUCT_QUANTITY},
         ])->toArray();
 
         $place_order_attributes = [

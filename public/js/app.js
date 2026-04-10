@@ -218,11 +218,11 @@ $(document).ready(() => {
 
     /* ---------=========== Click Action ============--------- */
     let
-        add_multi_selected_product_sizes_values            = [],
-        add_multi_selected_product_sizes_quick_view_values = [],
         filter_products_categories_values                  = [],
         filter_products_subcategories_values               = [],
-        filter_products_sizes_values                       = [];
+        filter_products_sizes_values                       = [],
+        add_multi_selected_product_sizes_values            = [],
+        add_multi_selected_product_sizes_quick_view_values = [];
 
     $(document).on(IGrace.CLICK, (e) => {
         const target = $(e.target);
@@ -282,14 +282,18 @@ $(document).ready(() => {
 
         // Show or hide the nav submenu list
         if (target.is(`${nav_submenu_list_header}, ${nav_submenu_item_title}, ${nav_submenu_item_badge}, ${nav_submenu_item_rotate_icon}`)) {
-            const nav_menu_list_item = target.parents(`.${nav_menu}-list-item`).toggleClass('active');
-            nav_menu_list_item.find(nav_submenu_item_rotate_icon).toggleClass('rotate-180');
+            target.parents(`.${nav_menu}-list-item`)
+                .toggleClass('active')
+                .find(nav_submenu_item_rotate_icon)
+                .toggleClass('rotate-180');
         }
 
         // Show or hide the footer menu list
         if (target.is(`${footer_menu_list_header}, ${footer_menu_item_title}, ${footer_menu_item_rotate_icon}`)) {
-            const footer_item = target.parents('.footer-item').first();
-            footer_item.find(footer_menu_item_rotate_icon).toggleClass('rotate-180');
+            target.parents('.footer-item')
+                .first()
+                .find(footer_menu_item_rotate_icon)
+                .toggleClass('rotate-180');
         }
 
         // Change the products grid view
@@ -328,8 +332,12 @@ $(document).ready(() => {
         // Remove the product from the cart
         if (target.is(`.${IGrace.CART} .${IGrace.PRODUCT}-remove`)) {
             const cart_product_remove_form = $(`#${IGrace.CART}_${IGrace.PRODUCT}_remove_form`);
+
             cart_product_remove_form.attr('action', target.data('route')).submit();
-            let cartProductInfo = (dbColumn) => cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
+
+            let cartProductInfo = (dbColumn) =>
+                cart_product_remove_form.find(`input[name="${IGrace.DELETE_COLLECTION(IGrace.CART)}_${dbColumn}"]`).val(target.data(dbColumn));
+
             cartProductInfo(IGrace.PRODUCT_SIZE());
             cartProductInfo(IGrace.PRODUCT_QUANTITY());
         }

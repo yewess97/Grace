@@ -126,19 +126,19 @@ class DashboardService
         // Metrics calculation
         $metrics = [
             'Sales' => [
-                'icon' => 'analytics',
-                'data' => $fulfilled_orders,
-                'padding' => 'pe-lg-3'
+                'icon'    => 'analytics',
+                'data'    => $fulfilled_orders,
+                'padding' => 'pe-lg-3',
             ],
             'Expenses' => [
-                'icon' => 'bar_chart',
-                'data' => $expences,
-                'padding' => 'px-lg-2'
+                'icon'    => 'bar_chart',
+                'data'    => $expences,
+                'padding' => 'px-lg-2',
             ],
             'Income' => [
-                'icon' => 'stacked_line_chart',
-                'data' => $completed_orders,
-                'padding' => 'ps-lg-3'
+                'icon'    => 'stacked_line_chart',
+                'data'    => $completed_orders,
+                'padding' => 'ps-lg-3',
             ]
         ];
 

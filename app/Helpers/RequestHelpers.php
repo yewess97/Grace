@@ -1,5 +1,6 @@
 <?php
 
+
 if (!function_exists('currentPageRequest')) {
     /**
      * Get the current page number.

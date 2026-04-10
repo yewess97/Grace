@@ -173,9 +173,9 @@ class Product extends Model implements IGrace, HasImages
      * @param Builder $query
      * @param array $filterAttributes
      * @param array $filterRequestValues
-     * @return LengthAwarePaginator
+     * @return Builder
      */
-    final public function scopeFilter(Builder $query, array $filterAttributes, array $filterRequestValues): LengthAwarePaginator
+    final public function scopeFilter(Builder $query, array $filterAttributes, array $filterRequestValues): Builder
     {
         $filter_related_collection = static function (string $relatedCollection, array $collectionValues) use ($query) {
             $query->when(!empty($collectionValues), static fn(Builder $product) =>
@@ -204,8 +204,7 @@ class Product extends Model implements IGrace, HasImages
 
         $query->sort($sort_value);
 
-        return $query->select(PRODUCT_ITEM_ATTRIBUTES)
-            ->fastPaginate(16);
+        return $query->select(PRODUCT_ITEM_ATTRIBUTES);
     }
 
 

@@ -114,7 +114,7 @@ class SearchController extends Controller
 
         $users_pagination_route = match (Route::currentRouteName()) {
             SEARCH_USERS => SEARCH_USERS,
-            default       => ADMIN_USERS_ROUTE,
+            default      => ADMIN_USERS_ROUTE,
         };
 
         noResultsException($users);
@@ -241,7 +241,7 @@ class SearchController extends Controller
 
         session()->forget(FILTER_PRODUCTS);
 
-        $products = $products->filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request->dataValues());
+        $products = $products->filter(FILTER_PRODUCTS_ATTRIBUTES, $filter_products_request->dataValues())?->fastPaginate(16);
 
         return viewProducts($products);
     }

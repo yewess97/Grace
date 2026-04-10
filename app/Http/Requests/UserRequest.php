@@ -4,14 +4,13 @@ namespace App\Http\Requests;
 
 use App\Traits\FormRequestHelper;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 
 class UserRequest extends FormRequest
 {
     use FormRequestHelper;
 
     protected array $filter_users_attribute;
-    protected bool $is_single_attribute, $is_subset;
+    protected bool  $is_single_attribute, $is_subset;
 
     /**
      * Get the validation rules that apply to the request.
@@ -43,10 +42,8 @@ class UserRequest extends FormRequest
      */
     final public function messages(): array
     {
-        if ($this->is_single_attribute && $this->is_subset) {
-            return $this->booleanValidation(ROLE, true, "Customer or Admin");
-        }
-
-        return $this->userValidation(USER_MODEL, true);
+        return $this->is_single_attribute && $this->is_subset
+            ? $this->booleanValidation(ROLE, true, "Customer or ".ucfirst(ADMIN))
+            : $this->userValidation(USER_MODEL, true);
     }
 }

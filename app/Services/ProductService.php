@@ -82,9 +82,9 @@ class ProductService implements ServiceData
             $product_attributes[] = THUMB_IMAGE;
         }
 
-        $validated_product_request = $this->validateRequest($operation, compact(PRODUCT_ID, PRODUCT_MODEL.'_attributes'));
+        $validated_product_request = $this->validateRequest($operation, compact(PRODUCT_ID, PRODUCT_ATTRIBUTES_VAR_NAME));
 
-        $product = $this->createOrUpdateCollection($validated_product_request, compact('operation', PRODUCT_ID, PRODUCT_MODEL.'_attributes', THUMB_IMAGE.'_input_name'));
+        $product = $this->createOrUpdateCollection($validated_product_request, compact('operation', PRODUCT_ID, PRODUCT_ATTRIBUTES_VAR_NAME, THUMB_IMAGE.'_input_name'));
 
         $this->forgetCollectionCache($product);
 
@@ -169,7 +169,7 @@ class ProductService implements ServiceData
      */
     final public function validateRequest(string $operation, array $extra = []): ProductRequest
     {
-        $product_request = new ProductRequest($operation, PRODUCT_MODEL, $extra[PRODUCT_MODEL.'_attributes']);
+        $product_request = new ProductRequest($operation, PRODUCT_MODEL, $extra[PRODUCT_ATTRIBUTES_VAR_NAME]);
 
         validateAttributes($product_request, $extra[PRODUCT_ID]);
 
@@ -186,7 +186,7 @@ class ProductService implements ServiceData
      */
     final public function createOrUpdateCollection(FormRequest|ProductRequest $collectionRequest, array $extra): Product|JsonResponse
     {
-        [$name, $short_description, $long_description, $main_image, $related_categories_ids, $related_subcategories_ids, $sizes, $old_price, $new_price, $quantity, $status] = $extra[PRODUCT_MODEL.'_attributes'];
+        [$name, $short_description, $long_description, $main_image, $related_categories_ids, $related_subcategories_ids, $sizes, $old_price, $new_price, $quantity, $status] = $extra[PRODUCT_ATTRIBUTES_VAR_NAME];
 
         [$name_value, $short_description_value, $long_description_value, $main_image_value, $related_categories_ids_values, $related_subcategories_ids_values, $sizes_values, $old_price_value, $new_price_value, $quantity_value, $status_value] = $collectionRequest->dataValues();
 
@@ -210,7 +210,7 @@ class ProductService implements ServiceData
 
         /*---------------------------- One to Many Relationships ----------------------------*/
         // Product Thumbnail Images
-        if (Arr::last($extra[PRODUCT_MODEL.'_attributes']) === THUMB_IMAGE) {
+        if (Arr::last($extra[PRODUCT_ATTRIBUTES_VAR_NAME]) === THUMB_IMAGE) {
             $this->storeThumbImages($product, $new_product_id, $extra[THUMB_IMAGE.'_input_name']);
         }
 

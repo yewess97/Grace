@@ -154,7 +154,7 @@ const Common = {
         const multi_selected_related_collection_values = all_multi_related_collection.filter(':checked')
             .map((_, relatedCollection) => $(relatedCollection).val())
             .get()
-            .filter(Boolean) // filter(Boolean) removes empty values
+            .filter(Boolean) // "filter(Boolean)" removes empty values
             .join(',');
 
         all_multi_related_collection.first().val(multi_selected_related_collection_values);
@@ -212,7 +212,7 @@ const Common = {
     /**
      * Add some classes, styles, and attributes on each image.
      *
-     * @return {void}
+     * @return {*}
      */
     imageConfig: () => $.each(($('img:not(.loading-spinner)')), (_, image) =>
         $(image).addClass('img-fluid h-100')
@@ -328,7 +328,7 @@ const Common = {
     /**
      * Warn the user before leaving/refreshing the form
      *
-     * @returns {*|jQuery}
+     * @returns {*}
      */
     warnBeforeLeaving: () =>
         $(window).on("beforeunload", function (e) {
@@ -384,7 +384,9 @@ const Common = {
     ajaxGetCountries: () => {
         const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
 
-        if (!country_elements.length) return;
+        if (!country_elements.length) {
+            return;
+        }
 
         $.getJSON('https://restcountries.com/v3.1/all?fields=name')
             .done((countries) => {
@@ -450,7 +452,7 @@ const Common = {
 
                 const login_attempts_interval = setInterval(() => {
                     const login_actions = {
-                        true: () => $('#count_down').text(--seconds),
+                        true:  () => $('#count_down').text(--seconds),
                         false: () => {
                             clearInterval(login_attempts_interval);
                             hideErrorElement(attr_err);
@@ -667,7 +669,7 @@ const Common = {
      * Error response for search/filter.
      *
      * @param imageSrc
-     * @return {*|jQuery}
+     * @return {*}
      */
     searchFilterErrorResponse: (imageSrc) =>
         $('.search-table').html(
@@ -1070,7 +1072,9 @@ const Common = {
                 search_value       = target.val(),
                 no_results_img_src = search_form.data('no_results');
 
-            if (target.is(`#${IGrace.USER}_${IGrace.SEARCH}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) return;
+            if (target.is(`#${IGrace.USER}_${IGrace.SEARCH}_${IGrace.PLURALIZE(IGrace.PRODUCT)}`)) {
+                return;
+            }
 
             $.get(`${route}${Common.routeParamsSeperator(route)}search_value=${search_value}`)
                 .done((data) => Common.searchFilterSuccessResponse(data))

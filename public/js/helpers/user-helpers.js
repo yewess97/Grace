@@ -28,9 +28,9 @@ const User = {
      */
     confirmLoginMessage: () => {
         Common.swalWithButtons.fire({
-            title: `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
-            html: `<p class="fs-8">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue</p>`,
-            icon: IGrace.WARNING,
+            title:             `${IGrace.CAPITALIZE(IGrace.LOGIN)} Required`,
+            html:              `<p class="fs-8">Please ${IGrace.CAPITALIZE(IGrace.LOGIN)} to Continue</p>`,
+            icon:              IGrace.WARNING,
             showConfirmButton: true,
             confirmButtonText: `Go to ${IGrace.LOGIN} page`,
         })
@@ -61,10 +61,12 @@ const User = {
 
         const update_collection_main = $(collection_main).html(new_content.html());
 
-        $.each(($(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`)), (_, totalItems) => $(totalItems).html(data[`${collection}_${IGrace.TOTAL_ITEMS}`]));
+        $.each(($(`.${IGrace.CLASS(`${collection}_${IGrace.TOTAL_ITEMS}`)}`)), (_, totalItems) =>
+            $(totalItems).html(data[`${collection}_${IGrace.TOTAL_ITEMS}`]));
 
         if (collection === IGrace.CART) {
-            $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) => $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
+            $.each(($(`.${IGrace.CLASS(`${IGrace.CART}_${IGrace.TOTAL_COST}`)}`)), (_, totalCost) =>
+                $(totalCost).html(IGrace.PRICE_FORMAT(data[IGrace.TOTAL_COST])));
 
             $(`#${IGrace.USER}_${IGrace.CART}_dropdown`).html($(data['header_row']).html());
         }
@@ -138,7 +140,7 @@ const User = {
                     let success_message;
 
                     if (data.status === `auth_${IGrace.SUCCESS}`) {
-                        window.isFormDirty = false;
+                        window.isFormDirty   = false;
                         return location.href = data['redirect_to'];
                     }
 
@@ -329,7 +331,7 @@ const User = {
             // Because of the pagination
             if (collection_name === IGrace.CAPITALIZE(IGrace.ORDER)) {
                 const
-                    key = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
+                    key   = `${form}_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`,
                     value = sessionStorage.getItem(`selected_${IGrace.COLLECTION_ID(IGrace.ADDRESS)}`);
 
                 form_data.set(key, value ? value : '');
@@ -498,11 +500,11 @@ const User = {
                     const wishlist_config = {
                         [IGrace.DELETED()]: {
                             action: `${IGrace.DELETED()} from`,
-                            icon: 'regular'
+                            icon:   'regular',
                         },
                         [IGrace.ADDED()]: {
                             action: `${IGrace.ADDED()} to`,
-                            icon: 'solid'
+                            icon:   'solid',
                         }
                     };
 
@@ -558,7 +560,9 @@ const User = {
                 form_data     = Common.filteredFormData(this);
 
             // FormData() accepts only POST method
-            if (action === IGrace.UPDATE) form_data.append('_method', IGrace.PUT);
+            if (action === IGrace.UPDATE) {
+                form_data.append('_method', IGrace.PUT);
+            }
 
             const products = $(`.${IGrace.CART} .${IGrace.PRODUCT}`).map((_, cartProduct) => {
                 const
@@ -790,14 +794,13 @@ const User = {
     ajaxFilterProducts: (args) => {
         const { route, action, noResultsImageSrc } = args;
 
-        const
-            stored_filters = JSON.parse(sessionStorage.getItem(IGrace.FILTER_PRODUCTS())) || {},
+        const stored_filters = JSON.parse(sessionStorage.getItem(IGrace.FILTER_PRODUCTS())) || {};
 
         /**
-         * Check if value is an array, if not, wrap it inside [value],
+         * Wrap the value inside an array [value] if it's not an array,
          * then append each value (single or multiple) separately to FormData.
          */
-        form_data = Object.entries(stored_filters).reduce((formData, [attribute, value]) => {
+        const form_data = Object.entries(stored_filters).reduce((formData, [attribute, value]) => {
             $.each(($.isArray(value) ? value : [value]), (_, val) => formData.append(attribute, val));
 
             return formData;

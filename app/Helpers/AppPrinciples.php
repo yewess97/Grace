@@ -26,7 +26,10 @@ if (!function_exists('capitalizeFirst')) {
      */
     function capitalizeFirst(string $text): string
     {
-        return str($text)->headline()->lower()->ucfirst()->value();
+        return str($text)->headline()
+            ->lower()
+            ->ucfirst()
+            ->value();
     }
 }
 

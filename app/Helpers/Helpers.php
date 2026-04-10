@@ -47,11 +47,9 @@ if (!function_exists('canonicalUrl')) {
      */
     function canonicalUrl(): string
     {
-        if (str($current_url = url()->current())->startsWith('https://www.')) {
-            return str_replace('https://www.', 'https://', $current_url);
-        }
-
-        return str_replace('https://', 'https://www.', $current_url);
+        return str($current_url = url()->current())->startsWith('https://www.')
+            ? str_replace('https://www.', 'https://', $current_url)
+            : str_replace('https://', 'https://www.', $current_url);
     }
 }
 
@@ -183,7 +181,7 @@ if (!function_exists('searchRoute')) {
     function searchRoute(string $searchableTable, ?string $urlParam = null): Routing
     {
         $searchable_table = str($searchableTable)->ltrim(ADMIN.'_')->value();
-        $search_uri = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
+        $search_uri       = '/'.kebabAll($searchable_table).(isset($urlParam) ? '/'.$urlParam : '');
 
         return Route::match(['get', 'post'], $search_uri, capitalizeSecond($searchable_table))->name($searchableTable);
     }
@@ -197,11 +195,11 @@ if (!function_exists('is'.ucfirst(ADMIN).'Route')) {
      * @param bool $returnRole
      * @return string|bool
      */
-    function isAdminRoute(bool $returnRole = false): string|bool
+    function isAdminRoute(bool $isReturnRole = false): string|bool
     {
         $is_admin = str_contains(url()->current(), ADMIN);
 
-        if ($returnRole) {
+        if ($isReturnRole) {
             return $is_admin
                 ? ADMIN
                 : USER_MODEL;
@@ -635,7 +633,7 @@ if (!function_exists(WISHLIST_MODEL.ucfirst(TITLE).'Icon')) {
     {
         match($property) {
             TITLE, 'icon' => null,
-            default => throw new InvalidArgumentException('Property must be either "'.TITLE.'" or "icon"')
+            default       => throw new InvalidArgumentException('Property must be either "'.TITLE.'" or "icon"')
         };
 
         $wishlist_product_exists = Wishlist::query()->whereHasAuthUser()
@@ -966,11 +964,9 @@ if (!function_exists('noResultsException')) {
         session()->forget('no_results');
 
         if ($model->isEmpty()) {
-            if (request()?->ajax()) {
-                throw new NotFoundHttpException('no-results');
-            }
-
-            session()->flash('no_results');
+            request()?->ajax()
+                ? throw new NotFoundHttpException('no-results')
+                : session()->flash('no_results');
         }
     }
 }
@@ -1022,7 +1018,7 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
     function storeOrUpdateImage(Model|stdClass $model, ?string $modelId = null, ?string $imageType = null, mixed $image = null): string
     {
         $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
-        $image_path = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
+        $image_path       = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
 
         if (is_null($image) && isset($exist_image_name)) {
             return $exist_image_name;
@@ -1063,7 +1059,7 @@ if (!function_exists('imageSource')) {
         $image_name = $modelOrImageName->{$imageType};
 
         if (str_contains($imageType, PRODUCT_MODEL)) {
-            $imageType = str_replace(PRODUCT_MODEL.'_', '', $imageType);
+            $imageType  = str_replace(PRODUCT_MODEL.'_', '', $imageType);
             $image_name = $modelOrImageName->{PRODUCT_MODEL."_$imageType"};
         }
 
@@ -1073,11 +1069,9 @@ if (!function_exists('imageSource')) {
 
         $image_path .= DIRECTORY_SEPARATOR.pluralize($imageType).DIRECTORY_SEPARATOR.$image_name;
 
-        if ($forDeletePath) {
-            return "public".DIRECTORY_SEPARATOR.$image_path;
-        }
-
-        return asset(Storage::url($image_path));
+        return $forDeletePath
+            ? "public".DIRECTORY_SEPARATOR.$image_path
+            : asset(Storage::url($image_path));
     }
 }
 
@@ -1348,8 +1342,8 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
                 if ($trashed_method_exists($related)) {
                     return [
                         $relation => [
-                            'type'          => 'single',
-                            'label'         => $relation,
+                            'type'                             => 'single',
+                            'label'                            => $relation,
                             toPastTense(DELETE).'_items' => [$related->{$attribute} ?? $relation],
                         ]
                     ];
@@ -1365,8 +1359,8 @@ if (!function_exists('soft'.toPastTense(DELETE).'Relations')) {
                     if (!empty($deleted_items)) {
                         return [
                             $relation => [
-                                'type'          => 'multiple',
-                                'label'         => $relation,
+                                'type'                             => 'multiple',
+                                'label'                            => $relation,
                                 toPastTense(DELETE).'_items' => $deleted_items,
                             ]
                         ];

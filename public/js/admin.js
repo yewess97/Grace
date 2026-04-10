@@ -22,7 +22,9 @@ $(document).ready(() => {
     $.each(Admin.loadClosedMenu(), (_, navMenu) => {
         $(`.${navMenu}`).toggleClass('close', $(window).width() > 991.98);
 
-        if ($(window).width() <= 991.98) sessionStorage.clear();
+        if ($(window).width() <= 991.98) {
+            sessionStorage.clear();
+        }
     });
 
     // Add some classes, styles, and attributes on each image
@@ -119,7 +121,6 @@ $(document).ready(() => {
 
 
     /* ---------=========== Click Action ===========--------- */
-
     let
         add_multi_selected_related_categories_values    = [],
         add_multi_selected_related_subcategories_values = [],
@@ -179,8 +180,10 @@ $(document).ready(() => {
 
         // Toggle the (active) class on the nav menu list item and rotate the icon
         if (target.is(`.${nav_menu_item}, .${nav_menu_item}-icon-title, .${nav_menu_item}-icon, .${nav_menu_item}-title, .${nav_menu_item_rotate_icon}`) && !target.is(`.${nav_menu}.close .${nav_menu_item}-icon`)) {
-            const target_parent = target.parents(`.${nav_menu_list_item}:not(.current-item)`).toggleClass('active');
-            target_parent.find(`.${nav_menu_item_rotate_icon}`).toggleClass('rotate-180');
+            target.parents(`.${nav_menu_list_item}:not(.current-item)`)
+                .toggleClass('active')
+                .find(`.${nav_menu_item_rotate_icon}`)
+                .toggleClass('rotate-180');
         }
 
         // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select

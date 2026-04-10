@@ -17,9 +17,10 @@ $.fn.imagePreviewConfig = function (options) {
 
     return this.each(function () {
         const
-            target = $(this),
+            target                            = $(this),
             is_add_or_update_collection_image = [IGrace.ADD_COLLECTION(settings.collection), IGrace.UPDATE_COLLECTION(settings.collection)]
-                .some((actionCollection) => target.is(`#${actionCollection}_${settings.imageType}`));
+                .some((actionCollection) =>
+                    target.is(`#${actionCollection}_${settings.imageType}`));
 
         if (is_add_or_update_collection_image) {
             target.parents()

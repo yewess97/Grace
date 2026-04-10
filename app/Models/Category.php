@@ -55,10 +55,10 @@ class Category extends Model implements IGrace, HasImages
     {
         return [
             MAIN_IMAGE => [
-                'type'   => 'column',
+                'type' => 'column',
             ],
             BANNER_IMAGE => [
-                'type'   => 'column',
+                'type' => 'column',
             ],
         ];
     }
