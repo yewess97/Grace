@@ -78,6 +78,10 @@ class OrderService implements ServiceData
 
             $order = $this->createOrUpdateCollection($validated_order_request, compact(PAYMENT_STATUS));
 
+            if (is_array($order)) {
+                return responseWithData($order);
+            }
+
             $this->createOrderItems($this->getUserCartItems(), $order);
 
             DB::commit();
@@ -221,10 +225,10 @@ class OrderService implements ServiceData
      *
      * @param FormRequest|OrderRequest $collectionRequest
      * @param array $extra
-     * @return Order|JsonResponse
+     * @return Order|RedirectResponse
      * @throws ApiErrorException|RandomException|Throwable
      */
-    final public function createOrUpdateCollection(FormRequest|OrderRequest $collectionRequest, array $extra): Order|JsonResponse
+    final public function createOrUpdateCollection(FormRequest|OrderRequest $collectionRequest, array $extra): Order|array
     {
         [$status, $address_id, $payment_method] = $this->create_order_attributes;
 
@@ -288,10 +292,10 @@ class OrderService implements ServiceData
      * @param StripeClient $stripe
      * @param LazyCollection $userCartItems
      * @param array $orderData
-     * @return JsonResponse
+     * @return array
      * @throws ApiErrorException
      */
-    private function stripePayment(StripeClient $stripe, LazyCollection $userCartItems, array $orderData): JsonResponse
+    private function stripePayment(StripeClient $stripe, LazyCollection $userCartItems, array $orderData): array
     {
         $line_items = $userCartItems->map(static fn(Cart $cartItem) =>
         [
@@ -310,7 +314,7 @@ class OrderService implements ServiceData
 
         $stripe_session = $this->stripeCheckout($stripe, $line_items, $place_order_attributes);
 
-        return responseWithData([STATUS => 'stripe_session_created', 'redirect_to' => $stripe_session->url]);
+        return [STATUS => 'stripe_session_created', 'redirect_to' => $stripe_session->url];
     }
 
     /**

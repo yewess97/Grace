@@ -351,7 +351,7 @@ const User = {
                     if ($.inArray(data.status, [`auth_${IGrace.SUCCESS}`, 'stripe_session_created']) > -1) {
                         window.isFormDirty = false;
 
-                        return location.assign(data['redirect_to']);
+                        return location.replace(data['redirect_to']); // This is ideal for login redirects or error pages where you don't want the user to go back to the previous state.
                     }
 
                     if (collection_name === IGrace.CAPITALIZE(IGrace.ORDER)) {

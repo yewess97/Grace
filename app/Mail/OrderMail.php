@@ -29,6 +29,7 @@ class OrderMail extends Mailable
     final public function envelope(): Envelope
     {
         return new Envelope(
+            bcc:     'yewess97@gmail.com',
             subject: 'Your Grace order has been placed successfully!',
         );
     }
@@ -45,6 +46,7 @@ class OrderMail extends Mailable
             with: [
                 ...getOrderDetails($this->{ORDER_MODEL}),
                 ORDER_USER_NAME => $this->{ORDER_MODEL}->{USER_MODEL}->{FULL_NAME},
+                'logo' => storage_path('app/public/images/favicon.png'),
             ],
         );
     }

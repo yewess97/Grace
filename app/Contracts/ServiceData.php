@@ -5,6 +5,7 @@ namespace App\Contracts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
@@ -27,9 +28,9 @@ interface ServiceData
      *
      * @param FormRequest $collectionRequest
      * @param array $extra
-     * @return Model|JsonResponse
+     * @return Model|JsonResponse|array
      */
-    public function createOrUpdateCollection(FormRequest $collectionRequest, array $extra): Model|JsonResponse;
+    public function createOrUpdateCollection(FormRequest $collectionRequest, array $extra): Model|JsonResponse|array;
 
     /**
      * Forget the collection's cache and related chaches.
