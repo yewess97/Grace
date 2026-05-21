@@ -192,7 +192,7 @@ if (!function_exists('is'.ucfirst(ADMIN).'Route')) {
     /**
      * Check if the route is related to the admin.
      *
-     * @param bool $returnRole
+     * @param bool $isReturnRole
      * @return string|bool
      */
     function isAdminRoute(bool $isReturnRole = false): string|bool

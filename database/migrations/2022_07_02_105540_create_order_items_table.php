@@ -2,6 +2,7 @@
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->productSizeQuantity();
             $table->unsignedDouble(PRODUCT_TOTAL_PRICE);
             $table->foreignIdOf(Order::class);
+            $table->nullableForeignIdOf(Product::class);
             $table->timestamps();
         });
     }

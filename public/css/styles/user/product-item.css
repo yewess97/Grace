@@ -9,6 +9,7 @@
 
 /* --------- Product Image --------- */
 .products-content .product-item .product-form .product-img {
+    min-height: calc(var(--fifty-pixels) * 4);
     background-color: var(--light-gray-color);
 }
 

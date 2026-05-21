@@ -356,6 +356,7 @@ class OrderService implements ServiceData
                 PRODUCT_QUANTITY    => $cart_item->{PRODUCT_QUANTITY},
                 PRODUCT_TOTAL_PRICE => $product_total_price,
                 ORDER_ID            => $order->getKey(),
+                PRODUCT_ID          => $cart_item->{PRODUCT_MODEL}->{ID},
             ]);
         });
     }

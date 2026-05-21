@@ -257,8 +257,8 @@ $(document).ready(() => {
     $.each(($(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}, .${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`)), (_, description_text) => $('<pre>').html($(description_text).html()).appendTo(description_text));
 
     // Count the number of characters of the product short and long descriptions
-    $(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).charsCounter();
-    $(`${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`).charsCounter();
+    $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).charsCounter();
+    $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`).charsCounter();
 
     // Add (active) class on the first child of the carousel item
     $('.carousel-item:first-child').addClass('active');

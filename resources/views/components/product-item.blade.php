@@ -5,7 +5,7 @@
         {{-- Multiple Items Grid View --}}
         <section class="grid-view-multiple-items">
             {{-- Product Image & Discount & Actions --}}
-            <article class="product-img position-relative rounded-2 overflow-hidden">
+            <article class="product-img position-relative d-flex align-items-center rounded-2 overflow-hidden">
                 {{-- Product Image & Discount --}}
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => MAIN_IMAGE])
 

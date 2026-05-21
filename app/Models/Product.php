@@ -114,21 +114,27 @@ class Product extends Model implements IGrace, HasImages
      * @param int $minSales
      * @return Builder
      */
-    final public function scopeMostSelling(Builder $query, int $minSales = 20): Builder
+    final public function scopeMostSelling(Builder $query, int $minSales = 30): Builder
     {
-        $product_item_attributes = array_map(static fn($attribute) => PRODUCTS_TABLE.".$attribute", PRODUCT_ITEM_ATTRIBUTES);
+        $product_item_attributes = array_map(static fn(string $attribute) => PRODUCTS_TABLE.".$attribute", PRODUCT_ITEM_ATTRIBUTES);
+
+        $total_product_sales = 'SUM('.ORDER_ITEMS_TABLE.'.'.PRODUCT_QUANTITY.')';
 
         return $query->join(
             ORDER_ITEMS_TABLE,
-            ORDER_ITEMS_TABLE.'.'.PRODUCT_NAME,
+            ORDER_ITEMS_TABLE.'.'.PRODUCT_ID,
             '=',
-            $product_item_attributes[1])
+            $product_item_attributes[0]
+        )
             ->select([
                 ...$product_item_attributes,
-                DB::raw('SUM('.ORDER_ITEMS_TABLE.'.'.PRODUCT_QUANTITY.') AS total_sales')
+                DB::raw("$total_product_sales AS total_sales")
             ])
             ->groupBy($product_item_attributes)
-            ->having('total_sales', '>', $minSales)
+            ->havingRaw(
+                "$total_product_sales > ?",
+                [$minSales]
+            ) // Because fastPaginate() with groupBy + having(alias) sometimes causes problems with internal queries.
             ->orderByDesc('total_sales');
     }
 
@@ -137,16 +143,11 @@ class Product extends Model implements IGrace, HasImages
      *
      * @param Builder $query
      * @param string|null $sort_value
-     * @return LengthAwarePaginator|Builder
+     * @return Builder
      */
-    final public function scopeSort(Builder $query, ?string $sort_value = null): LengthAwarePaginator|Builder
+    final public function scopeSort(Builder $query, ?string $sort_value = null): Builder
     {
         if (isset($sort_value)) {
-            if ($sort_value === 'best-selling') {
-                return $query->mostSelling()
-                    ->fastPaginate(16);
-            }
-
             if ($sort_value === 'title-ascending') {
                 return $query->orderBy(NAME);
             }
@@ -202,9 +203,12 @@ class Product extends Model implements IGrace, HasImages
             $product->whereBetween(NEW_PRICE, [(double) $min_price_value, (double) $max_price_value])
         );
 
-        $query->sort($sort_value);
+        if ($sort_value === 'most-selling') {
+            return $query->mostSelling();
+        }
 
-        return $query->select(PRODUCT_ITEM_ATTRIBUTES);
+        return $query->sort($sort_value)
+            ->select(PRODUCT_ITEM_ATTRIBUTES);
     }
 
 
@@ -219,6 +223,11 @@ class Product extends Model implements IGrace, HasImages
     final public function sizes(): HasMany
     {
         return $this->hasMany(ProductSize::class);
+    }
+
+    final public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     final public function reviews(): HasMany

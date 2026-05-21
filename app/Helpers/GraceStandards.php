@@ -594,6 +594,7 @@ define("ORDER_FILLABLE_ATTRIBUTES", [
 define("ORDER_ITEM_FILLABLE_ATTRIBUTES", [
     ...ORDER_ITEM_ATTRIBUTES,
     ORDER_ID,
+    PRODUCT_ID,
 ]);
 
 /**
@@ -981,7 +982,7 @@ define("PRODUCT_SIZE_ENUM", [
  * Sort Products Enum.
  */
 define("SORT_PRODUCTS_ENUM", [
-    'Best Selling'        => 'best-selling',
+    'Best Selling'        => 'most-selling',
     'Alphabetically, A-Z' => 'title-ascending',
     'Alphabetically, Z-A' => 'title-descending',
     'Price, low to high'  => 'price-ascending',
