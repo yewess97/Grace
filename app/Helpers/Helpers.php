@@ -227,83 +227,6 @@ if (!function_exists('adminCurrentUrl')) {
 }
 
 
-if (!function_exists('forgetCache')) {
-    /**
-     * Forget the cache.
-     *
-     * @param string|array $key
-     * @param Model|stdClass|null $model
-     * @param string|null $additionalSuffix
-     * @param array|null $extraConfig
-     * @return bool
-     * @throws CacheInvalidArgumentException
-     */
-    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool {
-        if (is_null($model)) {
-            return cache()->deleteMultiple(is_array($key) ? $key : [$key]);
-        }
-
-        $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_filter(
-                array_map('trim', explode(',', selectedIdsRequest()))
-            ))
-            : [$model->{ID}];
-
-        $query = $model::query()->whereIn(ID, $selected_ids)
-            ->withTrashed();
-
-        $query->pluck($additionalSuffix)
-            ->unique()
-            ->each(static fn(string $suffix) =>
-                cache()->forget($key.('_'.$suffix ?: ''))
-            );
-
-        if (empty($extraConfig)) {
-            return true;
-        }
-
-        $relations = collect($extraConfig['relation'] ?? [])
-            ->when(is_string($extraConfig['relation'] ?? null), static fn() => collect([$extraConfig['relation']]));
-
-        $relation_columns = collect($extraConfig['relation_only_columns'] ?? []);
-
-        $query->when($relations->isNotEmpty(), static fn($q) =>
-            $q->with(
-            $relations->mapWithKeys(static fn($relation) => [
-                        $relation => static fn($relQuery) =>
-                            $relQuery->select($relation_columns->get($relation, [ID]))
-                    ]
-                )
-                ->toArray()
-            )
-        );
-
-        $query->cursor()
-            ->flatMap(static function ($item) use ($relations, $relation_columns) {
-                return $relations->isEmpty()
-                    ? collect([$item->only($relation_columns->flatten()->toArray())])
-                    : $relations->flatMap(static fn($relation) =>
-                        collect($item->{$relation})
-                            ->when(!($item->{$relation} instanceof Collection), static fn() =>
-                                collect([$item->{$relation}])
-                            )
-                            ->filter()
-                            ->map(static fn($relatedItem) =>
-                                $relatedItem->only($relation_columns->get($relation, [ID]))
-                            )
-                    );
-            })
-            ->unique($extraConfig['unique_by'] ?? null)
-            ->flatMap(static fn($data) =>
-                collect($extraConfig['cache_keys'])->map(static fn($builder) => $builder($data))
-            )
-            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
-
-        return true;
-    }
-}
-
-
 if (!function_exists('getLastPage')) {
     /**
      * Get the last page number.
@@ -318,595 +241,6 @@ if (!function_exists('getLastPage')) {
         $total = $model::query()->count();
 
         return ceil($total / $perPage);
-    }
-}
-
-
-if (!function_exists(ADMIN.'Layout')) {
-    /**
-     * Get the admin layout name.
-     *
-     * @param string $layoutName
-     * @return string
-     */
-    function adminLayout(string $layoutName): string
-    {
-        return ADMIN.'.layouts.'.ADMIN."-$layoutName";
-    }
-}
-
-
-if (!function_exists(USER_MODEL.'Layout')) {
-    /**
-     * Get the user layout name.
-     *
-     * @param string $layoutName
-     * @return string
-     */
-    function userLayout(string $layoutName): string
-    {
-        return USER_MODEL.'.layouts.'.$layoutName;
-    }
-}
-
-
-if (!function_exists('viewLayout'.ucfirst(TITLE))) {
-    /**
-     * Get the view layout & title.
-     *
-     * @param string $role
-     * @return array
-     */
-    function viewLayoutTitle(string $role): array
-    {
-        $layout = $role === ADMIN
-            ? adminLayout('main')
-            : userLayout('main');
-
-        $title = [
-            TITLE => str(request()?->route()?->getName())
-                ->headline()
-                ->after(ucfirst($role === ADMIN ? ADMIN : ''))
-                ->value()
-        ];
-
-        return [$layout => $title];
-    }
-}
-
-
-if (!function_exists('commonCollections')) {
-    /**
-     * Get the common collections to be used in the frontend side.
-     *
-     * @return array
-     */
-    function commonCollections(): array
-    {
-        $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
-        $categories    = Category::get([...$categories_subcategories_common, BANNER_IMAGE]);
-        $subcategories = Subcategory::get($categories_subcategories_common);
-        $new_products  = Product::query()
-            ->latest()
-            ->take(4)
-            ->get(PRODUCT_ITEM_ATTRIBUTES);
-
-        if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
-            $categories    = $categories->load(PRODUCTS_TABLE);
-            $subcategories = $subcategories->load(PRODUCTS_TABLE);
-        }
-
-        $navbar_dropdowns = [
-            [
-                'title'      => CATEGORIES_TABLE,
-                'collection' => $categories,
-                'route_name' => CATEGORY_MODEL,
-            ],
-            [
-                'title'      => 'collections',
-                'collection' => $subcategories,
-                'route_name' => SUBCATEGORY_MODEL,
-            ],
-        ];
-
-        $navbar_items = [
-            [
-                'route_name' => PAYMENT,
-            ],
-            [
-                'route_name' => ABOUT_US,
-            ],
-            [
-                'route_name' => CONTACT_US,
-            ],
-        ];
-
-        $navbar_offers = [
-            'Every day up to 45% off',
-            'End of hot summer sale',
-            'Get 50% off on four orders',
-        ];
-
-        $footer_menus = [
-            'information' => [
-                ucfirst(pluralize(PRICE)).' Drop',
-                capitalizeAll(NEW_PRODUCTS),
-                'Best Sales',
-                'Sitemap',
-                'Store',
-            ],
-            'our company' => [
-                'Delivery',
-                'Legal Notice',
-                capitalizeAll(ABOUT_US),
-                'Secure Payment',
-                capitalizeAll(CONTACT_US),
-            ],
-            'your account' => [
-                'Personal Info',
-                ucfirst(ORDERS_TABLE),
-                'Credit Slips',
-                ucfirst(ADDRESSES_TABLE),
-                ucfirst(CART_MODEL),
-            ],
-        ];
-
-        $navbar_dropdowns = object_from_array($navbar_dropdowns);
-        $navbar_items     = object_from_array($navbar_items);
-        $footer_menus     = object_from_array($footer_menus);
-
-        return compact(CATEGORIES_TABLE, SUBCATEGORIES_TABLE, NEW_PRODUCTS, 'navbar_dropdowns', 'navbar_items', 'navbar_offers', 'footer_menus');
-    }
-}
-
-
-if (!function_exists('commonAsideMenus')) {
-    /**
-     * Get the common menus to be used in the frontend side.
-     *
-     * @return array
-     */
-    function commonAsideMenus(): array
-    {
-        $accessories_menu_item = [
-            'Top Accessories' => [
-                'Sports T-Shirts',
-                'Track pants',
-                'Cargos',
-                'Top wear',
-                'Track pants',
-            ],
-        ];
-
-        $sunglasses_menu_item = [
-            'Sunglasses' => [
-                'Shirts',
-                'Boxers',
-                'Vests',
-                'Belts',
-                'Accessories',
-            ],
-        ];
-
-        $top_wear = [
-            ...$accessories_menu_item,
-            ...$sunglasses_menu_item,
-            'Top Wear' => [
-                'Shirts',
-                'Kurtas',
-                'T-Shirts',
-                'Belts',
-                'Jewellery',
-            ],
-        ];
-
-        $bottom_wear = [
-            'Bottom Accessories' => [
-                'Vests',
-                'Sunglasses',
-                'Bottom wear',
-                'Jeans',
-                'Cargos',
-            ],
-            ...$sunglasses_menu_item,
-            ...$accessories_menu_item,
-            'Bottom Wear' => [
-                'Sports T-Shirts',
-                'Jewellery',
-                'Track pants',
-                'Cargos',
-                'Boxer',
-            ],
-        ];
-
-        $customers_reviews = [
-            [
-                NAME          => 'Yousif Ayman',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores beatae consectetur deleniti dicta doloremque dolorum ea excepturi, facere fuga harum iure iusto magnam minima molestiae optio quas quisquam sapiente, sequi?',
-            ],
-            [
-                NAME          => 'Ayman ahmed',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
-            ],
-            [
-                NAME          => 'ahmed mohamed',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
-            ],
-        ];
-
-        $top_wear          = object_from_array($top_wear);
-        $bottom_wear       = object_from_array($bottom_wear);
-        $customers_reviews = object_from_array($customers_reviews);
-
-        return compact('top_wear', 'bottom_wear', 'customers_reviews');
-    }
-}
-
-
-if (!function_exists(USER_MODEL.'CollectionsData')) {
-    /**
-     * Get the wishlist and cart data.
-     *
-     * @param array $vars
-     * @return array|array[]
-     * @throws Throwable
-     */
-    function userCollectionsData(array $vars = []): array
-    {
-        $collections_config = [
-            WISHLIST_MODEL => [
-                'model'             => Wishlist::class,
-                'cache_key'         => WISHLISTS_TABLE.'_'.auth()->id(),
-                'empty_session_key' => EMPTY_WISHLIST,
-            ],
-            CART_MODEL => [
-                'model'             => Cart::class,
-                'cache_key'         => CARTS_TABLE.'_'.auth()->id(),
-                'empty_session_key' => EMPTY_CART,
-            ],
-        ];
-
-        $compact_vars = [];
-
-        foreach ($collections_config as $type => $config) {
-            $collection_ids = cache()->remember($config['cache_key'], 1800, static fn() =>
-                $config['model']::query()
-                    ->whereHasAuthUser()
-                    ->pluck(ID)
-                    ->toArray()
-            );
-
-            empty($collection_ids)
-                ? session()->flash($config['empty_session_key'])
-                : session()->forget($config['empty_session_key']);
-
-            $collection = $config['model']::query()
-                ->whereIn(ID, $collection_ids)
-                ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
-
-            $items = Route::currentRouteName() === $type
-                ? $collection->fastPaginate(5)
-                : $collection->cursor();
-
-            $total_items = $type === CART_MODEL
-                ? $collection->sum(PRODUCT_QUANTITY)
-                : count($collection_ids);
-
-            $collection_data = [
-                ITEMS       => $items,
-                TOTAL_ITEMS => $total_items,
-            ];
-
-            if ($type === CART_MODEL) {
-                $total_cost = $collection->cursor()
-                    ->sum(static fn($item) =>
-                        $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY}
-                    );
-
-                $collection_data[TOTAL_COST] = $total_cost;
-            }
-
-            $compact_vars[$type] = $collection_data;
-        }
-
-        return empty($vars)
-            ? $compact_vars
-            : $compact_vars + $vars;
-    }
-}
-
-
-if (!function_exists(WISHLIST_MODEL.ucfirst(TITLE).'Icon')) {
-    /**
-     * Check if the product item exists in the user's wishlist,
-     * So, return the title or icon of the wishlist button.
-     *
-     * @param int $productId
-     * @param string $property
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    function wishlistTitleIcon(int $productId, string $property): string
-    {
-        match($property) {
-            TITLE, 'icon' => null,
-            default       => throw new InvalidArgumentException('Property must be either "'.TITLE.'" or "icon"')
-        };
-
-        $wishlist_product_exists = Wishlist::query()->whereHasAuthUser()
-            ->where(PRODUCT_ID, $productId)
-            ?->exists();
-
-        if ($wishlist_product_exists) {
-            return $property === TITLE
-                ? capitalizeAll(REMOVE.' from '.WISHLIST_MODEL)
-                : 'solid';
-        }
-
-        return $property === TITLE
-            ? capitalizeAll(ADD.' to '.WISHLIST_MODEL)
-            : 'regular';
-    }
-}
-
-
-if (!function_exists(ORDER_MODEL.ucfirst(STATUS))) {
-    /**
-     * Get the status of an order with its badge.
-     *
-     * @param Model|stdClass $order
-     * @param string|null $type
-     * @return string
-     */
-    function orderStatus(Model|stdClass $order, ?string $type = null): string
-    {
-        $order_status       = (int) $order->{STATUS};
-        $order_status_name  = array_search($order_status, ORDER_STATUS_ENUM,       true);
-        $order_status_badge = array_search($order_status, ORDER_STATUS_BADGE_ENUM, true);
-        $order_status_icon  = array_search($order_status, ORDER_STATUS_ICON_ENUM,  true);
-
-        if ($type === 'badge') {
-            return $order_status_badge;
-        }
-
-        if ($type === 'icon') {
-            return $order_status_icon;
-        }
-
-        return $order_status_name;
-    }
-}
-
-
-if (!function_exists(pluralize('date'))) {
-    /**
-     * Get the creation and updated dates of a model.
-     *
-     * @param Model|stdClass $model
-     * @param int $dateIndex
-     * @param bool $isTime
-     * @return string
-     */
-    function dates(Model|stdClass $model, int $dateIndex, bool $isTime = false): string
-    {
-        $model_date = $model->{DATES[$dateIndex]}->format('d-m-Y');
-        $model_time = $model->{DATES[$dateIndex]}->setTimezone('Africa/Cairo')->format('h : i A');
-
-        return $model_date.($isTime ? '<br> { '.$model_time.' }' : '');
-    }
-}
-
-
-if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
-    /**
-     * Get the specified order's details.
-     *
-     * @param Order $order
-     * @return array
-     */
-    function getOrderDetails(Order $order): array
-    {
-        $order_number_title = ucfirst(ORDER_MODEL).' Number #'.$order->{TRACKING_NUM};
-
-        $order_details = [
-            "Bought at" => "<span class='fw-500'>".dates($order, 0)."</span>",
-            "Number of ".ucfirst(PRODUCTS_TABLE) => "<span class='fw-500'>".$order->{NUM_ITEMS}.' '.ucfirst(PRODUCTS_TABLE)."</span>",
-            ucfirst(STATUS) => "<span class='badge badge-".orderStatus($order, 'badge')." rounded-pill p-2'>".orderStatus($order)."</span>",
-        ];
-
-        $order_product_size = static fn(OrderItem $orderItem) => key(array_intersect(PRODUCT_SIZE_ENUM, (array) $orderItem->{PRODUCT_SIZE}));
-
-        return compact(ORDER_MODEL, ORDER_NUMBER_TITLE, ORDER_DETAILS, ORDER_PRODUCT_SIZE);
-    }
-}
-
-
-if (!function_exists(PRODUCT_MODEL.ucfirst(SIZES))) {
-    /**
-     * Get the sizes of a product.
-     *
-     * @param Model|stdClass $product
-     * @param bool $areValues
-     * @return array
-     */
-    function productSizes(Model|stdClass $product, bool $areValues = false): array
-    {
-        $product_sizes = array_intersect(PRODUCT_SIZE_ENUM, $product->{SIZES}->pluck(SIZE)->toArray());
-
-        return $areValues
-            ? $product_sizes
-            : array_keys($product_sizes);
-    }
-}
-
-
-if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
-    /**
-     * Set the variables of the products' page.
-     *
-     * @param LengthAwarePaginator $products
-     * @param string|null $productsPaginationRoute
-     * @return array|string
-     */
-    function productsPageVars(LengthAwarePaginator $products, ?string $productsPaginationRoute = null): array|string
-    {
-        $products_list_title = str(Route::currentRouteName())
-            ->whenContains([SEARCH_PRODUCTS, FILTER_PRODUCTS],
-                static fn() => ucwords(PRODUCTS_TABLE),
-                static fn() => ucwords(basename(str_replace('-', ' & ', url()->current()))));
-
-        $sizes = collect(PRODUCT_SIZE_ENUM)
-            ->map(fn(int $value, string $size) => (object)[
-                SIZE                    => $size,
-                SIZE.'_value'           => $value,
-                PRODUCTS_TABLE.'_count' => ProductSize::query()->where(SIZE, $value)->count(),
-            ])->values();
-
-        $prices_range = (object) Product::query()
-            ->selectRaw('MIN('.NEW_PRICE.') as '.MIN_PRICE.', MAX('.NEW_PRICE.') as '.MAX_PRICE)
-            ->first()
-            ?->toArray();
-
-        $filter_products_error = static fn(string $attributeName) => formError(FILTER, PRODUCTS_TABLE, $attributeName);
-
-        return [
-            PRODUCTS_TABLE            => $products,
-            PRODUCTS_LIST_TITLE       => $products_list_title,
-            PRODUCT_SIZES_TABLE       => $sizes,
-            PRODUCTS_PRICES           => $prices_range,
-            FILTER_PRODUCTS_ERROR     => $filter_products_error,
-            PRODUCTS_PAGINATION_ROUTE => $productsPaginationRoute,
-        ];
-    }
-}
-
-
-if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
-    /**
-     * Display the view for the products' resource,
-     * when searching or filtering.
-     *
-     * @param LengthAwarePaginator $products
-     * @return Application|Factory|View|JsonResponse
-     * @throws Throwable
-     */
-    function viewProducts(LengthAwarePaginator $products): Application|Factory|View|JsonResponse
-    {
-        $products_pagination_route = match (Route::currentRouteName()) {
-            SEARCH_PRODUCTS => SEARCH_PRODUCTS,
-            FILTER_PRODUCTS => FILTER_PRODUCTS,
-            default         => PRODUCTS_LIST,
-        };
-
-        noResultsException($products);
-
-        if (request()?->ajax()) {
-            return isAdminRoute()
-                ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
-                : ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route]);
-        }
-
-        return showView(USER_PRODUCTS_VIEW, productsPageVars($products, $products_pagination_route));
-    }
-}
-
-
-if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
-    /**
-     * Display the view for the products' resource.
-     *
-     * @param string $table
-     * @param string|null $slug
-     * @return Application|Factory|View|JsonResponse
-     * @throws Throwable
-     */
-    function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
-    {
-        $products_ids = cache()->remember(PRODUCTS_TABLE, 1800, static fn() =>
-            Product::query()
-                ->pluck(ID)
-                ->toArray()
-        );
-
-        $products = paginateWithFallback(Product::class, $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, callback: static fn(Builder $query) =>
-            $query->when($table !== PRODUCTS_TABLE, static fn(Builder $q) =>
-                $q->whereHas($table, static fn(Builder $item) =>
-                    $item->where(SLUG, $slug)
-                )
-            )
-        );
-
-        return viewProducts($products);
-    }
-}
-
-
-if (!function_exists(REVIEW_MODEL.'Data')) {
-    /**
-     * Get the average rate or adding/updating error of a review.
-     *
-     * @param int|null $productId
-     * @param string|null $operation
-     * @param string|null $attributeName
-     * @return int|string|null
-     */
-    function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
-    {
-        if ($productId) {
-            return cache()->remember(AVERAGE_RATE.'_'.$productId, 1800, static fn() =>
-                Review::query()->where(PRODUCT_ID, $productId)
-                    ->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed())
-                    ->withoutTrashed()
-                    ->avg(RATING) ?? '0'
-            );
-        }
-
-        if ($operation && $attributeName) {
-            return formError($operation, REVIEW_MODEL, $attributeName);
-        }
-
-        return null;
-    }
-}
-
-
-if (!function_exists('get'.ucfirst(REVIEWS_TABLE))) {
-    /**
-     * Get the reviews of a specified product.
-     *
-     * @param int $productId
-     * @return array
-     */
-    function getReviews(int $productId): array
-    {
-        $average_rate        = reviewData($productId);
-        $add_review_error    = static fn(string $attributeName) => reviewData(operation: ADD, attributeName: $attributeName);
-        $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
-
-        return compact(AVERAGE_RATE, ADD_REVIEW_ERROR, UPDATE_REVIEW_ERROR);
-    }
-}
-
-
-if (!function_exists('showView')) {
-    /**
-     * Display the view for a specified resource.
-     *
-     * @param string $viewName
-     * @param array $vars
-     * @return Application|Factory|View
-     * @throws Throwable
-     */
-    function showView(string $viewName, array $vars = []): Application|Factory|View
-    {
-        $view_vars = isAdminRoute()
-            ? $vars
-            : userCollectionsData($vars);
-
-        return view($viewName, $view_vars);
     }
 }
 
@@ -1159,21 +493,6 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
 }
 
 
-if (!function_exists('getData')) {
-    /**
-     * Get the data of a specified record of a model.
-     *
-     * @param Model|stdClass $model
-     * @param array $desiredData
-     * @return object
-     */
-    function getData(Model|stdClass $model, array $desiredData): object
-    {
-        return $model::query()->findOrFail($model->getKey(), [ID, ...$desiredData]);
-    }
-}
-
-
 if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
     /**
      * Remove, Delete, or Restore a record of a model.
@@ -1195,9 +514,9 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
 
         $is_collection_trashed = $selected_collections->cursor()
             ->every(static fn($collection) =>
-                Wishlist::class || Cart::class
-                    ? false
-                    : $collection->trashed()
+            Wishlist::class || Cart::class
+                ? false
+                : $collection->trashed()
             );
 
         $send_notification_to_admins = static fn(string $action) => sendNotificationToAdmins(new NewAdminActionTaken([$model, $forNotification], $action, count($selected_ids) > 1), true);
@@ -1414,6 +733,717 @@ if (!function_exists(TRASHED.'RelationsData')) {
             'message'         => $message,
             TRASHED_RELATIONS => $trashed_relations->all(),
         ];
+    }
+}
+
+
+if (!function_exists('forgetCache')) {
+    /**
+     * Forget the cache.
+     *
+     * @param string|array $key
+     * @param Model|stdClass|null $model
+     * @param string|null $additionalSuffix
+     * @param array|null $extraConfig
+     * @return bool
+     * @throws CacheInvalidArgumentException
+     */
+    function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool {
+        if (is_null($model)) {
+            return cache()->deleteMultiple(is_array($key) ? $key : [$key]);
+        }
+
+        $selected_ids = selectedIdsRequest()
+            ? array_map('intval', array_filter(
+                array_map('trim', explode(',', selectedIdsRequest()))
+            ))
+            : [$model->{ID}];
+
+        $query = $model::query()->whereIn(ID, $selected_ids)
+            ->withTrashed();
+
+        $query->pluck($additionalSuffix)
+            ->unique()
+            ->each(static fn(string $suffix) =>
+                cache()->forget($key.('_'.$suffix ?: ''))
+            );
+
+        if (empty($extraConfig)) {
+            return true;
+        }
+
+        $relations = collect($extraConfig['relation'] ?? [])
+            ->when(is_string($extraConfig['relation'] ?? null), static fn() => collect([$extraConfig['relation']]));
+
+        $relation_columns = collect($extraConfig['relation_only_columns'] ?? []);
+
+        $query->when($relations->isNotEmpty(), static fn($q) =>
+            $q->with(
+            $relations->mapWithKeys(static fn($relation) => [
+                        $relation => static fn($relQuery) =>
+                            $relQuery->select($relation_columns->get($relation, [ID]))
+                    ]
+                )
+                ->toArray()
+            )
+        );
+
+        $query->cursor()
+            ->flatMap(static function ($item) use ($relations, $relation_columns) {
+                return $relations->isEmpty()
+                    ? collect([$item->only($relation_columns->flatten()->toArray())])
+                    : $relations->flatMap(static fn($relation) =>
+                        collect($item->{$relation})
+                            ->when(!($item->{$relation} instanceof Collection), static fn() =>
+                                collect([$item->{$relation}])
+                            )
+                            ->filter()
+                            ->map(static fn($relatedItem) =>
+                                $relatedItem->only($relation_columns->get($relation, [ID]))
+                            )
+                    );
+            })
+            ->unique($extraConfig['unique_by'] ?? null)
+            ->flatMap(static fn($data) =>
+                collect($extraConfig['cache_keys'])->map(static fn($builder) => $builder($data))
+            )
+            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
+
+        return true;
+    }
+}
+
+
+if (!function_exists(ADMIN.'Layout')) {
+    /**
+     * Get the admin layout name.
+     *
+     * @param string $layoutName
+     * @return string
+     */
+    function adminLayout(string $layoutName): string
+    {
+        return ADMIN.'.layouts.'.ADMIN."-$layoutName";
+    }
+}
+
+
+if (!function_exists(USER_MODEL.'Layout')) {
+    /**
+     * Get the user layout name.
+     *
+     * @param string $layoutName
+     * @return string
+     */
+    function userLayout(string $layoutName): string
+    {
+        return USER_MODEL.'.layouts.'.$layoutName;
+    }
+}
+
+
+if (!function_exists('viewLayout'.ucfirst(TITLE))) {
+    /**
+     * Get the view layout & title.
+     *
+     * @param string $role
+     * @return array
+     */
+    function viewLayoutTitle(string $role): array
+    {
+        $layout = $role === ADMIN
+            ? adminLayout('main')
+            : userLayout('main');
+
+        $title = [
+            TITLE => str(request()?->route()?->getName())
+                ->headline()
+                ->after(ucfirst($role === ADMIN ? ADMIN : ''))
+                ->value()
+        ];
+
+        return [$layout => $title];
+    }
+}
+
+
+if (!function_exists('commonCollections')) {
+    /**
+     * Get the common collections to be used in the frontend side.
+     *
+     * @return array
+     */
+    function commonCollections(): array
+    {
+        $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
+        $categories    = Category::get([...$categories_subcategories_common, BANNER_IMAGE]);
+        $subcategories = Subcategory::get($categories_subcategories_common);
+        $new_products  = Product::query()
+            ->latest()
+            ->take(4)
+            ->get(PRODUCT_ITEM_ATTRIBUTES);
+
+        if (str(Route::currentRouteName())->exactly(PRODUCTS_LIST)) {
+            $categories    = $categories->load(PRODUCTS_TABLE);
+            $subcategories = $subcategories->load(PRODUCTS_TABLE);
+        }
+
+        $navbar_dropdowns = [
+            [
+                'title'      => CATEGORIES_TABLE,
+                'collection' => $categories,
+                'route_name' => CATEGORY_MODEL,
+            ],
+            [
+                'title'      => 'collections',
+                'collection' => $subcategories,
+                'route_name' => SUBCATEGORY_MODEL,
+            ],
+        ];
+
+        $navbar_items = [
+            [
+                'route_name' => PAYMENT,
+            ],
+            [
+                'route_name' => ABOUT_US,
+            ],
+            [
+                'route_name' => CONTACT_US,
+            ],
+        ];
+
+        $navbar_offers = [
+            'Every day up to 45% off',
+            'End of hot summer sale',
+            'Get 50% off on four orders',
+        ];
+
+        $footer_menus = [
+            'information' => [
+                ucfirst(pluralize(PRICE)).' Drop',
+                capitalizeAll(NEW_PRODUCTS),
+                'Best Sales',
+                'Sitemap',
+                'Store',
+            ],
+            'our company' => [
+                'Delivery',
+                'Legal Notice',
+                capitalizeAll(ABOUT_US),
+                'Secure Payment',
+                capitalizeAll(CONTACT_US),
+            ],
+            'your account' => [
+                'Personal Info',
+                ucfirst(ORDERS_TABLE),
+                'Credit Slips',
+                ucfirst(ADDRESSES_TABLE),
+                ucfirst(CART_MODEL),
+            ],
+        ];
+
+        $navbar_dropdowns = object_from_array($navbar_dropdowns);
+        $navbar_items     = object_from_array($navbar_items);
+        $footer_menus     = object_from_array($footer_menus);
+
+        return compact(CATEGORIES_TABLE, SUBCATEGORIES_TABLE, NEW_PRODUCTS, 'navbar_dropdowns', 'navbar_items', 'navbar_offers', 'footer_menus');
+    }
+}
+
+
+if (!function_exists('commonAsideMenus')) {
+    /**
+     * Get the common menus to be used in the frontend side.
+     *
+     * @return array
+     */
+    function commonAsideMenus(): array
+    {
+        $accessories_menu_item = [
+            'Top Accessories' => [
+                'Sports T-Shirts',
+                'Track pants',
+                'Cargos',
+                'Top wear',
+                'Track pants',
+            ],
+        ];
+
+        $sunglasses_menu_item = [
+            'Sunglasses' => [
+                'Shirts',
+                'Boxers',
+                'Vests',
+                'Belts',
+                'Accessories',
+            ],
+        ];
+
+        $top_wear = [
+            ...$accessories_menu_item,
+            ...$sunglasses_menu_item,
+            'Top Wear' => [
+                'Shirts',
+                'Kurtas',
+                'T-Shirts',
+                'Belts',
+                'Jewellery',
+            ],
+        ];
+
+        $bottom_wear = [
+            'Bottom Accessories' => [
+                'Vests',
+                'Sunglasses',
+                'Bottom wear',
+                'Jeans',
+                'Cargos',
+            ],
+            ...$sunglasses_menu_item,
+            ...$accessories_menu_item,
+            'Bottom Wear' => [
+                'Sports T-Shirts',
+                'Jewellery',
+                'Track pants',
+                'Cargos',
+                'Boxer',
+            ],
+        ];
+
+        $customers_reviews = [
+            [
+                NAME          => 'Yousif Ayman',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores beatae consectetur deleniti dicta doloremque dolorum ea excepturi, facere fuga harum iure iusto magnam minima molestiae optio quas quisquam sapiente, sequi?',
+            ],
+            [
+                NAME          => 'Ayman ahmed',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
+            ],
+            [
+                NAME          => 'ahmed mohamed',
+                PRODUCT_MODEL => 'Blazer Jacket',
+                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
+            ],
+        ];
+
+        $top_wear          = object_from_array($top_wear);
+        $bottom_wear       = object_from_array($bottom_wear);
+        $customers_reviews = object_from_array($customers_reviews);
+
+        return compact('top_wear', 'bottom_wear', 'customers_reviews');
+    }
+}
+
+
+if (!function_exists('getData')) {
+    /**
+     * Get the data of a specified record of a model.
+     *
+     * @param Model|stdClass $model
+     * @param array $desiredData
+     * @return object
+     */
+    function getData(Model|stdClass $model, array $desiredData): object
+    {
+        return $model::query()->findOrFail($model->getKey(), [ID, ...$desiredData]);
+    }
+}
+
+
+if (!function_exists(USER_MODEL.'CollectionsData')) {
+    /**
+     * Get the wishlist and cart data.
+     *
+     * @param array $vars
+     * @return array|array[]
+     * @throws Throwable
+     */
+    function userCollectionsData(array $vars = []): array
+    {
+        $collections_config = [
+            WISHLIST_MODEL => [
+                'model'             => Wishlist::class,
+                'cache_key'         => WISHLISTS_TABLE.'_'.auth()->id(),
+                'empty_session_key' => EMPTY_WISHLIST,
+            ],
+            CART_MODEL => [
+                'model'             => Cart::class,
+                'cache_key'         => CARTS_TABLE.'_'.auth()->id(),
+                'empty_session_key' => EMPTY_CART,
+            ],
+        ];
+
+        $compact_vars = [];
+
+        foreach ($collections_config as $type => $config) {
+            $collection_ids = cache()->remember($config['cache_key'], 1800, static fn() =>
+                $config['model']::query()
+                    ->whereHasAuthUser()
+                    ->pluck(ID)
+                    ->toArray()
+            );
+
+            empty($collection_ids)
+                ? session()->flash($config['empty_session_key'])
+                : session()->forget($config['empty_session_key']);
+
+            $collection = $config['model']::query()
+                ->whereIn(ID, $collection_ids)
+                ->with(PRODUCT_MODEL, static fn(BelongsTo $product) => $product->select(PRODUCT_ITEM_ATTRIBUTES));
+
+            $items = Route::currentRouteName() === $type
+                ? $collection->fastPaginate(5)
+                : $collection->cursor();
+
+            $total_items = $type === CART_MODEL
+                ? $collection->sum(PRODUCT_QUANTITY)
+                : count($collection_ids);
+
+            $collection_data = [
+                ITEMS       => $items,
+                TOTAL_ITEMS => $total_items,
+            ];
+
+            if ($type === CART_MODEL) {
+                $total_cost = $collection->cursor()
+                    ->sum(static fn($item) =>
+                        $item->{PRODUCT_MODEL}->{NEW_PRICE} * $item->{PRODUCT_QUANTITY}
+                    );
+
+                $collection_data[TOTAL_COST] = $total_cost;
+            }
+
+            $compact_vars[$type] = $collection_data;
+        }
+
+        return empty($vars)
+            ? $compact_vars
+            : $compact_vars + $vars;
+    }
+}
+
+
+if (!function_exists(WISHLIST_MODEL.ucfirst(TITLE).'Icon')) {
+    /**
+     * Check if the product item exists in the user's wishlist,
+     * So, return the title or icon of the wishlist button.
+     *
+     * @param int $productId
+     * @param string $property
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    function wishlistTitleIcon(int $productId, string $property): string
+    {
+        match($property) {
+            TITLE, 'icon' => null,
+            default       => throw new InvalidArgumentException('Property must be either "'.TITLE.'" or "icon"')
+        };
+
+        $wishlist_product_exists = Wishlist::query()->whereHasAuthUser()
+            ->where(PRODUCT_ID, $productId)
+            ?->exists();
+
+        if ($wishlist_product_exists) {
+            return $property === TITLE
+                ? capitalizeAll(REMOVE.' from '.WISHLIST_MODEL)
+                : 'solid';
+        }
+
+        return $property === TITLE
+            ? capitalizeAll(ADD.' to '.WISHLIST_MODEL)
+            : 'regular';
+    }
+}
+
+
+if (!function_exists('showView')) {
+    /**
+     * Display the view for a specified resource.
+     *
+     * @param string $viewName
+     * @param array $vars
+     * @return Application|Factory|View
+     * @throws Throwable
+     */
+    function showView(string $viewName, array $vars = []): Application|Factory|View
+    {
+        $view_vars = isAdminRoute()
+            ? $vars
+            : userCollectionsData($vars);
+
+        return view($viewName, $view_vars);
+    }
+}
+
+
+if (!function_exists(EMAIL.'View')) {
+    /**
+     * Display the view for a specified email.
+     *
+     * @param string $emailViewName
+     * @return string
+     */
+    function emailView(string $emailViewName): string
+    {
+        return pluralize(EMAIL).'.'.kebabAll($emailViewName).'-'.EMAIL;
+    }
+}
+
+
+if (!function_exists(ORDER_MODEL.ucfirst(STATUS))) {
+    /**
+     * Get the status of an order with its badge.
+     *
+     * @param Model|stdClass $order
+     * @param string|null $type
+     * @return string
+     */
+    function orderStatus(Model|stdClass $order, ?string $type = null): string
+    {
+        $order_status_badges = [
+            'warning'   => 1,
+            'secondary' => 2,
+            'primary'   => 3,
+            'success'   => 4,
+            'danger'    => 5,
+        ];
+
+        $order_status_icons = [
+            'autorenew'      => 1,
+            'local_shipping' => 2,
+            'done_all'       => 3,
+            'check_circle'   => 4,
+            'block'          => 5,
+        ];
+
+        $order_status       = (int) $order->{STATUS};
+        $order_status_name  = array_search($order_status, ORDER_STATUS_ENUM,    true);
+        $order_status_badge = array_search($order_status, $order_status_badges, true);
+        $order_status_icon  = array_search($order_status, $order_status_icons,  true);
+
+        if ($type === 'badge') {
+            return $order_status_badge;
+        }
+
+        if ($type === 'icon') {
+            return $order_status_icon;
+        }
+
+        return $order_status_name;
+    }
+}
+
+
+if (!function_exists(pluralize('date'))) {
+    /**
+     * Get the creation and updated dates of a model.
+     *
+     * @param Model|stdClass $model
+     * @param int $dateIndex
+     * @param bool $isTime
+     * @return string
+     */
+    function dates(Model|stdClass $model, int $dateIndex, bool $isTime = false): string
+    {
+        $model_date = $model->{DATES[$dateIndex]}->format('d-m-Y');
+        $model_time = $model->{DATES[$dateIndex]}->setTimezone('Africa/Cairo')->format('h : i A');
+
+        return $model_date.($isTime ? '<br> { '.$model_time.' }' : '');
+    }
+}
+
+
+if (!function_exists('get'.str(ORDER_DETAILS)->studly()->value())) {
+    /**
+     * Get the specified order's details.
+     *
+     * @param Order $order
+     * @return array
+     */
+    function getOrderDetails(Order $order): array
+    {
+        $order_number_title = ucfirst(ORDER_MODEL).' Number #'.$order->{TRACKING_NUM};
+
+        $order_details = [
+            "Bought at" => "<span class='fw-500'>".dates($order, 0)."</span>",
+            "Number of ".ucfirst(PRODUCTS_TABLE) => "<span class='fw-500'>".$order->{NUM_ITEMS}.' '.ucfirst(PRODUCTS_TABLE)."</span>",
+            ucfirst(STATUS) => "<span class='badge badge-".orderStatus($order, 'badge')." rounded-pill p-2'>".orderStatus($order)."</span>",
+        ];
+
+        $order_product_size = static fn(OrderItem $orderItem) => key(array_intersect(PRODUCT_SIZE_ENUM, (array) $orderItem->{PRODUCT_SIZE}));
+
+        return compact(ORDER_MODEL, ORDER_NUMBER_TITLE, ORDER_DETAILS, ORDER_PRODUCT_SIZE);
+    }
+}
+
+
+if (!function_exists(PRODUCT_MODEL.ucfirst(SIZES))) {
+    /**
+     * Get the sizes of a product.
+     *
+     * @param Model|stdClass $product
+     * @param bool $areValues
+     * @return array
+     */
+    function productSizes(Model|stdClass $product, bool $areValues = false): array
+    {
+        $product_sizes = array_intersect(PRODUCT_SIZE_ENUM, $product->{SIZES}->pluck(SIZE)->toArray());
+
+        return $areValues
+            ? $product_sizes
+            : array_keys($product_sizes);
+    }
+}
+
+
+if (!function_exists(PRODUCTS_TABLE.'PageVars')) {
+    /**
+     * Set the variables of the products' page.
+     *
+     * @param LengthAwarePaginator $products
+     * @param string|null $productsPaginationRoute
+     * @return array|string
+     */
+    function productsPageVars(LengthAwarePaginator $products, ?string $productsPaginationRoute = null): array|string
+    {
+        $products_list_title = str(Route::currentRouteName())
+            ->whenContains([SEARCH_PRODUCTS, FILTER_PRODUCTS],
+                static fn() => ucwords(PRODUCTS_TABLE),
+                static fn() => ucwords(basename(str_replace('-', ' & ', url()->current()))));
+
+        $sizes = collect(PRODUCT_SIZE_ENUM)
+            ->map(fn(int $value, string $size) => (object)[
+                SIZE                    => $size,
+                SIZE.'_value'           => $value,
+                PRODUCTS_TABLE.'_count' => ProductSize::query()->where(SIZE, $value)->count(),
+            ])->values();
+
+        $prices_range = (object) Product::query()
+            ->selectRaw('MIN('.NEW_PRICE.') as '.MIN_PRICE.', MAX('.NEW_PRICE.') as '.MAX_PRICE)
+            ->first()
+            ?->toArray();
+
+        $filter_products_error = static fn(string $attributeName) => formError(FILTER, PRODUCTS_TABLE, $attributeName);
+
+        return [
+            PRODUCTS_TABLE            => $products,
+            PRODUCTS_LIST_TITLE       => $products_list_title,
+            PRODUCT_SIZES_TABLE       => $sizes,
+            PRODUCTS_PRICES           => $prices_range,
+            FILTER_PRODUCTS_ERROR     => $filter_products_error,
+            PRODUCTS_PAGINATION_ROUTE => $productsPaginationRoute,
+        ];
+    }
+}
+
+
+if (!function_exists('view'.ucfirst(PRODUCTS_TABLE))) {
+    /**
+     * Display the view for the products' resource,
+     * when searching or filtering.
+     *
+     * @param LengthAwarePaginator $products
+     * @return Application|Factory|View|JsonResponse
+     * @throws Throwable
+     */
+    function viewProducts(LengthAwarePaginator $products): Application|Factory|View|JsonResponse
+    {
+        $products_pagination_route = match (Route::currentRouteName()) {
+            SEARCH_PRODUCTS => SEARCH_PRODUCTS,
+            FILTER_PRODUCTS => FILTER_PRODUCTS,
+            default         => PRODUCTS_LIST,
+        };
+
+        noResultsException($products);
+
+        if (request()?->ajax()) {
+            return isAdminRoute()
+                ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
+                : ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route]);
+        }
+
+        return showView(USER_PRODUCTS_VIEW, productsPageVars($products, $products_pagination_route));
+    }
+}
+
+
+if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
+    /**
+     * Display the view for the products' resource.
+     *
+     * @param string $table
+     * @param string|null $slug
+     * @return Application|Factory|View|JsonResponse
+     * @throws Throwable
+     */
+    function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
+    {
+        $products_ids = cache()->remember(PRODUCTS_TABLE, 1800, static fn() =>
+            Product::query()
+                ->pluck(ID)
+                ->toArray()
+        );
+
+        $products = paginateWithFallback(Product::class, $products_ids, attributes: PRODUCT_ITEM_ATTRIBUTES, callback: static fn(Builder $query) =>
+            $query->when($table !== PRODUCTS_TABLE, static fn(Builder $q) =>
+                $q->whereHas($table, static fn(Builder $item) =>
+                    $item->where(SLUG, $slug)
+                )
+            )
+        );
+
+        return viewProducts($products);
+    }
+}
+
+
+if (!function_exists(REVIEW_MODEL.'Data')) {
+    /**
+     * Get the average rate or adding/updating error of a review.
+     *
+     * @param int|null $productId
+     * @param string|null $operation
+     * @param string|null $attributeName
+     * @return int|string|null
+     */
+    function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
+    {
+        if ($productId) {
+            return cache()->remember(AVERAGE_RATE.'_'.$productId, 1800, static fn() =>
+                Review::query()->where(PRODUCT_ID, $productId)
+                    ->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed())
+                    ->withoutTrashed()
+                    ->avg(RATING) ?? '0'
+            );
+        }
+
+        if ($operation && $attributeName) {
+            return formError($operation, REVIEW_MODEL, $attributeName);
+        }
+
+        return null;
+    }
+}
+
+
+if (!function_exists('get'.ucfirst(REVIEWS_TABLE))) {
+    /**
+     * Get the reviews of a specified product.
+     *
+     * @param int $productId
+     * @return array
+     */
+    function getReviews(int $productId): array
+    {
+        $average_rate        = reviewData($productId);
+        $add_review_error    = static fn(string $attributeName) => reviewData(operation: ADD, attributeName: $attributeName);
+        $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
+
+        return compact(AVERAGE_RATE, ADD_REVIEW_ERROR, UPDATE_REVIEW_ERROR);
     }
 }
 

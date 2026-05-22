@@ -42,7 +42,7 @@ class OrderMail extends Mailable
     final public function content(): Content
     {
         return new Content(
-            markdown: ORDER_EMAIL,
+            markdown: emailView(ORDER_MODEL),
             with: [
                 ...getOrderDetails($this->{ORDER_MODEL}),
                 ORDER_USER_NAME => $this->{ORDER_MODEL}->{USER_MODEL}->{FULL_NAME},

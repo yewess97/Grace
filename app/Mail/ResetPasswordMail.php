@@ -39,7 +39,7 @@ class ResetPasswordMail extends Mailable
     final public function content(): Content
     {
         return new Content(
-            markdown: RESET_PASSWORD_EMAIL,
+            markdown: emailView(RESET_PASSWORD),
             with:     $this->reset_password_data,
         );
     }

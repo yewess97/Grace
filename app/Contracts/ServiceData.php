@@ -5,7 +5,6 @@ namespace App\Contracts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 

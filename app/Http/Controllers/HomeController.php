@@ -55,6 +55,6 @@ class HomeController extends Controller
 
         return request()?->ajax()
             ? ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route])
-            : showView(USER_HOME_VIEW, compact(PRODUCTS_TABLE, SERVICES, PRODUCTS_PAGINATION_ROUTE));
+            : showView(USER_HOME_VIEW, compact(PRODUCTS_TABLE, 'services', PRODUCTS_PAGINATION_ROUTE));
     }
 }

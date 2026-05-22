@@ -35,7 +35,7 @@
                             <div class="order-product-img-info d-table-cell vertical-center">
                                 {{-- Order Product Image --}}
                                 <div class="order-product-image me-2 rounded">
-                                    <img src="{{storage_path('app/public/images/'.PRODUCTS_TABLE.DIRECTORY_SEPARATOR.MAIN_IMAGES_FOLDER.DIRECTORY_SEPARATOR.$order_item->{PRODUCT_MAIN_IMAGE})}}" alt="{{ $order_item->{PRODUCT_NAME} }}">
+                                    <img src="{{storage_path('app/public/images/'.PRODUCTS_TABLE.DIRECTORY_SEPARATOR.pluralize(MAIN_IMAGE).DIRECTORY_SEPARATOR.$order_item->{PRODUCT_MAIN_IMAGE})}}" alt="{{ $order_item->{PRODUCT_NAME} }}">
                                     <span class="order-product-quantity fw-500 text-center rounded-circle">
                                         {{ $order_item->{PRODUCT_QUANTITY} }}
                                     </span>
