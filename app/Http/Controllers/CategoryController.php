@@ -82,7 +82,7 @@ class CategoryController extends Controller
 
         return $category_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.CATEGORY_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(CATEGORY_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -99,7 +99,7 @@ class CategoryController extends Controller
 
         return $categories_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.CATEGORIES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(CATEGORY_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -115,7 +115,7 @@ class CategoryController extends Controller
 
         return $category_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.CATEGORY_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(CATEGORY_MODEL, RESTORE));
     }
 
     /**
@@ -131,6 +131,6 @@ class CategoryController extends Controller
 
         return $categories_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.CATEGORIES_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(CATEGORY_MODEL, RESTORE, true));
     }
 }

@@ -1,6 +1,6 @@
 <ul role="list" @class([
         'products-content row',
-        'box-content px-0 rounded-start' => !str(Route::currentRouteName())->exactly('home'),
+        'box-content px-0 rounded-start' => !str(Route::currentRouteName())->exactly(HOME),
         session()->has('no_results') ? 'justify-content-center' : 'row-cols-1 row-cols-md-4',
     ])>
     @if (session()->has('no_results'))

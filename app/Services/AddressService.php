@@ -51,8 +51,10 @@ class AddressService implements ServiceData
         $user_addresses_title = '*'.User::profileData((int) $user_id)->{FULL_NAME}.'* '.ucfirst(ADDRESSES_TABLE);
         $role                 = isAdminRoute(true);
 
-        $add_address_error    = static fn(string $attributeName) => formError(ADD, ADDRESS_MODEL, $attributeName);
-        $update_address_error = static fn(string $attributeName) => formError(UPDATE, ADDRESS_MODEL, $attributeName);
+        $add_address_error = static fn(string $attributeName) =>
+            formError(ADD,    ADDRESS_MODEL, $attributeName);
+        $update_address_error = static fn(string $attributeName) =>
+            formError(UPDATE, ADDRESS_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($user_addresses, USER_ADDRESSES_PAGINATION_PARTIAL, USER_ADDRESSES)

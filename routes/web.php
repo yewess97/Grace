@@ -24,8 +24,8 @@ use Illuminate\Support\Facades\Route,
 /**
  * Home Routes
  */
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/home', static fn() => to_route('home'));
+Route::get('/', [HomeController::class, 'index'])->name(HOME);
+Route::get('/home', static fn() => to_route(HOME));
 
 
 /**

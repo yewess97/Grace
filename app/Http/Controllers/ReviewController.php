@@ -71,7 +71,7 @@ class ReviewController extends Controller
 
         return $review_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.REVIEW_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(REVIEW_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -87,7 +87,7 @@ class ReviewController extends Controller
 
         return $reviews_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(REVIEW_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -103,7 +103,7 @@ class ReviewController extends Controller
 
         return $review_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.REVIEW_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(REVIEW_MODEL, RESTORE));
     }
 
     /**
@@ -119,6 +119,6 @@ class ReviewController extends Controller
 
         return $reviews_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.REVIEWS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(REVIEW_MODEL, RESTORE, true));
     }
 }

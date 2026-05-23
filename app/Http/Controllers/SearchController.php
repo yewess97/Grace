@@ -110,7 +110,7 @@ class SearchController extends Controller
             fn($user) =>
                 $user->search($this->search_value, [FIRST_NAME, LAST_NAME, EMAIL])
         )
-            ->fastPaginate(16);
+            ?->fastPaginate(16);
 
         $users_pagination_route = match (Route::currentRouteName()) {
             SEARCH_USERS => SEARCH_USERS,
@@ -162,7 +162,7 @@ class SearchController extends Controller
             fn($order) =>
                 $order->search($this->search_value, ORDER_ATTRIBUTES, [USER_MODEL => [FIRST_NAME, LAST_NAME]])
         )
-            ->fastPaginate(16);
+            ?->fastPaginate(16);
 
         $orders_pagination_route = match (Route::currentRouteName()) {
             SEARCH_ORDERS => SEARCH_ORDERS,

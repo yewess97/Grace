@@ -94,7 +94,8 @@ class DashboardService
         );
 
         // Get the filtering error messages
-        $filter_dashboard_error = static fn(string $attributeName) => formError(FILTER, DASHBOARD, $attributeName);
+        $filter_dashboard_error = static fn(string $attributeName) =>
+            formError(FILTER, DASHBOARD, $attributeName);
 
         $view_vars = compact(ORDERS_TABLE.'_metrics', ORDERS_TABLE.'_'.pluralize(STATUS), REVIEWS_TABLE.'_'.pluralize(RATING), USERS_TABLE, 'registered_'.USERS_TABLE, SUBCATEGORIES_TABLE, FILTER_DASHBOARD_ERROR);
 

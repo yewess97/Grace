@@ -26,7 +26,7 @@ class CheckoutController extends Controller
         $user_cart_items = userCollectionsData()[CART_MODEL][ITEMS];
 
         if ($user_cart_items->isEmpty()) {
-            return to_route('home')
+            return to_route(HOME)
                 ->with('checkoutError', 'Please add some '.PRODUCTS_TABLE.' to your '.CART_MODEL.' first')
                 ->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
@@ -47,7 +47,8 @@ class CheckoutController extends Controller
 
         $user_addresses = paginateWithFallback(Address::class, $user_addresses_ids, 4, [ID, ...ADDRESS_ATTRIBUTES]);
 
-        $add_order_error = static fn(string $attributeName) => formError(ADD, ORDER_MODEL, $attributeName);
+        $add_order_error = static fn(string $attributeName) =>
+            formError(ADD, ORDER_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($user_addresses, CHECKOUT_USER_ADDRESSES_PAGINATION, USER_ADDRESSES)

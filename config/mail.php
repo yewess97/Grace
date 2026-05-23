@@ -36,9 +36,9 @@ return [
     'mailers' => [
         'smtp' => [
             'transport'    => 'smtp',
-            'host'         => env('MAIL_HOST',         'smtp.gmail.com'),
-            'port'         => env('MAIL_PORT',         465),
-            'encryption'   => env('MAIL_ENCRYPTION',   'tls'),
+            'host'         => env('MAIL_HOST',       'smtp.gmail.com'),
+            'port'         => env('MAIL_PORT',        465),
+            'encryption'   => env('MAIL_ENCRYPTION', 'tls'),
             'username'     => env('MAIL_USERNAME'),
             'password'     => env('MAIL_PASSWORD'),
             'timeout'      => null,
@@ -93,7 +93,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'graceglossyfashion@gmail.com'),
-        'name'    => env('MAIL_FROM_NAME', 'Grace'),
+        'name'    => env('MAIL_FROM_NAME',    'Grace'),
     ],
 
     /*

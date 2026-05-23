@@ -493,6 +493,95 @@ if (!function_exists(STORE_OR_UPDATE.ucfirst(USER_MODEL))) {
 }
 
 
+if (!function_exists('collectImagesTo'.ucfirst(DELETE))) {
+    /**
+     * Collect the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @return Collection
+     */
+    function collectImagesToDelete(Model|stdClass $model): Collection
+    {
+        /** @var (HasImages&Model)|(HasImages&stdClass) $model */
+
+        return collect($model->imageProperties())
+            ->flatMap(static function (array $property, string $imageType) use ($model) {
+                // Column image (single)
+                if (($property['type'] === 'column') && !empty($model->{$imageType})) {
+                    return [imageSource($model, $imageType, true)];
+                }
+
+                // Relation images (multiple)
+                if (($property['type'] === 'relation') && $model->relationLoaded($imageType)) {
+                    return $model->{$imageType}
+                        ->map(static fn(Model|stdClass $img) => imageSource($img, $property['image_type'], true)
+                        )
+                        ->all();
+                }
+
+                return [];
+            })
+            ->filter()
+            ->unique()
+            ->values();
+    }
+}
+
+
+if (!function_exists(DELETE.'Images')) {
+    /**
+     * Delete the image(s) of a specified record or all/some records of a model.
+     *
+     * @param Model|stdClass $model
+     * @param array $selectedIds
+     * @return bool
+     */
+    function deleteImages(Model|stdClass $model, array $selectedIds): bool
+    {
+        /** @var (HasImages&Model)|(HasImages&stdClass) $model */
+
+        $images_relations = collect($model->imageProperties())
+            ->filter(static fn(array $image) => $image['type'] === 'relation')
+            ->keys()
+            ->values()
+            ->all();
+
+        $force_delete = request()?->input('force_'.DELETE);
+
+        $images_to_delete = $model::query()
+            ->onlyTrashed()
+            ->whereIn(ID, $selectedIds)
+            ->with($images_relations)
+            ->get()
+            ->flatMap(static function (Model|stdClass $images_model) use ($force_delete) {
+                $images = collectImagesToDelete($images_model);
+
+                if ($images->isEmpty()) {
+                    return collect();
+                }
+
+                $missing_images = $images->reject(static fn(string $path) => Storage::exists($path));
+
+                if ($missing_images->isNotEmpty() && !$force_delete) {
+                    throw new NotFoundHttpException('One or more images were not found in storage.');
+                }
+
+                return $force_delete
+                    ? $images
+                    : $images->diff($missing_images);
+            })
+            ->values();
+
+        return $images_to_delete->isEmpty()
+            || Storage::delete(
+                $images_to_delete->unique()
+                    ->values()
+                    ->all()
+            );
+    }
+}
+
+
 if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
     /**
      * Remove, Delete, or Restore a record of a model.
@@ -553,91 +642,25 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
 }
 
 
-if (!function_exists(DELETE.'Images')) {
+if (!function_exists('clearExceptionMessage')) {
     /**
-     * Delete the image(s) of a specified record or all/some records of a model.
+     * Handle exception messages for model actions (remove, delete, or restore).
      *
-     * @param Model|stdClass $model
-     * @param array $selectedIds
-     * @return bool
+     * @param string $modelName
+     * @param string $action
+     * @param bool $isMultiple
+     * @return string
      */
-    function deleteImages(Model|stdClass $model, array $selectedIds): bool
+    function clearExceptionMessage(string $modelName, string $action, bool $isMultiple = false): string
     {
-        /** @var (HasImages&Model)|(HasImages&stdClass) $model */
+        $verb = 'is';
 
-        $images_relations = collect($model->imageProperties())
-            ->filter(static fn(array $image) => $image['type'] === 'relation')
-            ->keys()
-            ->values()
-            ->all();
+        if ($isMultiple) {
+            $modelName = pluralize($modelName);
+            $verb      = 'are';
+        }
 
-        $force_delete = request()?->input('force_'.DELETE);
-
-        $images_to_delete = $model::query()
-            ->onlyTrashed()
-            ->whereIn(ID, $selectedIds)
-            ->with($images_relations)
-            ->get()
-            ->flatMap(static function (Model|stdClass $images_model) use ($force_delete) {
-                $images = collectImagesToDelete($images_model);
-
-                if ($images->isEmpty()) {
-                    return collect();
-                }
-
-                $missing_images = $images->reject(static fn(string $path) => Storage::exists($path));
-
-                if ($missing_images->isNotEmpty() && !$force_delete) {
-                    throw new NotFoundHttpException('One or more images were not found in storage.');
-                }
-
-                return $force_delete
-                    ? $images
-                    : $images->diff($missing_images);
-            })
-            ->values();
-
-        return $images_to_delete->isEmpty()
-            || Storage::delete(
-                $images_to_delete->unique()
-                    ->values()
-                    ->all()
-            );
-    }
-}
-
-
-if (!function_exists('collectImagesTo'.ucfirst(DELETE))) {
-    /**
-     * Collect the image(s) of a specified record or all/some records of a model.
-     *
-     * @param Model|stdClass $model
-     * @return Collection
-     */
-    function collectImagesToDelete(Model|stdClass $model): Collection
-    {
-        /** @var (HasImages&Model)|(HasImages&stdClass) $model */
-
-        return collect($model->imageProperties())
-            ->flatMap(static function (array $property, string $imageType) use ($model) {
-                // Column image (single)
-                if (($property['type'] === 'column') && !empty($model->{$imageType})) {
-                    return [imageSource($model, $imageType, true)];
-                }
-
-                // Relation images (multiple)
-                if (($property['type'] === 'relation') && $model->relationLoaded($imageType)) {
-                    return $model->{$imageType}
-                        ->map(static fn(Model|stdClass $img) => imageSource($img, $property['image_type'], true)
-                        )
-                        ->all();
-                }
-
-                return [];
-            })
-            ->filter()
-            ->unique()
-            ->values();
+        return "The $modelName you are trying to $action $verb not found!";
     }
 }
 

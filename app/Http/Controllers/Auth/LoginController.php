@@ -32,11 +32,13 @@ class LoginController extends Controller
      */
     final public function index(): RedirectResponse|Application|Factory|View
     {
-        $auth_action      = LOGIN;
-        $login_user_error = static fn(string $attributeName) => formError(LOGIN, USER_MODEL, $attributeName);
+        $auth_action = LOGIN;
+
+        $login_user_error = static fn(string $attributeName) =>
+            formError(LOGIN, USER_MODEL, $attributeName);
 
         return auth()->check()
-            ? to_route('home')
+            ? to_route(HOME)
             : showView(LOGIN_REGISTER_VIEW, compact(AUTH_ACTION, LOGIN_USER_ERROR));
     }
 

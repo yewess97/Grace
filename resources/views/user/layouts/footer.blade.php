@@ -6,7 +6,7 @@
                 {{-- Logo & About --}}
                 <li role="listitem" class="footer-item row gap-3">
                     <div class="footer-logo row align-items-center">
-                        <a href="{{route('home')}}" role="link" class="d-block">
+                        <a href="{{route(HOME)}}" role="link" class="d-block">
                             <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo">
                         </a>
                     </div>

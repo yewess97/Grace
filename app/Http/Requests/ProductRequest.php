@@ -58,7 +58,6 @@ class ProductRequest extends FormRequest
      */
     final public function messages(): array
     {
-        $cap_product           = ucfirst(PRODUCT_MODEL);
         $cap_categories        = ucfirst(CATEGORIES_TABLE);
         $cap_subcategories     = ucfirst(SUBCATEGORIES_TABLE);
         $cap_sizes             = ucfirst(pluralize(SIZE));

@@ -77,7 +77,7 @@ class UserController extends Controller
 
         return $user_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.USER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(USER_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -93,7 +93,7 @@ class UserController extends Controller
 
         return $users_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(USER_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -109,7 +109,7 @@ class UserController extends Controller
 
         return $user_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.USER_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(USER_MODEL, RESTORE));
     }
 
     /**
@@ -125,6 +125,6 @@ class UserController extends Controller
 
         return $users_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.USERS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(USER_MODEL, RESTORE, true));
     }
 }

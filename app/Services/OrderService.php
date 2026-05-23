@@ -314,7 +314,7 @@ class OrderService implements ServiceData
 
         $stripe_session = $this->stripeCheckout($stripe, $line_items, $place_order_attributes);
 
-        return [STATUS => 'stripe_session_created', 'redirect_to' => $stripe_session->url];
+        return [STATUS => 'stripe_session_created', REDIRECT_TO => $stripe_session->url];
     }
 
     /**
@@ -350,13 +350,13 @@ class OrderService implements ServiceData
             $product_total_price = $cart_item->{PRODUCT_QUANTITY} * $cart_item->{PRODUCT_MODEL}->{NEW_PRICE};
 
             $order->{ORDER_ITEMS}()->create([
+                PRODUCT_ID          => $cart_item->{PRODUCT_MODEL}->{ID},
                 PRODUCT_NAME        => $cart_item->{PRODUCT_MODEL}->{NAME},
                 PRODUCT_MAIN_IMAGE  => $cart_item->{PRODUCT_MODEL}->{MAIN_IMAGE},
                 PRODUCT_SIZE        => $cart_item->{PRODUCT_SIZE},
                 PRODUCT_QUANTITY    => $cart_item->{PRODUCT_QUANTITY},
                 PRODUCT_TOTAL_PRICE => $product_total_price,
                 ORDER_ID            => $order->getKey(),
-                PRODUCT_ID          => $cart_item->{PRODUCT_MODEL}->{ID},
             ]);
         });
     }

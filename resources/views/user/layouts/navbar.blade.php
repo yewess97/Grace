@@ -11,7 +11,7 @@
                 <ul role="list" class="navbar-nav flex-row gap-5">
                     {{-- Nav Home --}}
                     <li role="listitem" class="nav-item">
-                        <a href="{{route('home')}}" role="link" class="position-relative d-block py-3 fs-6 text-white">
+                        <a href="{{route(HOME)}}" role="link" class="position-relative d-block py-3 fs-6 text-white">
                             <span class="text-capitalize">Home</span>
                         </a>
                     </li>

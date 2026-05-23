@@ -31,12 +31,14 @@ class ResetPasswordController extends Controller
      */
     final public function index(): RedirectResponse|Application|Factory|View
     {
-        $token                     = request()?->input(TOKEN);
-        $email                     = request()?->input(EMAIL);
-        $reset_password_user_error = static fn(string $attributeName) => formError(RESET_PASSWORD, USER_MODEL, $attributeName);
+        $token = request()?->input(TOKEN);
+        $email = request()?->input(EMAIL);
+
+        $reset_password_user_error = static fn(string $attributeName) =>
+            formError(RESET_PASSWORD, USER_MODEL, $attributeName);
 
         return auth()->check()
-            ? to_route('home')
+            ? to_route(HOME)
             : showView(RESET_PASSWORD_VIEW, compact(RESET_PASSWORD_USER_ERROR, TOKEN, EMAIL));
     }
 

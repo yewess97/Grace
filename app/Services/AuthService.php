@@ -107,7 +107,7 @@ class AuthService {
             throw new RuntimeException("The provider *$provider* is not configured properly");
         }
 
-        return responseWithData(['redirect_to' => Socialite::driver($provider)->redirect()->getTargetUrl()]);
+        return responseWithData([REDIRECT_TO => Socialite::driver($provider)->redirect()->getTargetUrl()]);
     }
 
     /**

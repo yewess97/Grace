@@ -62,8 +62,10 @@ class AdminController extends Controller
 
         $categories = paginateWithFallback(Category::class, $categories_ids);
 
-        $add_category_error    = static fn(string $attributeName) => formError(ADD, CATEGORY_MODEL, $attributeName);
-        $update_category_error = static fn(string $attributeName) => formError(UPDATE, CATEGORY_MODEL, $attributeName);
+        $add_category_error = static fn(string $attributeName) =>
+            formError(ADD,    CATEGORY_MODEL, $attributeName);
+        $update_category_error = static fn(string $attributeName) =>
+            formError(UPDATE, CATEGORY_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($categories, ADMIN_CATEGORIES_PAGINATION, CATEGORIES_TABLE)
@@ -92,8 +94,10 @@ class AdminController extends Controller
             Category::get($this->id_name)
         );
 
-        $add_subcategory_error    = static fn(string $attributeName) => formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
-        $update_subcategory_error = static fn(string $attributeName) => formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
+        $add_subcategory_error = static fn(string $attributeName) =>
+            formError(ADD,    SUBCATEGORY_MODEL, $attributeName);
+        $update_subcategory_error = static fn(string $attributeName) =>
+            formError(UPDATE, SUBCATEGORY_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($subcategories, ADMIN_SUBCATEGORIES_PAGINATION, SUBCATEGORIES_TABLE)
@@ -117,9 +121,12 @@ class AdminController extends Controller
         $products = paginateWithFallback(Product::class, $products_ids, callback: fn(Builder $query) =>
             $query->with([
                 ...$this->relatedCategories(),
-                SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) => $subcategory->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
-                THUMB_IMAGES        => static fn(HasMany $thumbImage) => $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
-                SIZES               => static fn(HasMany $size)       => $size->select(SIZE, PRODUCT_ID),
+                SUBCATEGORIES_TABLE => fn(BelongsToMany $subcategory) =>
+                    $subcategory->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
+                THUMB_IMAGES => static fn(HasMany $thumbImage) =>
+                    $thumbImage->select(THUMB_IMAGE, PRODUCT_ID),
+                SIZES => static fn(HasMany $size) =>
+                    $size->select(SIZE, PRODUCT_ID),
             ])
         );
 
@@ -131,8 +138,10 @@ class AdminController extends Controller
         );
         $sizes = PRODUCT_SIZE_ENUM;
 
-        $add_product_error    = static fn(string $attributeName) => formError(ADD, PRODUCT_MODEL, $attributeName);
-        $update_product_error = static fn(string $attributeName) => formError(UPDATE, PRODUCT_MODEL, $attributeName);
+        $add_product_error = static fn(string $attributeName) =>
+            formError(ADD,    PRODUCT_MODEL, $attributeName);
+        $update_product_error = static fn(string $attributeName) =>
+            formError(UPDATE, PRODUCT_MODEL, $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($products, ADMIN_PRODUCTS_PAGINATION, PRODUCTS_TABLE)
@@ -157,9 +166,12 @@ class AdminController extends Controller
 
         $roles = USER_ROLE_ENUM;
 
-        $add_user_error     = static fn(string $attributeName) => formError(ADD,    USER_MODEL,  $attributeName);
-        $update_user_error  = static fn(string $attributeName) => formError(UPDATE, USER_MODEL,  $attributeName);
-        $filter_users_error = static fn(string $attributeName) => formError(FILTER, USERS_TABLE, $attributeName);
+        $add_user_error = static fn(string $attributeName) =>
+            formError(ADD,    USER_MODEL,  $attributeName);
+        $update_user_error = static fn(string $attributeName) =>
+            formError(UPDATE, USER_MODEL,  $attributeName);
+        $filter_users_error = static fn(string $attributeName) =>
+            formError(FILTER, USERS_TABLE, $attributeName);
 
         $users_pagination_route = match (Route::currentRouteName()) {
             SEARCH_USERS => SEARCH_USERS,
@@ -205,8 +217,10 @@ class AdminController extends Controller
         $orders_title = key(array_intersect($statuses, (array) $status)).' '.ucfirst(ORDERS_TABLE);
         $order_status = current(array_intersect($statuses, (array) $status));
 
-        $update_order_error  = static fn(string $attributeName) => formError(UPDATE, ORDER_MODEL,  $attributeName);
-        $filter_orders_error = static fn(string $attributeName) => formError(FILTER, ORDERS_TABLE, $attributeName);
+        $update_order_error = static fn(string $attributeName) =>
+            formError(UPDATE, ORDER_MODEL,  $attributeName);
+        $filter_orders_error = static fn(string $attributeName) =>
+            formError(FILTER, ORDERS_TABLE, $attributeName);
 
         $orders_pagination_route = match (Route::currentRouteName()) {
             SEARCH_ORDERS => SEARCH_ORDERS,
@@ -247,15 +261,18 @@ class AdminController extends Controller
 
         $reviews = paginateWithFallback(Review::class, $reviews_ids, callback: fn(Builder $query) =>
             $query->with([
-                PRODUCT_MODEL => fn(BelongsTo $product)     => $product->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
-                USER_MODEL    => static fn(BelongsTo $user) => $user->select([...USER_SELECTED_ATTRIBUTES, Arr::last(DATES)])->withTrashed(),
+                PRODUCT_MODEL => fn(BelongsTo $product) =>
+                    $product->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
+                USER_MODEL => static fn(BelongsTo $user) =>
+                    $user->select([...USER_SELECTED_ATTRIBUTES, Arr::last(DATES)])->withTrashed(),
             ])
                 ->where(RATING, $rating)
         );
 
         $review_rating = current(array_intersect(REVIEW_RATING_ENUM, (array) $rating));
 
-        $update_review_error = static fn(string $attributeName) => reviewData(operation: UPDATE, attributeName: $attributeName);
+        $update_review_error = static fn(string $attributeName) =>
+            reviewData(operation: UPDATE, attributeName: $attributeName);
 
         return request()?->ajax()
             ? ajaxPaginationResponse($reviews, ADMIN_REVIEWS_PAGINATION, REVIEWS_TABLE)
@@ -270,7 +287,8 @@ class AdminController extends Controller
     private function relatedCategories(): array
     {
         return [
-            CATEGORIES_TABLE => fn(BelongsToMany $category) => $category->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
+            CATEGORIES_TABLE => fn(BelongsToMany $category) =>
+                $category->select([...$this->id_name, Arr::last(DATES)])->withTrashed(),
         ];
     }
 }

@@ -94,7 +94,7 @@ class ProductController extends Controller
 
         return $product_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.PRODUCT_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(PRODUCT_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -111,7 +111,7 @@ class ProductController extends Controller
 
         return $products_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.PRODUCTS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(PRODUCT_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -127,7 +127,7 @@ class ProductController extends Controller
 
         return $product_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.PRODUCT_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(PRODUCT_MODEL, RESTORE));
     }
 
     /**
@@ -143,6 +143,6 @@ class ProductController extends Controller
 
         return $products_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.PRODUCTS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(PRODUCT_MODEL, RESTORE, true));
     }
 }

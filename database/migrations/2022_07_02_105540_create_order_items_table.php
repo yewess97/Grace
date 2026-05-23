@@ -2,7 +2,6 @@
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,12 +17,12 @@ return new class extends Migration
     {
         Schema::create((new OrderItem())->getTable(), static function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger(PRODUCT_ID);
             $table->string(PRODUCT_NAME, 300);
             $table->string(PRODUCT_MAIN_IMAGE);
             $table->productSizeQuantity();
             $table->unsignedDouble(PRODUCT_TOTAL_PRICE);
             $table->foreignIdOf(Order::class);
-            $table->nullableForeignIdOf(Product::class);
             $table->timestamps();
         });
     }

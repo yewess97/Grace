@@ -28,7 +28,7 @@ guestControllerRoutes(RegisterController::class, REGISTER);
 guestControllerRoutes(LoginController::class, LOGIN);
 
 Route::controller(LoginController::class)->prefix('/'.LOGIN)->group(function () {
-    Route::get('/{provider}', 'redirectToProvider')->name('social_login');
+    Route::get('/{provider}',          'redirectToProvider')->name('social_login');
     Route::get('/callback/{provider}', 'handleProviderCallback');
 });
 

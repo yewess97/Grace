@@ -17,7 +17,7 @@
                     'nav-menu-header',
                     'd-flex justify-content-between align-items-center' => $responsive,
                 ])>
-                <a href="{{route('home')}}" role="link" class="d-flex align-items-center gap-3">
+                <a href="{{route(HOME)}}" role="link" class="d-flex align-items-center gap-3">
                     <i class="fa-solid fa-shop nav-menu-header-icon fs-5"></i>
                     <h2 role="heading" class="nav-menu-header-title fs-8 fw-600">{{config('app.name')}} Store</h2>
                 </a>

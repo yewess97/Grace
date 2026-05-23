@@ -51,7 +51,7 @@ class HomeController extends Controller
         ];
 
         $services                  = object_from_array($services);
-        $products_pagination_route = 'home';
+        $products_pagination_route = HOME;
 
         return request()?->ajax()
             ? ajaxPaginationResponse($products, USER_PRODUCTS_PAGINATION, PRODUCTS_TABLE, [PRODUCTS_PAGINATION_ROUTE => $products_pagination_route])

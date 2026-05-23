@@ -76,7 +76,7 @@ class AddressController extends Controller
 
         return $address_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ADDRESS_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ADDRESS_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -92,7 +92,7 @@ class AddressController extends Controller
 
         return $addresses_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ADDRESSES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ADDRESS_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -108,7 +108,7 @@ class AddressController extends Controller
 
         return $address_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ADDRESS_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ADDRESS_MODEL, RESTORE));
     }
 
     /**
@@ -124,6 +124,6 @@ class AddressController extends Controller
 
         return $addresses_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ADDRESSES_TABLE.' (or some of them) you are trying to '.RESTORE.'are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ADDRESS_MODEL, RESTORE, true));
     }
 }

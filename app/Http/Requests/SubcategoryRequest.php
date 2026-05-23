@@ -35,8 +35,7 @@ class SubcategoryRequest extends FormRequest
      */
     final public function messages(): array
     {
-        $cap_category    = ucfirst(CATEGORY_MODEL);
-        $cap_subcategory = ucfirst(SUBCATEGORY_MODEL);
+        $cap_category = ucfirst(CATEGORY_MODEL);
 
         return [
             ...$this->categorySubcategoryNameValidation(null, SUBCATEGORIES_TABLE, SUBCATEGORY_MODEL, true),

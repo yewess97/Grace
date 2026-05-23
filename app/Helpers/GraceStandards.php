@@ -16,6 +16,7 @@ define("DESTROY",          'destroy');
 define("RESTORE",          'restore');
 define("FILTER",           'filter');
 define("STORE_OR_UPDATE",  'storeOr'.ucfirst(UPDATE));
+define("REMOVE_OR_DELETE", REMOVE.'/'.DELETE);
 define("STORE_OR_DELETE",  'storeOr'.ucfirst(DELETE)); // one use till now
 define("DESTROY_MULTIPLE", DESTROY.'Multiple'); // one use till now
 define("RESTORE_MULTIPLE", RESTORE.'Multiple'); // one use till now
@@ -191,14 +192,23 @@ define("ORDER_ITEMS",  capitalizeSecond(ORDER_ITEMS_TABLE));
 /**
  * Application Standards.
  */
-define("COMMON_COLLECTIONS",   'common_collections');
-define("PAYMENT",              'payment');
-define("ABOUT_US",             'about_us');
-define("CONTACT_US",           'contact_us');
-define("TRASHED",              'trashed');
-define("ROW",                  'row');
-define("LAST_PAGE",            'last_page');
-define("TRASHED_RELATIONS",    TRASHED.'_relations');
+define("COMMON_COLLECTIONS", 'common_collections');
+define("HOME",               'home');
+define("PAYMENT",            'payment');
+define("ABOUT_US",           'about_us');
+define("CONTACT_US",         'contact_us');
+define("TRASHED",            'trashed');
+define("ROW",                'row');
+define("LAST_PAGE",          'last_page');
+define("TRASHED_RELATIONS",  TRASHED.'_relations');
+define("REDIRECT_TO",        'redirect_to');
+
+/**
+ * Password Management Standards.
+ *
+ */
+define("FORGOT_PASSWORD", 'forgot_'.PASSWORD);
+define("RESET_PASSWORD",  'reset_'.PASSWORD);
 
 /**
  * Auth Standards.
@@ -207,14 +217,8 @@ define("AUTH",                   'auth');
 define("AUTH_ACTION",            AUTH.'_action');
 define("AUTH_SUCCESS",           AUTH.'_success');
 define("AUTH_FAILED",            AUTH.'.failed'); // one use till now
+define("FORGOT_PASSWORD_FAILED", FORGOT_PASSWORD.'.failed'); // one use till now
 define("LOGIN_SOCIAL_PROVIDERS", explode(',', config('auth.providers.login_social')));
-
-/**
- * Password Management Standards.
- *
- */
-define("FORGOT_PASSWORD", 'forgot_'.PASSWORD);
-define("RESET_PASSWORD",  'reset_'.PASSWORD);
 
 /**
  * User-Related Actions Standards.
@@ -241,7 +245,7 @@ define("USERS_PAGINATION_ROUTE", USERS_TABLE.'_pagination_route');
 /**
  * Products Standards.
  */
-define("HOME_PRODUCTS",               'home_'.PRODUCTS_TABLE);
+define("HOME_PRODUCTS",               HOME.'_'.PRODUCTS_TABLE);
 define("NEW_PRODUCTS",                'new_'.PRODUCTS_TABLE);
 define("QUICK_VIEW",                  'quick_view');
 define("PRODUCTS_LIST",               PRODUCTS_TABLE.'_list');
@@ -788,7 +792,7 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
 /**
  * Components.
  */
-define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component('home-'.PRODUCT_MODEL.'-left-side'));
+define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component(HOME.'-'.PRODUCT_MODEL.'-left-side'));
 define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES))); // one use till now
 define("ORDER_DETAILS_COMPONENT",          component(kebabAll(ORDER_DETAILS))); // one use till now
 define("REVIEWS_COMPONENT",                component(REVIEWS_TABLE));
@@ -826,11 +830,11 @@ define("UPDATE_REVIEW_ERRORS_PARTIAL", partial(pluralize(kebabAll(UPDATE_REVIEW_
 /**
  * Other Partials.
  */
-define("WISHLIST_CONTENT_PARTIAL",      partial(WISHLIST_MODEL.'-content',    'other'));
-define("CART_CONTENT_PARTIAL",          partial(CART_MODEL.'-content',        'other'));
-define("CART_HEADER_CONTENT_PARTIAL",   partial(CART_MODEL.'-header-content', 'other'));
-define("PRODUCT_ITEM_COMMON_PARTIAL",   partial(PRODUCT_MODEL.'-item-common', 'other'));
-define("TOP_BOTTOM_WEARS_PARTIAL",      partial('top-bottom-wears',           'other'));
+define("WISHLIST_CONTENT_PARTIAL",    partial(WISHLIST_MODEL.'-content',    'other'));
+define("CART_CONTENT_PARTIAL",        partial(CART_MODEL.'-content',        'other'));
+define("CART_HEADER_CONTENT_PARTIAL", partial(CART_MODEL.'-header-content', 'other'));
+define("PRODUCT_ITEM_COMMON_PARTIAL", partial(PRODUCT_MODEL.'-item-common', 'other'));
+define("TOP_BOTTOM_WEARS_PARTIAL",    partial('top-bottom-wears',           'other'));
 
 #################################### End Partials ####################################
 

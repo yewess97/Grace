@@ -84,7 +84,7 @@ class SubcategoryController extends Controller
 
         return $subcategory_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.SUBCATEGORY_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(SUBCATEGORY_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -101,7 +101,7 @@ class SubcategoryController extends Controller
 
         return $subcategories_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.SUBCATEGORIES_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(SUBCATEGORY_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -117,7 +117,7 @@ class SubcategoryController extends Controller
 
         return $subcategory_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.SUBCATEGORY_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(SUBCATEGORY_MODEL, RESTORE));
     }
 
     /**
@@ -133,6 +133,6 @@ class SubcategoryController extends Controller
 
         return $subcategories_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.SUBCATEGORIES_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(SUBCATEGORY_MODEL, RESTORE, true));
     }
 }

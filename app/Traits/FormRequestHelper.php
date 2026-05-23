@@ -16,7 +16,11 @@ trait FormRequestHelper
      * @param  array  $modelAttributes
      * @return void
      */
-    final public function __construct(private readonly string $operation, private readonly string $model, private readonly array $modelAttributes){}
+    final public function __construct(
+        private readonly string $operation,
+        private readonly string $model,
+        private readonly array $modelAttributes
+    ){}
 
     /**
      * Determine if the user is authorized to make this request.
@@ -35,7 +39,9 @@ trait FormRequestHelper
      */
     final public function data(): array
     {
-        return request()?->only(array_map(fn(string $key) => "{$this->operation}_{$this->model}_$key", $this->modelAttributes));
+        return request()?->only(array_map(fn(string $key) =>
+            "{$this->operation}_{$this->model}_$key", $this->modelAttributes)
+        );
     }
 
     /**
@@ -440,7 +446,7 @@ trait FormRequestHelper
     }
 
 
-    //    /**
+//    /**
 //     * Selection validation rules & messages.
 //     *
 //     * @param string|null $tableName

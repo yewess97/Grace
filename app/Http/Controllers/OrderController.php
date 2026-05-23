@@ -90,7 +90,7 @@ class OrderController extends Controller
 
         return $order_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.REMOVE.'/'.DELETE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ORDER_MODEL, REMOVE_OR_DELETE));
     }
 
     /**
@@ -106,7 +106,7 @@ class OrderController extends Controller
 
         return $orders_deleted
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.REMOVE.'/'.DELETE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ORDER_MODEL, REMOVE_OR_DELETE, true));
     }
 
     /**
@@ -122,7 +122,7 @@ class OrderController extends Controller
 
         return $order_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDER_MODEL.' you are trying to '.RESTORE.' is not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ORDER_MODEL, RESTORE));
     }
 
     /**
@@ -138,6 +138,6 @@ class OrderController extends Controller
 
         return $orders_restored
             ? responseSuccess()
-            : throw new ModelNotFoundException('The '.ORDERS_TABLE.' (or some of them) you are trying to '.RESTORE.' are not found!');
+            : throw new ModelNotFoundException(clearExceptionMessage(ORDER_MODEL, RESTORE, true));
     }
 }

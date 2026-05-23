@@ -57,9 +57,9 @@
     --sixty-four-pixels:   4rem;
 
     /* ----------- Boxes Shadow ----------- */
-    --box-shadow: 0 0 var(--ten-pixels) var(--box-shadow-color);
+    --admin-box-shadow:    0 var(--eight-pixels) var(--twenty-four-pixels) rgba(132, 139, 200, 0.18);
+    --box-shadow:          0 0 var(--ten-pixels) var(--box-shadow-color);
     --dropdown-box-shadow: 0 var(--ten-pixels) var(--fifteen-pixels) calc(var(--three-pixels) * -1) rgb(0 0 0 / 7%), 0 var(--four-pixels) 6px calc(var(--two-pixels) * -1) rgb(0 0 0 / 5%);
-    --admin-box-shadow: 0 var(--eight-pixels) var(--twenty-four-pixels) rgba(132, 139, 200, 0.18);
 
     /* ----------- Borders ----------- */
     --border:      var(--one-pixel) solid var(--border-color);

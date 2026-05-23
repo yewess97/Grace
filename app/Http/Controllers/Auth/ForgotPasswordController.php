@@ -31,10 +31,11 @@ class ForgotPasswordController extends Controller
      */
     final public function index(): RedirectResponse|Application|Factory|View
     {
-        $forgot_password_user_error = static fn(string $attributeName) => formError(FORGOT_PASSWORD, USER_MODEL, $attributeName);
+        $forgot_password_user_error = static fn(string $attributeName) =>
+            formError(FORGOT_PASSWORD, USER_MODEL, $attributeName);
 
         return auth()->check()
-            ? to_route('home')
+            ? to_route(HOME)
             : showView(FORGOT_PASSWORD_VIEW, compact(FORGOT_PASSWORD_USER_ERROR));
     }
 
@@ -49,7 +50,7 @@ class ForgotPasswordController extends Controller
         $forgot_password = $this->authService->forgotPasswordUser();
 
         return !$forgot_password
-            ? responseError(FORGOT_PASSWORD.'_failed')
+            ? responseError(FORGOT_PASSWORD_FAILED)
             : responseWithData([STATUS => 'sent_'.EMAIL]);
     }
 }

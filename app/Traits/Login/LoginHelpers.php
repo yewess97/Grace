@@ -45,8 +45,8 @@ trait LoginHelpers
         );
 
         return responseWithData([
-            STATUS        => AUTH_SUCCESS,
-            'redirect_to' => $redirect_to,
+            STATUS      => AUTH_SUCCESS,
+            REDIRECT_TO => $redirect_to,
         ]);
     }
 

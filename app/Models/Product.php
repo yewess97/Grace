@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class Product extends Model implements IGrace, HasImages
 {
@@ -223,11 +222,6 @@ class Product extends Model implements IGrace, HasImages
     final public function sizes(): HasMany
     {
         return $this->hasMany(ProductSize::class);
-    }
-
-    final public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
     }
 
     final public function reviews(): HasMany
