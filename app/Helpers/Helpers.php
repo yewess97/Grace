@@ -342,17 +342,18 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
     /**
      * Store or Update the main image.
      *
+     * @param string $imageType
      * @param Model|stdClass $model
      * @param string|null $modelId
-     * @param string|null $imageType
      * @param mixed|null $image
+     * @param string|null $checkBackground
      * @return string
      * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
      */
-    function storeOrUpdateImage(Model|stdClass $model, ?string $modelId = null, ?string $imageType = null, mixed $image = null): string
+    function storeOrUpdateImage(string $imageType, Model|stdClass $model, ?string $modelId = null, mixed $image = null, ?string $checkBackground = null): string
     {
-        $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
         $image_path       = "public/images/".$model->getTable().DIRECTORY_SEPARATOR.pluralize($imageType);
+        $exist_image_name = $model::query()->firstWhere(ID, $modelId)?->{$imageType};
 
         if (is_null($image) && isset($exist_image_name)) {
             return $exist_image_name;
@@ -361,14 +362,17 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
         if (isset($exist_image_name)) {
             Storage::exists($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
                 ? Storage::delete($image_path.DIRECTORY_SEPARATOR.$exist_image_name)
-                : throw new NotFoundHttpException('The targeted image is not found in the storage disk');
+                : throw new NotFoundHttpException('The targeted image is not found in the storage disk.');
         }
 
-//        $image_name = time().random_int(10, 100).'.png';
-//        $image->storeAs($image_path, $image_name);
-//        return $image_name;
+        if ($checkBackground === 'on') {
+            return storeImageWithoutBackground($image, $image_path);
+        }
 
-        return storeImageWithoutBackground($image, $image_path);
+        $image_name = time().random_int(10, 100).'.png';
+        $image->storeAs($image_path, $image_name);
+
+        return $image_name;
     }
 }
 

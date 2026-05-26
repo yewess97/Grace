@@ -58,11 +58,10 @@ class ProductRequest extends FormRequest
      */
     final public function messages(): array
     {
-        $cap_categories        = ucfirst(CATEGORIES_TABLE);
-        $cap_subcategories     = ucfirst(SUBCATEGORIES_TABLE);
-        $cap_sizes             = ucfirst(pluralize(SIZE));
-        $cap_sort              = ucfirst(PRODUCTS_TABLE.' '.SORT);
-        $name_desc_regex_rules = 'characters, numbers, and some symbols';
+        $cap_categories    = ucfirst(CATEGORIES_TABLE);
+        $cap_subcategories = ucfirst(SUBCATEGORIES_TABLE);
+        $cap_sizes         = ucfirst(pluralize(SIZE));
+        $cap_sort          = ucfirst(PRODUCTS_TABLE.' '.SORT);
 
         if ($this->operation === FILTER) {
             return [
@@ -77,9 +76,9 @@ class ProductRequest extends FormRequest
         }
 
         return [
-            ...$this->validationMessages(NAME, 2, 50, $name_desc_regex_rules, PRODUCT_MODEL),
-            ...$this->validationMessages(SHORT_DESCRIPTION, 5, 1000, $name_desc_regex_rules),
-            ...$this->validationMessages(LONG_DESCRIPTION, 10, 5000, $name_desc_regex_rules),
+            ...$this->validationMessages(NAME, 2, 50, 'characters, numbers, and some symbols', PRODUCT_MODEL),
+            ...$this->validationMessages(SHORT_DESCRIPTION, 5, 1000),
+            ...$this->validationMessages(LONG_DESCRIPTION, 10, 5000),
             ...$this->imageValidation(MAIN_IMAGE, true),
             ...$this->multipleSelectionValidation(RELATED_CATEGORIES, 3, null, $cap_categories, true),
             ...$this->multipleSelectionValidation(RELATED_SUBCATEGORIES, 6, null, $cap_subcategories, true),
@@ -106,7 +105,7 @@ class ProductRequest extends FormRequest
 
         return [
             $this->dataKeyOf($attribute) => [
-                "required", "regex:/^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.<>\/]*$/", "min:$min", "max:$max",
+                "required", ($attribute === NAME ?: "regex:/^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.<>\/]*$/"), "min:$min", "max:$max",
                 ($this->operation === UPDATE && isset($id)) ? $unique_product->ignore($id) : $unique_product
             ],
         ];

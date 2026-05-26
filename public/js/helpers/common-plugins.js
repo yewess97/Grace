@@ -138,40 +138,6 @@ $.fn.showHideMultiSelectedItems = function() {
 
 
 /**
- * Handles the characters counting in a textarea.
- *
- * @return {*}
- */
-$.fn.charsCounter = function () {
-    return this.each(function () {
-
-        $(this).on(IGrace.KEYUP, function (e) {
-            e.preventDefault();
-
-            const
-                target     = $(this),
-                text_value = target.val() || '',
-                max_length = target.attr('maxlength') || 0,
-                counter    = max_length - text_value.length,
-
-                counter_element = target.prop('class').includes(IGrace.REVIEW)
-                    ? target.parents().eq(1)
-                        .next()
-                        .next()
-                        .find('> .chars-counter')
-                    : target.parent()
-                        .next()
-                        .addClass('mt-3 mb-2');
-
-            text_value.length
-                ? counter_element.text(`${counter} characters remaining`)
-                : counter_element.text('').removeClass('mt-3 mb-2');
-        });
-    });
-};
-
-
-/**
  * Handles the "select all" checkbox functionality for multiple items with a hidden input.
  *
  * @param options
@@ -234,3 +200,38 @@ $.fn.selectAllMultiItems = function(options) {
         related_collection_hidden_input.val(selected_values);
     });
 };
+
+
+
+// /**
+//  * Handles the characters counting in a textarea.
+//  *
+//  * @return {*}
+//  */
+// $.fn.charsCounter = function () {
+//     return this.each(function () {
+//
+//         $(this).on(IGrace.KEYUP, function (e) {
+//             e.preventDefault();
+//
+//             const
+//                 target     = $(this),
+//                 text_value = target.val() || '',
+//                 max_length = target.attr('maxlength') || 0,
+//                 counter    = max_length - text_value.length,
+//
+//                 counter_element = target.prop('class').includes(IGrace.REVIEW)
+//                     ? target.parents().eq(1)
+//                         .next()
+//                         .next()
+//                         .find('> .chars-counter')
+//                     : target.parent()
+//                         .next()
+//                         .addClass('mt-3 mb-2');
+//
+//             text_value.length
+//                 ? counter_element.text(`${counter} characters remaining`)
+//                 : counter_element.text('').removeClass('mt-3 mb-2');
+//         });
+//     });
+// };

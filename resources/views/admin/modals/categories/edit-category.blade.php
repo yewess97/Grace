@@ -47,6 +47,9 @@
                             </div>
                             {{$update_category_error(BANNER_IMAGE)}}
                         </div>
+
+                        {{-- Check Background --}}
+                        <x-check-image-background/>
                     </div>
 
                     {{-- Save Changes Button --}}

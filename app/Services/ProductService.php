@@ -203,7 +203,7 @@ class ProductService implements ServiceData
 
         [$name_value, $short_description_value, $long_description_value, $main_image_value, $related_categories_ids_values, $related_subcategories_ids_values, $sizes_values, $old_price_value, $new_price_value, $quantity_value, $status_value] = $collectionRequest->dataValues();
 
-        $main_image_name = storeOrUpdateImage(new Product(), $extra[PRODUCT_ID], MAIN_IMAGE, $main_image_value);
+        $main_image_name = storeOrUpdateImage(MAIN_IMAGE, new Product(), $extra[PRODUCT_ID], $main_image_value, checkImageBackgroundRequest());
 
         $product = Product::query()->updateOrCreate(
             [ID => $extra[PRODUCT_ID]],
@@ -268,7 +268,11 @@ class ProductService implements ServiceData
         $thumb_images = request()?->file($inputName);
         $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($productAttributes) {
             $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
-            $thumb_image_name = storeImageWithoutBackground($thumb_image, $thumb_image_path);
+            $thumb_image_name = time().random_int(10, 100).'.png';
+
+            checkImageBackgroundRequest() === 'on'
+                ? storeImageWithoutBackground($thumb_image, $thumb_image_path)
+                : $thumb_image->storeAs($thumb_image_path, $thumb_image_name);
 
             return [
                 THUMB_IMAGE => $thumb_image_name,

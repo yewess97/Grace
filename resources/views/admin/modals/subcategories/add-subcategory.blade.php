@@ -19,6 +19,7 @@
                             </div>
                             {{$add_subcategory_error(NAME)}}
                         </div>
+
                         {{-- Subcategory Main Image --}}
                         <div class="add-subcategory-main-image">
                             <div class="form-group col-12 mb-2">
@@ -30,6 +31,7 @@
                             </div>
                             {{$add_subcategory_error(MAIN_IMAGE)}}
                         </div>
+
                         {{-- Subcategory Related Categories --}}
                         <div class="add-subcategory-related-categories col-12">
                             <div class="form-group position-relative mb-2">
@@ -45,6 +47,9 @@
                             </div>
                             {{$add_subcategory_error(RELATED_CATEGORIES)}}
                         </div>
+
+                        {{-- Check Background --}}
+                        <x-check-image-background/>
                     </div>
 
                     {{-- Add Button --}}

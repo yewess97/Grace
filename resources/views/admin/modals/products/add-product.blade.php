@@ -23,24 +23,22 @@
                         {{-- Product Short Description --}}
                         <div class="add-product-short-description">
                             <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="add_product_short_description" id="add_product_short_description" class="form-control product-short-description fs-7" rows="4" minlength="5" maxlength="1000" aria-required="true"></textarea>
                                 <label for="add_product_short_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(SHORT_DESCRIPTION)}}
                                 </label>
+                                <textarea role="textbox" name="add_product_short_description" id="add_product_short_description" class="text-editor form-control fs-7" rows="4" minlength="5" maxlength="1000" aria-required="true"></textarea>
                             </div>
-                            <div class="chars-counter"></div>
                             {{$add_product_error(SHORT_DESCRIPTION)}}
                         </div>
 
                         {{-- Product Long Description --}}
                         <div class="add-product-long-description">
                             <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="add_product_long_description" id="add_product_long_description" class="form-control product-long-description fs-7" rows="4" minlength="10" maxlength="5000" aria-required="true"></textarea>
                                 <label for="add_product_long_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(LONG_DESCRIPTION)}}
                                 </label>
+                                <textarea role="textbox" name="add_product_long_description" id="add_product_long_description" class="text-editor form-control fs-7" rows="4" minlength="10" maxlength="10000" aria-required="true"></textarea>
                             </div>
-                            <div class="chars-counter"></div>
                             {{$add_product_error(LONG_DESCRIPTION)}}
                         </div>
 
@@ -166,6 +164,9 @@
                                 {{$add_product_error(STATUS)}}
                             </div>
                         </div>
+
+                        {{-- Check Background --}}
+                        <x-check-image-background/>
                     </div>
 
                     {{-- Add Button --}}

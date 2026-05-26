@@ -148,8 +148,8 @@ class CategoryService implements ServiceData
 
         [$name_value, $main_image_value, $banner_image_value] = $collectionRequest->dataValues();
 
-        $main_image_name   = storeOrUpdateImage(new Category(), $extra[CATEGORY_ID], MAIN_IMAGE,   $main_image_value);
-        $banner_image_name = storeOrUpdateImage(new Category(), $extra[CATEGORY_ID], BANNER_IMAGE, $banner_image_value);
+        $main_image_name   = storeOrUpdateImage(MAIN_IMAGE,   new Category(), $extra[CATEGORY_ID], $main_image_value, checkImageBackgroundRequest());
+        $banner_image_name = storeOrUpdateImage(BANNER_IMAGE, new Category(), $extra[CATEGORY_ID], $banner_image_value, checkImageBackgroundRequest());
 
         return Category::query()->updateOrCreate(
             [ID => $extra[CATEGORY_ID]],

@@ -38,3 +38,16 @@ if (!function_exists('selectedIdsRequest')) {
         return request()?->input('selected_'.pluralize(ID));
     }
 }
+
+
+if (!function_exists('checkImageBackgroundRequest')) {
+    /**
+     * Check whether the uploaded image without background.
+     *
+     * @return string|null
+     */
+    function checkImageBackgroundRequest(): string|null
+    {
+        return request()?->input('check_image_background');
+    }
+}

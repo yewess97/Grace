@@ -253,15 +253,24 @@ $(document).ready(() => {
     Admin.googleGeoChartConfig();
     Admin.googlePieChartConfig();
 
-    // Make the content text of the product short and long descriptions as a preformatted text.
-    $.each(($(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}, .${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`)), (_, description_text) => $('<pre>').html($(description_text).html()).appendTo(description_text));
-
-    // Count the number of characters of the product short and long descriptions
-    $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).charsCounter();
-    $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.LONG_DESCRIPTION)}`).charsCounter();
-
-    // Add (active) class on the first child of the carousel item
-    $('.carousel-item:first-child').addClass('active');
+    // Configure the text editor
+    tinymce.init({
+        license_key: 'gpl',
+        selector: 'textarea.text-editor',
+        height: 300,
+        menubar: true,
+        a11y_advanced_options: true,
+        placeholder: 'Type your text here',
+        plugins: [
+            'accordion', 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'directionality', 'searchreplace', 'visualblocks', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | bold italic backcolor | ' +
+            'ltr rtl alignleft aligncenter alignright alignjustify | ' +
+            'accordion bullist numlist outdent indent | media image link | ' +
+            'removeformat | help'
+    });
 
     // Set the main image configurations when adding/updating a collection
     Admin.setImageConfig(IGrace.ADD_COLLECTION(IGrace.CATEGORY));
@@ -288,6 +297,9 @@ $(document).ready(() => {
         $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY())}`).formMultiSelectConfig();
         $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.SIZE)}`).formMultiSelectConfig();
     }
+
+    // Add (active) class on the first child of the carousel item
+    $('.carousel-item:first-child').addClass('active');
 
     // Set up the form select settings
     Common.formSelectConfig();

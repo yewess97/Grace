@@ -69,7 +69,6 @@
         <input type="hidden" name="add_review_product_id" value="{{$product->id}}">
         {{-- Review Characters Counter & Send Button --}}
         <div class="form-group submit-review-btn col-12 d-flex">
-            <span class="chars-counter"></span>
             <button type="submit" role="button" title="Submit {{ucfirst(REVIEW_MODEL)}}" class="btn">
                 Submit {{ucfirst(REVIEW_MODEL)}}
             </button>

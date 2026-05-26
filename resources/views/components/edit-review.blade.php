@@ -45,8 +45,6 @@
 
                         {{-- Review Product Id --}}
                         <input type="hidden" name="update_review_product_id" id="update_review_product_id">
-
-                        <div class="chars-counter"></div>
                     </div>
 
                     {{-- Save Changes Button --}}

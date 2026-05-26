@@ -82,12 +82,12 @@
     box-shadow: var(--one-pixel) 0 0 0 var(--main-color), 0 calc(var(--one-pixel) * -1) 0 0 var(--main-color), 0 var(--one-pixel) 0 0 var(--main-color);
 }
 
-.grace-form .grace-form-body .remember-check {
+.grace-form .grace-form-body :is(.remember-check, .image-background-check) {
     padding-left: var(--twenty-five-pixels);
     color: var(--black-color);
 }
 
-.grace-form .grace-form-body .remember-check > input[type="checkbox"]:checked ~ .remember-title {
+.grace-form .grace-form-body :is(.remember-check, .image-background-check) > input[type="checkbox"]:checked ~ :is(.remember-title, .check-image-background-title) {
     font-weight: 500;
     color: var(--main-color);
 }

@@ -21,6 +21,7 @@
                             </div>
                             {{$update_subcategory_error(NAME)}}
                         </div>
+
                         {{-- Subcategory Main Image --}}
                         <div class="update-subcategory-main-image">
                             <div class="form-group col-12 mb-2">
@@ -33,6 +34,7 @@
                             </div>
                             {{$update_subcategory_error(MAIN_IMAGE)}}
                         </div>
+
                         {{-- Subcategory Related Categories --}}
                         <div class="update-subcategory-related-categories col-12" data-related_categories="{{json_encode($categories, JSON_THROW_ON_ERROR)}}">
                             <div class="form-group position-relative mb-2">
@@ -48,6 +50,9 @@
                             </div>
                             {{$update_subcategory_error(RELATED_CATEGORIES)}}
                         </div>
+
+                        {{-- Check Background --}}
+                        <x-check-image-background/>
                     </div>
 
                     {{-- Save Changes Button --}}

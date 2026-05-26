@@ -25,24 +25,22 @@
                         {{-- Product Short-Description --}}
                         <div class="update-product-short-description">
                             <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="update_product_short_description" id="update_product_short_description" class="form-control product-short-description fs-7" rows="4" minlength="5" maxlength="1000" aria-required="true"></textarea>
+                                <textarea role="textbox" name="update_product_short_description" id="update_product_short_description" class="text-editor form-control fs-7" rows="4" minlength="5" maxlength="1000" aria-required="true"></textarea>
                                 <label for="update_product_short_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(SHORT_DESCRIPTION)}}
                                 </label>
                             </div>
-                            <div class="counter"></div>
                             {{$update_product_error(SHORT_DESCRIPTION)}}
                         </div>
 
                         {{-- Product Long-Description --}}
                         <div class="update-product-long-description">
                             <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="update_product_long_description" id="update_product_long_description" class="form-control product-long-description fs-7" rows="4" minlength="10" maxlength="5000" aria-required="true"></textarea>
+                                <textarea role="textbox" name="update_product_long_description" id="update_product_long_description" class="text-editor form-control fs-7" rows="4" minlength="10" maxlength="10000" aria-required="true"></textarea>
                                 <label for="update_product_long_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(LONG_DESCRIPTION)}}
                                 </label>
                             </div>
-                            <div class="counter"></div>
                             {{$update_product_error(LONG_DESCRIPTION)}}
                         </div>
 
@@ -171,6 +169,9 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Check Background --}}
+                        <x-check-image-background/>
                     </div>
 
                     {{-- Save Changes Button --}}

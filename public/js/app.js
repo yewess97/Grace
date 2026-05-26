@@ -379,9 +379,6 @@ $(document).ready(() => {
         target.checkRows();
     });
 
-    // Count the number of characters of the review body
-    $(`.${IGrace.REVIEW}-${IGrace.CLASS(IGrace.BODY_TEXT)}`).charsCounter();
-
     // Set up the form multiselect settings
     const
         add_cart_product_sizes            = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`),

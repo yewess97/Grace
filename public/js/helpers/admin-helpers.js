@@ -336,9 +336,10 @@ const Admin = {
                 data: form_data,
                 success: (data) => {
                     window.isFormDirty = false;
-                    $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
-                    target.trigger('reset');
+                    // target.find('input[type="hidden"]').val('').end().trigger('reset');
+                    $('.modal-body').load(location.href + ` ${target}`);
                     $(IGrace.ERROR_ELEMENT(action)).empty();
+                    $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
 
                     const data_actions = {
                         true: () => {

@@ -137,7 +137,7 @@ class SubcategoryService implements ServiceData
 
         [$name_value, $main_image_value, $related_categories_ids_values] = $collectionRequest->dataValues();
 
-        $main_image_name = storeOrUpdateImage(new Subcategory(), $extra[SUBCATEGORY_ID], MAIN_IMAGE, $main_image_value);
+        $main_image_name = storeOrUpdateImage(MAIN_IMAGE, new Subcategory(), $extra[SUBCATEGORY_ID], $main_image_value, checkImageBackgroundRequest());
 
         $subcategory = Subcategory::query()->updateOrCreate(
             [ID => $extra[SUBCATEGORY_ID]],
