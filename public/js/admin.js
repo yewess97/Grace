@@ -121,11 +121,6 @@ $(document).ready(() => {
 
 
     /* ---------=========== Click Action ===========--------- */
-    let
-        add_multi_selected_related_categories_values    = [],
-        add_multi_selected_related_subcategories_values = [],
-        add_multi_selected_sizes_values                 = [];
-
     $(document).on(IGrace.CLICK, (e) => {
         const
             target                    = $(e.target),
@@ -191,7 +186,7 @@ $(document).ready(() => {
             // Adding Operation
             target.selectAllMultiItems({
                 actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
-                multiSelectedValuesList: add_multi_selected_related_categories_values,
+                multiSelectedValuesList: $('input[name="add_subcategory_related_categories[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
 
@@ -207,37 +202,37 @@ $(document).ready(() => {
             // Adding Operation
             target.selectAllMultiItems({
                 actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: add_multi_selected_related_categories_values,
+                multiSelectedValuesList: $('input[name="add_product_related_categories[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
 
             target.selectAllMultiItems({
                 actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: add_multi_selected_related_subcategories_values,
+                multiSelectedValuesList: $('input[name="add_product_related_subcategories[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
             });
 
             target.selectAllMultiItems({
                 actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: add_multi_selected_sizes_values,
+                multiSelectedValuesList: $('input[name="add_product_sizes[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.SIZE),
             });
 
             // Updating Operation
             target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: $('input[name="update_product_related_categories[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
             });
 
             target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: $('input[name="update_product_related_subcategories[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
             });
 
             target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
                 multiSelectedValuesList: $('input[name="update_product_sizes[]"]:hidden').val().split(','),
                 relation:                IGrace.PLURALIZE(IGrace.SIZE),
             });
@@ -253,10 +248,10 @@ $(document).ready(() => {
     Admin.googleGeoChartConfig();
     Admin.googlePieChartConfig();
 
-    // Configure the text editor
+    // Configure the TinyMCE rich text editor for the specified textarea selector in the add or update form.
     tinymce.init({
         license_key: 'gpl',
-        selector: 'textarea.text-editor',
+        selector: `textarea.text-editor`,
         height: 300,
         menubar: true,
         a11y_advanced_options: true,
@@ -271,6 +266,11 @@ $(document).ready(() => {
             'accordion bullist numlist outdent indent | media image link | ' +
             'removeformat | help'
     });
+
+    // Admin.tinyMceConfig(`${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`);
+    // Admin.tinyMceConfig(`${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`);
+    // Admin.tinyMceConfig(`${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`);
+    // Admin.tinyMceConfig(`${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`);
 
     // Set the main image configurations when adding/updating a collection
     Admin.setImageConfig(IGrace.ADD_COLLECTION(IGrace.CATEGORY));

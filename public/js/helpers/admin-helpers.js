@@ -7,7 +7,7 @@ const Admin = {
 
     /* ---------------------------------- NAVBAR SETTINGS ---------------------------------- */
     /**
-     * Save/Set the value of the (closedMenu) key as an array.
+     * Stringify the closed menu array and save it in the session storage.
      *
      * @param closedMenu
      * @return {string}
@@ -16,16 +16,17 @@ const Admin = {
 
 
     /**
-     * Parse the value (i.e., make it as a string) or return an empty array,
-     * according to the existing of the (closedMenu) key.
+     * Parse the closed menu string from the session storage and return it as an array.
      *
-     * @returns {Array}
+     * @return {any}
      */
     loadClosedMenu: () => JSON.parse(sessionStorage.closedMenu || '[]'),
 
 
     /**
-     * Handles the nav menu open/close functionality and save the action in the session storage.
+     * Toggle the 'close' class on the specified navigation menu and update the closed menu array in the session storage,
+     * based on the action (close or open).
+     * This allows the application to remember which menus are closed even after a page refresh.
      *
      * @param navMenu
      * @param action
@@ -46,10 +47,11 @@ const Admin = {
 
     /* ---------------------------------- GOOGLE CHARTS ---------------------------------- */
     /**
-     * Get the chart data.
+     * Get the chart data from the specified element's data attribute, parse it,
+     * and return it in a format suitable for Google Charts.
      *
      * @param args
-     * @return {array}
+     * @return {*|*[]}
      */
     getChartData: (args) => {
         const { element, dataKey, label, legendData } = args;
@@ -69,9 +71,9 @@ const Admin = {
 
 
     /**
-     * Fill the map chart with the total of registered users per country.
-     * See https://developers.google.com/chart/interactive/docs/gallery/geochart
+     * Fill the geo map chart with the total registered users for each country.
      *
+     * @see https://developers.google.com/chart/interactive/docs/gallery/geochart
      * @param geoMapChart
      * @param registeredUsersCountries
      * @return {void}
@@ -97,8 +99,8 @@ const Admin = {
 
     /**
      * Fill the pie chart with the total products for each subcategory.
-     * See https://developers.google.com/chart/interactive/docs/gallery/piechart#configuration
      *
+     * @see https://developers.google.com/chart/interactive/docs/gallery/piechart#configuration
      * @param pieChart
      * @param subcategories
      * @return {void}
@@ -185,7 +187,8 @@ const Admin = {
 
     /* ---------------------------------- IMAGES SETTINGS ---------------------------------- */
     /**
-     * Empty the image error.
+     * Empty the image preview and error message
+     * when changing the collection main image in the add or update form.
      *
      * @param actionCollection
      * @return {void}
@@ -202,7 +205,8 @@ const Admin = {
 
 
     /**
-     * Configure the collection image input settings.
+     * Configure the collection images input settings in the add or update form,
+     * including allowed file types, maximum file size, and error messages.
      *
      * @param actionCollection
      * @param imageType
@@ -242,7 +246,7 @@ const Admin = {
 
 
     /**
-     * Configure the product thumbnail images input settings.
+     * Configure the product thumbnail images input settings in the add or update form.
      *
      * @param action
      * @return {void}
@@ -275,10 +279,11 @@ const Admin = {
 
 
     /**
-     * Show the image preview in the edit form.
+     * Display the image preview for the collection main image or product thumbnail images in the update form,
+     * or display a message if there are no thumbnail images to preview.
      *
      * @param args
-     * @return {void}
+     * @return {*}
      */
     showImageOnEdit: (args) => {
         const { collection, imageType, imageSrc } = args;
@@ -308,7 +313,7 @@ const Admin = {
 
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
     /**
-     * Create or Update a collection.
+     * Handle the create or update ajax request for the specified form.
      *
      * @param form
      * @return {void}
@@ -336,8 +341,7 @@ const Admin = {
                 data: form_data,
                 success: (data) => {
                     window.isFormDirty = false;
-                    // target.find('input[type="hidden"]').val('').end().trigger('reset');
-                    $('.modal-body').load(location.href + ` ${target}`);
+                    target.trigger('reset');
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
 
@@ -596,7 +600,7 @@ const Admin = {
 
     /* ---------------------------------- FILTER REQUEST ---------------------------------- */
     /**
-     * Filter ajax request.
+     * Handle the filter ajax request for the specified collection and element (form or input).
      *
      * @param args
      * @return {void}
@@ -679,7 +683,8 @@ const Admin = {
 
     /* ---------------------------------- NOTIFICATION REQUEST ---------------------------------- */
     /**
-     * Mark Notification as read ajax request.
+     * Handle the ajax request to mark a notification as read
+     * when clicking on the specified element.
      *
      * @param className
      * @return {void}
@@ -731,7 +736,8 @@ const Admin = {
     },
 
     /**
-     * Delete Notification ajax request
+     * Handle the ajax request to delete a notification
+     * when submitting the specified form.
      *
      * @return {void}
      */

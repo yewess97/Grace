@@ -308,14 +308,15 @@ if (!function_exists('noResultsException')) {
 
 if (!function_exists('storeImageWithoutBackground')) {
     /**
-     * Remove an image background using (remove.bg) API
+     * Remove an image background using (remove.bg) API.
      *
      * @param mixed $image
-     * @param string $image_path
+     * @param string $imagePath
+     * @param string|null $imageName
      * @return string
      * @throws ServiceUnavailableHttpException|RandomException
      */
-    function storeImageWithoutBackground(mixed $image, string $image_path): string
+    function storeImageWithoutBackground(mixed $image, string $imagePath, ?string $imageName = null): string
     {
         $response = Http::withHeaders([
             'X-Api-Key' => 'TGtoLSB6D6d98KEse4PRYkBE',
@@ -329,9 +330,11 @@ if (!function_exists('storeImageWithoutBackground')) {
 
         $removed_image_bg = $response->body();
 
-        $image_name = time().random_int(10, 100).'.png';  // PNG is the default format returned by remove.bg
+        $image_name = is_null($imageName)
+            ? time().random_int(10, 100).'.png' // PNG is the default format returned by remove.bg
+            : $imageName;
 
-        Storage::put($image_path.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
+        Storage::put($imagePath.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
 
         return $image_name;
     }

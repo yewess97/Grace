@@ -8,7 +8,7 @@ import "./user-plugins.js";
 const User = {
 
     /**
-     * Change the products view.
+     * Change the products view in the products page.
      *
      * @return {void}
      */
@@ -21,8 +21,8 @@ const User = {
 
 
     /**
-     * Display the login confirmation message,
-     * when the user not logged in.
+     * Show a confirmation message to the user to login before performing an action that requires authentication,
+     * and redirect them to the login page if they confirm.
      *
      * @return {void}
      */
@@ -43,7 +43,8 @@ const User = {
 
 
     /**
-     * Update the user collection (wishlist/cart) content.
+     * Update the content of a user collection (cart or wishlist) after performing an action on it,
+     * such as adding or removing an item, or clearing the collection.
      *
      * @param collection
      * @param data
@@ -85,8 +86,9 @@ const User = {
 
 
     /**
-     * Set a border-danger class to the selected address,
-     * and save the selected address in the session storage.
+     * Configure the checkout addresses selection
+     * by allowing the user to select an address and storing the selected address in the session storage,
+     * and applying a visual indication to the selected address card.
      *
      * @return {void}
      */
@@ -114,7 +116,11 @@ const User = {
 
     /* ---------------------------------- AUTH REQUEST ---------------------------------- */
     /**
-     * Auth ajax request.
+     * Handle the AJAX request for authentication actions (login, register, forgot password, reset password)
+     * by submitting the corresponding form via AJAX,
+     * showing a loading spinner on the submit button,
+     * and displaying success or error messages based on the response from the server.
+     * If the authentication is successful, the user will be redirected to the specified URL.
      *
      * @param authAction
      * @return {void}
@@ -182,7 +188,11 @@ const User = {
     },
 
     /**
-     * Social Auth ajax request.
+     * Handle the AJAX request for social authentication
+     * by sending a GET request to the corresponding social authentication route
+     * when the user clicks on a social login button,
+     * and redirecting the user to the specified URL upon successful response,
+     * or showing an error message if the request fails.
      *
      * @return {void}
      */
@@ -208,7 +218,9 @@ const User = {
 
     /* ---------------------------------- QUICK VIEW PRODUCT REQUEST ---------------------------------- */
     /**
-     * Get the product's data when quick view it.
+     * Handle the AJAX request for the quick view product feature
+     * by sending a GET request to the corresponding product route with a query parameter
+     * indicating that it's a quick view request.
      *
      * @return {void}
      */
@@ -301,7 +313,8 @@ const User = {
 
     /* ---------------------------------- CREATE OR UPDATE REQUEST ---------------------------------- */
     /**
-     * Create or Update a collection.
+     * Handle the AJAX request for creating or updating an item in a collection.
+     * (e.g., adding/updating an address, placing/updating an order, adding/updating a review)
      *
      * @param form
      * @return {void}
@@ -442,7 +455,8 @@ const User = {
 
     /* ---------------------------------- CREATE WISHLIST REQUEST ---------------------------------- */
     /**
-     * Create or Delete Wishlist Items ajax request.
+     * Handle the AJAX request for adding or removing a product from the wishlist
+     * by sending a POST request to the corresponding route with the product ID.
      *
      * @return {void}
      */
@@ -544,7 +558,9 @@ const User = {
 
     /* ---------------------------------- CREATE OR UPDATE CART REQUEST ---------------------------------- */
     /**
-     * Create or Update Cart Items ajax request.
+     * Handle the AJAX request for adding a product to the cart or updating the cart
+     * by sending a POST request to the corresponding route with the product details and quantities of all products in the cart,
+     * and updating the cart content and total cost in the UI based on the response from the server.
      *
      * @param action
      * @return {void}
@@ -651,7 +667,8 @@ const User = {
 
     /* ---------------------------------- DELETE ALL USER'S COLLECTION REQUEST ---------------------------------- */
     /**
-     * Delete All User Collection Items ajax request.
+     * Handle the AJAX request for deleting all items from a user collection (cart or wishlist)
+     * by showing a confirmation message to the user.
      *
      * @param collection
      * @return {void}
@@ -686,7 +703,10 @@ const User = {
 
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
     /**
-     * Delete Item ajax request.
+     * Handle the AJAX request for deleting an item from a user collection (cart or wishlist)
+     * by showing a confirmation message to the user,
+     * and upon confirmation, sending a DELETE request to the corresponding route with the item ID,
+     * and updating the collection content in the UI based on the response from the server.
      *
      * @param collection
      * @return {void}
@@ -750,7 +770,7 @@ const User = {
 
     /* ---------------------------------- UPDATE REVIEWS CONTENT REQUEST ---------------------------------- */
     /**
-     * Update Reviews' Container ajax request.
+     * Handle the AJAX request for updating the reviews content on the product page.
      *
      * @param reviewsRoute
      * @return {void}
@@ -786,7 +806,9 @@ const User = {
 
     /* ---------------------------------- FILTER PRODUCTS REQUEST ---------------------------------- */
     /**
-     * Get Filtered Products ajax request.
+     * Handle the AJAX request for filtering products
+     * by sending a POST request to the corresponding route with the selected filter attributes and values,
+     * and updating the products listing and pagination in the UI based on the response from the server,
      *
      * @param args
      * @return {void}
@@ -841,8 +863,7 @@ const User = {
     },
 
     /**
-     * Get Filtered Products ajax request,
-     * when submitting the filter form.
+     * Bind the submit event on the filter products form to trigger the AJAX request for filtering products.
      *
      * @return {void}
      */

@@ -24,22 +24,22 @@
 
                         {{-- Product Short-Description --}}
                         <div class="update-product-short-description">
-                            <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="update_product_short_description" id="update_product_short_description" class="text-editor form-control fs-7" rows="4" minlength="5" maxlength="1000" aria-required="true"></textarea>
+                            <div class="form-group col-12 mb-2">
                                 <label for="update_product_short_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(SHORT_DESCRIPTION)}}
                                 </label>
+                                <textarea role="textbox" name="update_product_short_description" id="update_product_short_description" class="text-editor form-control" minlength="5" maxlength="1000" aria-required="true"></textarea>
                             </div>
                             {{$update_product_error(SHORT_DESCRIPTION)}}
                         </div>
 
                         {{-- Product Long-Description --}}
                         <div class="update-product-long-description">
-                            <div class="form-outline col-12 mb-2">
-                                <textarea role="textbox" name="update_product_long_description" id="update_product_long_description" class="text-editor form-control fs-7" rows="4" minlength="10" maxlength="10000" aria-required="true"></textarea>
+                            <div class="form-group col-12 mb-2">
                                 <label for="update_product_long_description" class="form-label textarea-label">
                                     <sup class="me-1">*</sup>{{capitalizeAll(LONG_DESCRIPTION)}}
                                 </label>
+                                <textarea role="textbox" name="update_product_long_description" id="update_product_long_description" class="text-editor form-control" minlength="10" maxlength="10000" aria-required="true"></textarea>
                             </div>
                             {{$update_product_error(LONG_DESCRIPTION)}}
                         </div>

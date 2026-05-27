@@ -103,9 +103,13 @@ class ProductRequest extends FormRequest
     {
         $unique_product = Rule::unique(PRODUCTS_TABLE, SLUG);
 
+        $name_regex = $attribute === NAME
+            ? "regex:/^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.<>\/]*$/"
+            : null;
+
         return [
             $this->dataKeyOf($attribute) => [
-                "required", ($attribute === NAME ?: "regex:/^[a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.<>\/]*$/"), "min:$min", "max:$max",
+                "required", $name_regex, "min:$min", "max:$max",
                 ($this->operation === UPDATE && isset($id)) ? $unique_product->ignore($id) : $unique_product
             ],
         ];

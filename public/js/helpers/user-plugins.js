@@ -4,7 +4,8 @@ import { IGrace } from "./IGrace.js";
 
 
 /**
- * Handles the "carousel slider" functionality configurations.
+ * Handles the initialization of the Owl Carousel plugin for a carousel slider element,
+ * with custom configuration and accessibility adjustments.
  *
  * @param options
  * @return {*}
@@ -49,7 +50,8 @@ $.fn.carouselSlider = function(options) {
 
 
 /**
- * Handles the chosen filter products multiple items with a hidden input.
+ * Handles the updating of a hidden input field with the selected values from multiple checkboxes in a filter form,
+ * allowing for multiple selections and dynamic updates as checkboxes are checked or unchecked.
  *
  * @param options
  * @return {*}
@@ -82,7 +84,9 @@ $.fn.filterProductsMultiItems = function(options) {
 
 
 /**
- * Handles the syncorization of price inputs with range sliders.
+ * Handles the updating of the minimum and maximum price values in a price range filter form,
+ * ensuring that the minimum value does not exceed the maximum value and vice versa,
+ * and updating the corresponding input fields accordingly.
  *
  * @param options
  * @return {*}
@@ -116,7 +120,8 @@ $.fn.handlePriceRangeFilter = function (options) {
 
 
 /**
- * Handles the ratings update dynamically.
+ * Handles the display of star ratings for products,
+ * allowing for a dynamic number of filled and empty stars based on the provided rating value.
  *
  * @param options
  * @return {*}
@@ -138,7 +143,9 @@ $.fn.starRating = function(options) {
 
 
 /**
- * Handles the displaying of a loading spinner in an element.
+ * Handles the display of a loading spinner on a specified element,
+ * typically used to indicate that a process is ongoing,
+ * and optionally disables the element to prevent further interactions while the process is active.
  *
  * @param options
  * @return {*}

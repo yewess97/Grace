@@ -57,7 +57,7 @@
                                     @endoldprice
                                 </div>
                                 {{-- Product Short-Description --}}
-                                <p class="product-short-desc">{{ $product->{SHORT_DESCRIPTION} }}</p>
+                                <p class="product-short-desc">{!! $product->{SHORT_DESCRIPTION} !!}</p>
                                 {{-- Product Add To Cart Form --}}
                                 <div class="product-info-btns d-grid gap-4">
                                     {{-- Select Size --}}
@@ -114,7 +114,7 @@
                             <div role="tabpanel" id="product_desc_panel" class="tab-pane description fade show active" aria-labelledby="product_desc">
                                 <h2 class="fs-6 fw-600 text-capitalize">More details</h2>
                                 <div class="more-details-desc text-break">
-                                    {{ $product->{LONG_DESCRIPTION} }}
+                                    {!! $product->{LONG_DESCRIPTION} !!}
                                 </div>
                             </div>
                             {{-- Product Reviews Content --}}

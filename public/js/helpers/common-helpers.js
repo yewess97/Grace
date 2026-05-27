@@ -10,10 +10,10 @@ const Common = {
 
     /*================================== Concerned With UI/UX ==================================*/
     /**
-     * Set up the sweet alert swal buttons.
+     * A customized version of SweetAlert2 with custom classes for the confirm and cancel buttons.
      *
-     * @return {object}
      * @see https://sweetalert2.github.io/#configuration
+     * @return {object}
      */
     swalWithButtons: Swal.mixin({
         customClass: {
@@ -25,7 +25,7 @@ const Common = {
 
 
     /**
-     * Get the last directory from the url.
+     * Get the last directory in the URL path to determine the current page or section.
      *
      * @return {string}
      */
@@ -37,10 +37,11 @@ const Common = {
 
 
     /**
-     * Check if the route has parameters.
+     * Determine the separator to use for adding query parameters to a URL
+     * based on whether it already contains parameters.
      *
      * @param route
-     * @returns {string}
+     * @return {string}
      */
     routeParamsSeperator: (route) =>
         route.includes('?')
@@ -49,15 +50,15 @@ const Common = {
 
 
     /**
-     * Get the current page number.
+     * Get the current page number from the pagination component on the page.
      *
-     * @return {number}
+     * @return {*|number}
      */
     currentPageNumber: () => $('.page-item.active').find('.page-link').html() || 1,
 
 
     /**
-     * Show the data of the multiselect input.
+     * Show the multi-select input element with the related collection data.
      *
      * @param args
      * @return {void}
@@ -139,12 +140,17 @@ const Common = {
         const related_collection_element = $(`.${select_element_class}`);
 
         if (is_admin) {
-            $.each((collection[relation]), (_, relatedCollection) => related_collection_element.find('option')
-                .filter((_, rel_collection) => +rel_collection.value === (relational_collection.includes(IGrace.SIZE) ? +relatedCollection[IGrace.SIZE] : +relatedCollection[IGrace.ID]))
-                .attr('selected', true));
+            $.each((collection[relation]), (_, relatedCollection) =>
+                related_collection_element.find('option').filter((_, rel_collection) =>
+                    +rel_collection.value === (relational_collection.includes(IGrace.SIZE)
+                        ? +relatedCollection[IGrace.SIZE]
+                        : +relatedCollection[IGrace.ID]))
+                    .attr('selected', true)
+            );
         }
 
         $(`#${select_element_id}`).formMultiSelectConfig();
+
         Common.formSelectConfig();
 
         related_collection_element.remove();
@@ -163,7 +169,7 @@ const Common = {
 
 
     /**
-     * Configure the "form select" settings.
+     * Add some classes and styles on the select elements to make them look better.
      *
      * @return {void}
      */
@@ -190,17 +196,24 @@ const Common = {
 
 
     /**
-     * Custom filter the form data.
+     * Filter the form data to exclude the fields that have a comma in their value (except for file inputs)
+     * or the password and review fields
+     * to avoid any issues with the validation on the server side.
      *
      * @param target
-     * @return {FormData}
+     * @return {*}
      */
     filteredFormData: (target) => {
         return [...new FormData($(target)[0])]
             .reduce((formData, [attribute, value]) => {
-                const is_file_input = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File;
+                const
+                    is_file_input       = $(target).find(`input[name="${attribute}"]:file`).length && value instanceof File,
+                    attribute_has_words =
+                        attribute.includes(`${IGrace.PASSWORD}`) ||
+                        attribute.includes(`${IGrace.REVIEW}`) ||
+                        attribute.includes('description');
 
-                if (attribute.includes(`${IGrace.PASSWORD}`) || attribute.includes(`${IGrace.REVIEW}`) || !value.toString().includes(',') || is_file_input) {
+                if (attribute_has_words || is_file_input || !value.toString().includes(',')) {
                     formData.append(attribute, value);
                 }
 
@@ -210,7 +223,8 @@ const Common = {
 
 
     /**
-     * Add some classes, styles, and attributes on each image.
+     * Add some classes and styles on the image elements to make them look better,
+     * and set the loading attribute to lazy for better performance.
      *
      * @return {*}
      */
@@ -222,7 +236,7 @@ const Common = {
 
 
     /**
-     * Truncate the text that has more than 70 characters.
+     * Truncate the text in the elements with the "truncate" class to a specified number of characters.
      *
      * @return {void}
      */
@@ -278,7 +292,8 @@ const Common = {
 
 
     /**
-     * Arrange the table rows.
+     * Arrange the table rows after any action that affects the order of the rows (add, delete, restore, pagination)
+     * by updating the row numbers accordingly.
      *
      * @param startIndex
      * @return {*}
@@ -288,8 +303,8 @@ const Common = {
 
 
     /**
-     * Update the table rows after
-     * add, delete, restore, or pagination.
+     * Update the table rows after any action that affects the order of the rows
+     * (add, update, delete, restore, pagination).
      *
      * @param args
      * @return {void}
@@ -326,9 +341,9 @@ const Common = {
 
 
     /**
-     * Warn the user before leaving/refreshing the form
+     * Display a warning message before leaving the page if there are unsaved changes in the form (form is dirty).
      *
-     * @returns {*}
+     * @return {*}
      */
     warnBeforeLeaving: () =>
         $(window).on("beforeunload", function (e) {
@@ -340,7 +355,8 @@ const Common = {
 
 
     /**
-     * Scroll to the top of the page.
+     * Show the scroll to top button when scrolling down the page,
+     * and handle its click event to scroll smoothly to the top of the page.
      *
      * @return {void}
      */
@@ -359,7 +375,7 @@ const Common = {
 
     /*================================== Concerned With AJAX Requests ==================================*/
     /**
-     * Set up the ajax request.
+     * Set up the default settings for all ajax requests, including the CSRF token header for security.
      *
      * @return {void}
      */
@@ -377,7 +393,8 @@ const Common = {
 
 
     /**
-     * Get the countries from the (restcountries.com) API.
+     * Fetch the list of countries from the REST Countries API,
+     * and populate the country select elements in the address forms.
      *
      * @return {void}
      */
@@ -403,18 +420,17 @@ const Common = {
 
 
     /**
-     * Handle the response message or errors from the server.
+     * Extract the error messages from the JSON response of an ajax request error.
      *
      * @param error
      * @param isMessage
-     * @return {string}
+     * @return {*}
      */
     responseJsonError: (error, isMessage = false) => error.responseJSON?.[isMessage ? 'message' : 'errors'],
 
 
     /**
-     * Display the error messages in the given element
-     * for the given errors object (returned from the server).
+     * Display the error messages returned from the server after an ajax request in the appropriate place in the form.
      *
      * @param action
      * @param errors
@@ -473,10 +489,10 @@ const Common = {
 
 
     /**
-     * Display the confirmation message before deletion.
+     * Display a confirmation message before performing a delete or remove action.
      *
      * @param message
-     * @return {object}
+     * @return {*}
      */
     confirmMessage: (message) =>
         Common.swalWithButtons.fire({
@@ -490,12 +506,12 @@ const Common = {
 
 
     /**
-     * Display the success message.
+     * Display the success message returned from the server after an ajax request in a sweet alert.
      *
      * @param status
      * @param message
      * @param extra
-     * @return {*}
+     * @return {number|*}
      */
     successMessage: (status, message, extra = null) => {
         const
@@ -565,7 +581,8 @@ const Common = {
 
 
     /**
-     * Display the cancelation message when canceled.
+     * Display a cancellation message
+     * when the user cancels the delete or remove action in the confirmation message.
      *
      * @param message
      * @return {*}
@@ -582,7 +599,7 @@ const Common = {
 
 
     /**
-     * Display the error message in a sweet alert.
+     * Display the error message returned from the server after an ajax request in a sweet alert.
      *
      * @param error
      * @return {*}
@@ -591,9 +608,7 @@ const Common = {
 
 
     /**
-     * Display that something went wrong with the ajax request
-     * if there's an error but the validation error
-     * if confirmed, reload the page.
+     * Display a generic error message in a sweet alert when something goes wrong with an ajax request.
      *
      * @param message
      * @return {any}
@@ -614,12 +629,11 @@ const Common = {
 
 
     /**
-     * Remove the errors when the edit modal is closed/hidden
-     * to avoid showing the errors when the modal is opened again
-     * after closing it without submitting the form.
+     * Remove the error messages from the form when the edit modal is hidden
+     * to avoid showing old error messages when opening the modal again for another item.
      *
      * @param role
-     * @return {*|jQuery}
+     * @return {*}
      */
     removeErrorsWhenEditModelHides: (role) =>
         $(document).on('hidden.bs.modal', `.${role}-${IGrace.EDIT}-modal`, function (e) {
@@ -630,7 +644,7 @@ const Common = {
 
 
     /**
-     * Set up the pagination response after an ajax request.
+     * Handle the pagination response by updating the pagination container with the new data.
      *
      * @param paginationContainer
      * @param data
@@ -653,7 +667,7 @@ const Common = {
 
 
     /**
-     * Success response for search/filter.
+     * Success response for search/filter by updating the search results table with the new data.
      *
      * @param data
      * @return {void}
@@ -666,7 +680,7 @@ const Common = {
 
 
     /**
-     * Error response for search/filter.
+     * Error response for search/filter by showing a "No Results Found" message with an image in the search results table.
      *
      * @param imageSrc
      * @return {*}
@@ -756,10 +770,10 @@ const Common = {
 
     /* ---------------------------------- DELETE REQUEST ---------------------------------- */
     /**
-     * Delete a Single or Multiple Items ajax request.
+     * Get the ajax settings for deleting one or more items, with an optional force delete request parameter.
      *
      * @param options
-     * @return {object}
+     * @return {{url: string, method: string, success: function(): void, error: function(*): void}}
      */
     ajaxDeleteItems: (options) => {
         const { deleteRoute, isMultiple, selectedIds, forceDeleteRequest, mainPage, action, collectionTrashed, successMessage } = options;
@@ -791,7 +805,8 @@ const Common = {
     },
 
     /**
-     * Show a force delete confirmation message before deletion.
+     * Display a confirmation message with the error message returned from the server
+     * after a failed delete request due to related items.
      *
      * @param options
      * @return {void}
@@ -847,7 +862,7 @@ const Common = {
     },
 
     /**
-     * Handle the errors when deleting.
+     * Handle the errors returned from the server after a failed delete request by showing a confirmation message.
      *
      * @param options
      * @return {void}
@@ -1057,7 +1072,9 @@ const Common = {
 
     /* ---------------------------------- SEARCH & FILTER REQUESTS ---------------------------------- */
     /**
-     * Search ajax request.
+     * Search/Filter ajax request
+     * by sending the search value to the server
+     * and updating the search results table with the response data.
      *
      * @return {void}
      */
@@ -1128,7 +1145,8 @@ const Common = {
 
     /* ---------------------------------- NOTIFICATIONS REQUEST ---------------------------------- */
     /**
-     * Get Notifications event request.
+     * Set up the EventSource connection
+     * to receive real-time notifications from the server using Server-Sent Events (SSE).
      *
      * @return {void}
      */
@@ -1193,7 +1211,7 @@ const Common = {
 
     /* ---------------------------------- PAGINATION REQUEST ---------------------------------- */
     /**
-     * Set up the pagination.
+     * Handle the pagination links click event by sending an ajax request to the server.
      *
      * @return {void}
      */

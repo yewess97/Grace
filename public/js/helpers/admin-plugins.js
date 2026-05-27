@@ -4,7 +4,8 @@ import { IGrace } from "./IGrace.js";
 
 
 /**
- * Handles the image preview configurations when changing the image.
+ * Handles the image preview configuration for collection images
+ * when adding or updating a collection.
  *
  * @param options
  * @return {*}
@@ -38,7 +39,8 @@ $.fn.imagePreviewConfig = function (options) {
 
 
 /**
- * Handles the image preview visibility when updating a collection.
+ * Handles the display of the image preview for collection images
+ * when adding or updating a collection.
  *
  * @param options
  * @return {*}

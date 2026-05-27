@@ -4,7 +4,7 @@ import { IGrace } from "./IGrace.js";
 
 
 /**
- * Handles the "check all" functionality configurations for table rows.
+ * Handles the "check all" and individual row checkboxes functionality in a table.
  *
  * @return {*}
  */
@@ -43,7 +43,8 @@ $.fn.checkRows = function() {
 
 
 /**
- * Handles the "form multiselect" configurations.
+ * Handles the initialization of the filterMultiSelect plugin for multiple select inputs in forms,
+ * with custom configuration and UI adjustments.
  *
  * @return {*}
  */
@@ -81,7 +82,8 @@ $.fn.formMultiSelectConfig = function() {
 
 
 /**
- * Handles visibility and UI updates for multiple selected items.
+ * Handles the display of the selected items in the filter multi-select dropdown,
+ * showing a summary when more than 3 items are selected.
  *
  * @return {*}
  */
@@ -106,6 +108,7 @@ $.fn.showHideMultiSelectedItems = function() {
             select_all                 = multiselect_items.find('.custom-control:first-child'),
             select_all_label           = select_all.find('.custom-control-label'),
             select_all_checkbox        = select_all.find('.custom-checkbox'),
+            checked_items              = multiselect_items.find('.custom-control:not(:first-child) > .custom-checkbox:checked'),
             is_hidden                  = selected_items_length > 3;
 
         const
@@ -125,12 +128,14 @@ $.fn.showHideMultiSelectedItems = function() {
 
         select_all_label.html(selected_items_length === multiselect_max_num_items ? 'Unselect All' : 'Select All');
 
-        if (selected_items_length === 1) {
-            const current_value = multiselect_hidden_input.val();
+        let selected_values = [];
 
-            select_all_checkbox.val(`${current_value},`);
-            multiselect_hidden_input.val(`${current_value},`);
-        }
+        $.each((checked_items), (_, checked_item) => selected_values.push($(checked_item).val()));
+
+        selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
+
+        select_all_checkbox.val(selected_values);
+        multiselect_hidden_input.val(selected_values);
 
         num_selected_items_element.html(`${selected_items_length}/${multiselect_max_num_items} Selected items`);
     });
@@ -138,7 +143,8 @@ $.fn.showHideMultiSelectedItems = function() {
 
 
 /**
- * Handles the "select all" checkbox functionality for multiple items with a hidden input.
+ * Handles the "Select All" and individual item selection functionality for multiple select inputs in forms,
+ * updating the selected values list and the hidden input accordingly.
  *
  * @param options
  * @return {*}
@@ -147,7 +153,7 @@ $.fn.selectAllMultiItems = function(options) {
     const settings = $.extend({
         actionCollection:        null,
         relation:                null,
-        multiSelectedValuesList: [],
+        multiSelectedValuesList: null,
     }, options);
 
     return this.each(function() {
@@ -178,15 +184,28 @@ $.fn.selectAllMultiItems = function(options) {
 
                         select_all_checkbox.next().html('Unselect All');
                     },
-                    false: () => selected_values.push(target.val()),
+                    false: () => {
+                        if (!selected_values.includes(target.val())) {
+                            selected_values.push(target.val());
+                        }
+                    },
                 };
 
                 select_actions[is_select_all]();
             },
             false: () => {
-                is_select_all
-                    ? selected_values.length = 0
-                    : selected_values.splice($.inArray(target.val(), selected_values), 1);
+                const select_actions = {
+                    true: ()  => selected_values.length = 0,
+                    false: () => {
+                        const index = $.inArray(target.val(), selected_values);
+
+                        if (index !== -1) {
+                            selected_values.splice(index, 1);
+                        }
+                    },
+                };
+
+                select_actions[is_select_all]();
 
                 select_all_checkbox.next().html('Select All');
             },

@@ -271,7 +271,7 @@ class ProductService implements ServiceData
             $thumb_image_name = time().random_int(10, 100).'.png';
 
             checkImageBackgroundRequest() === 'on'
-                ? storeImageWithoutBackground($thumb_image, $thumb_image_path)
+                ? storeImageWithoutBackground($thumb_image, $thumb_image_path, $thumb_image_name)
                 : $thumb_image->storeAs($thumb_image_path, $thumb_image_name);
 
             return [
