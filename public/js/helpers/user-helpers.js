@@ -275,30 +275,43 @@ const User = {
                         );
 
                     quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}, #${IGrace.ADD_REMOVE_WISHLIST()}_${IGrace.COLLECTION_ID(IGrace.PRODUCT)}`).val(product[IGrace.ID]);
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).html($('<img>', {
                         src: main_image,
                         alt: product[IGrace.NAME],
                     }));
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html(product[IGrace.NAME]);
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html(`EGP ${product[`${IGrace.NEW_PRICE}`].toFixed(2)}`);
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.OLD_PRICE)}`).html(
                         product[`${IGrace.OLD_PRICE}`] && product[`${IGrace.OLD_PRICE}`] !== product[`${IGrace.NEW_PRICE}`]
                             ? `EGP ${product[`${IGrace.OLD_PRICE}`].toFixed(2)}`
                             : ''
                     );
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-availability span:last-child`).html(product[IGrace.STATUS] ? 'In Stock' : 'Out of Stock');
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.RATING}`).starRating({ rating: data['average_rate'] });
+
                     quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.CLASS(IGrace.SHORT_DESCRIPTION)}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
+
                     Common.showMultiSelectData({
                         userType:          IGrace.USER,
                         collection:        product,
                         collectionName:    IGrace.PRODUCT,
                         relatedCollection: IGrace.PRODUCT_SIZE_QUICK_VIEW(),
                     });
+
                     quick_view_modal.find(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_QUANTITY()}`).attr('max', product[IGrace.QUANTITY]);
+
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}, .${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}`).css('display', product[IGrace.STATUS] === 1 ? 'block' : 'none');
+
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('title', `${is_product_in_wishlist ? IGrace.CAPITALIZE(IGrace.REMOVE)+' From' : IGrace.CAPITALIZE(IGrace.ADD)+' To'} ${IGrace.CAPITALIZE(IGrace.WISHLIST)}`);
+
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn`).attr('data-id', product[IGrace.ID]);
+
                     quick_view_modal.find(`.${IGrace.CLASS(IGrace.ADD_REMOVE_WISHLIST())}-lg-btn > i`)
                         .removeClass('fa-regular fa-solid')
                         .addClass(is_product_in_wishlist ? 'fa-solid' : 'fa-regular');

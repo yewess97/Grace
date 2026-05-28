@@ -92,6 +92,10 @@
     background-color: var(--light-gray-color);
 }
 
+.product-quick-view-modal .modal-body .product-quick-view-img > img {
+    height: 330px !important;
+}
+
 .product-quick-view-modal .modal-body .product-quick-view-info .product-info-availability span:last-child {
     margin-left: var(--ten-pixels);
 }

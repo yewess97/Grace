@@ -259,6 +259,10 @@
     padding-inline: var(--fifteen-pixels);
 }
 
+.home-product-main .product-right-side .product-imgs-info .product-images .product-main-image > img {
+    height: 330px !important;
+}
+
 .home-product-main .product-right-side .product-imgs-info .product-images :is(.product-main-image, .product-thumb-images-carousel .product-thumb-image) {
     background-color: var(--light-gray-color);
 }

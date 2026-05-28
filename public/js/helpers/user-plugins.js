@@ -72,9 +72,18 @@ $.fn.filterProductsMultiItems = function(options) {
 
         let selected_values = settings.multiSelectedValuesList;
 
-        target.is(':checked') && !selected_values.includes(target.val())
-            ? selected_values.push(target.val())
-            : selected_values.splice($.inArray(target.val(), selected_values), 1);
+        const check_actions = {
+            true: ()  => selected_values.push(target.val()),
+            false: () => {
+                const index = $.inArray(target.val(), selected_values);
+
+                if (index !== -1) {
+                    selected_values.splice(index, 1);
+                }
+            },
+        };
+
+        check_actions[target.is(':checked') && !selected_values.includes(target.val())]();
 
         selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 

@@ -124,14 +124,14 @@
                         </div>
                     </section>
                     {{-- Related Products --}}
-                    <section class="related-products box-content">
-                        {{-- Related Products Title --}}
-                        <article class="box-title mb-3 border-bottom">
-                            <h2 class="fs-5 fw-600 text-uppercase">
-                                <span class="position-relative">{{capitalizeAll(RELATED_PRODUCTS)}}</span>
-                            </h2>
-                        </article>
-                        @if ($product->{RELATED_PRODUCTS})
+                    @if ($product->{RELATED_PRODUCTS}->count())
+                        <section class="related-products box-content">
+                            {{-- Related Products Title --}}
+                            <article class="box-title mb-3 border-bottom">
+                                <h2 class="fs-5 fw-600 text-uppercase">
+                                    <span class="position-relative">{{capitalizeAll(RELATED_PRODUCTS)}}</span>
+                                </h2>
+                            </article>
                             {{-- Related Products Content --}}
                             <article class="related-products-carousel owl-carousel owl-theme owl-loaded owl-drag">
                                 <div class="owl-stage-outer">
@@ -144,8 +144,8 @@
                                     </ul>
                                 </div>
                             </article>
-                        @endif
-                    </section>
+                        </section>
+                    @endif
                 </section>
             </div>
         </div>

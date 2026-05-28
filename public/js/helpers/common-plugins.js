@@ -164,7 +164,6 @@ $.fn.selectAllMultiItems = function(options) {
         }
 
         const
-            is_checked                      = target.is(':checked'),
             is_select_all                   = target.next().html().includes('All'),
             all_items                       = target.parents('.items').find('input[type="checkbox"]'),
             select_all_checkbox             = all_items.first(),
@@ -211,7 +210,7 @@ $.fn.selectAllMultiItems = function(options) {
             },
         };
 
-        check_actions[is_checked]();
+        check_actions[target.is(':checked')]();
 
         selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 

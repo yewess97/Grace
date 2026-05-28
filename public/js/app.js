@@ -9,7 +9,6 @@ $(document).ready(() => {
     /* ========================================= Global Variables ========================================= */
     const products_main_view = $(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-view-sort`);
 
-
     /* ========================================= Functions & Events ========================================= */
 
     // Load the preloader
@@ -52,20 +51,22 @@ $(document).ready(() => {
     }
 
     $(window).width() < 992
-        ? $('.products-filter-form').children().remove()
-        : $('.products-filter-form-menu').children().remove();
+        ? $(`.${IGrace.PRODUCT}-${IGrace.FILTER}-form`).children().remove()
+        : $(`.${IGrace.PRODUCT}-${IGrace.FILTER}-form-menu`).children().remove();
 
     $(window).width() < 1200
         ? $('.header-search').children().remove()
         : $('.nav-search').children().remove();
 
-    // Configure the carousels
+
+    // Configure the home carousel
     $('.home-carousel').carouselSlider({
         displayItemsCount: 1,
         nav:               false,
         dots:              true,
     });
 
+    // Configure the customers reviews carousel
     $(`.customers-${IGrace.PLURALIZE(IGrace.REVIEW)}-carousel`).carouselSlider({
         displayItemsCount: customers_reviews_display_items_count,
         nav:               false,
@@ -73,21 +74,23 @@ $(document).ready(() => {
         autoplay:          false,
     });
 
+    // Configure the partners carousel
     $('.partners-carousel').carouselSlider({
         displayItemsCount: partners_display_items_count,
     });
 
+    // Configure the product thumbnail images carousel
     $(`.${IGrace.PRODUCT}-${IGrace.CLASS(IGrace.PLURALIZE(IGrace.THUMB_IMAGE()))}-carousel`).carouselSlider({
         displayItemsCount: 4,
         autoplay:          false,
     });
 
+    // Configure the related products carousel
     $(`.related-${IGrace.PLURALIZE(IGrace.PRODUCT)}-carousel`).carouselSlider({
         displayItemsCount: related_products_display_items_count,
     });
 
     /* ---------=========== End Carousel Config ============--------- */
-
 
     // Change the products main view
     if (products_main_view.length) {
@@ -207,7 +210,7 @@ $(document).ready(() => {
         });
     }
 
-    // Observe the body for any changes
+    // Observe the body for any changes in the child elements and subtree
     observer.observe(document.body, {
         childList: true,
         subtree:   true,
@@ -217,13 +220,6 @@ $(document).ready(() => {
 
 
     /* ---------=========== Click Action ============--------- */
-    let
-        filter_products_categories_values                  = [],
-        filter_products_subcategories_values               = [],
-        filter_products_sizes_values                       = [],
-        add_multi_selected_product_sizes_values            = [],
-        add_multi_selected_product_sizes_quick_view_values = [];
-
     $(document).on(IGrace.CLICK, (e) => {
         const target = $(e.target);
 
@@ -349,35 +345,37 @@ $(document).ready(() => {
 
         // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
         target.filterProductsMultiItems({
-            multiSelectedValuesList: filter_products_categories_values,
+            multiSelectedValuesList: $('input[name="filter_products_categories[]"]:hidden').val().split(','),
             relation:                IGrace.PLURALIZE(IGrace.CATEGORY),
         });
 
         target.filterProductsMultiItems({
-            multiSelectedValuesList: filter_products_subcategories_values,
+            multiSelectedValuesList: $('input[name="filter_products_subcategories[]"]:hidden').val().split(','),
             relation:                IGrace.PLURALIZE(IGrace.SUBCATEGORY),
         });
 
         target.filterProductsMultiItems({
-            multiSelectedValuesList: filter_products_sizes_values,
+            multiSelectedValuesList: $('input[name="filter_products_sizes[]"]:hidden').val().split(','),
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
 
         target.selectAllMultiItems({
-            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: add_multi_selected_product_sizes_quick_view_values,
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
+            multiSelectedValuesList: $('input[name="add_cart_product_size_quick_view[]"]:hidden').val().split(','),
             relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
         });
 
         target.selectAllMultiItems({
-            actionCollection: IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: add_multi_selected_product_sizes_values,
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
+            multiSelectedValuesList: $('input[name="add_cart_product_size[]"]:hidden').val().split(','),
             relation:                IGrace.PRODUCT_SIZE(),
         });
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
         target.checkRows();
     });
+
+    /* ---------=========== End Click Action ============--------- */
 
     // Set up the form multiselect settings
     const

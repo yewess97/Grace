@@ -12,7 +12,6 @@ $(document).ready(() => {
         nav_menu_list_item = `${nav_menu}-list-item`,
         nav_menu_item      = `${nav_menu}-item`;
 
-
     /* ========================================= Functions & Events ========================================= */
 
     // Load the preloader
@@ -73,51 +72,6 @@ $(document).ready(() => {
     });
 
     /* ---------=========== End Keyup Action ===========--------- */
-
-
-    /* ---------=========== Mutation Observer Action ===========--------- */
-    const observer = new MutationObserver((mutations) => {
-        $.each((mutations), (_, mutation) => {
-            if (mutation.type === 'childList' || mutation.type === 'subtree' || mutation.type === 'attributes') {
-                const target = $(mutation.target);
-
-                // Handles the image preview visibility when updating a collection
-                target.showHideImagePreview({ collection: IGrace.CATEGORY });
-                target.showHideImagePreview({
-                    collection: IGrace.CATEGORY,
-                    imageType:  IGrace.BANNER_IMAGE(),
-                });
-
-                target.showHideImagePreview({ collection: IGrace.SUBCATEGORY });
-
-                target.showHideImagePreview({ collection: IGrace.PRODUCT });
-                target.showHideImagePreview({
-                    collection: IGrace.PRODUCT,
-                    imageType:  IGrace.PLURALIZE(IGrace.THUMB_IMAGE()),
-                });
-
-                // Show or hide the number of selected items when selecting multiple items
-                target.showHideMultiSelectedItems();
-
-                // Remove the 'show' class from any list in the closed nav menu
-                if (target.is(`.${nav_menu}.close .${nav_menu_list_item} .nav-submenu-list`)
-                    && target.hasClass('show')
-                    && target.hasClass('collapse')
-                ) {
-                    target.removeClass('show');
-                }
-            }
-        });
-    });
-
-    observer.observe(document.body, {
-        childList:       true,
-        subtree:         true,
-        attributes:      true,
-        attributeFilter: ['class'],
-    });
-
-    /* ---------=========== End Mutation Observer Action ===========--------- */
 
 
     /* ---------=========== Click Action ===========--------- */
@@ -244,6 +198,52 @@ $(document).ready(() => {
 
     /* ---------=========== End Click Action ===========--------- */
 
+
+    /* ---------=========== Mutation Observer Action ===========--------- */
+    const observer = new MutationObserver((mutations) => {
+        $.each((mutations), (_, mutation) => {
+            if (mutation.type === 'childList' || mutation.type === 'subtree' || mutation.type === 'attributes') {
+                const target = $(mutation.target);
+
+                // Handles the image preview visibility when updating a collection
+                target.showHideImagePreview({ collection: IGrace.CATEGORY });
+                target.showHideImagePreview({
+                    collection: IGrace.CATEGORY,
+                    imageType:  IGrace.BANNER_IMAGE(),
+                });
+
+                target.showHideImagePreview({ collection: IGrace.SUBCATEGORY });
+
+                target.showHideImagePreview({ collection: IGrace.PRODUCT });
+                target.showHideImagePreview({
+                    collection: IGrace.PRODUCT,
+                    imageType:  IGrace.PLURALIZE(IGrace.THUMB_IMAGE()),
+                });
+
+                // Show or hide the number of selected items when selecting multiple items
+                target.showHideMultiSelectedItems();
+
+                // Remove the 'show' class from any list in the closed nav menu
+                if (target.is(`.${nav_menu}.close .${nav_menu_list_item} .nav-submenu-list`)
+                    && target.hasClass('show')
+                    && target.hasClass('collapse')
+                ) {
+                    target.removeClass('show');
+                }
+            }
+        });
+    });
+
+    // Observe the body for any changes in the child elements, subtree, and attributes (specifically the class attribute)
+    observer.observe(document.body, {
+        childList:       true,
+        subtree:         true,
+        attributes:      true,
+        attributeFilter: ['class'],
+    });
+
+    /* ---------=========== End Mutation Observer Action ===========--------- */
+
     // Show the geo and pie charts
     Admin.googleGeoChartConfig();
     Admin.googlePieChartConfig();
@@ -259,18 +259,14 @@ $(document).ready(() => {
         plugins: [
             'accordion', 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
             'anchor', 'directionality', 'searchreplace', 'visualblocks', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
         ],
-        toolbar: 'undo redo | blocks | bold italic backcolor | ' +
-            'ltr rtl alignleft aligncenter alignright alignjustify | ' +
+        toolbar: 'fullscreen undo redo | blocks fontfamily fontsize | ' +
+            'bold italic underline forecolor backcolor | ' +
+            'ltr rtl alignleft aligncenter alignright alignjustify lineheight | ' +
             'accordion bullist numlist outdent indent | media image link | ' +
             'removeformat | help'
     });
-
-    // Admin.tinyMceConfig(`${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`);
-    // Admin.tinyMceConfig(`${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`);
-    // Admin.tinyMceConfig(`${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`);
-    // Admin.tinyMceConfig(`${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`);
 
     // Set the main image configurations when adding/updating a collection
     Admin.setImageConfig(IGrace.ADD_COLLECTION(IGrace.CATEGORY));

@@ -11,7 +11,7 @@
                     <div class="grace-form-body row row-cols-1 row-cols-md-2 justify-content-evenly px-lg-0 py-3">
                         <input type="hidden" name="add_cart_product_id" id="add_cart_product_id">
                         {{-- Product Quick View Main Image --}}
-                        <article class="product-quick-view-img col rounded-3"></article>
+                        <article class="product-quick-view-img col d-flex align-items-center rounded-3"></article>
                         <article class="product-quick-view-info col d-grid gap-3 mt-2">
                             {{-- Product Quick View Name & Price --}}
                             <div class="product-info-name-price d-grid gap-3">
@@ -28,11 +28,10 @@
                                 <span>Availability:</span>
                                 <span class="text-main"></span>
                             </h2>
-
+                            {{-- Product Quick View Rating --}}
                             <div class="product-info-rating"></div>
-
                             {{-- Product Quick View Short Description --}}
-                            <p class="product-info-short-description fs-7 text-muted"></p>
+                            <div class="product-info-short-description fs-7 text-muted"></div>
                             {{-- Product Quick View Buttons --}}
                             <div class="product-info-btns d-grid gap-3">
                                 {{-- Product Quick View Select Size --}}

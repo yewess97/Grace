@@ -398,6 +398,7 @@ const Admin = {
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.CATEGORY))}`).val(category[IGrace.ID]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.CATEGORY)}_${IGrace.NAME}`).val(category[IGrace.NAME]);
+
                     Admin.showImageOnEdit({
                         collection: [IGrace.CATEGORY, category],
                         imageType:  IGrace.MAIN_IMAGE(),
@@ -439,11 +440,13 @@ const Admin = {
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.SUBCATEGORY))}`).val(subcategory[IGrace.ID]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY)}_${IGrace.NAME}`).val(subcategory[IGrace.NAME]);
+
                     Admin.showImageOnEdit({
                         collection: [IGrace.SUBCATEGORY, subcategory],
                         imageType:  IGrace.MAIN_IMAGE(),
                         imageSrc:   main_image,
                     });
+
                     Common.showMultiSelectData({
                         userType:          IGrace.ADMIN,
                         collection:        subcategory,
@@ -479,12 +482,24 @@ const Admin = {
 
             $.get(route)
                 .done((data) => {
-                    const product = data[IGrace.PRODUCT];
+                    const
+                        product       = data[IGrace.PRODUCT],
+                        short_desc_id = `${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`,
+                        long_desc_id  = `${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`;
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.PRODUCT))}`).val(product[IGrace.ID]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.NAME}`).val(product[IGrace.NAME]);
-                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.SHORT_DESCRIPTION}`).html(product[`${IGrace.SHORT_DESCRIPTION}`]);
-                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.LONG_DESCRIPTION}`).html(product[`${IGrace.LONG_DESCRIPTION}`]);
+
+                    /**
+                     * ".val()" prevents formatting issues or broken tags if the HTML string contains nested quotes or unescaped characters,
+                     * while "tinymce.get(id).setContent(html)" ensures that the content is properly rendered in the TinyMCE editor,
+                     * preserving the intended formatting and structure of the HTML string
+                     */
+                    $(`#${short_desc_id}`).val(product[`${IGrace.SHORT_DESCRIPTION}`]);
+                    tinymce.get(short_desc_id)?.setContent(product[`${IGrace.SHORT_DESCRIPTION}`] ?? '');
+                    $(`#${long_desc_id}`).val(product[`${IGrace.LONG_DESCRIPTION}`]);
+                    tinymce.get(long_desc_id)?.setContent(product[`${IGrace.LONG_DESCRIPTION}`] ?? '');
+
                     Admin.showImageOnEdit({
                         collection: [IGrace.PRODUCT, product],
                         imageType:  IGrace.MAIN_IMAGE(),
@@ -495,6 +510,7 @@ const Admin = {
                         imageType:  IGrace.PLURALIZE(IGrace.THUMB_IMAGE()),
                         imageSrc:   thumb_images,
                     });
+
                     const commonMultiSelectDataArgs = {
                         userType:       IGrace.ADMIN,
                         collection:     product,
@@ -512,9 +528,11 @@ const Admin = {
                         ...commonMultiSelectDataArgs,
                         relatedCollection: IGrace.SIZE,
                     });
+
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.OLD_PRICE}`).val(product[`${IGrace.OLD_PRICE}`]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.NEW_PRICE}`).val(product[`${IGrace.NEW_PRICE}`]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.PRODUCT)}_${IGrace.QUANTITY}`).val(product[`${IGrace.QUANTITY}`]);
+
                     status.find('option')
                         .removeAttr('selected')
                         .filter((_, productStatus) => +productStatus.value === +product[IGrace.STATUS])
@@ -552,6 +570,7 @@ const Admin = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.FIRST_NAME()}`).val(user[IGrace.FIRST_NAME()]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.LAST_NAME()}`).val(user[IGrace.LAST_NAME()]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.USER)}_${IGrace.EMAIL}`).val(user[IGrace.EMAIL]);
+
                     role.find('option')
                         .removeAttr('selected')
                         .filter((_, userRole) => +userRole.value === +user[IGrace.ROLE])
@@ -584,6 +603,7 @@ const Admin = {
                     const order = data[IGrace.ORDER];
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.ORDER))}`).val(order[IGrace.ID]);
+
                     status.find('option')
                         .removeAttr('selected')
                         .filter((_, orderStatus) => +orderStatus.value === +order[IGrace.STATUS])
