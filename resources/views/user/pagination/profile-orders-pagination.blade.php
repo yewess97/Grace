@@ -29,7 +29,7 @@
                 </td>
             </tr>
         @empty
-            @noResults(ORDERS_TABLE, 5)
+            @noResults(ORDERS_TABLE, 6)
         @endforelse
         </tbody>
     </table>

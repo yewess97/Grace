@@ -1,11 +1,11 @@
 <div id="product_quick_view_modal" class="modal product-quick-view-modal top fade" tabindex="-1" aria-labelledby="quick_view" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="quick_view" class="modal-title fs-6 fw-600">{{capitalizeAll(PRODUCT_MODEL.' '.QUICK_VIEW)}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body">
+            </article>
+            <article class="modal-body">
                 <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
                     @csrf
                     <div class="grace-form-body row row-cols-1 row-cols-md-2 justify-content-evenly px-lg-0 py-3">
@@ -64,7 +64,7 @@
                 </form>
                 {{-- Add or Remove Wishlist Form --}}
                 <x-add-remove-wishlist-form product_id="{{$product->id}}" />
-            </div>
+            </article>
         </div>
     </div>
 </div>

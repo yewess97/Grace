@@ -11,10 +11,10 @@
                 @endif
 
                 @unless (isAdminRoute())
-                    <div class="d-flex align-items-baseline gap-3 mb-lg-3">
+                    <article class="d-flex align-items-baseline gap-3 mb-lg-3">
                         @backTo(PROFILE)
                         <h2 class="title mb-3 fs-5 fw-600">{{$order_number_title}} Details</h2>
-                    </div>
+                    </article>
                 @endunless
 
                 <!----======= Left Side =======---->

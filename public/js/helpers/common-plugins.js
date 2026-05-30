@@ -130,7 +130,7 @@ $.fn.showHideMultiSelectedItems = function() {
 
         let selected_values = [];
 
-        $.each((checked_items), (_, checked_item) => selected_values.push($(checked_item).val()));
+        $.each((checked_items), (_, checkedItem) => selected_values.push($(checkedItem).val()));
 
         selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 
@@ -179,7 +179,7 @@ $.fn.selectAllMultiItems = function(options) {
                         select_all_checkbox.val('');
                         related_collection_hidden_input.val('');
 
-                        $.each((all_items), (_, selected_item) => selected_values.push($(selected_item).val() || ''));
+                        $.each((all_items), (_, selectedItem) => selected_values.push($(selectedItem).val() || ''));
 
                         select_all_checkbox.next().html('Unselect All');
                     },

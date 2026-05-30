@@ -1,11 +1,11 @@
 <div id="add_address_modal" class="modal {{$role}}-modal top fade" tabindex="-1" aria-labelledby="add_address" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="add_address" class="modal-title fs-6 fw-600">{{ADD_ADDRESS_TITLE}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body pb-0">
+            </article>
+            <article class="modal-body pb-0">
                 {{$add_address_error(USER_ID)}}
 
                 <form action="{{route(CREATE_UPDATE_ADDRESS, ADD)}}" method="post" role="form" id="add_address_form" class="grace-form" data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID)])}}">
@@ -88,7 +88,7 @@
                     {{-- Add Button --}}
                     @submitButton(ADD)
                 </form>
-            </div>
+            </article>
         </div>
     </div>
 </div>

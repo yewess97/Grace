@@ -2,6 +2,14 @@
 
 @section('content')
 
+    {{-- Wishlist Breadcrumb --}}
+    {{
+        breadcrumb([
+            ['title' => ucfirst(PROFILE), 'url' => route(PROFILE)],
+            ['title' => 'My '.ucfirst(WISHLIST_MODEL)],
+        ])
+    }}
+
     {{-- Wishlist Main --}}
     <main role="main" class="wishlist-main py-6">
         <div class="container">

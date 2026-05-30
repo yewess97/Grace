@@ -1,11 +1,11 @@
 <div id="edit_subcategory_modal" class="modal admin-modal admin-edit-modal top fade" tabindex="-1" aria-labelledby="edit_subcategory" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="edit_subcategory" class="modal-title fs-6 fw-600">{{EDIT_SUBCATEGORY_TITLE}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body pb-0">
+            </article>
+            <article class="modal-body pb-0">
                 <form action="{{route(CREATE_UPDATE_SUBCATEGORY, UPDATE)}}" method="post" role="form" id="update_subcategory_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE)}}">
                     @csrf
                     @method('PUT')
@@ -58,7 +58,7 @@
                     {{-- Save Changes Button --}}
                     @submitButton(SAVE_CHANGES)
                 </form>
-            </div>
+            </article>
         </div>
     </div>
 </div>

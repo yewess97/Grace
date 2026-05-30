@@ -17,20 +17,12 @@
                             {{-- Shipping Payment Logo --}}
                             <a href="{{route(PRODUCTS_LIST)}}" role="link" class="shipping-payment-logo">{{config('app.name')}} Store</a>
                             {{-- Shipping Payment Breadcrumb --}}
-                            <nav role="navigation" class="nav-breadcrumb" aria-label="breadcrumb">
-                                <div class="container ms-0">
-                                    <div class="row">
-                                        <ol role="list" class="breadcrumb">
-                                            <li role="listitem" class="breadcrumb-item fw-500">
-                                                <a href="{{route(CART_MODEL)}}" role="link">{{ucfirst(CART_MODEL)}}</a>
-                                            </li>
-                                            <li role="listitem" class="breadcrumb-item active fw-500" aria-current="page">
-                                                {{ucfirst(CHECKOUT)}}
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </nav>
+                            {{
+                                breadcrumb([
+                                    ['title' => ucfirst(CART_MODEL), 'url' => route(CART_MODEL)],
+                                    ['title' => ucfirst(CHECKOUT)],
+                                ])
+                            }}
                         </header>
                         {{-- Shipping Payment Main --}}
                         <main role="main" class="shipping-payment-main row col-12 gap-5 bg-white">

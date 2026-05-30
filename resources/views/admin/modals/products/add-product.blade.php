@@ -1,11 +1,11 @@
 <div id="add_product_modal" class="modal admin-modal top fade" tabindex="-1" aria-labelledby="add_product" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="add_product" class="modal-title fs-6 fw-600">{{ADD_PRODUCT_TITLE}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body pb-0">
+            </article>
+            <article class="modal-body pb-0">
                 <form action="{{route(CREATE_UPDATE_PRODUCT, ADD)}}" method="post" role="form" id="add_product_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_PRODUCTS_ROUTE)}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
@@ -172,7 +172,7 @@
                     {{-- Add Button --}}
                     @submitButton(ADD)
                 </form>
-            </div>
+            </article>
         </div>
     </div>
 </div>

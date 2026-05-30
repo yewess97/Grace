@@ -82,13 +82,11 @@
             @foreach ($common_collections[NEW_PRODUCTS] as $new_product)
                 <li role="listitem" class="new-product-item">
                     <a href="{{route(PRODUCT_DETAILS, $new_product->{SLUG})}}" role="link" class="new-product row align-items-center">
-                        <div class="new-product-img col-2 rounded-2">
+                        <article class="new-product-img col-2 rounded-2">
                             <img src="{{imageSource($new_product, MAIN_IMAGE)}}" alt="{{ $new_product->{NAME} }}" class="w-100">
-                        </div>
-                        <div class="new-product-info row col gap-2">
-                            <h3 class="text-nowrap overflow-hidden">
-                                {{capitalizeFirst($new_product->{NAME})}}
-                            </h3>
+                        </article>
+                        <article class="new-product-info row col gap-2">
+                            <h3>{{capitalizeFirst($new_product->{NAME})}}</h3>
                             <div class="price-info row gap-1">
                                 <div class="new-price-discount d-flex align-items-center">
                                     <span class="new-price">@priceFormat($new_product->new_price)</span>
@@ -100,7 +98,7 @@
                                     <s class="old-price fs-7">@priceFormat($new_product->old_price)</s>
                                 @endoldprice
                             </div>
-                        </div>
+                        </article>
                     </a>
                 </li>
             @endforeach

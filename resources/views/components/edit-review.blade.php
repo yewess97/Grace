@@ -1,11 +1,11 @@
 <div id="edit_review_modal" class="modal {{$role}}-modal {{$role}}-edit-modal top fade" tabindex="-1" aria-labelledby="edit_review" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="edit_review" class="modal-title fs-6 fw-600">{{EDIT_REVIEW_TITLE}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body pb-0">
+            </article>
+            <article class="modal-body pb-0">
                 <form action="{{route(CREATE_UPDATE_REVIEW, UPDATE)}}" method="post" role="form" id="update_review_form" class="grace-form review-form" data-reviews="{{$dataReviews ?? ''}}">
                     @csrf
                     @method('PUT')
@@ -50,7 +50,7 @@
                     {{-- Save Changes Button --}}
                     @submitButton(SAVE_CHANGES)
                 </form>
-            </div>
+            </article>
         </div>
     </div>
 </div>

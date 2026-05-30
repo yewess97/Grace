@@ -489,8 +489,8 @@ const User = {
                 ),
 
                 showLoadingSpinners = () => {
-                    $.each((getProductWishlistButtons()), (_, wishlist_button) => {
-                        const wishlist_btn = $(wishlist_button);
+                    $.each((getProductWishlistButtons()), (_, wishlistButton) => {
+                        const wishlist_btn = $(wishlistButton);
 
                         wishlist_btn.find('i').remove();
 
@@ -499,8 +499,8 @@ const User = {
                 },
 
                 updateWishlistButtonIcons = (action, iconType) => {
-                    $.each((getProductWishlistButtons()), (_, wishlist_button) => {
-                        const wishlist_btn = $(wishlist_button);
+                    $.each((getProductWishlistButtons()), (_, wishlistButton) => {
+                        const wishlist_btn = $(wishlistButton);
 
                         wishlist_btn.find('.loading-spinner').remove();
 

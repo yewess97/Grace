@@ -342,6 +342,13 @@ const Admin = {
                 success: (data) => {
                     window.isFormDirty = false;
                     target.trigger('reset');
+                    $('input[type="hidden"]').val('');
+                    $.each((target.find('.aks-file-upload-label')), (_, uploadImageLabel) => $(uploadImageLabel).nextAll().remove());
+                    $.each((target.find('.selected-items')), (_, selectedItemsElem) => {
+                        $(selectedItemsElem).empty();
+                        $(selectedItemsElem).prev().removeAttr('hidden');
+                        $(selectedItemsElem).prevAll(':eq(1)').html().replace(/^\d+/, '0');
+                    });
                     $(IGrace.ERROR_ELEMENT(action)).empty();
                     $(IGrace.MODAL(IGrace.ADMIN)).modal('hide');
 

@@ -2,6 +2,14 @@
 
 @section('content')
 
+    {{-- Cart Breadcrumb --}}
+    {{
+        breadcrumb([
+            ['title' => ucfirst(PRODUCTS_TABLE), 'url' => route(PRODUCTS_LIST)],
+            ['title' => 'My '.ucfirst(CART_MODEL)],
+        ])
+    }}
+
     {{-- Cart Main --}}
     <main role="main" class="cart-main py-6">
         <div class="container">

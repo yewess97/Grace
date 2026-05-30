@@ -278,7 +278,11 @@ if (!function_exists('formError')) {
      */
     function formError(string $action, string $modelOrTable, string $attribute): string
     {
-        echo "<div class='grace-form-error'><ul role='list' id='{$action}_{$modelOrTable}_{$attribute}_error' class='form-error $action-error fs-7 text-danger'></ul></div>";
+        echo "
+            <div class='grace-form-error'>
+                <ul role='list' id='{$action}_{$modelOrTable}_{$attribute}_error' class='form-error $action-error fs-7 text-danger'></ul>
+            </div>
+        ";
 
         return '';
     }
@@ -1493,6 +1497,52 @@ if (!function_exists('sendNotificationToAdmins')) {
             ->get([ID, ROLE]);
 
         Notification::send($admins, $notification);
+    }
+}
+
+
+if (!function_exists('breadcrumb')) {
+    /**
+     * Generate the breadcrumb navigation HTML.
+     *
+     * @param array $items
+     * @return string
+     */
+    function breadcrumb(array $items): string
+    {
+        if (empty($items)) {
+            return '';
+        }
+
+        $items     = array_filter($items);
+        $last_item = count($items) - 1;
+
+        $html = '
+            <nav role="navigation" class="nav-breadcrumb breadcrumb-navigation" aria-label="breadcrumb">
+                <div class="container">
+                    <div class="row">
+                        <ol role="list" class="breadcrumb">
+        ';
+
+        foreach ($items as $key => $item) {
+            if ($key === $last_item) {
+                $html .= '<li role="listitem" class="breadcrumb-item fw-500 active" aria-current="page">'.($item['title'] ?? '').'</li>';
+            }
+            else {
+                $html .= '<li role="listitem" class="breadcrumb-item fw-500"><a href="'.($item['url'] ?? '').'" role="link">'.$item['title'].'</a></li>';
+            }
+        }
+
+        $html .= '
+                       </ol>
+                    </div>
+                </div>
+            </nav>
+        ';
+
+        echo $html;
+
+        return '';
     }
 }
 

@@ -1,11 +1,11 @@
-<article id="wishlist_content">
+<div id="wishlist_content">
     {{-- Wishlist Title --}}
-    <div class="title d-flex justify-content-between align-items-center border-top border-bottom">
+    <article class="title d-flex justify-content-between align-items-center border-top border-bottom">
         <h2 class="fs-6 fw-600">My {{ucfirst(WISHLIST_MODEL)}}:</h2>
         <p class="count">
             <span class="counter">{{$wishlist_total_items}} Items</span>
         </p>
-    </div>
+    </article>
 
     {{-- Wishlist Products --}}
     <ul role="list" class="products pagination-container">
@@ -56,4 +56,4 @@
             </li>
         @endforeach
     </ul>
-</article>
+</div>

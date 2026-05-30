@@ -4,30 +4,13 @@
 
     {{-- Addresses Breadcrumb --}}
     @if (!isAdminRoute())
-        <nav role="navigation" class="nav-breadcrumb breadcrumb-navigation" aria-label="breadcrumb">
-            <div class="container">
-                <div class="row">
-                    <ol role="list" class="breadcrumb">
-                        <li role="listitem" class="breadcrumb-item fw-500">
-                            <a href="{{route(PROFILE)}}" role="link">{{ucfirst(PROFILE)}}</a>
-                        </li>
-                        @if (conditionRequest() === TRASHED)
-                            <li role="listitem" class="breadcrumb-item fw-500">
-                                <a href="{{route(USER_ADDRESSES, [ID => request()?->input(ID)])}}" role="link">My {{ucfirst(ADDRESSES_TABLE)}}</a>
-                            </li>
-
-                            <li role="listitem" class="breadcrumb-item fw-500 active" aria-current="page">
-                                {{capitalizeAll(TRASHED.'_'.ADDRESSES_TABLE)}}
-                            </li>
-                        @else
-                            <li role="listitem" class="breadcrumb-item fw-500 active" aria-current="page">
-                                My {{ucfirst(ADDRESSES_TABLE)}}
-                            </li>
-                        @endif
-                    </ol>
-                </div>
-            </div>
-        </nav>
+        {{
+            breadcrumb([
+                ['title' => ucfirst(PROFILE), 'url' => route(PROFILE)],
+                ['title' => 'My '.ucfirst(ADDRESSES_TABLE), 'url' => route(USER_ADDRESSES, [ID => request()?->input(ID)])],
+                (conditionRequest() === TRASHED) ? ['title' => capitalizeAll(TRASHED.'_'.ADDRESSES_TABLE)] : [],
+            ])
+        }}
     @endif
 
     {{-- Addresses Main --}}

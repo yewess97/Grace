@@ -47,8 +47,8 @@
 }
 
 .right-side .total-order-products ul.order-products li.order-product-item .order-product-img-info .order-product-image .order-product-quantity {
-    top: calc(var(--twelve-pixels) * -1);
-    right: calc(var(--twelve-pixels) * -1);
+    top: calc(var(--nine-pixels) * -1);
+    right: calc(var(--six-pixels) * -1);
     padding: var(--four-pixels) var(--six-pixels);
     background-color: #727272ff;
 }

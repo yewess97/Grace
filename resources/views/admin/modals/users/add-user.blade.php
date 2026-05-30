@@ -1,11 +1,11 @@
 <div id="add_user_modal" class="modal admin-modal top fade" tabindex="-1" aria-labelledby="add_user" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-3">
-            <div class="modal-header">
+            <article class="modal-header">
                 <h2 id="add_user" class="modal-title fs-6 fw-600">{{ADD_USER_TITLE}}</h2>
                 @modalCloseBtn()
-            </div>
-            <div class="modal-body pb-0">
+            </article>
+            <article class="modal-body pb-0">
                 <form action="{{route(CREATE_UPDATE_USER, ADD)}}" method="post" role="form" id="add_user_form" class="grace-form" data-main="{{route(ADMIN_USERS_ROUTE)}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
@@ -78,7 +78,7 @@
                     {{-- Add Button --}}
                     @submitButton(ADD)
                 </form>
-            </div>
+            </article>
         </div>
     </div>
 </div>
