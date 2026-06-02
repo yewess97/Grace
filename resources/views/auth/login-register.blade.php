@@ -94,7 +94,7 @@
 
                                     {{-- Submit Button --}}
                                     <div class="form-group">
-                                        <button type="submit" role="button" title="{{ucfirst($auth_action)}}" class="btn {{$auth_action}}-btn d-flex justify-content-center align-items-center gap-2 w-100">
+                                        <button type="submit" role="button" title="{{ucfirst($auth_action)}}" class="btn {{$auth_action}}-btn auth-btn d-flex justify-content-center align-items-center gap-2 w-100">
                                             <span>{{ucfirst($auth_action)}}</span>
                                         </button>
                                     </div>

@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </article>
             <article class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_REVIEW, UPDATE)}}" method="post" role="form" id="update_review_form" class="grace-form review-form" data-reviews="{{$dataReviews ?? ''}}">
+                <form action="{{route(CREATE_UPDATE_REVIEW, UPDATE)}}" method="post" role="form" id="update_review_form" class="grace-form review-form" data-reviews="{{$dataReviews ?? ''}}" data-loading_spinner="{{imageSource('loading2.png')}}">
                     @csrf
                     @method('PUT')
                     <div class="grace-form-body review-body row col-12 pt-2 pb-4">

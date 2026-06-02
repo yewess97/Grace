@@ -48,7 +48,7 @@
 
                                 {{-- Submit --}}
                                 <div class="form-group">
-                                    <button type="submit" role="button" title="Reset" class="btn btn-block">Reset</button>
+                                    <button type="submit" role="button" title="Reset" class="btn btn-block auth-btn">Reset</button>
                                 </div>
                             </article>
                         </form>

@@ -124,7 +124,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 else {
                     echo \"
                         <div class='modal-footer p-2'>
-                            <button type='submit' role='button' title='\".capitalizeAll(\$__btn_name).\"' class='btn'>\".capitalizeAll(\$__btn_name).\"</button>
+                            <button type='submit' role='button' title='\".capitalizeAll(\$__btn_name).\"' class='btn action-btn'>\".capitalizeAll(\$__btn_name).\"</button>
                         </div>
                     \";
                 }

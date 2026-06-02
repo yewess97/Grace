@@ -149,35 +149,3 @@ $.fn.starRating = function(options) {
         target.empty().html(filled_star.repeat(settings.rating) + empty_star.repeat(5 - settings.rating));
     });
 };
-
-
-/**
- * Handles the display of a loading spinner on a specified element,
- * typically used to indicate that a process is ongoing,
- * and optionally disables the element to prevent further interactions while the process is active.
- *
- * @param options
- * @return {*}
- */
-$.fn.loadingSpinner = function(options) {
-    const settings = $.extend({
-        element:    null,
-        isDisabled: false,
-    }, options);
-
-    return this.each(function() {
-        const target = $(this);
-
-        if (settings.isDisabled) {
-            settings.element.prop('disabled', true);
-        }
-
-        settings.element.prepend($('<img>', {
-            src:    target.data('loading_spinner'),
-            alt:    'Loading',
-            class:  'img-fluid loading-spinner',
-            width:  30,
-            height: 30,
-        }));
-    });
-};

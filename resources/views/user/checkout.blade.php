@@ -150,7 +150,7 @@
                         </article>
                         {{-- Place Order Button --}}
                         <article class="d-grid place-items-center">
-                            <button type="submit" role="button" title="Place {{ucfirst(ORDER_MODEL)}}" id="place_order_btn" class="btn d-flex justify-content-center align-items-center gap-2 w-75 mt-3">
+                            <button type="submit" role="button" title="Place {{ucfirst(ORDER_MODEL)}}" id="place_order_btn" class="btn action-btn d-flex justify-content-center align-items-center gap-2 w-75 mt-3">
                                 <span>Place {{ucfirst(ORDER_MODEL)}}</span>
                             </button>
                         </article>

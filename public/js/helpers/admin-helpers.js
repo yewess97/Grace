@@ -325,6 +325,7 @@ const Admin = {
             const
                 target                    = $(this),
                 route                     = target.attr('action'),
+                action_btn                = target.find('.action-btn'),
                 [action, collection_name] = form.split('_'),
                 form_data                 = Common.filteredFormData(this);
 
@@ -339,6 +340,10 @@ const Admin = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
+                beforeSend: () => target.loadingSpinner({
+                    element:    action_btn,
+                    isDisabled: true,
+                }),
                 success: (data) => {
                     window.isFormDirty = false;
                     target.trigger('reset');
@@ -365,6 +370,10 @@ const Admin = {
 
                     data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection_name)]();
 
+                    action_btn.prop('disabled', false)
+                        .find('.loading-spinner')
+                        .remove();
+
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection_name)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
                 error: (err) => {
@@ -373,6 +382,10 @@ const Admin = {
                     }
 
                     if (err.status === 422) {
+                        action_btn.prop('disabled', false)
+                            .find('.loading-spinner')
+                            .remove();
+
                         return Common.errorMessage(action, Common.responseJsonError(err));
                     }
 

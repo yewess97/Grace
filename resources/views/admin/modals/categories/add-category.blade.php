@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </article>
             <article class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_CATEGORY, ADD)}}" method="post" role="form" id="add_category_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_CATEGORIES_ROUTE)}}">
+                <form action="{{route(CREATE_UPDATE_CATEGORY, ADD)}}" method="post" role="form" id="add_category_form" class="grace-form" enctype="multipart/form-data" data-main="{{route(ADMIN_CATEGORIES_ROUTE)}}" data-loading_spinner="{{imageSource('loading2.png')}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
                         {{-- Category Name --}}
