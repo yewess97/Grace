@@ -11,6 +11,7 @@
                     @isset($user_address->{ADDRESS2})
                         <li role="listitem" class="list-group-item px-3">{{ $user_address->{ADDRESS2} }}</li>
                     @endisset
+                    <li role="listitem" class="list-group-item px-3">{{ $user_address->{PHONE} }}</li>
                     <li role="listitem" class="list-group-item px-3">{{ $user_address->{CITY} }}, {{ $user_address->{STATE}.', ' ?? '' }}{{ $user_address->{COUNTRY} }}, {{ $user_address->{POSTAL_CODE} }}</li>
                 </ul>
             </div>
