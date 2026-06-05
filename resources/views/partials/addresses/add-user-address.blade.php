@@ -34,10 +34,21 @@
                             {{$add_address_error(ADDRESS2)}}
                         </div>
 
-                        {{-- City & State --}}
-                        <div class="city-state row col-12 align-items-center gap-3 gap-lg-0">
+                        {{-- Country & City & State --}}
+                        <div class="country-city-state row col-12 align-items-center gap-3 gap-lg-0">
+                            {{-- Country --}}
+                            <div class="add-address-country col-12 col-lg-4 pe-lg-2">
+                                <div class="form-group position-relative">
+                                    <label for="add_address_country" class="label-select position-absolute user-select-none pe-none">
+                                        <sup class="me-1">*</sup>{{ucfirst(COUNTRY)}}
+                                    </label>
+                                    <select name="add_address_country" id="add_address_country" class="form-select address-country"></select>
+                                </div>
+                                {{$add_address_error(COUNTRY)}}
+                            </div>
+
                             {{-- City --}}
-                            <div class="add-address-city col-12 col-lg-6 pe-lg-2">
+                            <div class="add-address-city col-12 col-lg-4 px-lg-2">
                                 <div class="form-outline">
                                     <input type="text" name="add_address_city" id="add_address_city" class="form-control fs-7 rounded-2" min="2" max="50">
                                     <label for="add_address_city" class="form-label">
@@ -48,7 +59,7 @@
                             </div>
 
                             {{-- State --}}
-                            <div class="add-address-state col-12 col-lg-6 ps-lg-2">
+                            <div class="add-address-state col-12 col-lg-4 ps-lg-2">
                                 <div class="form-outline">
                                     <input type="text" name="add_address_state" id="add_address_state" class="form-control fs-7 rounded-2" min="2" max="50">
                                     <label for="add_address_state" class="form-label">
@@ -59,10 +70,33 @@
                             </div>
                         </div>
 
-                        {{-- Postal Code & Country --}}
-                        <div class="postal-country row col-12 align-items-center gap-3 gap-lg-0">
+                        {{-- Phone Number & Postal Code --}}
+                        <div class="phone-postal row col-12 align-items-end gap-3 gap-lg-0">
+                            {{-- Phone Number --}}
+                            <div class="address-phone col-12 col-lg-6 pe-lg-2">
+                                <div class="form-group col-12">
+                                    <label for="add_address_phone" class="form-label">
+                                        <sup class="me-1">*</sup>{{ucfirst(PHONE)}}
+                                    </label>
+                                    <div id="add_address_phone_container" class="address-phone-container position-relative d-flex align-items-center border rounded-2 overflow-visible" data-initial_country="EG">
+                                        <div class="address-phone-country-selector d-flex align-items-center px-3 cursor-pointer">
+                                            <img class="selected-flag" src="" alt="Flag">
+                                            <span class="selected-code fw-600">+20</span>
+                                            <span class="chevron-icon mb-1"></span>
+                                        </div>
+                                        <input type="tel" id="add_address_phone" class="add-address-phone address-phone-input px-3 border-0" placeholder="101 183 6243">
+                                        <div class="address-phone-dropdown-container position-absolute w-100 border rounded-3 overflow-hidden">
+                                            <input type="text" id="add_address_phone_country_search" class="country-search-input w-100 px-3 border-bottom" placeholder="Search country or code...">
+                                            <ul class="countries-list overflow-auto"></ul>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="add_address_phone">
+                                </div>
+                                {{$add_address_error(PHONE)}}
+                            </div>
+
                             {{-- Postal Code --}}
-                            <div class="add-address-postal-code col-12 col-lg-6 pe-lg-2">
+                            <div class="add-address-postal-code col-12 col-lg-6 ps-lg-2">
                                 <div class="form-outline">
                                     <input type="number" inputmode="numeric" name="add_address_postal_code" id="add_address_postal_code" class="form-control fs-7 rounded-2">
                                     <label for="add_address_postal_code" class="form-label">
@@ -70,17 +104,6 @@
                                     </label>
                                 </div>
                                 {{$add_address_error(POSTAL_CODE)}}
-                            </div>
-
-                            {{-- Country --}}
-                            <div class="add-address-country col-12 col-lg-6 ps-lg-2">
-                                <div class="form-group position-relative">
-                                    <label for="add_address_country" class="label-select position-absolute user-select-none pe-none">
-                                        <sup class="me-1">*</sup>{{ucfirst(COUNTRY)}}
-                                    </label>
-                                    <select name="add_address_country" id="add_address_country" class="form-select address-country"></select>
-                                </div>
-                                {{$add_address_error(COUNTRY)}}
                             </div>
                         </div>
                     </div>

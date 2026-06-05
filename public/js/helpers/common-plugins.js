@@ -235,19 +235,25 @@ $.fn.loadingSpinner = function(options) {
     }, options);
 
     return this.each(function() {
-        const target = $(this);
+        const loading_spinner_actions = {
+            true: () => {
+                settings.element.prop('disabled', true);
 
-        if (settings.isDisabled) {
-            settings.element.prop('disabled', true);
-        }
+                settings.element.prepend($('<img>', {
+                    src:    $(this).data('loading_spinner'),
+                    alt:    'Loading',
+                    class:  'img-fluid loading-spinner',
+                    width:  30,
+                    height: 30,
+                }));
+            },
+            false: () =>
+                settings.element.prop('disabled', false)
+                    .find('.loading-spinner')
+                    .remove(),
+        };
 
-        settings.element.prepend($('<img>', {
-            src:    target.data('loading_spinner'),
-            alt:    'Loading',
-            class:  'img-fluid loading-spinner',
-            width:  30,
-            height: 30,
-        }));
+        loading_spinner_actions[settings.isDisabled]();
     });
 };
 

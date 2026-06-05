@@ -124,9 +124,10 @@ define("LAST_SEEN",             'last_seen');
  */
 define("ADDRESS1",    'address_1');
 define("ADDRESS2",    'address_2');
+define("COUNTRY",     'country');
 define("CITY",        'city');
 define("STATE",       'state');
-define("COUNTRY",     'country');
+define("PHONE",       'phone');
 define("POSTAL_CODE", 'postal_code');
 
 /**
@@ -418,9 +419,10 @@ define("QUICK_VIEW_COMMON_ATTRIBUTES", [
 define("ADDRESS_ATTRIBUTES", [
     ADDRESS1,
     ADDRESS2,
+    COUNTRY,
     CITY,
     STATE,
-    COUNTRY,
+    PHONE,
     POSTAL_CODE,
 ]);
 

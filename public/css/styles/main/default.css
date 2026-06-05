@@ -33,7 +33,7 @@ p {
 }
 
 a,
-input:not([type="text"], [type="email"], [type="password"], [type="number"], [type="search"]),
+input:not([type="text"], [type="email"], [type="password"], [type="tel"], [type="number"], [type="search"]),
 select,
 button,
 [role="button"],

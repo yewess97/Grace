@@ -7,6 +7,8 @@ import "./common-plugins.js";
 
 
 const Common = {
+    /* ========================================= Global Variables ========================================= */
+    countriesData: [],
 
     /*================================== Concerned With UI/UX ==================================*/
     /**
@@ -55,6 +57,33 @@ const Common = {
      * @return {*|number}
      */
     currentPageNumber: () => $('.page-item.active').find('.page-link').html() || 1,
+
+
+    /**
+     * Add some classes and styles on the select elements to make them look better.
+     *
+     * @return {void}
+     */
+    formSelectConfig: () => {
+        $('.viewbar').removeClass('dropdown-toggle').addClass('form-select');
+
+        const form_select = $('.form-select');
+
+        $.each((form_select), (_, selectElement) => {
+            // Add some styles on the label of the select element
+            const select_element_label = $(selectElement).hasClass('viewbar')
+                ? $(selectElement).parent().prev()
+                : $(selectElement).prev();
+
+            select_element_label.css({
+                'top':       '18%',
+                'font-size': 'var(--twelve-pixels)',
+            })
+
+            // Add some styles on the select element
+            $(selectElement).css('padding-block', 'var(--twenty-four-pixels) 0.357rem');
+        });
+    },
 
 
     /**
@@ -169,28 +198,211 @@ const Common = {
 
 
     /**
-     * Add some classes and styles on the select elements to make them look better.
+     * Strip the country code prefix from the formatted phone number string
+     * to get the localized format for the input field.
      *
+     * @param formattedStr
+     * @param countryCode
+     * @return {string}
+     */
+    stripCountryPrefix: (formattedStr, countryCode) => {
+        let
+            code_digits_count = countryCode.replace(/\D/g, '').length,
+            digit_counter     = 0,
+            cut_index         = 0;
+
+        $.each((formattedStr.split('')), (index, char) => {
+            if (/\d/.test(char)) {
+                digit_counter++;
+            }
+
+            if (digit_counter === code_digits_count) {
+                cut_index = index + 1;
+                return false;
+            }
+        });
+
+        return formattedStr.substring(cut_index).replace(/^[^0-9]+/, '').trim();
+    },
+
+
+    /**
+     * Generate a dynamic placeholder for the phone input field
+     * based on the selected country code using the libphonenumber library if available.
+     *
+     * @param cca2
+     * @param countryCode
+     * @return {string}
+     */
+    generateDynamicPlaceholder: (cca2, countryCode) => {
+        if (typeof libphonenumber !== 'undefined') {
+            let
+                generic_mock = "123456789012345".substring(0, 10),
+                formatted_str = new libphonenumber.AsYouType().input(countryCode + generic_mock);
+
+            return Common.stripCountryPrefix(formatted_str, countryCode);
+        }
+
+        return "101 183 6243";
+    },
+
+
+    /**
+     * Form configuration for the phone input field in the address form,
+     * including the country selector dropdown.
+     *
+     * @param action
+     * @param countriesData
      * @return {void}
      */
-    formSelectConfig: () => {
-        $('.viewbar').removeClass('dropdown-toggle').addClass('form-select');
+    formPhoneConfig: (action, countriesData) => {
+        const address_phone_container = $(`#${action}_${IGrace.ADDRESS}_${IGrace.PHONE}_container`);
 
-        const form_select = $('.form-select');
+        const
+            country_selector         = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-${IGrace.COUNTRY}-selector`),
+            selected_country_flag    = country_selector?.find('.selected-flag'),
+            selected_country_code    = country_selector?.find('.selected-code'),
+            selected_country_chevron = country_selector?.find('.chevron-icon'),
+            phone_input              = address_phone_container?.find(`.${action}-${IGrace.ADDRESS}-${IGrace.PHONE}`),
+            dropdown_container       = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-dropdown-container`),
+            search_input             = dropdown_container?.find(`.${IGrace.COUNTRY}-search-input`),
+            countries_list           = dropdown_container?.find(`.${IGrace.PLURALIZE(IGrace.COUNTRY)}-list`),
+            phone_hidden_input       = address_phone_container?.closest('.form-group').find(`input[name="${action}_${IGrace.ADDRESS}_${IGrace.PHONE}"]`);
 
-        $.each((form_select), (_, selectElement) => {
-            // Add some styles on the label of the select element
-            const select_element_label = $(selectElement).hasClass('viewbar')
-                ? $(selectElement).parent().prev()
-                : $(selectElement).prev();
+        const default_cca2 = address_phone_container?.data(`initial_${IGrace.COUNTRY}`);
 
-            select_element_label.css({
-                'top':       '18%',
-                'font-size': 'var(--twelve-pixels)',
-            })
+        address_phone_container?.data('cca2', default_cca2);
 
-            // Add some styles on the select element
-            $(selectElement).css('padding-block', 'var(--twenty-four-pixels) 0.357rem');
+        // Populate countries rows
+        let countries_items = '';
+
+        $.each((countriesData), (_, countryData) => {
+            countries_items += `
+                <li data-cca2="${countryData.cca2}" data-flag="${countryData.flagSvg}" data-code="${countryData.code}">
+                    <img src="${countryData.flagSvg}" alt="${countryData.name}" class="dropdown-flag">
+                    <span class="dropdown-name">${countryData.name}</span>
+                    <span class="dropdown-code">${countryData.code}</span>
+                </li>`;
+
+            if(countryData.cca2 === default_cca2) {
+                selected_country_flag.attr('src', countryData.flagSvg);
+                selected_country_code.text(countryData.code);
+                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(countryData.cca2, countryData.code));
+            }
+        });
+
+        countries_list.html(countries_items);
+
+        // Click Actions
+        $(document).on(IGrace.CLICK, (e) => {
+            const
+                target       = $(e.target),
+                country_flag = countries_list.find('.dropdown-flag'),
+                country_name = countries_list.find('.dropdown-name'),
+                country_code = countries_list.find('.dropdown-code');
+
+            // Dropdown open/close
+            if (target.is(country_selector) || target.is(selected_country_flag) || target.is(selected_country_code) || target.is(selected_country_chevron)) {
+                e.stopPropagation();
+
+                dropdown_container.toggleClass('show');
+
+                if (dropdown_container.hasClass('show')) {
+                    search_input.val('')
+                        .trigger(IGrace.KEYUP)
+                        .focus();
+                }
+            }
+
+            // Dropdown filter search
+            if (target.is(search_input)) {
+                e.stopPropagation();
+            }
+
+            // Country item selected
+            if (target.is(country_flag) || target.is(country_name) || target.is(country_code)) {
+                const
+                    cca2     = target.parent().data('cca2'),
+                    flag_url = target.parent().data('flag'),
+                    code     = target.parent().data('code');
+
+                address_phone_container?.data('cca2', cca2);
+                selected_country_flag.attr('src', flag_url);
+                selected_country_code.text(code);
+                dropdown_container.removeClass('show');
+
+                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(cca2, code));
+                phone_input.trigger(IGrace.INPUT).focus();
+            }
+        });
+
+        // Keyup Action (Dropdown filter search)
+        search_input.on(IGrace.KEYUP, function() {
+            const countries_items = countries_list.find('li');
+
+            let query = $(this).val()
+                .toLowerCase()
+                .trim();
+
+            $.each((countries_items), (_, countryItem) => {
+                let
+                    name = $(countryItem).find('.dropdown-name')
+                        .text()
+                        .toLowerCase(),
+
+                    code = $(countryItem).find('.dropdown-code')
+                        .text()
+                        .toLowerCase();
+
+                $(countryItem).toggle(name.includes(query) || code.includes(query));
+            });
+        });
+
+        // Input Action (Format As-You-Type & Save Clean Value to Hidden Input)
+        phone_input.on(IGrace.INPUT, function() {
+            let raw_digits = $(this).val().replace(/\D/g, '');
+
+            const
+                current_code = selected_country_code.text(),
+                current_cca2 = address_phone_container?.data('cca2');
+
+            if (raw_digits === '') {
+                $(this).val('');
+                phone_hidden_input.val('');
+                return;
+            }
+
+            const phone_actions = {
+                true: () => {
+                    try {
+                        let
+                            combined_string         = current_code + raw_digits,
+                            global_formatted_number = new libphonenumber.AsYouType().input(combined_string),
+                            localized_result        = Common.stripCountryPrefix(global_formatted_number, current_code);
+
+                        $(this).val(localized_result);
+
+                        // Parse & set validation payload inside the hidden input field
+                        const parsed_number = libphonenumber.parsePhoneNumber(combined_string, current_cca2);
+
+                        const number_actions = {
+                            true:  () => phone_hidden_input.val(parsed_number.number), // Outputs strict standard format (+201011836243)
+                            false: () => phone_hidden_input.val(combined_string), // Work-in-progress input value fallback
+                        }
+
+                        number_actions[parsed_number && parsed_number.isValid()]();
+                    }
+                    catch (e) {
+                        phone_hidden_input.val(current_code + raw_digits);
+                    }
+                },
+                false: () => {
+                    $(this).val(raw_digits);
+                    phone_hidden_input.val(current_code + raw_digits);
+                }
+            }
+
+            phone_actions[typeof libphonenumber !== 'undefined']();
         });
     },
 
@@ -393,29 +605,81 @@ const Common = {
 
 
     /**
-     * Fetch the list of countries from the REST Countries API,
-     * and populate the country select elements in the address forms.
+     * Fetch the list of countries from the REST Countries API.
      *
      * @return {void}
      */
     ajaxGetCountries: () => {
-        const country_elements = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
+        const country_element = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
 
-        if (!country_elements.length) {
-            return;
-        }
-
-        $.getJSON('https://restcountries.com/v3.1/all?fields=name')
+        $.getJSON('https://restcountries.com/v3.1/all?fields=name,cca2,idd,flags')
             .done((countries) => {
+                // For Address Country
                 const countries_options = countries
                     .map((country) => country.name.common)
                     .sort((opt1, opt2) => opt1.localeCompare(opt2))
                     .map((countryName) => `<option value="${countryName}">${countryName}</option>`)
                     .join('');
 
-                country_elements.append(countries_options);
+                country_element?.append(countries_options);
+
+                // For Address Phone Country Selector
+                Common.countriesData = countries.filter((country) => country.idd && country.idd.root)
+                    .map((country) => {
+                        let code = country.idd.root;
+
+                        if (country.idd.suffixes && country.idd.suffixes.length === 1) {
+                            code += country.idd.suffixes[0];
+                        }
+
+                        return {
+                            name:    country.name.common,
+                            cca2:    country.cca2,
+                            flagSvg: country.flags.svg,
+                            code:    code,
+                        };
+                    })
+                    .sort((item1, item2) => item1.name.localeCompare(item2.name));
+
+                Common.formPhoneConfig(IGrace.ADD,    Common.countriesData);
+                Common.formPhoneConfig(IGrace.UPDATE, Common.countriesData);
             })
             .fail(() => console.error("Failed to fetch countries!"));
+    },
+
+
+    /**
+     * Extract the phone number data from the response and populate the phone input field in the address form.
+     *
+     * @param responseData
+     * @return {void}
+     */
+    getPhoneData: (responseData) => {
+        if(responseData.phone && typeof libphonenumber !== 'undefined') {
+            const phone = responseData.phone;
+
+            try {
+                const parsed = libphonenumber.parsePhoneNumber(phone);
+
+                if (parsed) {
+                    const
+                        country_code = `+${parsed.countryCallingCode}`,
+                        target_country = Common.countriesData.find((countryData) =>
+                            countryData.code === country_code && countryData.cca2 === parsed.country
+                        );
+
+                    if (target_country) {
+                        $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}_container`).data('cca2', target_country.cca2);
+                        $('.selected-flag').attr('src', target_country.flagSvg);
+                        $('.selected-code').text(target_country.code);
+                        $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}`).val(parsed.nationalNumber).trigger(IGrace.INPUT);
+                    }
+                }
+            }
+            catch (e) {
+                $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}`).val(phone);
+            }
+        }
     },
 
 
@@ -715,12 +979,13 @@ const Common = {
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.ADDRESS))}`).val(address[IGrace.ID]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.ADDRESS1()}`).val(address[IGrace.ADDRESS1()]);
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.ADDRESS2()}`).val(address[IGrace.ADDRESS2()]);
-                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.CITY}`).val(address[IGrace.CITY]);
-                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.STATE}`).val(address[IGrace.STATE]);
-                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.POSTAL_CODE}`).val(address[IGrace.POSTAL_CODE]);
                     country.find('option').removeAttr('selected')
                         .filter((_, addressCountry) => addressCountry.value === address[IGrace.COUNTRY])
                         .attr('selected', true);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.CITY}`).val(address[IGrace.CITY]);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.STATE}`).val(address[IGrace.STATE]);
+                    Common.getPhoneData(address);
+                    $(`#${IGrace.UPDATE_COLLECTION(IGrace.ADDRESS)}_${IGrace.POSTAL_CODE}`).val(address[IGrace.POSTAL_CODE]);
 
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ADDRESS, true)).modal('show');
                 })
@@ -1134,7 +1399,8 @@ const Common = {
 
                     if (search_form.length) clearForm(search_form);
                     if (filter_form.length) clearForm(filter_form);
-                    if (clear_search_button.length) clear_search_button.css({'opacity': '0', 'visibility': 'hidden'});
+
+                    clear_search_button?.css({'opacity': '0', 'visibility': 'hidden'});
 
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
                 })
@@ -1196,9 +1462,7 @@ const Common = {
 
                 showHideNotificationsCount(notifications_details_list);
 
-                if (notification_sound.length) {
-                    notification_sound.trigger('play');
-                }
+                notification_sound?.trigger('play');
             }
             catch (error) {
                 console.error('Failed to parse SSE message: ', error);

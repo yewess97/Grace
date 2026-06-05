@@ -24,9 +24,10 @@ class AddressRequest extends FormRequest
         return [
             $this->dataKeyOf(ADDRESS1)    => ['required',  ...$address_lines_rules],
             $this->dataKeyOf(ADDRESS2)    => ['nullable',  ...$address_lines_rules],
+            $this->dataKeyOf(COUNTRY)     => ['required'],
             $this->dataKeyOf(CITY)        => ['required',  ...$city_state_rules],
             $this->dataKeyOf(STATE)       => ['nullable',  ...$city_state_rules],
-            $this->dataKeyOf(COUNTRY)     => ['required'],
+            $this->dataKeyOf(PHONE)       => ['required', 'string', 'min:8', 'max:16', 'regex:/^\+[1-9]\d{1,14}$/'],
             $this->dataKeyOf(POSTAL_CODE) => ['required', 'integer', 'digits_between:5,6'],
             ...$this->collectionIdValidation($this->user_id_validation),
         ];
@@ -40,14 +41,17 @@ class AddressRequest extends FormRequest
     final public function messages(): array
     {
         $cap_country     = ucfirst(COUNTRY);
+        $cap_phone       = ucfirst(PHONE);
         $cap_postal_code = capitalizeFirst(POSTAL_CODE);
 
         return [
             ...$this->validationMessages(ADDRESS1, 3, 80, "letters, numbers, and hyphen(-)"),
             ...$this->validationMessages(ADDRESS2, 3, 80, "letters, numbers, and hyphen(-)"),
+            ...$this->requiredMessage($this->dataKeyOf(COUNTRY), $cap_country),
             ...$this->validationMessages(CITY, 3, 50, "characters"),
             ...$this->validationMessages(STATE, 3, 50, "characters"),
-            ...$this->requiredMessage($this->dataKeyOf(COUNTRY), $cap_country),
+            ...$this->requiredMessage($this->dataKeyOf(PHONE), $cap_phone),
+            ...$this->validationMessages(PHONE, 8, 16, "numbers and a leading plus (+) sign"),
             ...$this->requiredMessage($this->dataKeyOf(POSTAL_CODE), $cap_postal_code),
             ...$this->integerMessage($this->dataKeyOf(POSTAL_CODE), $cap_postal_code),
             "{$this->dataKeyOf(POSTAL_CODE)}.digits_between" => "$cap_postal_code must be five digits",

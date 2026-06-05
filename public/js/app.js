@@ -224,24 +224,25 @@ $(document).ready(() => {
         const target = $(e.target);
 
         const
-            nav_menu                     = 'nav-menu',
-            nav_submenu                  = 'nav-submenu',
-            footer_menu                  = 'footer-menu',
-            nav_menu_toggler             = $(`.${nav_menu}-toggler > i`),
-            nav_menu_close               = `.${nav_menu}-close`,
-            nav_menu_overlay             = `.${nav_menu}-overlay`,
-            nav_menu_list_header         = `.${nav_menu}-list-header`,
-            nav_menu_list_content        = `.${nav_menu}-list-content`,
-            nav_menu_list_icon           = `.${nav_menu}-list-icon`,
-            nav_menu_list_title          = `.${nav_menu}-list-title`,
-            nav_submenu_list_header      = `.${nav_submenu}-list-header`,
-            nav_submenu_list_content     = `.${nav_submenu}-list-content`,
-            nav_submenu_item_title       = `.${nav_submenu}-item-title`,
-            nav_submenu_item_badge       = `.${nav_submenu}-item-badge`,
-            nav_submenu_item_rotate_icon = `.${nav_submenu}-item-rotate-icon`,
-            footer_menu_list_header      = `.${footer_menu}-list-header`,
-            footer_menu_item_title       = `.${footer_menu}-item-title`,
-            footer_menu_item_rotate_icon = `.${footer_menu}-item-rotate-icon`;
+            nav_menu                         = 'nav-menu',
+            nav_submenu                      = 'nav-submenu',
+            footer_menu                      = 'footer-menu',
+            nav_menu_toggler                 = $(`.${nav_menu}-toggler > i`),
+            nav_menu_close                   = `.${nav_menu}-close`,
+            nav_menu_overlay                 = `.${nav_menu}-overlay`,
+            nav_menu_list_header             = `.${nav_menu}-list-header`,
+            nav_menu_list_content            = `.${nav_menu}-list-content`,
+            nav_menu_list_icon               = `.${nav_menu}-list-icon`,
+            nav_menu_list_title              = `.${nav_menu}-list-title`,
+            nav_submenu_list_header          = `.${nav_submenu}-list-header`,
+            nav_submenu_list_content         = `.${nav_submenu}-list-content`,
+            nav_submenu_item_title           = `.${nav_submenu}-item-title`,
+            nav_submenu_item_badge           = `.${nav_submenu}-item-badge`,
+            nav_submenu_item_rotate_icon     = `.${nav_submenu}-item-rotate-icon`,
+            footer_menu_list_header          = `.${footer_menu}-list-header`,
+            footer_menu_item_title           = `.${footer_menu}-item-title`,
+            footer_menu_item_rotate_icon     = `.${footer_menu}-item-rotate-icon`,
+            address_phone_dropdown_container = `.${IGrace.ADDRESS}-${IGrace.PHONE}-dropdown-container`;
 
         const
             quantity_input           = target.parent().find(`.${IGrace.QUANTITY}-input`),
@@ -343,31 +344,36 @@ $(document).ready(() => {
             $(`#${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_form`).fadeToggle('slow').toggleClass('show-form');
         }
 
+        // Address Phone Dropdown close when clicking outside
+        if (!target.is(address_phone_dropdown_container)) {
+            $(address_phone_dropdown_container).removeClass('show');
+        }
+
         // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
         target.filterProductsMultiItems({
-            multiSelectedValuesList: $('input[name="filter_products_categories[]"]:hidden').val().split(','),
+            multiSelectedValuesList: $('input[name="filter_products_categories[]"]:hidden').val()?.split(','),
             relation:                IGrace.PLURALIZE(IGrace.CATEGORY),
         });
 
         target.filterProductsMultiItems({
-            multiSelectedValuesList: $('input[name="filter_products_subcategories[]"]:hidden').val().split(','),
+            multiSelectedValuesList: $('input[name="filter_products_subcategories[]"]:hidden').val()?.split(','),
             relation:                IGrace.PLURALIZE(IGrace.SUBCATEGORY),
         });
 
         target.filterProductsMultiItems({
-            multiSelectedValuesList: $('input[name="filter_products_sizes[]"]:hidden').val().split(','),
+            multiSelectedValuesList: $('input[name="filter_products_sizes[]"]:hidden').val()?.split(','),
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: $('input[name="add_cart_product_size_quick_view[]"]:hidden').val().split(','),
+            multiSelectedValuesList: $('input[name="add_cart_product_size_quick_view[]"]:hidden').val()?.split(','),
             relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: $('input[name="add_cart_product_size[]"]:hidden').val().split(','),
+            multiSelectedValuesList: $('input[name="add_cart_product_size[]"]:hidden').val()?.split(','),
             relation:                IGrace.PRODUCT_SIZE(),
         });
 
@@ -378,17 +384,8 @@ $(document).ready(() => {
     /* ---------=========== End Click Action ============--------- */
 
     // Set up the form multiselect settings
-    const
-        add_cart_product_sizes            = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`),
-        add_cart_product_sizes_quick_view = $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`);
-
-    if (add_cart_product_sizes.length) {
-        add_cart_product_sizes.formMultiSelectConfig();
-    }
-
-    if (add_cart_product_sizes_quick_view.length) {
-        add_cart_product_sizes_quick_view.formMultiSelectConfig();
-    }
+    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`)?.formMultiSelectConfig();
+    $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`)?.formMultiSelectConfig();
 
     // Set up the form select settings
     Common.formSelectConfig();

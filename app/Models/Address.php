@@ -42,6 +42,6 @@ class Address extends Model implements IGrace
      */
     final public function data(): Attribute
     {
-        return Attribute::get(fn() => getData($this, [ADDRESS1, ADDRESS2, CITY, STATE, POSTAL_CODE, COUNTRY]));
+        return Attribute::get(fn() => getData($this, [ADDRESS1, ADDRESS2, COUNTRY, CITY, STATE, PHONE, POSTAL_CODE]));
     }
 }

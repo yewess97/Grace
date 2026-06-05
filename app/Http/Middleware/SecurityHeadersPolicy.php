@@ -26,7 +26,7 @@ class SecurityHeadersPolicy
         // Generate a unique nonce for inline scripts and styles to enhance security
         $nonce = app()->make('csp_nonce');
 
-        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-{$nonce}'; style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com www.gstatic.com 'nonce-{$nonce}' 'sha256-3ITP0qhJJYBulKb1omgiT3qOK6k0iB3rMDhGfpM8b7c=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-ORYTfWgGeaDP2b2S7MVkXsd+c7Cui4ZVcoC+HzzP/nM=' 'sha256-rRl7CHm+5M/6W322VSJ6spPUB/xQLLTchIPOFgti90E=' 'sha256-ucCfCRKeUNEuZJWr2Xeo7Jf7mdikyR4eZ280hmS9Yk0=' 'sha256-0R/LX01gwFNdds3kDBfH0kPtAnQmJw3/a8ABXs9E1Lc=' 'unsafe-hashes'; font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com fonts.gstatic.com data:; connect-src 'self' www.gstatic.com restcountries.com api.emailjs.com; img-src 'self' data:; frame-ancestors 'self';");
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-{$nonce}'; style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com www.gstatic.com 'nonce-{$nonce}' 'sha256-3ITP0qhJJYBulKb1omgiT3qOK6k0iB3rMDhGfpM8b7c=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-ORYTfWgGeaDP2b2S7MVkXsd+c7Cui4ZVcoC+HzzP/nM=' 'sha256-rRl7CHm+5M/6W322VSJ6spPUB/xQLLTchIPOFgti90E=' 'sha256-ucCfCRKeUNEuZJWr2Xeo7Jf7mdikyR4eZ280hmS9Yk0=' 'sha256-0R/LX01gwFNdds3kDBfH0kPtAnQmJw3/a8ABXs9E1Lc=' 'unsafe-hashes'; font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com fonts.gstatic.com data:; connect-src 'self' www.gstatic.com restcountries.com api.emailjs.com unpkg.com; img-src 'self' data: flagcdn.com upload.wikimedia.org; frame-ancestors 'self';");
 
         // X-Content-Type-Options - Prevents browsers from MIME-type sniffing
         $response->headers->set('X-Content-Type-Options', 'nosniff');
@@ -40,8 +40,11 @@ class SecurityHeadersPolicy
         // Cross-Origin-Resource-Policy - Restricts which origins can load resources from this site
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
 
-        // Cross-Origin-Embedder-Policy - Prevents embedding the website in foreign origins
-        $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
+        // Cross-Origin-Embedder-Policy (require-corp) - Prevents embedding the website in foreign origins
+        // $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
+
+        // Cross-Origin-Embedder-Policy (credentialless) - Protects against cross-origin attacks without breaking third-party resources (CDNs, iframes, widgets)
+        $response->headers->set('Cross-Origin-Embedder-Policy', 'credentialless');
 
         // Strict-Transport-Security (HSTS) - Forces the use of HTTPS for security
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');

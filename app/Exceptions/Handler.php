@@ -97,7 +97,7 @@ class Handler extends ExceptionHandler
             $status = $e->getStatusCode();
 
             return response(view(ERROR_COMPONENT, [
-                TITLE           => $this->getErrorPageTitle($status),
+                TITLE           => $status.' '.$this->getErrorTitle($status),
                 'error_status'  => $status,
                 'error_title'   => $this->getErrorTitle($status),
                 'error_message' => $this->getErrorMessage($status),
@@ -105,27 +105,6 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $e);
-    }
-
-    /**
-     * Get the error page title based on the status code.
-     *
-     * @param int $status
-     * @return string
-     */
-    private function getErrorPageTitle(int $status): string
-    {
-        return match ($status) {
-            400 => '400 Bad Request',
-            401 => '401 Unauthorized',
-            402 => '402 Payment Required',
-            403 => '403 Forbidden',
-            404 => '404 Not Found',
-            419 => '419 Expired',
-            429 => '429 Too Many Requests',
-            500 => '500 Internal Server Error',
-            503 => '503 Service Unavailable',
-        };
     }
 
     /**
@@ -137,15 +116,16 @@ class Handler extends ExceptionHandler
     private function getErrorTitle(int $status): string
     {
         return match ($status) {
-            400 => 'Bad Request',
-            401 => 'Unauthorized',
-            402 => 'Payment Required',
-            403 => 'Forbidden',
-            404 => 'Page Not Found',
-            419 => 'Page Expired',
-            429 => 'Too Many Requests',
-            500 => 'Internal Server Error',
-            503 => 'Service Unavailable',
+            400     => 'Bad Request',
+            401     => 'Unauthorized',
+            402     => 'Payment Required',
+            403     => 'Forbidden',
+            404     => 'Page Not Found',
+            419     => 'Page Expired',
+            429     => 'Too Many Requests',
+            500     => 'Internal Server Error',
+            503     => 'Service Unavailable',
+            default => 'Error',
         };
     }
 
@@ -158,15 +138,16 @@ class Handler extends ExceptionHandler
     private function getErrorMessage(int $status): string
     {
         return match ($status) {
-            400 => "We're sorry but the request you made is invalid. Please check the URL and try again!",
-            401 => "We're sorry but you don't have permission to access this page. Please register or login first and try again!",
-            402 => "We're sorry but you need to pay to access this page. Please check your payment status and try again!",
-            403 => "We're sorry but you are forbidden from accessing this page. Please check your permissions and try again!",
-            404 => "We're sorry but the page you are looking for could not be found. Please check the URL and try again!",
-            419 => "We're sorry but the page you are looking for has expired. Please refresh the page and try again!",
-            429 => "We're sorry but you have made too many requests. Please wait a while and try again!",
-            500 => "We're sorry but something went wrong. Please try again later!",
-            503 => "We're sorry but the service you requested is currently unavailable. Please try again later!",
+            400     => "We're sorry but the request you made is invalid. Please check the URL and try again!",
+            401     => "We're sorry but you don't have permission to access this page. Please register or login first and try again!",
+            402     => "We're sorry but you need to pay to access this page. Please check your payment status and try again!",
+            403     => "We're sorry but you are forbidden from accessing this page. Please check your permissions and try again!",
+            404     => "We're sorry but the page you are looking for could not be found. Please check the URL and try again!",
+            419     => "We're sorry but the page you are looking for has expired. Please refresh the page and try again!",
+            429     => "We're sorry but you have made too many requests. Please wait a while and try again!",
+            500     => "We're sorry but something went wrong. Please try again later!",
+            503     => "We're sorry but the service you requested is currently unavailable. Please try again later!",
+            default => "We're sorry but an unexpected error occurred. Please try again later!",
         };
     }
 }

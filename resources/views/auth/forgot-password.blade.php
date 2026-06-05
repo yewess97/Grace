@@ -31,7 +31,7 @@
 
                                 {{-- Submit --}}
                                 <div class="form-group">
-                                    <button type="submit" role="button" title="Send {{ucfirst(EMAIL)}}" class="btn btn-block auth-btn">Send {{ucfirst(EMAIL)}}</button>
+                                    <button type="submit" role="button" title="Send {{ucfirst(EMAIL)}}" class="btn btn-block action-btn">Send {{ucfirst(EMAIL)}}</button>
                                 </div>
                             </article>
 

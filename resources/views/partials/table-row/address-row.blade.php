@@ -8,13 +8,16 @@
         <i>{{$address->{ADDRESS2} ?? 'No Address line 2'}}</i>
     </td>
     <td>
+        <p>{{ $address->{COUNTRY} }}</p>
+    </td>
+    <td>
         <p>{{ $address->{CITY} }}</p>
     </td>
     <td>
         <p><i>{{$address->{STATE} ?? 'No '.STATE}}</i></p>
     </td>
     <td>
-        <p>{{ $address->{COUNTRY} }}</p>
+        <p>{{ $address->{PHONE} }}</p>
     </td>
     <td>
         <p>{{ $address->{POSTAL_CODE} }}</p>

@@ -118,9 +118,9 @@ const IGrace = {
     /*################################### End Authentication Attributes ###################################*/
 
 
-    /*################################### Common Attributes ###################################*/
+    /*################################### Attributes ###################################*/
     /**
-     * Common Attributes.
+     * Attributes.
      */
     ID                : 'id',
     NAME              : 'name',
@@ -132,9 +132,10 @@ const IGrace = {
     SIZE              : 'size',
     QUANTITY          : 'quantity',
     STATUS            : 'status',
+    COUNTRY           : 'country',
     CITY              : 'city',
     STATE             : 'state',
-    COUNTRY           : 'country',
+    PHONE             : 'phone',
     POSTAL_CODE       : 'postal_code',
     EMAIL             : 'email',
     ROLE              : 'role',
@@ -149,7 +150,7 @@ const IGrace = {
     TRASHED           : 'trashed',
 
     /**
-     * Common Attributes Methods.
+     * Attributes Methods.
      */
     MAIN_IMAGE              : () => IGrace.IMAGE_TYPE('main'),
     BANNER_IMAGE            : () => IGrace.IMAGE_TYPE('banner'),
@@ -167,7 +168,7 @@ const IGrace = {
     FILTER_ORDERS           : () => `${IGrace.FILTER}_${IGrace.PLURALIZE(IGrace.ORDER)}`,
     ADD_REMOVE_WISHLIST     : () => `${IGrace.ADD}_${IGrace.REMOVE}_${IGrace.WISHLIST}`,
 
-    /*################################### End Common Attributes ###################################*/
+    /*################################### End Attributes ###################################*/
 
 
     /*################################### Common Elements ###################################*/

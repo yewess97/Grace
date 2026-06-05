@@ -2,14 +2,14 @@
     <table role="table" class="table table-bordered address-table align-middle mb-0 fs-7 bg-white">
         <thead class="text-center bg-light">
         <tr>
-            @tableHeaders("Address line 1", "Address line 2", "City", "State", "Country", "Postal Code")
+            @tableHeaders("Address line 1", "Address line 2", "Country", "City", "State", "Phone", "Postal Code")
         </tr>
         </thead>
         <tbody class="text-center">
         @forelse ($user_addresses as $key => $address)
             @include(ADDRESS_ROW_PARTIAL, [ADDRESS_MODEL => $address])
         @empty
-            @noResults(ADDRESSES_TABLE, 6)
+            @noResults(ADDRESSES_TABLE, 7)
         @endforelse
         </tbody>
     </table>

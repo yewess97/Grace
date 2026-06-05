@@ -370,9 +370,8 @@ const Admin = {
 
                     data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection_name)]();
 
-                    action_btn.prop('disabled', false)
-                        .find('.loading-spinner')
-                        .remove();
+                    // Remove the loading spinner
+                    target.loadingSpinner({ element: action_btn });
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection_name)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
@@ -382,9 +381,8 @@ const Admin = {
                     }
 
                     if (err.status === 422) {
-                        action_btn.prop('disabled', false)
-                            .find('.loading-spinner')
-                            .remove();
+                        // Remove the loading spinner
+                        target.loadingSpinner({ element: action_btn });
 
                         return Common.errorMessage(action, Common.responseJsonError(err));
                     }

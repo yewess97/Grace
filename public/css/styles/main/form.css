@@ -96,6 +96,97 @@
     max-height: calc(var(--thirty-two-pixels) * 10);
 }
 
+/*==== User Phone ====*/
+.grace-form .grace-form-body .address-phone .address-phone-container:focus-within {
+    border-color: var(--main-color) !important;
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-country-selector {
+    gap: var(--eight-pixels);
+    padding-block: var(--twelve-pixels);
+    user-select: none;
+    border-right: var(--gray-border);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container :is(.address-phone-country-selector .selected-flag, .address-phone-dropdown-container .countries-list .dropdown-flag) {
+    width: var(--twenty-four-pixels);
+    height: var(--sixteen-pixels);
+    object-fit: cover;
+    border-radius: var(--two-pixels);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-country-selector .selected-code {
+    color: var(--black-color);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-country-selector .chevron-icon {
+    width: var(--six-pixels);
+    height: var(--six-pixels);
+    margin-left: var(--two-pixels);
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    transform: rotate(45deg);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container.show ~ .grace-form .grace-form-body .address-phone .address-phone-container .address-phone-country-selector .chevron-icon {
+    margin-bottom: calc(var(--two-pixels) * -1);
+    transform: rotate(-135deg);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-input {
+    padding-block: var(--six-pixels);
+    letter-spacing: 0.031rem;
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-input::placeholder {
+    color: var(--mute-color);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container {
+    display: none;
+    top: calc(100% + var(--six-pixels));
+    left: 0;
+    z-index: 999;
+    background-color: var(--dropdown-background-color);
+    box-shadow: var(--dropdown-box-shadow);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container.show {
+    display: block;
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .country-search-input {
+    padding-block: var(--twelve-pixels);
+    background: var(--light-gray-color);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .countries-list {
+    max-height: calc(var(--twenty-two-pixels) * 10);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .countries-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--twelve-pixels);
+    padding: var(--twelve-pixels) var(--sixteen-pixels);
+    cursor: pointer;
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .countries-list li:hover {
+    background-color: #f1f5f9;
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .countries-list .dropdown-name {
+    flex: 1;
+    color: var(--black-color);
+}
+
+.grace-form .grace-form-body .address-phone .address-phone-container .address-phone-dropdown-container .countries-list .dropdown-code {
+    font-weight: 600;
+    color: #64748b;
+}
+/*==== End User Phone ====*/
+
 .grace-form .grace-form-footer .title {
     font-size: var(--fifteen-pixels);
     white-space: nowrap;

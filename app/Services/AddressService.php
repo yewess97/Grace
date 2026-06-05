@@ -176,18 +176,19 @@ class AddressService implements ServiceData
      */
     final public function createOrUpdateCollection(FormRequest|AddressRequest $collectionRequest, array $extra): Address
     {
-        [$address1, $address2, $city, $state, $country, $postal_code, $user_id] = ADDRESS_FILLABLE_ATTRIBUTES;
+        [$address1, $address2, $country, $city, $state, $phone, $postal_code, $user_id] = ADDRESS_FILLABLE_ATTRIBUTES;
 
-        [$address1_value, $address2_value, $city_value, $state_value, $country_value, $postal_code_value, $user_id_value] = $collectionRequest->dataValues();
+        [$address1_value, $address2_value, $country_value, $city_value, $state_value, $phone_value, $postal_code_value, $user_id_value] = $collectionRequest->dataValues();
 
         return Address::query()->updateOrCreate(
             [ID => $extra[ADDRESS_ID]],
             [
                 $address1    => $address1_value,
                 $address2    => $address2_value,
+                $country     => $country_value,
                 $city        => $city_value,
                 $state       => $state_value,
-                $country     => $country_value,
+                $phone       => $phone_value,
                 $postal_code => $postal_code_value,
                 $user_id     => $user_id_value,
             ]

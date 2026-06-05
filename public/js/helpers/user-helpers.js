@@ -130,17 +130,17 @@ const User = {
             e.preventDefault();
 
             const
-                target    = $(this),
-                route     = target.attr('action'),
-                auth_btn  = target.find('.auth-btn'),
-                form_data = Common.filteredFormData(this);
+                target     = $(this),
+                route      = target.attr('action'),
+                action_btn = target.find('.action-btn'),
+                form_data  = Common.filteredFormData(this);
 
             $.ajax({
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
                 beforeSend: () => target.loadingSpinner({
-                    element:    auth_btn,
+                    element:    action_btn,
                     isDisabled: true,
                 }),
                 success: (data) => {
@@ -163,6 +163,9 @@ const User = {
                     window.isFormDirty = false;
                     $(IGrace.ERROR_ELEMENT(authAction)).empty();
 
+                    // Remove the loading spinner
+                    target.loadingSpinner({ element: action_btn });
+
                     return Common.successMessage(IGrace.SUCCESS, success_message, authAction);
                 },
                 error: (err) => {
@@ -170,14 +173,13 @@ const User = {
                         return Common.swalResponseJsonErrorMessage(err);
                     }
 
-                    if (err.status === 429 && $('.auth-btn').length) {
+                    if (err.status === 429 && $('.action-btn').length) {
                         return Common.errorMessage(authAction, Common.responseJsonError(err), err.status);
                     }
 
                     if (err.status === 422 || IGrace.IS_IN_ARRAY([`${IGrace.FORGOT_PASSWORD()}_failed`, `${IGrace.RESET_PASSWORD()}_failed`], err.status)) {
-                        auth_btn.prop('disabled', false)
-                            .find('.loading-spinner')
-                            .remove();
+                        // Remove the loading spinner
+                        target.loadingSpinner({ element: action_btn });
 
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
@@ -384,10 +386,6 @@ const User = {
                     if (collection_name === IGrace.CAPITALIZE(IGrace.ORDER)) {
                         success_message = '<p style="font-size:var(--eighteen-pixels)">We are glad and honored that you chose us <i class="fa-solid fa-face-grin-wink"></i></p><p class="mt-3" style="font-size:var(--eighteen-pixels)">Order has been placed successfully</p><p class="mt-2 fs-6">Have a nice day <i class="fa-solid fa-face-smile-beam"></i></p>';
 
-                        action_btn.prop('disabled', false)
-                            .find('.loading-spinner')
-                            .remove();
-
                         window.isFormDirty = false;
 
                         $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))} ul`).empty();
@@ -414,6 +412,9 @@ const User = {
                         action:   action,
                     });
 
+                    // Remove the loading spinner
+                    target.loadingSpinner({ element: action_btn });
+
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
                 error: (err) => {
@@ -436,10 +437,6 @@ const User = {
 
                     if (err.status === 422) {
                         if (!Common.responseJsonError(err)[`${IGrace.REVIEW}_exists`]) {
-                            action_btn.prop('disabled', false)
-                                .find('.loading-spinner')
-                                .remove();
-
                             $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).removeClass('d-none');
 
                             return Common.errorMessage(action, Common.responseJsonError(err));
@@ -452,6 +449,9 @@ const User = {
                             .html(Common.responseJsonError(err, true));
 
                         $(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"][type="hidden"]`).val('');
+
+                        // Remove the loading spinner
+                        target.loadingSpinner({ element: action_btn });
 
                         return formReset(target, action);
                     }
