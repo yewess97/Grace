@@ -110,5 +110,5 @@
     </section>
 
     <!----======= Footer Bottom =======---->
-    <x-bottom-footer/>
+    <x-layout.bottom-footer/>
 </footer>

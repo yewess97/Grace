@@ -32,19 +32,19 @@
                 {{-- Nav Menu List --}}
                 <ul role="list" class="nav-menu-list row box-content bg-transparent">
                     {{-- Dashboard --}}
-                    <x-admin-nav-item url="{{DASHBOARD}}" route_name="{{ADMIN_DASHBOARD_ROUTE}}" icon="ti ti-layout-grid2-alt"/>
+                    <x-layout.admin-nav-item url="{{DASHBOARD}}" route_name="{{ADMIN_DASHBOARD_ROUTE}}" icon="ti ti-layout-grid2-alt"/>
                     {{-- Categories --}}
-                    <x-admin-nav-item url="{{CATEGORIES_TABLE}}" route_name="{{ADMIN_CATEGORIES_ROUTE}}" icon="fa-solid fa-layer-group"/>
+                    <x-layout.admin-nav-item url="{{CATEGORIES_TABLE}}" route_name="{{ADMIN_CATEGORIES_ROUTE}}" icon="fa-solid fa-layer-group"/>
                     {{-- Subcategories --}}
-                    <x-admin-nav-item url="{{SUBCATEGORIES_TABLE}}" route_name="{{ADMIN_SUBCATEGORIES_ROUTE}}" icon="fa-solid fa-shapes"/>
+                    <x-layout.admin-nav-item url="{{SUBCATEGORIES_TABLE}}" route_name="{{ADMIN_SUBCATEGORIES_ROUTE}}" icon="fa-solid fa-shapes"/>
                     {{-- Products --}}
-                    <x-admin-nav-item url="{{PRODUCTS_TABLE}}" route_name="{{ADMIN_PRODUCTS_ROUTE}}" icon="fa-solid fa-box-open"/>
+                    <x-layout.admin-nav-item url="{{PRODUCTS_TABLE}}" route_name="{{ADMIN_PRODUCTS_ROUTE}}" icon="fa-solid fa-box-open"/>
                     {{-- Users --}}
-                    <x-admin-nav-item url="{{USERS_TABLE}}" route_name="{{ADMIN_USERS_ROUTE}}" icon="fa-solid fa-users"/>
+                    <x-layout.admin-nav-item url="{{USERS_TABLE}}" route_name="{{ADMIN_USERS_ROUTE}}" icon="fa-solid fa-users"/>
                     {{-- Orders --}}
-                    <x-admin-nav-item id="{{ORDERS_TABLE}}_list" url="{{ORDERS_TABLE}}" icon="fa-solid fa-truck-fast" route_name="{{ADMIN_ORDERS_ROUTE}}" submenu="true" :all_table="\App\Models\Order::withTrashed()->get([STATUS])->unique(STATUS)" column_name="{{STATUS}}"/>
+                    <x-layout.admin-nav-item id="{{ORDERS_TABLE}}_list" url="{{ORDERS_TABLE}}" icon="fa-solid fa-truck-fast" route_name="{{ADMIN_ORDERS_ROUTE}}" submenu="true" :all_table="\App\Models\Order::withTrashed()->get([STATUS])->unique(STATUS)" column_name="{{STATUS}}"/>
                     {{-- Reviews --}}
-                    <x-admin-nav-item id="{{REVIEWS_TABLE}}_list" url="{{REVIEWS_TABLE}}" icon="fa-solid fa-star" route_name="{{ADMIN_REVIEWS_ROUTE}}" submenu="true" :all_table="\App\Models\Review::withTrashed()->get([RATING])->unique(RATING)" column_name="{{RATING}}"/>
+                    <x-layout.admin-nav-item id="{{REVIEWS_TABLE}}_list" url="{{REVIEWS_TABLE}}" icon="fa-solid fa-star" route_name="{{ADMIN_REVIEWS_ROUTE}}" submenu="true" :all_table="\App\Models\Review::withTrashed()->get([RATING])->unique(RATING)" column_name="{{RATING}}"/>
                 </ul>
             </main>
 

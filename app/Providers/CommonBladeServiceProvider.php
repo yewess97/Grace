@@ -251,7 +251,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$__trashed_main_button = \"
                     <a href=\".route(\$__route, [...\$__query_params, CONDITION => TRASHED]).\" type='button' role='link' title='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"' class='trashed-btn mt-2 \$__button_class' aria-label='\".capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"'>
-                        \".Blade::render('<x-action-icon action='.\$__button_text.'/>').capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"
+                        \".Blade::render('<x-actions.icon action='.\$__button_text.'/>').capitalizeAll(TRASHED.'_'.\$__subcollection_title.\$__table_name).\"
                     </a>
                 \";
 
@@ -260,7 +260,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                     \$__restore_all_selected_button = \"
                         <button type='button' role='button' title='\".capitalizeAll(RESTORE.'_'.\$__subcollection_title.\$__table_name).\"' id='restore_\".\$__table_name.\"_btn' class='restore-btn \$__button_class' data-route=\".route(RESTORE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">
-                            \".Blade::render('<x-action-icon action='.RESTORE.'/>').ucfirst(RESTORE).\" all selected
+                            \".Blade::render('<x-actions.icon action='.RESTORE.'/>').ucfirst(RESTORE).\" all selected
                         </button>
                     \";
 
@@ -274,14 +274,14 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$__delete_remove_all_selected_button = \"
                     <button type='button' role='button' title='\".capitalizeAll(\$__button_text.'_'.\$__subcollection_title.\$__table_name).\"' id='delete_\".\$__table_name.\"_btn' class='delete-btn \$__button_class' data-route=\".route(DELETE.'_'.\$__table_name).\" data-main=\".route(\$__route, [...\$__query_params, CONDITION => conditionRequest()]).\">
-                        \".Blade::render('<x-action-icon action='.\$__button_text.'/>').ucfirst(\$__button_text).\" all selected
+                        \".Blade::render('<x-actions.icon action='.\$__button_text.'/>').ucfirst(\$__button_text).\" all selected
                     </button>
                 \";
 
                 if (!in_array(Route::currentRouteName(), [ADMIN_ORDERS_ROUTE, ADMIN_REVIEWS_ROUTE]) && conditionRequest() !== TRASHED) {
                     \$__add_button = \"
                         <button type='button' role='button' title='\".capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"' class='add-btn \$__button_class' data-mdb-toggle='modal' data-mdb-target='#add_\".singularize(\$__table_name).\"_modal'>
-                            \".Blade::render('<x-action-icon action='.ADD.'/>').capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"
+                            \".Blade::render('<x-actions.icon action='.ADD.'/>').capitalizeAll(ADD.'_'.singularize(\$__table_name)).\"
                         </button>
                     \";
                 }
@@ -418,7 +418,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 \$__query_params = \Illuminate\Support\Arr::except(request()?->query(), ['_token', 'page']);
 
-                echo with(\$__collection)->links(PAGINATION_COMPONENT, ['route' => route(\$__route, \$__query_params)]);
+                echo with(\$__collection)->links('components.pagination-template', ['route' => route(\$__route, \$__query_params)]);
             ?>"
         );
     }

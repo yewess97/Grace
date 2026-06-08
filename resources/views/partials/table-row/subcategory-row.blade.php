@@ -30,7 +30,7 @@
                         data-name="{{ $subcategory->{NAME} }}"
                         data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_SUBCATEGORY_TITLE}}"
@@ -39,7 +39,7 @@
                         data-route="{{route(EDIT_SUBCATEGORY, $subcategory->id)}}"
                         data-main_image="{{imageSource($subcategory, MAIN_IMAGE)}}"
                         class="edit-subcategory-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -49,7 +49,7 @@
                     data-name="{{ $subcategory->{NAME} }}"
                     data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$subcategory->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$subcategory->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

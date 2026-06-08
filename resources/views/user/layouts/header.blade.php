@@ -15,7 +15,7 @@
                             {{-- Nav Menu Header --}}
                             <header role="banner" class="nav-menu-header nav-offer position-relative">
                                 {{-- Offers Sales --}}
-                                <x-offers-sales :common_collections="$common_collections"/>
+                                <x-home.offers-sales :common_collections="$common_collections"/>
 
                                 {{-- Close Button --}}
                                 @menuCloseBtn("header_nav_menu")
@@ -194,7 +194,7 @@
 
             {{-- Header Products search --}}
             <article class="header-search products-search row col-5">
-                <x-products-search/>
+                <x-products.search/>
             </article>
 
             {{-- Header User's Account & Cart --}}

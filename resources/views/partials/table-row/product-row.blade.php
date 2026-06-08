@@ -98,7 +98,7 @@
                         data-name="{{ $product->{NAME} }}"
                         data-main="{{route(ADMIN_PRODUCTS_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-product-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_PRODUCT_TITLE}}"
@@ -108,7 +108,7 @@
                         data-main_image="{{imageSource($product, MAIN_IMAGE)}}"
                         data-thumb_images="@foreach($product->{THUMB_IMAGES} as $thumb_image){{imageSource($thumb_image, THUMB_IMAGE)}} @endforeach"
                         class="edit-product-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -118,7 +118,7 @@
                     data-name="{{ $product->{NAME} }}"
                     data-main="{{route(ADMIN_PRODUCTS_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-product-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$product->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$product->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

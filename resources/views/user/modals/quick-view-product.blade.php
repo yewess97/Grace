@@ -48,7 +48,7 @@
                                 {{-- Product Quick View Select Quantity --}}
                                 <div class="cart-product-quantity">
                                     <div class="form-group d-flex align-items-center">
-                                        <x-product-quantity id="add_cart_product_quantity_quick_view"/>
+                                        <x-products.quantity id="add_cart_product_quantity_quick_view"/>
                                     </div>
                                     {{formError(ADD, CART_MODEL, PRODUCT_QUANTITY_QUICK_VIEW)}}
                                 </div>
@@ -63,7 +63,7 @@
                     </div>
                 </form>
                 {{-- Add or Remove Wishlist Form --}}
-                <x-add-remove-wishlist-form product_id="{{$product->id}}" />
+                <x-wishlist-cart.add-remove-wishlist-form product_id="{{$product->id}}" />
             </article>
         </div>
     </div>

@@ -39,7 +39,7 @@
                 <article class="product-actions d-grid place-items-center">
                     @if ($cart_item->{PRODUCT_MODEL}->{STATUS} === 1)
                         <div class="cart-product-quantity d-flex align-items-center">
-                            <x-product-quantity :cart_item="$cart_item" id="update_cart_product_quantity_{{  $cart_item->{PRODUCT_ID} }}" class="update-cart-product-quantity"/>
+                            <x-products.quantity :cart_item="$cart_item" id="update_cart_product_quantity_{{  $cart_item->{PRODUCT_ID} }}" class="update-cart-product-quantity"/>
                         </div>
                     @else
                         <p>The {{ucfirst(PRODUCT_MODEL)}} is Out Of Stock</p>

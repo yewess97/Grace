@@ -33,14 +33,14 @@
                                     @menuCloseBtn("products_filter_menu")
 
                                     {{-- Offers Sales --}}
-                                    <x-offers-sales :common_collections="$common_collections"/>
+                                    <x-home.offers-sales :common_collections="$common_collections"/>
                                 </header>
 
                                 {{-- Nav Menu Main Body --}}
                                 <main role="main" class="nav-menu-main">
                                     <div class="container">
                                         <div class="row left-side products-filter-form-menu">
-                                            <x-products-filter-form class="px-2 py-3" :common_collections="$common_collections" :product_sizes="$product_sizes" :products_prices="$products_prices"/>
+                                            <x-products.filter-form class="px-2 py-3" :common_collections="$common_collections" :product_sizes="$product_sizes" :products_prices="$products_prices"/>
                                         </div>
                                     </div>
                                 </main>
@@ -52,7 +52,7 @@
 
                 <!----======= Left Side =======---->
                 <aside class="left-side products-filter-form d-lg-block d-none col-lg-3 pe-lg-3">
-                    <x-products-filter-form :common_collections="$common_collections" :product_sizes="$product_sizes" :products_prices="$products_prices"/>
+                    <x-products.filter-form :common_collections="$common_collections" :product_sizes="$product_sizes" :products_prices="$products_prices"/>
                 </aside>
 
                 <!----======= Right Side =======---->

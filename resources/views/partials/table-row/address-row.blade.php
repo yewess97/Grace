@@ -31,7 +31,7 @@
                         data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}"
                         data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID), CONDITION => conditionRequest()])}}"
                         class="restore-address-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_ADDRESS_TITLE}}"
@@ -39,7 +39,7 @@
                         data-mdb-toggle="modal" data-mdb-target="#edit_address_modal"
                         data-route="{{route(EDIT_ADDRESS, $address->id)}}"
                         class="edit-address-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -49,7 +49,7 @@
                     data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}"
                     data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID), CONDITION => conditionRequest()])}}"
                     class="delete-address-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$address->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$address->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

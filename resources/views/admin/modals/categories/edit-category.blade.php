@@ -49,7 +49,7 @@
                         </div>
 
                         {{-- Check Background --}}
-                        <x-check-image-background/>
+                        <x-actions.check-image-background/>
                     </div>
 
                     {{-- Save Changes Button --}}

@@ -2,7 +2,7 @@
     <div class="container">
         {{-- Navbar Products search --}}
         <article class="nav-search products-search row col-12">
-            <x-products-search/>
+            <x-products.search/>
         </article>
 
         {{-- Navbar List Content --}}
@@ -56,7 +56,7 @@
                 </div>
 
                 {{-- Offers Sales --}}
-                <x-offers-sales :common_collections="$common_collections"/>
+                <x-home.offers-sales :common_collections="$common_collections"/>
             </article>
         </div>
     </div>

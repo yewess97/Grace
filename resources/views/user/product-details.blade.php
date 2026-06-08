@@ -78,7 +78,7 @@
                                     {{-- Select Quantity --}}
                                     <div class="cart-product-quantity">
                                         <div class="form-group d-flex align-items-center">
-                                            <x-product-quantity id="add_cart_product_quantity"/>
+                                            <x-products.quantity id="add_cart_product_quantity"/>
                                         </div>
                                         {{$add_cart_product_error(PRODUCT_QUANTITY)}}
                                     </div>
@@ -95,7 +95,7 @@
                         </div>
                     </form>
                     {{-- Add or Remove Wishlist Form --}}
-                    <x-add-remove-wishlist-form product_id="{{$product->id}}" />
+                    <x-wishlist-cart.add-remove-wishlist-form product_id="{{$product->id}}" />
                     {{-- Product Long-Description & Reviews --}}
                     <section class="box-content product-details-reviews">
                         <ul role="tablist" class="nav nav-tabs d-flex justify-content-center align-items-center mb-1">
@@ -138,7 +138,7 @@
                                     <ul role="list" class="owl-stage products-content">
                                         @foreach ($product->{RELATED_PRODUCTS} as $related_product)
                                             <li role="listitem" class="owl-item product-item position-relative p-0">
-                                                <x-product-item :product="$related_product"/>
+                                                <x-products.item :product="$related_product"/>
                                             </li>
                                         @endforeach
                                     </ul>

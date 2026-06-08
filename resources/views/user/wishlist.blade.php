@@ -15,7 +15,7 @@
         <div class="container">
             <div class="row justify-content-center align-items-center">
                 @if (session()->has(EMPTY_WISHLIST))
-                    <x-empty-wishlist-cart collection="{{WISHLIST_MODEL}}"/>
+                    <x-wishlist-cart.empty collection="{{WISHLIST_MODEL}}"/>
                 @else
                     <div class="main-sides row col-12">
                         <!----======= Left Side =======---->

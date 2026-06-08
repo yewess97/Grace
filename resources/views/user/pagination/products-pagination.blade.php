@@ -10,7 +10,7 @@
     @else
         @foreach ($products as $product)
             <li role="listitem" class="product-item col position-relative">
-                <x-product-item :product="$product"/>
+                <x-products.item :product="$product"/>
             </li>
         @endforeach
     @endif

@@ -96,7 +96,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof HttpExceptionInterface && !($request->ajax() || $request->is('/api.*'))) {
             $status = $e->getStatusCode();
 
-            return response(view(ERROR_COMPONENT, [
+            return response(view('components.error', [
                 TITLE           => $status.' '.$this->getErrorTitle($status),
                 'error_status'  => $status,
                 'error_title'   => $this->getErrorTitle($status),

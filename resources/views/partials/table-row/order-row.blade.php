@@ -32,7 +32,7 @@
                         data-name="{{ $order->{TRACKING_NUM} }}"
                         data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => conditionRequest()])}}"
                         class="restore-order-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_ORDER_TITLE}}"
@@ -40,7 +40,7 @@
                         data-mdb-toggle="modal" data-mdb-target="#edit_order_modal"
                         data-route="{{route(EDIT_ORDER, $order->id)}}"
                         class="edit-order-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -50,7 +50,7 @@
                     data-name="{{ $order->{TRACKING_NUM} }}"
                     data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => conditionRequest()])}}"
                     class="delete-order-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$order->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$order->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

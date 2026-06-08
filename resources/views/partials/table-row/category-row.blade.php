@@ -23,7 +23,7 @@
                         data-name="{{ $category->{NAME} }}"
                         data-main="{{route(ADMIN_CATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-category-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_CATEGORY_TITLE}}"
@@ -33,7 +33,7 @@
                         data-main_image="{{imageSource($category, MAIN_IMAGE)}}"
                         data-banner_image="{{imageSource($category, BANNER_IMAGE)}}"
                         class="edit-category-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -43,7 +43,7 @@
                     data-name="{{ $category->{NAME} }}"
                     data-main="{{route(ADMIN_CATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-category-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$category->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$category->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

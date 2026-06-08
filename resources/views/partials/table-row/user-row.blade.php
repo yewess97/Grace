@@ -26,7 +26,7 @@
                 <a href="{{route(ADMIN_USER_ADDRESSES_ROUTE, [ID => encrypt($user->id)])}}" type="button" role="link"
                    title="{{capitalizeAll('view_'.ADDRESSES_TABLE)}}" data-tooltip="tooltip" data-mdb-placement="top"
                    class="view-user-addresses-btn fs-5 text-warning">
-                    <x-action-icon action="view"/>
+                    <x-actions.icon action="view"/>
                 </a>
             @endif
 
@@ -37,7 +37,7 @@
                         data-name="{{ $user->{FULL_NAME} }}"
                         data-main="{{route(ADMIN_USERS_ROUTE, [CONDITION => conditionRequest()])}}"
                         class="restore-user-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_USER_TITLE}}"
@@ -45,7 +45,7 @@
                         data-mdb-toggle="modal" data-mdb-target="#edit_user_modal"
                         data-route="{{route(EDIT_USER, $user->id)}}"
                         class="edit-user-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
 
@@ -55,7 +55,7 @@
                     data-name="{{ $user->{FULL_NAME} }}"
                     data-main="{{route(ADMIN_USERS_ROUTE, [CONDITION => conditionRequest()])}}"
                     class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$user->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$user->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

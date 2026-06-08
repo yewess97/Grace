@@ -34,7 +34,7 @@
                         data-name="{{ $review->{TITLE} }}"
                         data-main="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review->{RATING}, CONDITION => conditionRequest()])}}"
                         class="restore-review-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{RESTORE}}"/>
+                    <x-actions.icon action="{{RESTORE}}"/>
                 </button>
             @else
                 <button type="button" role="button" title="{{EDIT_REVIEW_TITLE}}"
@@ -42,7 +42,7 @@
                         data-mdb-toggle="modal" data-mdb-target="#edit_review_modal"
                         data-route="{{route(EDIT_REVIEW, $review->id)}}"
                         class="edit-review-btn h-fit-content fs-5 text-success bg-transparent border-0">
-                    <x-action-icon action="{{EDIT}}"/>
+                    <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
             <button type="button" role="button"
@@ -52,7 +52,7 @@
                     data-name="{{ $review->{TITLE} }}"
                     data-main="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review->{RATING}, CONDITION => conditionRequest()])}}"
                     class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0">
-                <x-action-icon action="{{$review->trashed() ? DELETE : REMOVE}}"/>
+                <x-actions.icon action="{{$review->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
     </td>

@@ -1,3 +1,3 @@
 <footer role="contentinfo" class="footer">
-    <x-bottom-footer/>
+    <x-layout.bottom-footer/>
 </footer>

@@ -794,12 +794,10 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
 /**
  * Components.
  */
-define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component(HOME.'-'.PRODUCT_MODEL.'-left-side'));
+define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component(HOME.'.'.PRODUCT_MODEL.'-left-side'));
 define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES))); // one use till now
 define("ORDER_DETAILS_COMPONENT",          component(kebabAll(ORDER_DETAILS))); // one use till now
-define("REVIEWS_COMPONENT",                component(REVIEWS_TABLE));
-define("PAGINATION_COMPONENT",             component('pagination-template')); // one use till now
-define("ERROR_COMPONENT",                  component('error')); // one use till now
+define("REVIEWS_COMPONENT",                component(REVIEWS_TABLE.'.'.REVIEWS_TABLE));
 
 #################################### End Components ####################################
 

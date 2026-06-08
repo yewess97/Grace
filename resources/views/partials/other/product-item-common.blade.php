@@ -38,6 +38,6 @@
 
     {{-- Quick View --}}
     <button type="button" role="button" title="{{capitalizeAll(QUICK_VIEW)}}" class="quick-view-btn d-grid place-items-center fs-6 text-white border-0 rounded-1 @isset($is_single_view) opacity-100 visible @endisset" data-tooltip="tooltip" data-mdb-placement="top" data-mdb-toggle="modal" data-mdb-target="#product_quick_view_modal" data-route="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" data-main_image="{{imageSource($product, MAIN_IMAGE)}}" aria-label="{{capitalizeAll(QUICK_VIEW)}}">
-        <x-action-icon action="view"/>
+        <x-actions.icon action="view"/>
     </button>
 @endif
