@@ -139,10 +139,7 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => target.loadingSpinner({
-                    element:    action_btn,
-                    isDisabled: true,
-                }),
+                beforeSend: () => action_btn.loadingSpinner({ isDisabled: true }),
                 success: (data) => {
                     let success_message;
 
@@ -164,7 +161,7 @@ const User = {
                     $(IGrace.ERROR_ELEMENT(authAction)).empty();
 
                     // Remove the loading spinner
-                    target.loadingSpinner({ element: action_btn });
+                    action_btn.loadingSpinner();
 
                     return Common.successMessage(IGrace.SUCCESS, success_message, authAction);
                 },
@@ -179,7 +176,7 @@ const User = {
 
                     if (err.status === 422 || IGrace.IS_IN_ARRAY([`${IGrace.FORGOT_PASSWORD()}_failed`, `${IGrace.RESET_PASSWORD()}_failed`], err.status)) {
                         // Remove the loading spinner
-                        target.loadingSpinner({ element: action_btn });
+                        action_btn.loadingSpinner();
 
                         return Common.errorMessage(authAction, Common.responseJsonError(err));
                     }
@@ -372,10 +369,7 @@ const User = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => target.loadingSpinner({
-                    element:    action_btn,
-                    isDisabled: true,
-                }),
+                beforeSend: () => action_btn.loadingSpinner({ isDisabled: true }),
                 success: (data) => {
                     if ($.inArray(data.status, [`auth_${IGrace.SUCCESS}`, 'stripe_session_created']) > -1) {
                         window.isFormDirty = false;
@@ -413,7 +407,7 @@ const User = {
                     });
 
                     // Remove the loading spinner
-                    target.loadingSpinner({ element: action_btn });
+                    action_btn.loadingSpinner();
 
                     Common.successMessage(IGrace.SUCCESS, success_message);
                 },
@@ -451,7 +445,7 @@ const User = {
                         $(`input[name="${IGrace.ADD_COLLECTION(IGrace.REVIEW)}_${IGrace.RATING}"][type="hidden"]`).val('');
 
                         // Remove the loading spinner
-                        target.loadingSpinner({ element: action_btn });
+                        action_btn.loadingSpinner();
 
                         return formReset(target, action);
                     }
@@ -495,7 +489,7 @@ const User = {
 
                         wishlist_btn.find('i').remove();
 
-                        target.loadingSpinner({ element: wishlist_btn });
+                        wishlist_btn.loadingSpinner();
                     });
                 },
 
@@ -631,7 +625,7 @@ const User = {
                         .find('.loading-spinner')
                         .remove();
 
-                    target.loadingSpinner({ element: cart_button });
+                    cart_button.loadingSpinner();
                 },
                 success: (data) => {
                     let success_message = action === IGrace.ADD

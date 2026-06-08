@@ -360,14 +360,16 @@ const Common = {
 
         // Input Action (Format As-You-Type & Save Clean Value to Hidden Input)
         phone_input.on(IGrace.INPUT, function() {
-            let raw_digits = $(this).val().replace(/\D/g, '');
+            const target = $(this);
+
+            let raw_digits = target.val().replace(/\D/g, '');
 
             const
                 current_code = selected_country_code.text(),
                 current_cca2 = address_phone_container?.data('cca2');
 
             if (raw_digits === '') {
-                $(this).val('');
+                target.val('');
                 phone_hidden_input.val('');
                 return;
             }
@@ -380,7 +382,7 @@ const Common = {
                             global_formatted_number = new libphonenumber.AsYouType().input(combined_string),
                             localized_result        = Common.stripCountryPrefix(global_formatted_number, current_code);
 
-                        $(this).val(localized_result);
+                        target.val(localized_result);
 
                         // Parse & set validation payload inside the hidden input field
                         const parsed_number = libphonenumber.parsePhoneNumber(combined_string, current_cca2);
@@ -397,7 +399,7 @@ const Common = {
                     }
                 },
                 false: () => {
-                    $(this).val(raw_digits);
+                    target.val(raw_digits);
                     phone_hidden_input.val(current_code + raw_digits);
                 }
             }
@@ -487,13 +489,14 @@ const Common = {
             e.preventDefault();
 
             const
-                truncate_element = $(this).closest('.truncate'),
+                target           = $(this),
+                truncate_element = target.closest('.truncate'),
                 truncate_text    = truncate_element.find('.truncate-text'),
                 full_text        = truncate_element.data('full_text'),
                 short_text       = full_text.substring(0, show_char_num);
 
             truncate_text.slideUp(180).fadeOut(180, () => {
-                $(this).hasClass('short')
+                target.hasClass('short')
                     ? truncate_element.html(buildTruncateContent(full_text, 'full'))
                     : truncate_element.html(buildTruncateContent(short_text, 'short'));
 

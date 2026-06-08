@@ -110,6 +110,7 @@ input[type="checkbox"] + .custom-check {
 
 .filter-multi-select > .dropdown-menu > .filter > input {
     padding: var(--eight-pixels) var(--twelve-pixels) !important;
+    font-size: var(--fourteen-pixels);
 }
 
 .filter-multi-select > .dropdown-menu > .filter > button {

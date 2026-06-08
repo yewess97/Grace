@@ -135,62 +135,56 @@ $(document).ready(() => {
                 .toggleClass('rotate-180');
         }
 
-        // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
-        if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
-            // Adding Operation
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
-                multiSelectedValuesList: $('input[name="add_subcategory_related_categories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-            });
+        /**
+         * Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
+         */
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
+            multiSelectedValuesList: $('input[name="add_subcategory_related_categories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        });
 
-            // Updating Operation
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
-                multiSelectedValuesList: $('input[name="update_subcategory_related_categories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-            });
-        }
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
+            multiSelectedValuesList: $('input[name="update_subcategory_related_categories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        });
 
-        if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
-            // Adding Operation
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="add_product_related_categories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-            });
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="add_product_related_categories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        });
 
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="add_product_related_subcategories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-            });
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="add_product_related_subcategories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
+        });
 
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="add_product_sizes[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.SIZE),
-            });
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="add_product_sizes[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.SIZE),
+        });
 
-            // Updating Operation
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="update_product_related_categories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-            });
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="update_product_related_categories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
+        });
 
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="update_product_related_subcategories[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-            });
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="update_product_related_subcategories[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
+        });
 
-            target.selectAllMultiItems({
-                actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-                multiSelectedValuesList: $('input[name="update_product_sizes[]"]:hidden').val().split(','),
-                relation:                IGrace.PLURALIZE(IGrace.SIZE),
-            });
-        }
+        target.selectAllMultiItems({
+            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
+            multiSelectedValuesList: $('input[name="update_product_sizes[]"]:hidden').val()?.split(','),
+            relation:                IGrace.PLURALIZE(IGrace.SIZE),
+        });
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
         target.checkRows();
@@ -205,7 +199,9 @@ $(document).ready(() => {
             if (mutation.type === 'childList' || mutation.type === 'subtree' || mutation.type === 'attributes') {
                 const target = $(mutation.target);
 
-                // Handles the image preview visibility when updating a collection
+                /**
+                 * Handle the image preview visibility when updating a collection
+                 */
                 target.showHideImagePreview({ collection: IGrace.CATEGORY });
                 target.showHideImagePreview({
                     collection: IGrace.CATEGORY,
@@ -284,15 +280,10 @@ $(document).ready(() => {
     Admin.setThumbImagesConfig(IGrace.UPDATE);
 
     // Set up the form multiselect settings
-    if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.SUBCATEGORY))) {
-        $(`#${IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`).formMultiSelectConfig();
-    }
-
-    if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.PRODUCT))) {
-        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`).formMultiSelectConfig();
-        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY())}`).formMultiSelectConfig();
-        $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.SIZE)}`).formMultiSelectConfig();
-    }
+    $(`#${IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`)?.formMultiSelectConfig();
+    $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_CATEGORY())}`)?.formMultiSelectConfig();
+    $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY())}`)?.formMultiSelectConfig();
+    $(`#${IGrace.ADD_COLLECTION(IGrace.PRODUCT)}_${IGrace.PLURALIZE(IGrace.SIZE)}`)?.formMultiSelectConfig();
 
     // Add (active) class on the first child of the carousel item
     $('.carousel-item:first-child').addClass('active');

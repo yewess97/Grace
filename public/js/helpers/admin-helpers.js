@@ -340,10 +340,7 @@ const Admin = {
                 url: route,
                 method: IGrace.POST,
                 data: form_data,
-                beforeSend: () => target.loadingSpinner({
-                    element:    action_btn,
-                    isDisabled: true,
-                }),
+                beforeSend: () => action_btn.loadingSpinner({ isDisabled: true }),
                 success: (data) => {
                     window.isFormDirty = false;
                     target.trigger('reset');
@@ -371,7 +368,7 @@ const Admin = {
                     data_actions[!IGrace.IS_IN_ARRAY([IGrace.ORDER, IGrace.REVIEW], collection_name)]();
 
                     // Remove the loading spinner
-                    target.loadingSpinner({ element: action_btn });
+                    action_btn.loadingSpinner();
 
                     Common.successMessage(IGrace.SUCCESS, `${IGrace.CAPITALIZE(collection_name)} has been ${action === IGrace.ADD ? IGrace.ADDED() : IGrace.UPDATED()}`, main_page);
                 },
@@ -382,7 +379,7 @@ const Admin = {
 
                     if (err.status === 422) {
                         // Remove the loading spinner
-                        target.loadingSpinner({ element: action_btn });
+                        action_btn.loadingSpinner();
 
                         return Common.errorMessage(action, Common.responseJsonError(err));
                     }
@@ -429,7 +426,6 @@ const Admin = {
                     });
 
                     window.isFormDirty = false;
-
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.CATEGORY, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -473,7 +469,6 @@ const Admin = {
                     });
 
                     window.isFormDirty = false;
-
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.SUBCATEGORY, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -557,7 +552,6 @@ const Admin = {
                         .attr('selected', true);
 
                     window.isFormDirty = false;
-
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.PRODUCT, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -595,7 +589,6 @@ const Admin = {
                         .attr('selected', true);
 
                     window.isFormDirty = false;
-
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.USER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -628,7 +621,6 @@ const Admin = {
                         .attr('selected', true);
 
                     window.isFormDirty = false;
-
                     $(IGrace.COLLECTION_ACTION(IGrace.EDIT, IGrace.ORDER, true)).modal('show');
                 })
                 .fail(Common.somethingWentWrongError);
@@ -700,7 +692,6 @@ const Admin = {
                     (actions[collection] || actions.default)();
 
                     window.isFormDirty = false;
-
                     $(IGrace.ERROR_ELEMENT(IGrace.FILTER)).empty();
                 },
                 error: (err) => {

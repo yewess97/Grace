@@ -45,5 +45,6 @@
         </section>
     </a>
 </form>
+
 {{-- Add or Remove Wishlist Form --}}
 <x-wishlist-cart.add-remove-wishlist-form product_id="{{$product->id}}" />

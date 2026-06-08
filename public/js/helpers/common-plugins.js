@@ -230,17 +230,18 @@ $.fn.selectAllMultiItems = function(options) {
  */
 $.fn.loadingSpinner = function(options) {
     const settings = $.extend({
-        element:    null,
         isDisabled: false,
     }, options);
 
     return this.each(function() {
+        const target = $(this);
+
         const loading_spinner_actions = {
             true: () => {
-                settings.element.prop('disabled', true);
+                target.prop('disabled', true);
 
-                settings.element.prepend($('<img>', {
-                    src:    $(this).data('loading_spinner'),
+                target.prepend($('<img>', {
+                    src:    target.closest('form').data('loading_spinner'),
                     alt:    'Loading',
                     class:  'img-fluid loading-spinner',
                     width:  30,
@@ -248,7 +249,7 @@ $.fn.loadingSpinner = function(options) {
                 }));
             },
             false: () =>
-                settings.element.prop('disabled', false)
+                target.prop('disabled', false)
                     .find('.loading-spinner')
                     .remove(),
         };
