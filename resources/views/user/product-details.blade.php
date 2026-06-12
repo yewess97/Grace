@@ -71,7 +71,6 @@
                                                     <option value="{{$value}}">{{$size}}</option>
                                                 @endforeach
                                             </select>
-                                            <input type="hidden" name="add_cart_product_size[]">
                                         </div>
                                         {{$add_cart_product_error(PRODUCT_SIZE)}}
                                     </div>

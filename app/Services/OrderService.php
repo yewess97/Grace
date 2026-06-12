@@ -43,7 +43,7 @@ class OrderService implements ServiceData
      */
     final public function getOrderDetailsData(): RedirectResponse|Application|Factory|View
     {
-        $order = cache()->remember(ORDER_DETAILS, 3600, fn():
+        $order = cache()->remember(ORDER_DETAILS, now()->addHour(), fn():
             Order => Order::query()->with(
                 ORDER_ITEMS, static fn(HasMany $orderItem) => $orderItem->select(ORDER_ITEM_FILLABLE_ATTRIBUTES)
             )

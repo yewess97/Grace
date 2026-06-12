@@ -53,7 +53,7 @@ class ReviewService implements ServiceData
 
         $this->getCompletedOrderOrFail($order_purchased);
 
-        $this->checkReviewExistingOrFail($review_id, $product_id_value);
+        $this->checkReviewExistingOrFail($product_id_value, $review_id);
 
         $review = $this->createOrUpdateCollection($validated_review_request, compact(REVIEW_ID));
 
@@ -257,11 +257,11 @@ class ReviewService implements ServiceData
     /**
      * Throw an exception if the user has already reviewed this product.
      *
-     * @param int $review_id
      * @param int $productId
+     * @param int|null $review_id
      * @return void
      */
-    private function checkReviewExistingOrFail(int $review_id, int $productId): void
+    private function checkReviewExistingOrFail(int $productId, int $review_id = null): void
     {
         $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
             ->whereHas(PRODUCT_MODEL, static function ($product) use ($productId) {

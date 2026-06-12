@@ -41,7 +41,6 @@
                                             <sup class="me-1">*</sup>{{ucfirst(SIZES)}}
                                         </label>
                                         <select name="add_cart_product_size_quick_view[]" id="add_cart_product_size_quick_view" class="product-size-quick-view" multiple="multiple" aria-required="true"></select>
-                                        <input type="hidden" name="add_cart_product_size_quick_view[]">
                                     </div>
                                     {{formError(ADD, CART_MODEL, PRODUCT_SIZE_QUICK_VIEW)}}
                                 </div>

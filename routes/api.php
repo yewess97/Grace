@@ -11,6 +11,4 @@
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
+Route::get('/fetch-countries', static fn() => Http::get('https://www.apicountries.com/countries')->json());

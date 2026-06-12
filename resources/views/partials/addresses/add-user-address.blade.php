@@ -81,7 +81,7 @@
                                     <div id="add_address_phone_container" class="address-phone-container position-relative d-flex align-items-center border rounded-2 overflow-visible" data-initial_country="EG">
                                         <div class="address-phone-country-selector d-flex align-items-center px-3 cursor-pointer">
                                             <img class="selected-flag" src="" alt="Flag">
-                                            <span class="selected-code fw-600">+20</span>
+                                            <span class="selected-calling-code fw-600">+20</span>
                                             <span class="chevron-icon mb-1"></span>
                                         </div>
                                         <input type="tel" id="add_address_phone" class="add-address-phone address-phone-input px-3 border-0" placeholder="101 183 6243">
@@ -108,7 +108,7 @@
                         </div>
                     </div>
 
-                    {{-- Add Button --}}
+                    {{-- Add Buttons --}}
                     @submitButton(ADD)
                 </form>
             </article>

@@ -39,7 +39,7 @@ class AddressService implements ServiceData
             abort(Response::HTTP_NOT_FOUND, ucfirst(USER_MODEL).' not found.');
         }
 
-        $user_addresses_ids = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, 1800, fn() =>
+        $user_addresses_ids = cache()->remember(ADDRESSES_PAGINATION_CACHE_KEY, now()->addMinutes(30), fn() =>
             Address::query()->where(USER_ID, $user_id)
                 ->withTrashed()
                 ->pluck(ID)

@@ -133,7 +133,7 @@ class Product extends Model implements IGrace, HasImages
             ->havingRaw(
                 "$total_product_sales > ?",
                 [$minSales]
-            ) // Because fastPaginate() with groupBy + having(alias) sometimes causes problems with internal queries.
+            ) // Used [havingRaw] because fastPaginate() with [groupBy + having(alias)] sometimes causes problems with internal queries.
             ->orderByDesc('total_sales');
     }
 

@@ -393,6 +393,9 @@ const User = {
 
                         window.isFormDirty = false;
 
+                        // Remove the loading spinner
+                        action_btn.loadingSpinner();
+
                         return Common.successMessage(IGrace.SUCCESS, success_message, reviews_route);
                     }
 
@@ -432,6 +435,9 @@ const User = {
                     if (err.status === 422) {
                         if (!Common.responseJsonError(err)[`${IGrace.REVIEW}_exists`]) {
                             $(`${IGrace.CLASS(IGrace.ERROR_ELEMENT(IGrace.ADD_COLLECTION(IGrace.ORDER)))}`).removeClass('d-none');
+
+                            // Remove the loading spinner
+                            action_btn.loadingSpinner();
 
                             return Common.errorMessage(action, Common.responseJsonError(err));
                         }

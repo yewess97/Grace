@@ -383,6 +383,11 @@ $(document).ready(() => {
 
     /* ---------=========== End Click Action ============--------- */
 
+    // Get the countries
+    if (Common.urlLastDirectory().includes(IGrace.PLURALIZE(IGrace.ADDRESS))) {
+        Common.ajaxGetCountries();
+    }
+
     // Set up the form multiselect settings
     $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE()}`)?.formMultiSelectConfig();
     $(`#${IGrace.ADD_COLLECTION(IGrace.CART)}_${IGrace.PRODUCT_SIZE_QUICK_VIEW()}`)?.formMultiSelectConfig();
@@ -395,9 +400,6 @@ $(document).ready(() => {
 
     // Add some classes, styles, and attributes on each image
     Common.imageConfig();
-
-    // Get the countries
-    Common.ajaxGetCountries();
 
     // Truncate the text that has more than 70 characters
     Common.truncateText();

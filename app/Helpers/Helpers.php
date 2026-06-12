@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Notifications\NewAdminActionTaken;
 use App\Notifications\NewUserRegistered;
+use App\Services\SettingsService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -25,6 +26,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route as Routing;
 use Illuminate\Routing\RouteRegistrar;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -783,7 +785,7 @@ if (!function_exists('forgetCache')) {
      * @throws CacheInvalidArgumentException
      */
     function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool {
-        if (is_null($model)) {
+        if (is_null($model) && empty(selectedIdsRequest())) {
             return cache()->deleteMultiple(is_array($key) ? $key : [$key]);
         }
 
@@ -793,12 +795,19 @@ if (!function_exists('forgetCache')) {
             ))
             : [$model->{ID}];
 
+        // Filter out nulls to prevent whereIn('id', [null])
+        $selected_ids = array_filter($selected_ids);
+
+        if (empty($selected_ids)) {
+            return true;
+        }
+
         $query = $model::query()->whereIn(ID, $selected_ids)
             ->withTrashed();
 
         $query->pluck($additionalSuffix)
             ->unique()
-            ->each(static fn(string $suffix) =>
+            ->each(static fn($suffix) =>
                 cache()->forget($key.('_'.$suffix ?: ''))
             );
 
@@ -807,7 +816,9 @@ if (!function_exists('forgetCache')) {
         }
 
         $relations = collect($extraConfig['relation'] ?? [])
-            ->when(is_string($extraConfig['relation'] ?? null), static fn() => collect([$extraConfig['relation']]));
+            ->when(is_string($extraConfig['relation'] ?? null), static fn() =>
+                collect([$extraConfig['relation']])
+            );
 
         $relation_columns = collect($extraConfig['relation_only_columns'] ?? []);
 
@@ -816,9 +827,7 @@ if (!function_exists('forgetCache')) {
             $relations->mapWithKeys(static fn($relation) => [
                         $relation => static fn($relQuery) =>
                             $relQuery->select($relation_columns->get($relation, [ID]))
-                    ]
-                )
-                ->toArray()
+                    ])->toArray()
             )
         );
 
@@ -909,9 +918,8 @@ if (!function_exists('commonCollections')) {
      */
     function commonCollections(): array
     {
-        $categories_subcategories_common = [ID, NAME, SLUG, MAIN_IMAGE];
-        $categories    = Category::get([...$categories_subcategories_common, BANNER_IMAGE]);
-        $subcategories = Subcategory::get($categories_subcategories_common);
+        $categories    = Category::get([ID, ...CATEGORY_FILLABLE_ATTRIBUTES]);
+        $subcategories = Subcategory::get([ID, ...SUBCATEGORY_FILLABLE_ATTRIBUTES]);
         $new_products  = Product::query()
             ->latest()
             ->take(4)
@@ -922,64 +930,10 @@ if (!function_exists('commonCollections')) {
             $subcategories = $subcategories->load(PRODUCTS_TABLE);
         }
 
-        $navbar_dropdowns = [
-            [
-                'title'      => CATEGORIES_TABLE,
-                'collection' => $categories,
-                'route_name' => CATEGORY_MODEL,
-            ],
-            [
-                'title'      => 'collections',
-                'collection' => $subcategories,
-                'route_name' => SUBCATEGORY_MODEL,
-            ],
-        ];
-
-        $navbar_items = [
-            [
-                'route_name' => PAYMENT,
-            ],
-            [
-                'route_name' => ABOUT_US,
-            ],
-            [
-                'route_name' => CONTACT_US,
-            ],
-        ];
-
-        $navbar_offers = [
-            'Every day up to 45% off',
-            'End of hot summer sale',
-            'Get 50% off on four orders',
-        ];
-
-        $footer_menus = [
-            'information' => [
-                ucfirst(pluralize(PRICE)).' Drop',
-                capitalizeAll(NEW_PRODUCTS),
-                'Best Sales',
-                'Sitemap',
-                'Store',
-            ],
-            'our company' => [
-                'Delivery',
-                'Legal Notice',
-                capitalizeAll(ABOUT_US),
-                'Secure Payment',
-                capitalizeAll(CONTACT_US),
-            ],
-            'your account' => [
-                'Personal Info',
-                ucfirst(ORDERS_TABLE),
-                'Credit Slips',
-                ucfirst(ADDRESSES_TABLE),
-                ucfirst(CART_MODEL),
-            ],
-        ];
-
-        $navbar_dropdowns = object_from_array($navbar_dropdowns);
-        $navbar_items     = object_from_array($navbar_items);
-        $footer_menus     = object_from_array($footer_menus);
+        $navbar_dropdowns = SettingsService::getNavbarDropdowns(compact(CATEGORIES_TABLE, SUBCATEGORIES_TABLE));
+        $navbar_items     = SettingsService::getNavbarItems();
+        $navbar_offers    = SettingsService::getNavbarOffers();
+        $footer_menus     = SettingsService::getFooterMenus();
 
         return compact(CATEGORIES_TABLE, SUBCATEGORIES_TABLE, NEW_PRODUCTS, 'navbar_dropdowns', 'navbar_items', 'navbar_offers', 'footer_menus');
     }
@@ -994,56 +948,14 @@ if (!function_exists('commonAsideMenus')) {
      */
     function commonAsideMenus(): array
     {
-        $accessories_menu_item = [
-            'Top Accessories' => [
-                'Sports T-Shirts',
-                'Track pants',
-                'Cargos',
-                'Top wear',
-                'Track pants',
-            ],
-        ];
+//        $customers_reviews = cache()->remember('customers_'.REVIEWS_TABLE, now()->addMinutes(30), static fn() =>
+//            Review::query()
+//                ->latest()
+//                ->take(5)
+//                ->get([ID, ...Arr::except(REVIEW_FILLABLE_ATTRIBUTES, TITLE)])
+//        );
 
-        $sunglasses_menu_item = [
-            'Sunglasses' => [
-                'Shirts',
-                'Boxers',
-                'Vests',
-                'Belts',
-                'Accessories',
-            ],
-        ];
-
-        $top_wear = [
-            ...$accessories_menu_item,
-            ...$sunglasses_menu_item,
-            'Top Wear' => [
-                'Shirts',
-                'Kurtas',
-                'T-Shirts',
-                'Belts',
-                'Jewellery',
-            ],
-        ];
-
-        $bottom_wear = [
-            'Bottom Accessories' => [
-                'Vests',
-                'Sunglasses',
-                'Bottom wear',
-                'Jeans',
-                'Cargos',
-            ],
-            ...$sunglasses_menu_item,
-            ...$accessories_menu_item,
-            'Bottom Wear' => [
-                'Sports T-Shirts',
-                'Jewellery',
-                'Track pants',
-                'Cargos',
-                'Boxer',
-            ],
-        ];
+//        dd($customers_reviews);
 
         $customers_reviews = [
             [
@@ -1063,8 +975,8 @@ if (!function_exists('commonAsideMenus')) {
             ],
         ];
 
-        $top_wear          = object_from_array($top_wear);
-        $bottom_wear       = object_from_array($bottom_wear);
+        $top_wear          = SettingsService::getTopBottomWearMenu()['top_wear'];
+        $bottom_wear       = SettingsService::getTopBottomWearMenu()['bottom_wear'];
         $customers_reviews = object_from_array($customers_reviews);
 
         return compact('top_wear', 'bottom_wear', 'customers_reviews');
@@ -1113,7 +1025,7 @@ if (!function_exists(USER_MODEL.'CollectionsData')) {
         $compact_vars = [];
 
         foreach ($collections_config as $type => $config) {
-            $collection_ids = cache()->remember($config['cache_key'], 1800, static fn() =>
+            $collection_ids = cache()->remember($config['cache_key'], now()->addMinutes(30), static fn() =>
                 $config['model']::query()
                     ->whereHasAuthUser()
                     ->pluck(ID)
@@ -1416,7 +1328,7 @@ if (!function_exists(USER_MODEL.ucfirst(PRODUCTS_TABLE).'View')) {
      */
     function userProductsView(string $table, ?string $slug = null): Application|Factory|View|JsonResponse
     {
-        $products_ids = cache()->remember(PRODUCTS_TABLE, 1800, static fn() =>
+        $products_ids = cache()->remember(PRODUCTS_TABLE, now()->addMinutes(30), static fn() =>
             Product::query()
                 ->pluck(ID)
                 ->toArray()
@@ -1447,7 +1359,7 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
     function reviewData(?int $productId = null, ?string $operation = null, ?string $attributeName = null): int|string|null
     {
         if ($productId) {
-            return cache()->remember(AVERAGE_RATE.'_'.$productId, 1800, static fn() =>
+            return cache()->remember(AVERAGE_RATE.'_'.$productId, now()->addMinutes(30), static fn() =>
                 Review::query()->where(PRODUCT_ID, $productId)
                     ->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed())
                     ->withoutTrashed()
@@ -1517,8 +1429,12 @@ if (!function_exists('breadcrumb')) {
         $items     = array_filter($items);
         $last_item = count($items) - 1;
 
+        $checkout_class = str_contains(Route::currentRouteName(), CHECKOUT)
+            ? ' bg-transparent'
+            : '';
+
         $html = '
-            <nav role="navigation" class="nav-breadcrumb breadcrumb-navigation" aria-label="breadcrumb">
+            <nav role="navigation" class="nav-breadcrumb breadcrumb-navigation'.$checkout_class.'" aria-label="breadcrumb">
                 <div class="container">
                     <div class="row">
                         <ol role="list" class="breadcrumb">

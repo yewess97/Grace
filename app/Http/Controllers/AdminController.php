@@ -54,7 +54,7 @@ class AdminController extends Controller
      */
     final public function categories(): Application|Factory|View|JsonResponse
     {
-        $categories_ids = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, 1800, static fn() =>
+        $categories_ids = cache()->remember(CATEGORIES_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             Category::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
@@ -80,7 +80,7 @@ class AdminController extends Controller
      */
     final public function subcategories(): Application|Factory|View|JsonResponse
     {
-        $subcategories_ids = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, 1800, static fn() =>
+        $subcategories_ids = cache()->remember(SUBCATEGORIES_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             Subcategory::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
@@ -90,7 +90,7 @@ class AdminController extends Controller
             $query->with([...$this->relatedCategories()])
         );
 
-        $categories = cache()->remember(CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY, 1800, fn() =>
+        $categories = cache()->remember(CATEGORIES_FOR_SUBCATEGORIES_CACHE_KEY, now()->addMinutes(30), fn() =>
             Category::get($this->id_name)
         );
 
@@ -112,7 +112,7 @@ class AdminController extends Controller
      */
     final public function products(): Application|Factory|View|JsonResponse
     {
-        $products_ids = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, 1800, static fn() =>
+        $products_ids = cache()->remember(PRODUCTS_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             Product::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
@@ -130,10 +130,10 @@ class AdminController extends Controller
             ])
         );
 
-        $categories = cache()->remember(CATEGORIES_FOR_PRODUCTS_CACHE_KEY, 1800, fn() =>
+        $categories = cache()->remember(CATEGORIES_FOR_PRODUCTS_CACHE_KEY, now()->addMinutes(30), fn() =>
             Category::query()->get($this->id_name)
         );
-        $subcategories = cache()->remember(SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY, 1800, fn() =>
+        $subcategories = cache()->remember(SUBCATEGORIES_FOR_PRODUCTS_CACHE_KEY, now()->addMinutes(30), fn() =>
             Subcategory::query()->get($this->id_name)
         );
         $sizes = PRODUCT_SIZE_ENUM;
@@ -156,7 +156,7 @@ class AdminController extends Controller
      */
     final public function users(): Application|Factory|View|JsonResponse
     {
-        $users_ids = cache()->remember(USERS_PAGINATION_CACHE_KEY, 1800, static fn() =>
+        $users_ids = cache()->remember(USERS_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             User::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()
@@ -204,7 +204,7 @@ class AdminController extends Controller
 
         session()->push('last_valid_status', $status);
 
-        $orders_ids = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.'_'.$status, 1800, static fn() =>
+        $orders_ids = cache()->remember(ORDERS_PAGINATION_CACHE_KEY.'_'.$status, now()->addMinutes(30), static fn() =>
             Order::query()->whereStatus($status)
                 ->withTrashed()
                 ->pluck(ID)
@@ -253,7 +253,7 @@ class AdminController extends Controller
 
         session()->push('last_valid_rating', $rating);
 
-        $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, 1800, static fn() =>
+        $reviews_ids = cache()->remember(REVIEWS_PAGINATION_CACHE_KEY.'_'.$rating, now()->addMinutes(30), static fn() =>
             Review::query()->withTrashed()
                 ->pluck(ID)
                 ->toArray()

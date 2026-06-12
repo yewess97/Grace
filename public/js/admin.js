@@ -244,6 +244,11 @@ $(document).ready(() => {
     Admin.googleGeoChartConfig();
     Admin.googlePieChartConfig();
 
+    // Get the countries
+    if ($.inArray([IGrace.DASHBOARD, IGrace.PLURALIZE(IGrace.ADDRESS)], Common.urlLastDirectory())) {
+        Common.ajaxGetCountries();
+    }
+
     // Configure the TinyMCE rich text editor for the specified textarea selector in the add or update form.
     tinymce.init({
         license_key: 'gpl',
@@ -293,9 +298,6 @@ $(document).ready(() => {
 
     // Arrange the table rows
     Common.arrangeTableRows();
-
-    // Get the countries
-    Common.ajaxGetCountries();
 
     // Scroll to top action
     Common.scrollToTop();

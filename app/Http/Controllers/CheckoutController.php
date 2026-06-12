@@ -39,7 +39,7 @@ class CheckoutController extends Controller
             && $cart_item->delete()
         );
 
-        $user_addresses_ids = cache()->remember(USER_ADDRESSES_PAGINATION_CACHE_KEY, 1800, static fn() =>
+        $user_addresses_ids = cache()->remember(USER_ADDRESSES_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             auth()->user()?->{ADDRESSES_TABLE}()
                 ->pluck(ID)
                 ->toArray()

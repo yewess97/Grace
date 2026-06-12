@@ -24,9 +24,9 @@ class UserService
     final public function getUserProfile(): Application|Factory|View|JsonResponse
     {
         $user_profile_title = auth()->user()?->{FULL_NAME}.' - '.ucfirst(PROFILE);
-        $user               = cache()->remember(USER_MODEL, 1800, static fn() => User::profileData());
+        $user               = cache()->remember(USER_MODEL, now()->addMinutes(30), static fn() => User::profileData());
 
-        $user_orders_ids = cache()->remember(USER_ORDERS_PAGINATION_CACHE_KEY, 1800, function () use ($user) {
+        $user_orders_ids = cache()->remember(USER_ORDERS_PAGINATION_CACHE_KEY, now()->addMinutes(30), function () use ($user) {
             return $user->{ORDERS_TABLE}()
                 ->pluck(ID)
                 ->toArray();

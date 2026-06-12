@@ -35,7 +35,7 @@ class ProductService implements ServiceData
      */
     final public function getProductDetails(string $productSlug): Application|Factory|View|array|string
     {
-        $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, 1800, static fn() =>
+        $product = cache()->remember(PRODUCT_MODEL.'_'.$productSlug, now()->addMinutes(30), static fn() =>
             Product::query()->with([
                 WISHLISTS_TABLE,
                 REVIEWS_TABLE => static fn(HasMany $reviews) =>

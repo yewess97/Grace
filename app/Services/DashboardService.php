@@ -150,9 +150,9 @@ class DashboardService
                 NAME           => $name,
                 'icon'         => $metric['icon'],
                 'card_padding' => $metric['padding'],
-                TOTAL_COST     => cache()->remember(strtolower($name).'_'.TOTAL_COST, 300, static fn() =>
+                TOTAL_COST     => cache()->remember(strtolower($name).'_'.TOTAL_COST, now()->addMinutes(5), static fn() =>
                     $orders->allTotalCost()),
-                'statistic'    => cache()->remember(strtolower($name).'_statistic', 300, static fn() =>
+                'statistic'    => cache()->remember(strtolower($name).'_statistic', now()->addMinutes(5), static fn() =>
                     $orders->statisticsInLast24Hours()),
             ];
         })
@@ -215,7 +215,7 @@ class DashboardService
             ->map(function (int $value, string $status) use ($isFilter, $filterDashboardDates) {
                 $cache_key = $this->allOrFilteredCacheKey($isFilter)."_{$status}_orders_count";
 
-                return cache()->remember($cache_key, 300, function () use ($value, $status, $isFilter, $filterDashboardDates) {
+                return cache()->remember($cache_key, now()->addMinutes(5), function () use ($value, $status, $isFilter, $filterDashboardDates) {
                     $orders = $this->applyFilter(Order::query()->whereStatus($value), $isFilter, $filterDashboardDates);
 
                     return (object)[
@@ -242,7 +242,7 @@ class DashboardService
                 $stars = count(explode("★", $rating)) - 1;
                 $cache_key = $this->allOrFilteredCacheKey($isFilter)."_{$stars}star_reviews";
 
-                return cache()->remember($cache_key, 300, function () use ($value, $rating, $stars, $isFilter, $filterDashboardDates) {
+                return cache()->remember($cache_key, now()->addMinutes(5), function () use ($value, $rating, $stars, $isFilter, $filterDashboardDates) {
                     $reviews = $this->applyFilter(
                         Review::query()->where(RATING, $value),
                         $isFilter,

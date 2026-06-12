@@ -202,12 +202,12 @@ const Common = {
      * to get the localized format for the input field.
      *
      * @param formattedStr
-     * @param countryCode
+     * @param countryCallingCode
      * @return {string}
      */
-    stripCountryPrefix: (formattedStr, countryCode) => {
+    stripCountryPrefix: (formattedStr, countryCallingCode) => {
         let
-            code_digits_count = countryCode.replace(/\D/g, '').length,
+            code_digits_count = countryCallingCode.replace(/\D/g, '').length,
             digit_counter     = 0,
             cut_index         = 0;
 
@@ -230,17 +230,16 @@ const Common = {
      * Generate a dynamic placeholder for the phone input field
      * based on the selected country code using the libphonenumber library if available.
      *
-     * @param cca2
-     * @param countryCode
+     * @param countryCallingCode
      * @return {string}
      */
-    generateDynamicPlaceholder: (cca2, countryCode) => {
-        if (typeof libphonenumber !== 'undefined') {
+    generateDynamicPlaceholder: (countryCallingCode) => {
+        if (typeof libphonenumber !== 'undefined' && libphonenumber.AsYouType) {
             let
                 generic_mock = "123456789012345".substring(0, 10),
-                formatted_str = new libphonenumber.AsYouType().input(countryCode + generic_mock);
+                formatted_str = new libphonenumber.AsYouType().input(countryCallingCode + generic_mock);
 
-            return Common.stripCountryPrefix(formatted_str, countryCode);
+            return Common.stripCountryPrefix(formatted_str, countryCallingCode);
         }
 
         return "101 183 6243";
@@ -252,42 +251,42 @@ const Common = {
      * including the country selector dropdown.
      *
      * @param action
-     * @param countriesData
+     * @param countries
      * @return {void}
      */
-    formPhoneConfig: (action, countriesData) => {
+    formPhoneConfig: (action, countries) => {
         const address_phone_container = $(`#${action}_${IGrace.ADDRESS}_${IGrace.PHONE}_container`);
 
         const
-            country_selector         = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-${IGrace.COUNTRY}-selector`),
-            selected_country_flag    = country_selector?.find('.selected-flag'),
-            selected_country_code    = country_selector?.find('.selected-code'),
-            selected_country_chevron = country_selector?.find('.chevron-icon'),
-            phone_input              = address_phone_container?.find(`.${action}-${IGrace.ADDRESS}-${IGrace.PHONE}`),
-            dropdown_container       = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-dropdown-container`),
-            search_input             = dropdown_container?.find(`.${IGrace.COUNTRY}-search-input`),
-            countries_list           = dropdown_container?.find(`.${IGrace.PLURALIZE(IGrace.COUNTRY)}-list`),
-            phone_hidden_input       = address_phone_container?.closest('.form-group').find(`input[name="${action}_${IGrace.ADDRESS}_${IGrace.PHONE}"]`);
+            country_selector              = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-${IGrace.COUNTRY}-selector`),
+            selected_country_flag         = country_selector?.find('.selected-flag'),
+            selected_country_calling_code = country_selector?.find('.selected-calling-code'),
+            selected_country_chevron      = country_selector?.find('.chevron-icon'),
+            phone_input                   = address_phone_container?.find(`.${action}-${IGrace.ADDRESS}-${IGrace.PHONE}`),
+            dropdown_container            = address_phone_container?.find(`.${IGrace.ADDRESS}-${IGrace.PHONE}-dropdown-container`),
+            search_input                  = dropdown_container?.find(`.${IGrace.COUNTRY}-search-input`),
+            countries_list                = dropdown_container?.find(`.${IGrace.PLURALIZE(IGrace.COUNTRY)}-list`),
+            phone_hidden_input            = address_phone_container?.closest('.form-group').find(`input[name="${action}_${IGrace.ADDRESS}_${IGrace.PHONE}"]`);
 
-        const default_cca2 = address_phone_container?.data(`initial_${IGrace.COUNTRY}`);
+        const default_alpha2Code = address_phone_container?.data(`initial_${IGrace.COUNTRY}`);
 
-        address_phone_container?.data('cca2', default_cca2);
+        address_phone_container?.data('alpha2Code', default_alpha2Code);
 
         // Populate countries rows
         let countries_items = '';
 
-        $.each((countriesData), (_, countryData) => {
+        $.each((countries), (_, country) => {
             countries_items += `
-                <li data-cca2="${countryData.cca2}" data-flag="${countryData.flagSvg}" data-code="${countryData.code}">
-                    <img src="${countryData.flagSvg}" alt="${countryData.name}" class="dropdown-flag">
-                    <span class="dropdown-name">${countryData.name}</span>
-                    <span class="dropdown-code">${countryData.code}</span>
+                <li data-alpha2Code="${country.alpha2Code}" data-flag="${country.flag}" data-calling_code="${country.calling_code}">
+                    <img src="${country.flag}" alt="${country.name}" class="dropdown-flag">
+                    <span class="dropdown-name">${country.name}</span>
+                    <span class="dropdown-calling-code">${country.calling_code}</span>
                 </li>`;
 
-            if(countryData.cca2 === default_cca2) {
-                selected_country_flag.attr('src', countryData.flagSvg);
-                selected_country_code.text(countryData.code);
-                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(countryData.cca2, countryData.code));
+            if(country.alpha2Code === default_alpha2Code) {
+                selected_country_flag.attr('src', country.flag);
+                selected_country_calling_code.text(country.calling_code);
+                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(country.calling_code));
             }
         });
 
@@ -296,13 +295,13 @@ const Common = {
         // Click Actions
         $(document).on(IGrace.CLICK, (e) => {
             const
-                target       = $(e.target),
-                country_flag = countries_list.find('.dropdown-flag'),
-                country_name = countries_list.find('.dropdown-name'),
-                country_code = countries_list.find('.dropdown-code');
+                target               = $(e.target),
+                country_flag         = countries_list.find('.dropdown-flag'),
+                country_name         = countries_list.find('.dropdown-name'),
+                country_calling_code = countries_list.find('.dropdown-calling-code');
 
             // Dropdown open/close
-            if (target.is(country_selector) || target.is(selected_country_flag) || target.is(selected_country_code) || target.is(selected_country_chevron)) {
+            if (target.is(country_selector) || target.is(selected_country_flag) || target.is(selected_country_calling_code) || target.is(selected_country_chevron)) {
                 e.stopPropagation();
 
                 dropdown_container.toggleClass('show');
@@ -320,18 +319,18 @@ const Common = {
             }
 
             // Country item selected
-            if (target.is(country_flag) || target.is(country_name) || target.is(country_code)) {
+            if (target.is(country_flag) || target.is(country_name) || target.is(country_calling_code)) {
                 const
-                    cca2     = target.parent().data('cca2'),
-                    flag_url = target.parent().data('flag'),
-                    code     = target.parent().data('code');
+                    alpha2Code   = target.parent().data('alpha2Code'),
+                    flag_url     = target.parent().data('flag'),
+                    calling_code = target.parent().data('calling_code');
 
-                address_phone_container?.data('cca2', cca2);
+                address_phone_container?.data('alpha2Code', alpha2Code);
                 selected_country_flag.attr('src', flag_url);
-                selected_country_code.text(code);
+                selected_country_calling_code.text(calling_code);
                 dropdown_container.removeClass('show');
 
-                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(cca2, code));
+                phone_input.attr('placeholder', Common.generateDynamicPlaceholder(calling_code));
                 phone_input.trigger(IGrace.INPUT).focus();
             }
         });
@@ -350,11 +349,11 @@ const Common = {
                         .text()
                         .toLowerCase(),
 
-                    code = $(countryItem).find('.dropdown-code')
+                    calling_code = $(countryItem).find('.dropdown-calling-code')
                         .text()
                         .toLowerCase();
 
-                $(countryItem).toggle(name.includes(query) || code.includes(query));
+                $(countryItem).toggle(name.includes(query) || calling_code.includes(query));
             });
         });
 
@@ -365,8 +364,8 @@ const Common = {
             let raw_digits = target.val().replace(/\D/g, '');
 
             const
-                current_code = selected_country_code.text(),
-                current_cca2 = address_phone_container?.data('cca2');
+                current_calling_code = selected_country_calling_code.text(),
+                current_alpha2Code   = address_phone_container?.data('alpha2Code');
 
             if (raw_digits === '') {
                 target.val('');
@@ -378,14 +377,14 @@ const Common = {
                 true: () => {
                     try {
                         let
-                            combined_string         = current_code + raw_digits,
+                            combined_string         = current_calling_code + raw_digits,
                             global_formatted_number = new libphonenumber.AsYouType().input(combined_string),
-                            localized_result        = Common.stripCountryPrefix(global_formatted_number, current_code);
+                            localized_result        = Common.stripCountryPrefix(global_formatted_number, current_calling_code);
 
                         target.val(localized_result);
 
                         // Parse & set validation payload inside the hidden input field
-                        const parsed_number = libphonenumber.parsePhoneNumber(combined_string, current_cca2);
+                        const parsed_number = libphonenumber.parsePhoneNumberFromString(combined_string, current_alpha2Code);
 
                         const number_actions = {
                             true:  () => phone_hidden_input.val(parsed_number.number), // Outputs strict standard format (+201011836243)
@@ -395,12 +394,12 @@ const Common = {
                         number_actions[parsed_number && parsed_number.isValid()]();
                     }
                     catch (e) {
-                        phone_hidden_input.val(current_code + raw_digits);
+                        phone_hidden_input.val(current_calling_code + raw_digits);
                     }
                 },
                 false: () => {
                     target.val(raw_digits);
-                    phone_hidden_input.val(current_code + raw_digits);
+                    phone_hidden_input.val(current_calling_code + raw_digits);
                 }
             }
 
@@ -615,11 +614,10 @@ const Common = {
     ajaxGetCountries: () => {
         const country_element = $(`.${IGrace.ADDRESS}-${IGrace.COUNTRY}`);
 
-        $.getJSON('https://restcountries.com/v3.1/all?fields=name,cca2,idd,flags')
+        $.getJSON('/api/fetch-countries')
             .done((countries) => {
                 // For Address Country
-                const countries_options = countries
-                    .map((country) => country.name.common)
+                const countries_options = countries.map((country) => country.name)
                     .sort((opt1, opt2) => opt1.localeCompare(opt2))
                     .map((countryName) => `<option value="${countryName}">${countryName}</option>`)
                     .join('');
@@ -627,19 +625,12 @@ const Common = {
                 country_element?.append(countries_options);
 
                 // For Address Phone Country Selector
-                Common.countriesData = countries.filter((country) => country.idd && country.idd.root)
-                    .map((country) => {
-                        let code = country.idd.root;
-
-                        if (country.idd.suffixes && country.idd.suffixes.length === 1) {
-                            code += country.idd.suffixes[0];
-                        }
-
+                Common.countriesData = countries.map((country) => {
                         return {
-                            name:    country.name.common,
-                            cca2:    country.cca2,
-                            flagSvg: country.flags.svg,
-                            code:    code,
+                            alpha2Code:   country.alpha2Code,
+                            flag:         country.flag,
+                            name:         country.name,
+                            calling_code: `+${country.callingCodes[0]}`,
                         };
                     })
                     .sort((item1, item2) => item1.name.localeCompare(item2.name));
@@ -666,15 +657,15 @@ const Common = {
 
                 if (parsed) {
                     const
-                        country_code = `+${parsed.countryCallingCode}`,
-                        target_country = Common.countriesData.find((countryData) =>
-                            countryData.code === country_code && countryData.cca2 === parsed.country
+                        country_calling_code = `+${parsed.countryCallingCode}`,
+                        target_country = Common.countriesData.find((country) =>
+                            country.calling_code === country_calling_code && country.alpha2Code === parsed.country
                         );
 
                     if (target_country) {
-                        $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}_container`).data('cca2', target_country.cca2);
-                        $('.selected-flag').attr('src', target_country.flagSvg);
-                        $('.selected-code').text(target_country.code);
+                        $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}_container`).data('alpha2Code', target_country.alpha2Code);
+                        $('.selected-flag').attr('src', target_country.flag);
+                        $('.selected-code').text(target_country.calling_code);
                         $(`#${IGrace.UPDATE}_${IGrace.ADDRESS}_${IGrace.PHONE}`).val(parsed.nationalNumber).trigger(IGrace.INPUT);
                     }
                 }
