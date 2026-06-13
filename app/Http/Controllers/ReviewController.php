@@ -30,7 +30,7 @@ class ReviewController extends Controller
      */
     final public function index(): string
     {
-        return $this->reviewService->getReviews();
+        return $this->reviewService->getReviewsData();
     }
 
     /**

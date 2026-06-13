@@ -150,10 +150,8 @@ class DashboardService
                 NAME           => $name,
                 'icon'         => $metric['icon'],
                 'card_padding' => $metric['padding'],
-                TOTAL_COST     => cache()->remember(strtolower($name).'_'.TOTAL_COST, now()->addMinutes(5), static fn() =>
-                    $orders->allTotalCost()),
-                'statistic'    => cache()->remember(strtolower($name).'_statistic', now()->addMinutes(5), static fn() =>
-                    $orders->statisticsInLast24Hours()),
+                TOTAL_COST     => $orders->allTotalCost(),
+                'statistic'    => $orders->statisticsInLast24Hours(),
             ];
         })
         ->values()

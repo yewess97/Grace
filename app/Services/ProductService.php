@@ -40,7 +40,8 @@ class ProductService implements ServiceData
                 WISHLISTS_TABLE,
                 REVIEWS_TABLE => static fn(HasMany $reviews) =>
                     $reviews->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed()),
-                SIZES => static fn(HasMany $sizes) => $sizes->select(SIZE, PRODUCT_ID),
+                SIZES => static fn(HasMany $sizes) =>
+                    $sizes->select(SIZE, PRODUCT_ID),
             ])
                 ->whereSlug($productSlug)
                 ->withoutTrashed()

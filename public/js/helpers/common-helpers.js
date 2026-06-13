@@ -1001,7 +1001,7 @@ const Common = {
             $.get(route)
                 .done((data) => {
                     const
-                        review = data[IGrace.REVIEW],
+                        review                         = data[IGrace.REVIEW],
                         update_review_rating_container = $(`#${IGrace.RATING}_container`);
 
                     $(`#${IGrace.UPDATE_COLLECTION(IGrace.COLLECTION_ID(IGrace.REVIEW))}`).val(review[IGrace.ID]);

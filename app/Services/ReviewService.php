@@ -28,7 +28,7 @@ class ReviewService implements ServiceData
      * @return string
      * @throws Throwable
      */
-    final public function getReviews(): string
+    final public function getReviewsData(): string
     {
         return view(REVIEWS_COMPONENT, getReviews(request()?->input(PRODUCT_ID)))->render();
     }
@@ -255,13 +255,15 @@ class ReviewService implements ServiceData
     }
 
     /**
-     * Throw an exception if the user has already reviewed this product.
+     * Check if a review already exists for the given product and user,
+     * and throw a validation exception if it does.
      *
      * @param int $productId
      * @param int|null $review_id
      * @return void
+     * @throws ValidationException
      */
-    private function checkReviewExistingOrFail(int $productId, int $review_id = null): void
+    private function checkReviewExistingOrFail(int $productId, ?int $review_id = null): void
     {
         $review_exists = Review::query()->when($review_id, static fn($review) => $review->whereKeyNot($review_id))
             ->whereHas(PRODUCT_MODEL, static function ($product) use ($productId) {

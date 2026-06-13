@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+
 
 if (!function_exists('currentPageRequest')) {
     /**
@@ -29,13 +31,22 @@ if (!function_exists('conditionRequest')) {
 
 if (!function_exists('selectedIdsRequest')) {
     /**
-     * Get the selected ids.
+     * Get the selected IDs from the request,
+     * either from the model's ID or from a comma-separated list in the request input.
      *
-     * @return string|null
+     * @param Model|stdClass $model
+     * @return array
      */
-    function selectedIdsRequest(): string|null
+    function selectedIdsRequest(Model|stdClass $model): array
     {
-        return request()?->input('selected_'.pluralize(ID));
+        $selected_ids = $model->{ID}
+            ? [$model->{ID}]
+            : array_map('intval', array_filter(
+                array_map('trim', explode(',', request()?->input('selected_'.pluralize(ID))))
+            ));
+
+        // Filter out nulls to prevent whereIn('id', [null])
+        return array_filter($selected_ids);
     }
 }
 

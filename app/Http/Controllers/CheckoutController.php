@@ -32,12 +32,12 @@ class CheckoutController extends Controller
         }
 
         // Check if a product is unavailable, then delete it from the cart when proceeding to checkout
-        $user_cart_items->each(fn(Cart $cart_item) =>
-            !Product::query()->whereId($cart_item->{PRODUCT_MODEL}->{ID})
+        $user_cart_items->each(function (Cart $cart_item) {
+            return !Product::query()->whereId($cart_item->{PRODUCT_MODEL}->{ID})
                 ->whereStatus(1)
                 ->exists()
-            && $cart_item->delete()
-        );
+            && $cart_item->delete();
+        });
 
         $user_addresses_ids = cache()->remember(USER_ADDRESSES_PAGINATION_CACHE_KEY, now()->addMinutes(30), static fn() =>
             auth()->user()?->{ADDRESSES_TABLE}()

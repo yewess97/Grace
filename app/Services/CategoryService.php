@@ -183,15 +183,9 @@ class CategoryService implements ServiceData
      */
     private function deleteRelatedCollectionItems(Category $category, string $modelClass): void
     {
-        $category_ids = selectedIdsRequest()
-            ? array_map('intval', array_filter(
-                array_map('trim', explode(',', selectedIdsRequest()))
-            ))
-            : [$category->{ID}];
-
         $modelClass::query()
             ->whereHas(CATEGORIES_TABLE, static fn(Builder $query) =>
-                $query->whereIn(ID, $category_ids)->onlyTrashed()
+                $query->whereIn(ID, selectedIdsRequest($category))->onlyTrashed()
             )
             ->with([CATEGORIES_TABLE => static fn(Builder $query) => $query->withTrashed()])
             ->cursor()

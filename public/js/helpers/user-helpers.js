@@ -392,6 +392,8 @@ const User = {
                         const reviews_route = target.data(IGrace.PLURALIZE(IGrace.REVIEW));
 
                         window.isFormDirty = false;
+                        $(IGrace.MODAL(IGrace.USER)).modal('hide');
+                        formReset(target, action);
 
                         // Remove the loading spinner
                         action_btn.loadingSpinner();

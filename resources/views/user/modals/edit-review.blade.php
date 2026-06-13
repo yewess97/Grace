@@ -1,3 +1,3 @@
-<x-reviews.edit-review role="{{USER_MODEL}}" dataReviews="{{route(REVIEWS_TABLE, $product->id)}}">
+<x-reviews.edit-review role="{{USER_MODEL}}" dataReviews="{{route(PRODUCT_DETAILS, $productSlug)}}">
     @include(UPDATE_REVIEW_ERRORS_PARTIAL)
 </x-reviews.edit-review>

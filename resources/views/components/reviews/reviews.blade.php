@@ -7,7 +7,7 @@
         @include(REVIEW_RATING_PARTIAL, [RATING => $average_rate])
 
         <p class="rate-count mt-2">Based on
-            {{$product->{REVIEWS_TABLE}->count() === 1 ? '1 '.REVIEW_MODEL : $product->{REVIEWS_TABLE}->count().' '.REVIEWS_TABLE}}
+            {{$product->{REVIEWS_TABLE}->count().' '.pluralize(REVIEW_MODEL, $product->{REVIEWS_TABLE}->count())}}
         </p>
     </div>
     {{-- Reviews Header Write Review Button --}}
@@ -92,7 +92,7 @@
                 <div class="user-review-info fs-7 fst-italic">
                     <strong class="user-review-name fw-600">{{ $review->{USER_MODEL}->{FULL_NAME} }}</strong>
                     <span>on</span>
-                    <strong class="user-review-date fw-600">{{$review->created_at->format('d F Y')}}</strong>
+                    <strong class="user-review-date fw-600">{{$review->{DATES[0]}->format('d F Y')}}</strong>
                 </div>
                 {{-- User Review Body --}}
                 <p class="user-review-body">{{ $review->{BODY_TEXT} }}</p>

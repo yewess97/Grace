@@ -167,7 +167,11 @@ if (!function_exists('generalControllerRoutes')) {
                     )
             );
 
-        return Route::controller($controller)->group(static fn() => $routes->each(static fn($route) => $route()));
+        return Route::controller($controller)->group(static function () use ($routes) {
+            return $routes->each(static function ($route) {
+                return $route();
+            });
+        });
     }
 }
 
@@ -606,17 +610,13 @@ if (!function_exists(REMOVE.ucfirst(DELETE).'Or'.ucfirst(RESTORE))) {
      */
     function removeDeleteOrRestore(Model|stdClass $model, ?string $forNotification = null): bool
     {
-        $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_filter(
-                array_map('trim', explode(',', selectedIdsRequest()))
-            ))
-            : [$model->{ID}];
+        $selected_ids = selectedIdsRequest($model);
 
         $selected_collections = $model::query()->whereIn(ID, $selected_ids);
 
         $is_collection_trashed = $selected_collections->cursor()
             ->every(static fn($collection) =>
-            Wishlist::class || Cart::class
+            Wishlist::class || Cart::class || (Review::class && !isAdminRoute())
                 ? false
                 : $collection->trashed()
             );
@@ -785,31 +785,20 @@ if (!function_exists('forgetCache')) {
      * @throws CacheInvalidArgumentException
      */
     function forgetCache(string|array $key, Model|stdClass $model = null, ?string $additionalSuffix = null, ?array $extraConfig = []): bool {
-        if (is_null($model) && empty(selectedIdsRequest())) {
+        $base_key = is_array($key) ? $key[0] : $key;
+
+        if (is_null($model)) {
             return cache()->deleteMultiple(is_array($key) ? $key : [$key]);
         }
 
-        $selected_ids = selectedIdsRequest()
-            ? array_map('intval', array_filter(
-                array_map('trim', explode(',', selectedIdsRequest()))
-            ))
-            : [$model->{ID}];
-
-        // Filter out nulls to prevent whereIn('id', [null])
-        $selected_ids = array_filter($selected_ids);
-
-        if (empty($selected_ids)) {
-            return true;
-        }
-
-        $query = $model::query()->whereIn(ID, $selected_ids)
-            ->withTrashed();
+        $query = $model::query()->whereIn(ID, selectedIdsRequest($model))->withTrashed();
 
         $query->pluck($additionalSuffix)
             ->unique()
-            ->each(static fn($suffix) =>
-                cache()->forget($key.('_'.$suffix ?: ''))
-            );
+            ->filter()
+            ->each(static function ($suffix) use ($base_key) {
+                cache()->forget($base_key.('_'.$suffix ?: ''));
+            });
 
         if (empty($extraConfig)) {
             return true;
@@ -850,7 +839,9 @@ if (!function_exists('forgetCache')) {
             ->flatMap(static fn($data) =>
                 collect($extraConfig['cache_keys'])->map(static fn($builder) => $builder($data))
             )
-            ->each(static fn($cacheKey) => cache()->forget($cacheKey));
+            ->each(static function ($cacheKey) {
+                cache()->forget($cacheKey);
+            });
 
         return true;
     }
@@ -1363,7 +1354,7 @@ if (!function_exists(REVIEW_MODEL.'Data')) {
                 Review::query()->where(PRODUCT_ID, $productId)
                     ->whereHas(USER_MODEL, static fn(Builder $user) => $user->withoutTrashed())
                     ->withoutTrashed()
-                    ->avg(RATING) ?? '0'
+                    ->avg(RATING)
             );
         }
 

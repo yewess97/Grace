@@ -112,7 +112,9 @@ class WishlistService
 
         $user_wishlists->pluck(PRODUCT_ID)
             ->unique()
-            ->each(fn(int $product_id) => $this->forgetWishlistCache($product_id));
+            ->each(function (int $product_id) {
+                $this->forgetWishlistCache($product_id);
+            });
 
         return $deleted_wishlists;
     }
@@ -124,7 +126,7 @@ class WishlistService
      * @return Product
      * @throws ModelNotFoundException
      */
-    private function getProductOrFail(int $productId = null): Product
+    private function getProductOrFail(?int $productId = null): Product
     {
         $product_id = request()?->input(ADD.'_'.REMOVE.'_'.WISHLIST_MODEL.'_'.PRODUCT_ID) ?? $productId;
 
@@ -146,7 +148,7 @@ class WishlistService
      * @return void
      * @throws CacheInvalidArgumentException
      */
-    private function forgetWishlistCache(int $productId = null): void
+    private function forgetWishlistCache(?int $productId = null): void
     {
         forgetCache(PRODUCT_MODEL, $this->getProductOrFail($productId), SLUG);
         forgetCache([WISHLISTS_TABLE.'_'.auth()->id(), HOME_PRODUCTS, PRODUCTS_TABLE]);
