@@ -699,7 +699,7 @@ const Admin = {
                         return Common.errorMessage(IGrace.FILTER, Common.responseJsonError(err));
                     }
 
-                    if (Common.responseJsonError(err, true) === 'no-results') {
+                    if (err.status === 404) {
                         return Common.searchFilterErrorResponse(no_results_img_src);
                     }
 

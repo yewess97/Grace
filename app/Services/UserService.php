@@ -131,7 +131,7 @@ class UserService
                 app(ReviewService::class)->forgetCollectionCache($review);
             });
 
-        forgetCache([USERS_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY, USER_ORDERS_PAGINATION_CACHE_KEY, USER_MODEL]);
+        forgetCache([USERS_PAGINATION_CACHE_KEY, USER_ADDRESSES_PAGINATION_CACHE_KEY, USER_ORDERS_PAGINATION_CACHE_KEY, USER_MODEL, CUSTOMERS_REVIEWS]);
     }
 }
 

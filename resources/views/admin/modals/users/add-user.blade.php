@@ -50,7 +50,7 @@
                             {{-- User Password --}}
                             <div class="add-user-password col-12 col-lg-6 ps-lg-2">
                                 <div class="form-outline">
-                                    <input type="password" name="add_user_password" id="add_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true">
+                                    <input type="password" name="add_user_password" id="add_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true" autocomplete="off">
                                     <label for="add_user_password" class="form-label">
                                         <sup class="me-1">*</sup>{{ucfirst(PASSWORD)}}
                                     </label>

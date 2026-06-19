@@ -22,7 +22,7 @@ class ViewServiceProvider extends ServiceProvider
             static function ($view) {
                 $view->with([
                     COMMON_COLLECTIONS   => commonCollections(),
-                    'aside_menus'        => commonAsideMenus(),
+                    'common_left_side'   => commonAsideMenus(),
                     USER_CART_ITEMS      => userCollectionsData()[CART_MODEL][ITEMS],
                     CART_TOTAL_ITEMS     => userCollectionsData()[CART_MODEL][TOTAL_ITEMS],
                     TOTAL_COST           => userCollectionsData()[CART_MODEL][TOTAL_COST],

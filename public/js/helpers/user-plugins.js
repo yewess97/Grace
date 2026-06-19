@@ -75,10 +75,10 @@ $.fn.filterProductsMultiItems = function(options) {
         const check_actions = {
             true: ()  => selected_values.push(target.val()),
             false: () => {
-                const index = $.inArray(target.val(), selected_values);
+                const target_value_in_selected_values = $.inArray(target.val(), selected_values);
 
-                if (index !== -1) {
-                    selected_values.splice(index, 1);
+                if (target_value_in_selected_values !== -1) {
+                    selected_values.splice(target_value_in_selected_values, 1);
                 }
             },
         };

@@ -150,10 +150,6 @@
     line-height: var(--twenty-five-pixels);
 }
 
-.home-product-main .left-side .customers-reviews > .customers-reviews-content .customers-reviews-carousel .customer-name > .name {
-    margin-top: var(--ten-pixels);
-}
-
 .home-product-main .left-side .customers-reviews > .customers-reviews-content .customers-reviews-carousel .owl-dots {
     margin-top: var(--twenty-four-pixels);
     line-height: 0;

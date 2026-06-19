@@ -794,10 +794,10 @@ define("ADMIN_REVIEWS_ROUTE",        adminRoute(REVIEWS_TABLE));
 /**
  * Components.
  */
-define("HOME_PRODUCT_LEFT_SIDE_COMPONENT", component(HOME.'.'.PRODUCT_MODEL.'-left-side'));
-define("USER_ADDRESSES_COMPONENT",         component(kebabAll(USER_ADDRESSES))); // one use till now
-define("ORDER_DETAILS_COMPONENT",          component(kebabAll(ORDER_DETAILS))); // one use till now
-define("REVIEWS_COMPONENT",                component(REVIEWS_TABLE.'.'.REVIEWS_TABLE));
+define("USER_LEFT_SIDE_COMPONENT", component('layout'.'.'.USER_MODEL.'-left-side'));
+define("USER_ADDRESSES_COMPONENT", component(kebabAll(USER_ADDRESSES))); // one use till now
+define("ORDER_DETAILS_COMPONENT",  component(kebabAll(ORDER_DETAILS))); // one use till now
+define("REVIEWS_COMPONENT",        component(REVIEWS_TABLE.'.'.REVIEWS_TABLE));
 
 #################################### End Components ####################################
 
@@ -906,10 +906,10 @@ define("ADMIN_REVIEWS_PAGINATION",       paginationView(REVIEWS_TABLE));
 /**
  * User Pagination Views.
  */
-define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,               true));
-define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,                         true));
-define("WISHLIST_PAGINATION",                paginationView(WISHLIST_MODEL,                         true));
-define("CART_PAGINATION",                    paginationView(CART_MODEL,                             true));
+define("PROFILE_ORDERS_PAGINATION",          paginationView(PROFILE.'-'.ORDERS_TABLE,                   true));
+define("USER_PRODUCTS_PAGINATION",           paginationView(PRODUCTS_TABLE,                             true));
+define("WISHLIST_PAGINATION",                paginationView(WISHLIST_MODEL,                             true));
+define("CART_PAGINATION",                    paginationView(CART_MODEL,                                 true));
 define("CHECKOUT_USER_ADDRESSES_PAGINATION", paginationView(kebabAll(CHECKOUT.'_'.USER_ADDRESSES), true));
 
 #################################### End Pagination Views ####################################

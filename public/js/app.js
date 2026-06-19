@@ -367,13 +367,13 @@ $(document).ready(() => {
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: $('input[name="add_cart_product_size_quick_view[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: $('input[name="add_cart_product_size[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PRODUCT_SIZE(),
         });
 

@@ -35,7 +35,7 @@
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'info', 'is_single_view' => true])
 
                 {{-- Product Short Description --}}
-                <p class="product-info-short-desc">{{ $product->{SHORT_DESCRIPTION} }}</p>
+                <p class="product-info-short-desc">{!! $product->{SHORT_DESCRIPTION} !!}</p>
 
                 {{-- Product Actions --}}
                 <article class="product-actions d-flex align-items-center mt-2">

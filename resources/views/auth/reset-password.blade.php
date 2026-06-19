@@ -27,7 +27,7 @@
                                 {{-- Password --}}
                                 <div class="reset-password-user-password">
                                     <div class="form-outline col-12">
-                                        <input type="password" name="reset_password_user_password" id="reset_password_user_password" class="form-control fs-7 rounded-2" min="8" autocomplete="on" aria-required="true" autofocus="autofocus">
+                                        <input type="password" name="reset_password_user_password" id="reset_password_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true" autofocus="autofocus" autocomplete="off">
                                         <label for="reset_password_user_password" class="form-label">
                                             <sup class="me-1">*</sup>{{ucfirst(PASSWORD)}}
                                         </label>
@@ -38,7 +38,7 @@
                                 {{-- Password Confirmation --}}
                                 <div class="reset-password-user-password-confirmation">
                                     <div class="form-outline col-12">
-                                        <input type="password" name="reset_password_user_password_confirmation" id="reset_password_user_password_confirmation" class="form-control fs-7 rounded-2" min="8" autocomplete="on" aria-required="true" autofocus="autofocus">
+                                        <input type="password" name="reset_password_user_password_confirmation" id="reset_password_user_password_confirmation" class="form-control fs-7 rounded-2" min="8" aria-required="true" autofocus="autofocus" autocomplete="off">
                                         <label for="reset_password_user_password_confirmation" class="form-label">
                                             <sup class="me-1">*</sup>{{capitalizeAll(PASSWORD_CONFIRMATION)}}
                                         </label>

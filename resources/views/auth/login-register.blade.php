@@ -63,7 +63,7 @@
                                     {{-- Password --}}
                                     <div class="{{$auth_action}}-user-password col-12">
                                         <div class="form-outline">
-                                            <input type="password" name="{{$auth_action}}_user_password" id="{{$auth_action}}_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true">
+                                            <input type="password" name="{{$auth_action}}_user_password" id="{{$auth_action}}_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true" autocomplete="off">
                                             <label for="{{$auth_action}}_user_password" class="form-label">
                                                 <sup class="me-1">*</sup>{{ucfirst(PASSWORD)}}
                                             </label>

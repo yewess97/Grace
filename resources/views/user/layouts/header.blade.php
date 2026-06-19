@@ -98,7 +98,7 @@
                                                 <i class="ti ti-angle-down nav-submenu-item-rotate-icon"></i>
                                             </a>
                                             <ul role="list" id="nav_submenu_top_wear_list" class="nav-submenu-list-content row collapse align-items-center pt-2">
-                                                @foreach ($aside_menus['top_wear'] as $title => $menu_items)
+                                                @foreach ($common_left_side['top_wear'] as $title => $menu_items)
                                                     <li role="listitem" class="dropdown-item pt-0 pb-2">
                                                         <h2 class="dropdown-item-title fw-600 text-capitalize">{{$title}}</h2>
                                                         <ul role="list" class="dropdown-item-content d-grid gap-2">
@@ -135,7 +135,7 @@
                                                 <i class="ti ti-angle-down nav-submenu-item-rotate-icon"></i>
                                             </a>
                                             <ul role="list" id="nav_submenu_bottom_wear_list" class="nav-submenu-list-content row collapse align-items-center pt-2">
-                                                @foreach ($aside_menus['bottom_wear'] as $title => $menu_items)
+                                                @foreach ($common_left_side['bottom_wear'] as $title => $menu_items)
                                                     <li role="listitem" class="dropdown-item pt-0 pb-2">
                                                         <h2 class="dropdown-item-title fw-600 text-capitalize">{{$title}}</h2>
                                                         <ul role="list" class="dropdown-item-content d-grid gap-2">

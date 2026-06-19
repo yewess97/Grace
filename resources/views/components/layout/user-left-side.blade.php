@@ -117,17 +117,20 @@
             <article class="customers-reviews-carousel owl-carousel owl-theme owl-loaded owl-drag">
                 <div class="owl-stage-outer">
                     <div class="owl-stage">
-                        @foreach ($aside_menus['customers_'.REVIEWS_TABLE] as $customer_review)
+                        @foreach ($common_left_side[CUSTOMERS_REVIEWS] as $customer_review)
                         <div class="owl-item">
                             <div class="row gap-2 text-center">
                                 <div class="customer-review border overflow-hidden">
                                     <i class="fa-solid fa-quote-left d-block fs-9"></i>
-                                    <p>{{ $customer_review->{REVIEW_MODEL} }}</p>
+                                    <p>{{ $customer_review->{BODY_TEXT} }}</p>
                                 </div>
                                 <div class="customer-name">
-                                    <h6 class="name fw-500 lh-1 text-main">{{capitalizeAll($customer_review->{NAME})}}</h6>
-                                    <p class="mt-3 fs-7 lh-1">
-                                        Reviewed on the {{ $customer_review->{PRODUCT_MODEL} }} {{ucfirst(PRODUCT_MODEL)}}
+                                    <h6 class="mt-2 fw-500 lh-base text-main">{{ $customer_review->{USER_MODEL}->{FULL_NAME} }}</h6>
+                                    <p class="mt-2">
+                                        @include(REVIEW_RATING_PARTIAL, [RATING => $customer_review->{RATING}])
+                                    </p>
+                                    <p class="mt-2 fs-7 lh-base">
+                                        Reviewed on the "<b>{{ $customer_review->{PRODUCT_MODEL}->{NAME} }}</b>" {{ucfirst(PRODUCT_MODEL)}}
                                     </p>
                                 </div>
                             </div>

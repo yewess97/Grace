@@ -52,7 +52,7 @@
                             {{-- User Password --}}
                             <div class="update-user-password col-12 col-lg-6 ps-lg-2">
                                 <div class="form-outline">
-                                    <input type="password" name="update_user_password" id="update_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true">
+                                    <input type="password" name="update_user_password" id="update_user_password" class="form-control fs-7 rounded-2" min="8" aria-required="true" autocomplete="off">
                                     <label for="update_user_password" class="form-label">
                                         <sup class="me-1">*</sup>{{ucfirst(PASSWORD)}}
                                     </label>

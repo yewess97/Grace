@@ -166,10 +166,10 @@ $.fn.selectAllMultiItems = function(options) {
         const
             is_select_all                   = target.next().html().includes('All'),
             all_items                       = target.parents('.items').find('input[type="checkbox"]'),
-            select_all_checkbox             = all_items.first(),
-            related_collection_hidden_input = target.parents('.filter-multi-select').next();
+            select_all_checkbox             = all_items.first();
 
-        let selected_values = settings.multiSelectedValuesList;
+        let selected_values                   = settings.multiSelectedValuesList;
+        const target_value_in_selected_values = $.inArray(target.val(), selected_values);
 
         const check_actions = {
             true: () => {
@@ -177,14 +177,13 @@ $.fn.selectAllMultiItems = function(options) {
                     true: () => {
                         selected_values.length = 0;
                         select_all_checkbox.val('');
-                        related_collection_hidden_input.val('');
 
                         $.each((all_items), (_, selectedItem) => selected_values.push($(selectedItem).val() || ''));
 
                         select_all_checkbox.next().html('Unselect All');
                     },
                     false: () => {
-                        if (!selected_values.includes(target.val())) {
+                        if (target_value_in_selected_values === -1) {
                             selected_values.push(target.val());
                         }
                     },
@@ -196,10 +195,8 @@ $.fn.selectAllMultiItems = function(options) {
                 const select_actions = {
                     true: ()  => selected_values.length = 0,
                     false: () => {
-                        const index = $.inArray(target.val(), selected_values);
-
-                        if (index !== -1) {
-                            selected_values.splice(index, 1);
+                        if (target_value_in_selected_values !== -1) {
+                            selected_values.splice(target_value_in_selected_values, 1);
                         }
                     },
                 };
@@ -215,7 +212,6 @@ $.fn.selectAllMultiItems = function(options) {
         selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
 
         select_all_checkbox.val(selected_values);
-        related_collection_hidden_input.val(selected_values);
     });
 };
 

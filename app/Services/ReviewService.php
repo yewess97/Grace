@@ -179,6 +179,7 @@ class ReviewService implements ServiceData
      */
     final public function forgetCollectionCache(Model|Review $model = null): void
     {
+        forgetCache(CUSTOMERS_REVIEWS);
         forgetCache(REVIEWS_PAGINATION_CACHE_KEY, $model, RATING, [
             'relation' => PRODUCT_MODEL,
             'relation_only_columns' => [

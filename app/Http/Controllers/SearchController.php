@@ -18,7 +18,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -216,7 +215,7 @@ class SearchController extends Controller
     final public function filterProducts(): Application|Factory|View|JsonResponse
     {
         $products     = Product::query();
-        $query_params = Arr::except(request()?->query(), ['page']);
+        $query_params = array_diff(request()?->query(), ['page']);
 
         if (!empty($query_params)) {
             collect($query_params)->each(static function ($collectionValue, $relatedCollection) {

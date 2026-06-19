@@ -416,7 +416,7 @@ class CommonBladeServiceProvider extends ServiceProvider
             "<?php
                 [\$__collection, \$__route] = [$paginationArgs];
 
-                \$__query_params = \Illuminate\Support\Arr::except(request()?->query(), ['_token', 'page']);
+                \$__query_params = array_diff(request()?->query(), ['_token', 'page']);
 
                 echo with(\$__collection)->links('components.pagination-template', ['route' => route(\$__route, \$__query_params)]);
             ?>"

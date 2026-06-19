@@ -939,38 +939,17 @@ if (!function_exists('commonAsideMenus')) {
      */
     function commonAsideMenus(): array
     {
-//        $customers_reviews = cache()->remember('customers_'.REVIEWS_TABLE, now()->addMinutes(30), static fn() =>
-//            Review::query()
-//                ->latest()
-//                ->take(5)
-//                ->get([ID, ...Arr::except(REVIEW_FILLABLE_ATTRIBUTES, TITLE)])
-//        );
-
-//        dd($customers_reviews);
-
-        $customers_reviews = [
-            [
-                NAME          => 'Yousif Ayman',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores beatae consectetur deleniti dicta doloremque dolorum ea excepturi, facere fuga harum iure iusto magnam minima molestiae optio quas quisquam sapiente, sequi?',
-            ],
-            [
-                NAME          => 'Ayman ahmed',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
-            ],
-            [
-                NAME          => 'ahmed mohamed',
-                PRODUCT_MODEL => 'Blazer Jacket',
-                REVIEW_MODEL  => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolore nostrum, odit quidem reiciendis vel voluptas?',
-            ],
-        ];
-
         $top_wear          = SettingsService::getTopBottomWearMenu()['top_wear'];
         $bottom_wear       = SettingsService::getTopBottomWearMenu()['bottom_wear'];
-        $customers_reviews = object_from_array($customers_reviews);
 
-        return compact('top_wear', 'bottom_wear', 'customers_reviews');
+        $customers_reviews = cache()->remember(CUSTOMERS_REVIEWS, now()->addMinutes(30), static fn() =>
+            Review::query()
+                ->latest()
+                ->take(5)
+                ->get([ID, ...array_diff(REVIEW_FILLABLE_ATTRIBUTES, [TITLE])])
+        );
+
+        return compact('top_wear', 'bottom_wear', CUSTOMERS_REVIEWS);
     }
 }
 

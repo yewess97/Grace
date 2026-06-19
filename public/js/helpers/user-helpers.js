@@ -238,7 +238,6 @@ const User = {
             quick_view_modal.find('form').trigger('reset');
 
             // Clear all dynamic content
-            quick_view_modal.find('input[type="hidden"]').val('');
             quick_view_modal.find(`.${IGrace.PRODUCT}-quick-view-img`).empty();
             quick_view_modal.find(`.${IGrace.PRODUCT}-info-${IGrace.NAME}`).html('');
             quick_view_modal.find(`.${IGrace.PRODUCT}-info-quick-view-price .${IGrace.CLASS(IGrace.NEW_PRICE)}`).html('');
@@ -643,7 +642,6 @@ const User = {
                     $.each(($(`.${IGrace.CLASS(IGrace.ADD_COLLECTION(IGrace.CART))}-form`)), (_, form) => {
                         $(form).trigger('reset')
                             .find('input[type="checkbox"]').prop({'checked': false, 'indeterminate': false}).end()
-                            .find('input[name*="quick_view"][type="hidden"]').val('').end()
                             .find('.selected-items').empty().end()
                             .find('.placeholder').removeAttr('hidden');
                     });
@@ -861,7 +859,7 @@ const User = {
                 User.ajaxQuickViewProductRequest();
             },
             error: (err) => {
-                if (Common.responseJsonError(err, true) === 'no-results') {
+                if (err.status === 404) {
                     return Common.searchFilterErrorResponse(noResultsImageSrc);
                 }
 

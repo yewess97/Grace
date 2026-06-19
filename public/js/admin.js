@@ -140,49 +140,49 @@ $(document).ready(() => {
          */
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
-            multiSelectedValuesList: $('input[name="add_subcategory_related_categories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
-            multiSelectedValuesList: $('input[name="update_subcategory_related_categories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="add_product_related_categories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="add_product_related_subcategories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="add_product_sizes[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="update_product_related_categories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="update_product_related_subcategories[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
         });
 
         target.selectAllMultiItems({
             actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: $('input[name="update_product_sizes[]"]:hidden').val()?.split(','),
+            multiSelectedValuesList: [],
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
         });
 
@@ -245,7 +245,7 @@ $(document).ready(() => {
     Admin.googlePieChartConfig();
 
     // Get the countries
-    if ($.inArray([IGrace.DASHBOARD, IGrace.PLURALIZE(IGrace.ADDRESS)], Common.urlLastDirectory())) {
+    if ([IGrace.DASHBOARD, IGrace.PLURALIZE(IGrace.ADDRESS)].some((directory) => Common.urlLastDirectory().includes(directory))) {
         Common.ajaxGetCountries();
     }
 

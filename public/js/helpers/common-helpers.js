@@ -116,12 +116,10 @@ const Common = {
             select_element_name                  = `${select_element_id}[]`,
             action_collection_related_collection = $(`.${IGrace.CLASS(select_element_id)}`),
             multi_related_collection             = action_collection_related_collection.data(relational_collection),
-            filter_multi_select_element          = action_collection_related_collection.find('.filter-multi-select'),
-            related_collection_hidden_input      = action_collection_related_collection.find(`input[name="${select_element_name}"]:hidden`);
-
+            related_collection_label             = action_collection_related_collection.find('.label-select'),
+            filter_multi_select_element          = action_collection_related_collection.find('.filter-multi-select');
 
         filter_multi_select_element.remove();
-        related_collection_hidden_input.val('');
 
         let related_collection_select_element = $('<select>', {
             name:            select_element_name,
@@ -164,7 +162,7 @@ const Common = {
 
         (role_actions[userType] || role_actions.default)();
 
-        related_collection_select_element.insertBefore(related_collection_hidden_input);
+        related_collection_label.after(related_collection_select_element);
 
         const related_collection_element = $(`.${select_element_class}`);
 
@@ -193,7 +191,6 @@ const Common = {
             .join(',');
 
         all_multi_related_collection.first().val(multi_selected_related_collection_values);
-        related_collection_hidden_input.val(multi_selected_related_collection_values);
     },
 
 
@@ -944,9 +941,9 @@ const Common = {
      * @return {*}
      */
     searchFilterErrorResponse: (imageSrc) =>
-        $('.search-table').html(
-            `<div class="d-flex justify-content-center mt-5">
-                <img src=${imageSrc} alt="No Results Found" class="img-fluid h-100" style="width:300px">
+        $('.search-table').add(`.${IGrace.PLURALIZE(IGrace.PRODUCT)}-content`).html(
+            `<div class="d-flex justify-content-center mt-5 mx-auto">
+                <img src=${imageSrc} alt="No Results Found" class="img-fluid h-100" style="width:300px!important">
             </div>`
         ),
 
@@ -1355,7 +1352,7 @@ const Common = {
             $.get(`${route}${Common.routeParamsSeperator(route)}search_value=${search_value}`)
                 .done((data) => Common.searchFilterSuccessResponse(data))
                 .fail((err) =>
-                    Common.responseJsonError(err, true) === 'no-results'
+                    err.status === 404
                         ? Common.searchFilterErrorResponse(no_results_img_src)
                         : Common.somethingWentWrongError()
                 );
