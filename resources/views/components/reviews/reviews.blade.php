@@ -13,6 +13,8 @@
     {{-- Reviews Header Write Review Button --}}
     <button type="button" role="button" title="Write a {{REVIEW_MODEL}}" class="col-lg-3 col-md-12 col-sm-12 btn write-review-btn px-4 fw-500">Write a {{REVIEW_MODEL}}</button>
 </article>
+
+{{-- Review Exists Alert --}}
 <div id="review_exists" role="alert" class="alert alert-dismissible fade show alert-danger d-none justify-content-between align-items-center pe-4" data-mdb-color="danger">
     <div class="error-message">
         <i class="fas fa-times-circle me-3"></i>
@@ -20,6 +22,7 @@
     </div>
     <button type="button" role='button' title='Close' class="btn-close position-relative p-0" data-mdb-dismiss="alert" aria-label="Close"></button>
 </div>
+
 {{-- Product Add Review Form --}}
 <form action="{{route(CREATE_UPDATE_REVIEW, ADD)}}" method="post" role="form" id="add_review_form" class="grace-form review-form flex-wrap py-4 px-0 border-top" data-reviews="{{route(PRODUCT_DETAILS, $productSlug)}}">
     @csrf

@@ -29,6 +29,7 @@
                                     <sup class="me-1">*</sup>{{capitalizeAll(MAIN_IMAGE)}}
                                 </label>
                                 <div id="update_subcategory_main_image_container" class="mx-auto mt-2 border overflow-auto"></div>
+                                <input type="hidden" name="update_subcategory_main_image">
                                 <div id="update_subcategory_main_image_preview"></div>
                             </div>
                             {{$update_subcategory_error(MAIN_IMAGE)}}
@@ -45,6 +46,7 @@
                                         <option value="{{$category->id}}">{{ $category->{NAME} }}</option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="update_subcategory_related_categories[]">
                             </div>
                             {{$update_subcategory_error(RELATED_CATEGORIES)}}
                         </div>

@@ -41,6 +41,7 @@
                                             <sup class="me-1">*</sup>{{ucfirst(SIZES)}}
                                         </label>
                                         <select name="add_cart_product_size_quick_view[]" id="add_cart_product_size_quick_view" class="product-size-quick-view" multiple="multiple" aria-required="true"></select>
+                                        <input type="hidden" name="add_cart_product_size_quick_view[]">
                                     </div>
                                     {{formError(ADD, CART_MODEL, PRODUCT_SIZE_QUICK_VIEW)}}
                                 </div>
@@ -53,7 +54,7 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
                                     {{-- Add To/Remove From Wishlist Button --}}
-                                    @submitButton(WISHLIST_MODEL, $product->id, QUICK_VIEW)
+                                    @submitButton(WISHLIST_MODEL, $product->id ?? 0, QUICK_VIEW)
                                     {{-- Add To Cart Button --}}
                                     @submitButton(ADD_TO_CART)
                                 </div>
@@ -62,7 +63,7 @@
                     </div>
                 </form>
                 {{-- Add or Remove Wishlist Form --}}
-                <x-wishlist-cart.add-remove-wishlist-form product_id="{{$product->id}}" />
+                <x-wishlist-cart.add-remove-wishlist-form product_id="{{$product->id ?? 0}}" />
             </article>
         </div>
     </div>

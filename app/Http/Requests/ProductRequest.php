@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Category;
+use App\Models\Subcategory;
 use App\Traits\FormRequestHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -11,6 +13,8 @@ class ProductRequest extends FormRequest
 {
     use FormRequestHelper;
 
+    protected int $max_categories, $max_subcategories, $max_sizes;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,11 +23,15 @@ class ProductRequest extends FormRequest
      */
     final public function rules(?string $id = null): array
     {
+        $this->max_categories    = Category::query()->count();
+        $this->max_subcategories = Subcategory::query()->count();
+        $this->max_sizes         = count(PRODUCT_SIZE_ENUM);
+
         if ($this->operation === FILTER) {
             return [
-                ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, CATEGORIES_TABLE),
-                ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, SUBCATEGORIES_TABLE),
-                ...$this->multipleSelectionValidation(SIZES, 5, PRODUCT_SIZES_TABLE),
+                ...$this->multipleSelectionValidation(CATEGORIES_TABLE, $this->max_categories, CATEGORIES_TABLE),
+                ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, $this->max_subcategories, SUBCATEGORIES_TABLE),
+                ...$this->multipleSelectionValidation(SIZES, $this->max_sizes, PRODUCT_SIZES_TABLE),
                 ...$this->numberValidation(MIN_PRICE, 'numeric'),
                 ...$this->numberValidation(MAX_PRICE, 'numeric'),
                 $this->dataKeyOf(SORT) => ['nullable', 'string', 'in:'.implode(',', array_values(SORT_PRODUCTS_ENUM))],
@@ -35,9 +43,9 @@ class ProductRequest extends FormRequest
             ...$this->nameDescriptionRules(null, SHORT_DESCRIPTION, 5, 1000),
             ...$this->nameDescriptionRules(null, LONG_DESCRIPTION, 10, 5000),
             ...$this->imageValidation(MAIN_IMAGE),
-            ...$this->multipleSelectionValidation(RELATED_CATEGORIES, 3, CATEGORIES_TABLE),
-            ...$this->multipleSelectionValidation(RELATED_SUBCATEGORIES, 6, SUBCATEGORIES_TABLE),
-            ...$this->multipleSelectionValidation(SIZES, 5, PRODUCT_SIZES_TABLE),
+            ...$this->multipleSelectionValidation(RELATED_CATEGORIES, $this->max_categories, CATEGORIES_TABLE),
+            ...$this->multipleSelectionValidation(RELATED_SUBCATEGORIES, $this->max_subcategories, SUBCATEGORIES_TABLE),
+            ...$this->multipleSelectionValidation(SIZES, $this->max_sizes, PRODUCT_SIZES_TABLE),
             ...$this->numberValidation(OLD_PRICE, 'numeric'),
             ...$this->numberValidation(NEW_PRICE, 'numeric'),
             ...$this->numberValidation(QUANTITY, 'integer'),
@@ -65,9 +73,9 @@ class ProductRequest extends FormRequest
 
         if ($this->operation === FILTER) {
             return [
-                ...$this->multipleSelectionValidation(CATEGORIES_TABLE, 3, null, $cap_categories, true),
-                ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, 6, null, $cap_subcategories, true),
-                ...$this->multipleSelectionValidation(SIZES, 5, null, $cap_sizes, true),
+                ...$this->multipleSelectionValidation(CATEGORIES_TABLE, $this->max_categories, null, $cap_categories, true),
+                ...$this->multipleSelectionValidation(SUBCATEGORIES_TABLE, $this->max_subcategories, null, $cap_subcategories, true),
+                ...$this->multipleSelectionValidation(SIZES, $this->max_sizes, null, $cap_sizes, true),
                 ...$this->numberValidation(MIN_PRICE, 'numeric', true),
                 ...$this->numberValidation(MAX_PRICE, 'numeric', true),
                 "{$this->dataKeyOf(SORT)}.string" => "$cap_sort must be a text",
@@ -80,9 +88,9 @@ class ProductRequest extends FormRequest
             ...$this->validationMessages(SHORT_DESCRIPTION, 5, 1000),
             ...$this->validationMessages(LONG_DESCRIPTION, 10, 5000),
             ...$this->imageValidation(MAIN_IMAGE, true),
-            ...$this->multipleSelectionValidation(RELATED_CATEGORIES, 3, null, $cap_categories, true),
-            ...$this->multipleSelectionValidation(RELATED_SUBCATEGORIES, 6, null, $cap_subcategories, true),
-            ...$this->multipleSelectionValidation(SIZES, 5, null, $cap_sizes, true),
+            ...$this->multipleSelectionValidation(RELATED_CATEGORIES, $this->max_categories, null, $cap_categories, true),
+            ...$this->multipleSelectionValidation(RELATED_SUBCATEGORIES, $this->max_subcategories, null, $cap_subcategories, true),
+            ...$this->multipleSelectionValidation(SIZES, $this->max_sizes, null, $cap_sizes, true),
             ...$this->numberValidation(OLD_PRICE, 'numeric', true),
             ...$this->numberValidation(NEW_PRICE, 'numeric', true),
             ...$this->numberValidation(QUANTITY, 'integer', true),

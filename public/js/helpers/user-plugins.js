@@ -10,7 +10,7 @@ import { IGrace } from "./IGrace.js";
  * @param options
  * @return {*}
  */
-$.fn.carouselSlider = function(options) {
+$.fn.carouselSlider = function (options) {
     const settings = $.extend({
         displayItemsCount:  3,
         nav:                true,
@@ -23,7 +23,7 @@ $.fn.carouselSlider = function(options) {
         navText:            ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>']
     }, options);
 
-    return this.each(function() {
+    return this.each(function () {
         const target = $(this);
 
         target.owlCarousel({
@@ -39,8 +39,8 @@ $.fn.carouselSlider = function(options) {
         });
 
         target.find('.owl-nav button').attr('type', 'button');
-        target.find('.owl-nav .owl-prev').attr('title', 'Go to Previous');
-        target.find('.owl-nav .owl-next').attr('title', 'Go to Next');
+        target.find('.owl-nav .owl-prev').attr('title', 'Go to Previous').removeAttr('role');
+        target.find('.owl-nav .owl-next').attr('title', 'Go to Next').removeAttr('role');
         target.find('.owl-dot').attr({
             type:  'button',
             title: 'Go to Slider'
@@ -135,12 +135,12 @@ $.fn.handlePriceRangeFilter = function (options) {
  * @param options
  * @return {*}
  */
-$.fn.starRating = function(options) {
+$.fn.starRating = function (options) {
     const settings = $.extend({
         rating: null,
     }, options);
 
-    return this.each(function() {
+    return this.each(function () {
         const
             target      = $(this),
             filled_star = '<span class="position-relative fs-4 star-fill" aria-label="Filled Star">★</span>',

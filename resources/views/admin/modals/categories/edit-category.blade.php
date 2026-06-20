@@ -29,6 +29,7 @@
                                     <sup class="me-1">*</sup>{{capitalizeAll(MAIN_IMAGE)}}
                                 </label>
                                 <div id="update_category_main_image_container" class="mx-auto mt-2 border overflow-auto"></div>
+                                <input type="hidden" name="update_category_main_image">
                                 <div id="update_category_main_image_preview"></div>
                             </div>
                             {{$update_category_error(MAIN_IMAGE)}}
@@ -41,6 +42,7 @@
                                     <sup class="me-1">*</sup>{{capitalizeAll(BANNER_IMAGE)}}
                                 </label>
                                 <div id="update_category_banner_image_container" class="mx-auto mt-2 border overflow-auto"></div>
+                                <input type="hidden" name="update_category_banner_image">
                                 <div id="update_category_banner_image_preview"></div>
                             </div>
                             {{$update_category_error(BANNER_IMAGE)}}

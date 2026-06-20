@@ -12,7 +12,7 @@ $(document).ready(() => {
     /* ========================================= Functions & Events ========================================= */
 
     // Load the preloader
-    $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
+    Common.loadPreloader();
 
     // Show the offers sales one after the other every 3 seconds
     $.each(($('.nav-offer .offer-sale')), (_, offerSale) => {
@@ -31,7 +31,11 @@ $(document).ready(() => {
     });
 
 
-    /* ---------=========== Carousel Config ============--------- */
+    /* ---------=========== Responsive Config ============--------- */
+    const
+        products_filter_form      = `.${IGrace.PLURALIZE(IGrace.PRODUCT)}-${IGrace.FILTER}-form`,
+        products_filter_form_menu = $(`${products_filter_form}-menu`);
+
     let
         customers_reviews_display_items_count = 1,
         partners_display_items_count          = 4,
@@ -49,16 +53,17 @@ $(document).ready(() => {
     if ($(window).width() >= 768 && $(window).width() < 1200) {
         related_products_display_items_count = 3;
     }
+    if ($(window).width() < 992) {
+        products_filter_form_menu.html($(products_filter_form).html());
+        products_filter_form_menu.find('form').addClass('px-2 py-3');
+    }
+    if ($(window).width() < 1200) {
+        $('.nav-search').html($('.header-search').html());
+    }
 
-    $(window).width() < 992
-        ? $(`.${IGrace.PRODUCT}-${IGrace.FILTER}-form`).children().remove()
-        : $(`.${IGrace.PRODUCT}-${IGrace.FILTER}-form-menu`).children().remove();
+    /* ---------=========== End Responsive Config ============--------- */
 
-    $(window).width() < 1200
-        ? $('.header-search').children().remove()
-        : $('.nav-search').children().remove();
-
-
+    /* ---------=========== Carousel Config ============--------- */
     // Configure the home carousel
     $('.home-carousel').carouselSlider({
         displayItemsCount: 1,
@@ -349,7 +354,7 @@ $(document).ready(() => {
             $(address_phone_dropdown_container).removeClass('show');
         }
 
-        // Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
+        // Handle the filter products multi-select
         target.filterProductsMultiItems({
             multiSelectedValuesList: $('input[name="filter_products_categories[]"]:hidden').val()?.split(','),
             relation:                IGrace.PLURALIZE(IGrace.CATEGORY),
@@ -363,18 +368,6 @@ $(document).ready(() => {
         target.filterProductsMultiItems({
             multiSelectedValuesList: $('input[name="filter_products_sizes[]"]:hidden').val()?.split(','),
             relation:                IGrace.PLURALIZE(IGrace.SIZE),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PRODUCT_SIZE_QUICK_VIEW(),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.CART),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PRODUCT_SIZE(),
         });
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table

@@ -13,7 +13,7 @@ Common.removeErrorsWhenEditModelHides(IGrace.ADMIN);
 window.isFormDirty = false;
 
 // Track changes on any form input, including dynamic ones
-$(document).on("input change", "input, textarea, select", () => window.isFormDirty = true);
+$(document).on("input change", "input:not([type='search']), textarea, select:not([class='form-select'])", () => window.isFormDirty = true);
 
 
 /* ---------------------------------- CATEGORIES ---------------------------------- */

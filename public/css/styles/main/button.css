@@ -26,6 +26,7 @@
     transform: translateY(var(--five-pixels));
 }
 
+/* --------- Action Buttons --------- */
 .main-btn {
     background-color: #2a95d5;
 }
@@ -103,4 +104,26 @@
 
 .swal2-confirm:hover {
     background-color: #e02f3c !important;
+}
+
+/* --------- Clear Button --------- */
+#clear_filter {
+    font-size: var(--fifteen-pixels);
+    color: var(--main-color);
+}
+
+.clear-search-btn {
+    right: var(--twelve-pixels);
+    padding: var(--two-pixels) var(--four-pixels);
+    background-color: var(--gray-color);
+    color: var(--light-gray-color);
+    border: var(--one-pixel) solid var(--gray-color);
+    opacity: 0;
+    visibility: hidden;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.clear-search-btn:hover {
+    background-color: var(--mute-color);
 }

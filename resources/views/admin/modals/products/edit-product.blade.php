@@ -51,6 +51,7 @@
                                     <sup class="me-1">*</sup>{{capitalizeAll(MAIN_IMAGE)}}
                                 </label>
                                 <div id="update_product_main_image_container" class="mx-auto mt-2 border overflow-auto"></div>
+                                <input type="hidden" name="update_product_main_image">
                                 <div id="update_product_main_image_preview"></div>
                             </div>
                             {{$update_product_error(MAIN_IMAGE)}}
@@ -78,6 +79,7 @@
                                             <option value="{{$category->id}}">{{ $category->{NAME} }}</option>
                                         @endforeach
                                     </select>
+                                    <input type="hidden" name="update_product_related_categories[]">
                                 </div>
                                 {{$update_product_error(RELATED_CATEGORIES)}}
                             </div>
@@ -93,6 +95,7 @@
                                             <option value="{{$subcategory->id}}">{{ $subcategory->{NAME} }}</option>
                                         @endforeach
                                     </select>
+                                    <input type="hidden" name="update_product_related_subcategories[]">
                                 </div>
                                 {{$update_product_error(RELATED_SUBCATEGORIES)}}
                             </div>
@@ -108,6 +111,7 @@
                                             <option value="{{$value}}">{{$size}}</option>
                                         @endforeach
                                     </select>
+                                    <input type="hidden" name="update_product_sizes[]">
                                 </div>
                                 {{$update_product_error(SIZES)}}
                             </div>

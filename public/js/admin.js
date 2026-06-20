@@ -15,7 +15,7 @@ $(document).ready(() => {
     /* ========================================= Functions & Events ========================================= */
 
     // Load the preloader
-    $(window).on('load', () => $("#preloader").delay(500).fadeOut("slow"));
+    Common.loadPreloader();
 
     // Restore the closed menu when page load
     $.each(Admin.loadClosedMenu(), (_, navMenu) => {
@@ -134,57 +134,6 @@ $(document).ready(() => {
                 .find(`.${nav_menu_item_rotate_icon}`)
                 .toggleClass('rotate-180');
         }
-
-        /**
-         * Handle the "Select All" checkbox and the "hidden input" value for the selected items in the filter-multi-select
-         */
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.SUBCATEGORY),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.SUBCATEGORY),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.ADD_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.SIZE),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_CATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.RELATED_SUBCATEGORY()),
-        });
-
-        target.selectAllMultiItems({
-            actionCollection:        IGrace.UPDATE_COLLECTION(IGrace.PRODUCT),
-            multiSelectedValuesList: [],
-            relation:                IGrace.PLURALIZE(IGrace.SIZE),
-        });
 
         // Check/Uncheck the (check_all) checkbox and checkboxes in the table
         target.checkRows();

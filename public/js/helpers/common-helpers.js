@@ -27,6 +27,26 @@ const Common = {
 
 
     /**
+     * Load the preloader element and fade it out when the page is fully loaded.
+     *
+     * @return {void}
+     */
+    loadPreloader: () => {
+        const preloader = $('#preloader');
+
+        const prealoader_loading = () => {
+            preloader.length
+                ? preloader.fadeOut('slow')
+                : console.error("Preloader element not found!");
+        }
+
+        document.readyState === 'complete'
+            ? prealoader_loading()
+            : $(window).on('load', prealoader_loading);
+    },
+
+
+    /**
      * Get the last directory in the URL path to determine the current page or section.
      *
      * @return {string}
@@ -333,7 +353,7 @@ const Common = {
         });
 
         // Keyup Action (Dropdown filter search)
-        search_input.on(IGrace.KEYUP, function() {
+        search_input.on(IGrace.KEYUP, function () {
             const countries_items = countries_list.find('li');
 
             let query = $(this).val()
@@ -355,7 +375,7 @@ const Common = {
         });
 
         // Input Action (Format As-You-Type & Save Clean Value to Hidden Input)
-        phone_input.on(IGrace.INPUT, function() {
+        phone_input.on(IGrace.INPUT, function () {
             const target = $(this);
 
             let raw_digits = target.val().replace(/\D/g, '');

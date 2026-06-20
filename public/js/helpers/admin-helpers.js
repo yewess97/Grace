@@ -650,7 +650,7 @@ const Admin = {
                 dashboard_main     = `.${IGrace.DASHBOARD}-main`,
                 no_results_img_src = filter_form.data('no_results'),
                 updateRoute = (route, form_data) => {
-                    return function(params) {
+                    return function (params) {
                         if (typeof params === 'string') params = [params];
 
                         const query = params

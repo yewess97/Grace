@@ -73,7 +73,7 @@ const User = {
         }
 
         const collection_content_update_actions = {
-            true: ()  => update_collection_main,
+            true:  () => update_collection_main,
             false: () => data[IGrace.TOTAL_ITEMS] === 0
                     ? update_collection_main
                     : $(`#${collection}_content`).html($(data[IGrace.ROW]).html()),

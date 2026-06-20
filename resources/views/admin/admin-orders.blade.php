@@ -24,26 +24,20 @@
                                         {{-- Start Date --}}
                                         <div class="filter-orders-start-date col-12 col-lg-6 pe-lg-2">
                                             <div class="form-group">
-                                                <label for="filter_orders_start_date"
-                                                       class="form-label fs-6 fw-500">{{capitalizeALL(START_DATE)}}
-                                                    : </label>
-                                                <input type="date" name="filter_orders_start_date"
-                                                       id="filter_orders_start_date" class="col-12 rounded-2"
-                                                       min="2022-06-24" max="{{now()->toDateString()}}"
-                                                       aria-required="true" value="{{old('filter_orders_start_date')}}">
+                                                <label for="filter_orders_start_date" class="form-label fs-6 fw-500">
+                                                    {{capitalizeALL(START_DATE)}}:
+                                                </label>
+                                                <input type="date" name="filter_orders_start_date" id="filter_orders_start_date" class="col-12 rounded-2" min="2022-06-24" max="{{now()->toDateString()}}" aria-required="true" value="{{old('filter_orders_start_date')}}">
                                             </div>
                                             {{$filter_orders_error(START_DATE)}}
                                         </div>
                                         {{-- End Date --}}
                                         <div class="filter-orders-end-date col-12 col-lg-6 ps-lg-2">
                                             <div class="form-group">
-                                                <label for="filter_orders_end_date"
-                                                       class="form-label fs-6 fw-500">{{capitalizeALL(END_DATE)}}
-                                                    : </label>
-                                                <input type="date" name="filter_orders_end_date"
-                                                       id="filter_orders_end_date" class="col-12 rounded-2"
-                                                       min="2022-06-24" max="{{now()->toDateString()}}"
-                                                       aria-required="true" value="{{old('filter_orders_end_date')}}">
+                                                <label for="filter_orders_end_date" class="form-label fs-6 fw-500">
+                                                    {{capitalizeALL(END_DATE)}}:
+                                                </label>
+                                                <input type="date" name="filter_orders_end_date" id="filter_orders_end_date" class="col-12 rounded-2" min="2022-06-24" max="{{now()->toDateString()}}" aria-required="true" value="{{old('filter_orders_end_date')}}">
                                             </div>
                                             {{$filter_orders_error(END_DATE)}}
                                         </div>
@@ -52,8 +46,7 @@
                                     <div
                                         class="filter-orders-buttons row col-12 justify-content-between align-items-center">
                                         {{-- Filter Button --}}
-                                        <button type="submit" role="button" title="{{ucfirst(FILTER)}}"
-                                                class="btn col-12 col-md-7">
+                                        <button type="submit" role="button" title="{{ucfirst(FILTER)}}" class="btn col-12 col-md-7">
                                             {{ucfirst(FILTER)}}
                                         </button>
                                         {{-- Clear Search/Filter Button --}}

@@ -125,7 +125,7 @@
                                     <p>{{ $customer_review->{BODY_TEXT} }}</p>
                                 </div>
                                 <div class="customer-name">
-                                    <h6 class="mt-2 fw-500 lh-base text-main">{{ $customer_review->{USER_MODEL}->{FULL_NAME} }}</h6>
+                                    <h2 class="mt-2 fw-500 lh-base text-main">{{ $customer_review->{USER_MODEL}->{FULL_NAME} }}</h2>
                                     <p class="mt-2">
                                         @include(REVIEW_RATING_PARTIAL, [RATING => $customer_review->{RATING}])
                                     </p>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Category;
 use App\Traits\FormRequestHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,7 +20,7 @@ class SubcategoryRequest extends FormRequest
      */
     final public function rules(?string $id = null): array
     {
-        $this->max_categories = (count((array) $this->dataValues()[2]) === 5) ? 5 : 4;
+        $this->max_categories = Category::query()->count();
 
         return [
             ...$this->categorySubcategoryNameValidation($id, SUBCATEGORIES_TABLE),

@@ -12,11 +12,9 @@
                 <!----======= Home Right Side =======---->
                 <section class="right-side product-right-side col-lg-9 d-flex flex-column gap-4 ps-lg-3">
                     {{-- Product Images and Info --}}
-                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form"
-                          class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
+                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
                         @csrf
-                        <div
-                            class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
+                        <div class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
                             <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
                             {{-- Product Images --}}
                             <article class="product-images row col">
@@ -31,10 +29,8 @@
                                         <div class="owl-stage-outer">
                                             <ul role="list" class="owl-stage">
                                                 @foreach ($product->{THUMB_IMAGES} as $thumb_image)
-                                                    <li role="listitem"
-                                                        class="product-thumb-image owl-item cursor-pointer">
-                                                        <img src="{{imageSource($thumb_image, THUMB_IMAGE)}}"
-                                                             alt="{{ $product->{NAME} }}">
+                                                    <li role="listitem" class="product-thumb-image owl-item cursor-pointer">
+                                                        <img src="{{imageSource($thumb_image, THUMB_IMAGE)}}" alt="{{ $product->{NAME} }}">
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -49,15 +45,13 @@
                                 {{-- Product Availability --}}
                                 <h2 class="product-availability fw-600">
                                     <span>Availability:</span>
-                                    <span
-                                        class="ms-3 text-main">{{$product->{STATUS} === 0 ? 'Empty From Stock' : 'In Stock'}}</span>
+                                    <span class="ms-3 text-main">{{$product->{STATUS} === 0 ? 'Empty From Stock' : 'In Stock'}}</span>
                                 </h2>
                                 {{-- Product Price --}}
                                 <div class="product-price d-flex align-items-center">
                                     <span class="new-price fs-6 fw-600 lh-1">@priceFormat($product->new_price)</span>
                                     @oldprice ($product->old_price, $product->new_price)
-                                    <span
-                                        class="old-price fs-7 text-decoration-line-through lh-1">@priceFormat($product->old_price)</span>
+                                    <span class="old-price fs-7 text-decoration-line-through lh-1">@priceFormat($product->old_price)</span>
                                     <span class="discount-percent fw-500 lh-1 text-white">
                                         @discount($product->new_price, $product->old_price)
                                     </span>
@@ -70,16 +64,15 @@
                                     {{-- Select Size --}}
                                     <div class="add-cart-product-sizes col-lg-8 col-md-5 col-sm-6">
                                         <div class="form-group position-relative">
-                                            <label for="add_cart_product_size"
-                                                   class="label-select position-absolute user-select-none pe-none">
+                                            <label for="add_cart_product_size" class="label-select position-absolute user-select-none pe-none">
                                                 <sup class="me-1">*</sup>{{ucfirst(SIZES)}}
                                             </label>
-                                            <select name="add_cart_product_size[]" id="add_cart_product_size"
-                                                    class="product-sizes" multiple="multiple" aria-required="true">
+                                            <select name="add_cart_product_size[]" id="add_cart_product_size" class="product-sizes" multiple="multiple" aria-required="true">
                                                 @foreach (productSizes($product, true) as $size => $value)
                                                     <option value="{{$value}}">{{$size}}</option>
                                                 @endforeach
                                             </select>
+                                            <input type="hidden" name="add_cart_product_size[]">
                                         </div>
                                         {{$add_cart_product_error(PRODUCT_SIZE)}}
                                     </div>
@@ -109,31 +102,24 @@
                         <ul role="tablist" class="nav nav-tabs d-flex justify-content-center align-items-center mb-1">
                             {{-- Product Long-Description --}}
                             <li role="presentation" class="nav-item">
-                                <a href="#product_desc_panel" role="tab" id="product_desc"
-                                   class="nav-link product-details-reviews-title fw-500 text-capitalize text-center active"
-                                   data-mdb-toggle="tab" aria-controls="product_desc_panel" aria-selected="true">Description</a>
+                                <a href="#product_desc_panel" role="tab" id="product_desc" class="nav-link product-details-reviews-title fw-500 text-capitalize text-center active" data-mdb-toggle="tab" aria-controls="product_desc_panel" aria-selected="true">Description</a>
                             </li>
                             {{-- Product Reviews --}}
                             <li role="presentation" class="nav-item">
-                                <a href="#product_reviews_panel" role="tab" id="product_reviews"
-                                   class="nav-link product-details-reviews-title fw-500 text-capitalize text-center"
-                                   data-mdb-toggle="tab" aria-controls="product_reviews_panel"
-                                   aria-selected="false">{{ucfirst(REVIEWS_TABLE)}}</a>
+                                <a href="#product_reviews_panel" role="tab" id="product_reviews" class="nav-link product-details-reviews-title fw-500 text-capitalize text-center" data-mdb-toggle="tab" aria-controls="product_reviews_panel" aria-selected="false">{{ucfirst(REVIEWS_TABLE)}}</a>
                             </li>
                         </ul>
                         {{-- Product Long-Description & Reviews Content --}}
                         <div class="tab-content product-details-reviews-content border rounded">
                             {{-- Product Long-Description Content --}}
-                            <div role="tabpanel" id="product_desc_panel" class="tab-pane description fade show active"
-                                 aria-labelledby="product_desc">
+                            <div role="tabpanel" id="product_desc_panel" class="tab-pane description fade show active" aria-labelledby="product_desc">
                                 <h2 class="fs-6 fw-600 text-capitalize">More details</h2>
                                 <div class="more-details-desc text-break">
                                     {!! $product->{LONG_DESCRIPTION} !!}
                                 </div>
                             </div>
                             {{-- Product Reviews Content --}}
-                            <div role="tabpanel" id="product_reviews_panel" class="tab-pane reviews fade"
-                                 aria-labelledby="product_reviews">
+                            <div role="tabpanel" id="product_reviews_panel" class="tab-pane reviews fade" aria-labelledby="product_reviews">
                                 @include(REVIEWS_COMPONENT)
                             </div>
                         </div>

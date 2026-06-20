@@ -7,7 +7,7 @@
         <div class="main-sides">
             <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12" data-loading_spinner="{{imageSource('loading2.png')}}">
                 @csrf
-                <input type="hidden" name="add_order_status" value="1">
+                <input type="hidden" name="add_order_status" value="{{ORDER_STATUS_ENUM['Processing']}}">
                 <input type="hidden" name="add_order_payment_method" id="order_payment_method">
                 <!----======= Left Side =======---->
                 <section class="left-side col-12 col-lg-7">

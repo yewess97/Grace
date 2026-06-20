@@ -45,7 +45,7 @@ $.fn.imagePreviewConfig = function (options) {
  * @param options
  * @return {*}
  */
-$.fn.showHideImagePreview = function(options) {
+$.fn.showHideImagePreview = function (options) {
     const settings = $.extend({
         collection: null,
         imageType:  IGrace.MAIN_IMAGE(),

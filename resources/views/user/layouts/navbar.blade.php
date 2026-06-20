@@ -1,9 +1,7 @@
 <nav role="navigation" class="navbar p-0" aria-label="{{ucfirst(USER_MODEL)}} navigation">
     <div class="container">
         {{-- Navbar Products search --}}
-        <article class="nav-search products-search row col-12">
-            <x-products.search/>
-        </article>
+        <article class="nav-search products-search row col-12"></article>
 
         {{-- Navbar List Content --}}
         <div class="nav-list row col-12 align-items-center">
@@ -12,7 +10,7 @@
                     {{-- Nav Home --}}
                     <li role="listitem" class="nav-item">
                         <a href="{{route(HOME)}}" role="link" class="position-relative d-block py-3 fs-6 text-white">
-                            <span class="text-capitalize">Home</span>
+                            <span class="text-capitalize">{{ucfirst(HOME)}}</span>
                         </a>
                     </li>
                     {{-- Nav Dropdowns --}}

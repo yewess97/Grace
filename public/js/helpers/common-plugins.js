@@ -8,8 +8,8 @@ import { IGrace } from "./IGrace.js";
  *
  * @return {*}
  */
-$.fn.checkRows = function() {
-    return this.each(function() {
+$.fn.checkRows = function () {
+    return this.each(function () {
         const
             target    = $(this),
             check_all = $('#check_all'),
@@ -48,8 +48,8 @@ $.fn.checkRows = function() {
  *
  * @return {*}
  */
-$.fn.formMultiSelectConfig = function() {
-    return this.each(function() {
+$.fn.formMultiSelectConfig = function () {
+    return this.each(function () {
         const target = $(this);
 
         let relation = target.prop(IGrace.ID)
@@ -74,9 +74,6 @@ $.fn.formMultiSelectConfig = function() {
 
         // Remove dropdown class
         target.removeClass('dropdown');
-
-        // Update search input name
-        $('.filter.dropdown-item > input').attr('name', `search_${relation}`);
     });
 };
 
@@ -87,8 +84,8 @@ $.fn.formMultiSelectConfig = function() {
  *
  * @return {*}
  */
-$.fn.showHideMultiSelectedItems = function() {
-    return this.each(function() {
+$.fn.showHideMultiSelectedItems = function () {
+    return this.each(function () {
         const target = $(this);
 
         if (!target.hasClass('selected-items')) {
@@ -143,80 +140,6 @@ $.fn.showHideMultiSelectedItems = function() {
 
 
 /**
- * Handles the "Select All" and individual item selection functionality for multiple select inputs in forms,
- * updating the selected values list and the hidden input accordingly.
- *
- * @param options
- * @return {*}
- */
-$.fn.selectAllMultiItems = function(options) {
-    const settings = $.extend({
-        actionCollection:        null,
-        relation:                null,
-        multiSelectedValuesList: null,
-    }, options);
-
-    return this.each(function() {
-        const target = $(this);
-
-        if (!target.is(`input[name="${settings.actionCollection}_${settings.relation}[]"]`)) {
-            return;
-        }
-
-        const
-            is_select_all                   = target.next().html().includes('All'),
-            all_items                       = target.parents('.items').find('input[type="checkbox"]'),
-            select_all_checkbox             = all_items.first();
-
-        let selected_values                   = settings.multiSelectedValuesList;
-        const target_value_in_selected_values = $.inArray(target.val(), selected_values);
-
-        const check_actions = {
-            true: () => {
-                const select_actions = {
-                    true: () => {
-                        selected_values.length = 0;
-                        select_all_checkbox.val('');
-
-                        $.each((all_items), (_, selectedItem) => selected_values.push($(selectedItem).val() || ''));
-
-                        select_all_checkbox.next().html('Unselect All');
-                    },
-                    false: () => {
-                        if (target_value_in_selected_values === -1) {
-                            selected_values.push(target.val());
-                        }
-                    },
-                };
-
-                select_actions[is_select_all]();
-            },
-            false: () => {
-                const select_actions = {
-                    true: ()  => selected_values.length = 0,
-                    false: () => {
-                        if (target_value_in_selected_values !== -1) {
-                            selected_values.splice(target_value_in_selected_values, 1);
-                        }
-                    },
-                };
-
-                select_actions[is_select_all]();
-
-                select_all_checkbox.next().html('Select All');
-            },
-        };
-
-        check_actions[target.is(':checked')]();
-
-        selected_values = selected_values.filter(Boolean).join(','); // "filter(Boolean)" removes empty values
-
-        select_all_checkbox.val(selected_values);
-    });
-};
-
-
-/**
  * Handles the display of a loading spinner on a specified element,
  * typically used to indicate that a process is ongoing,
  * and optionally disables the element to prevent further interactions while the process is active.
@@ -224,12 +147,12 @@ $.fn.selectAllMultiItems = function(options) {
  * @param options
  * @return {*}
  */
-$.fn.loadingSpinner = function(options) {
+$.fn.loadingSpinner = function (options) {
     const settings = $.extend({
         isDisabled: false,
     }, options);
 
-    return this.each(function() {
+    return this.each(function () {
         const target = $(this);
 
         const loading_spinner_actions = {
