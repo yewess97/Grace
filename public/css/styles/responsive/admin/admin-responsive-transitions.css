@@ -1,7 +1,1 @@
-.nav-menu-overlay {
-    -webkit-transition: var(--trans-300);
-    -moz-transition: var(--trans-300);
-    -ms-transition: var(--trans-300);
-    -o-transition: var(--trans-300);
-    transition: var(--trans-300);
-}
+.nav-menu-overlay{-webkit-transition:var(--trans-300);-moz-transition:var(--trans-300);-ms-transition:var(--trans-300);-o-transition:var(--trans-300);transition:var(--trans-300)}

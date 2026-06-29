@@ -1,8 +1,1 @@
-@media all and (max-width: 575.98px) {
-    /* ------------============== Reviews ==============------------ */
-    .reviews-main .reviews .delete-all-selected-button {
-        justify-content: center;
-    }
-
-    /* ------------============== End Reviews ==============------------ */
-}
+@media all and(max-width:575.98px){.reviews-main.reviews.delete-all-selected-button{justify-content:center}}
