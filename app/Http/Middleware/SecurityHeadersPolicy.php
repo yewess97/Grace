@@ -30,7 +30,7 @@ class SecurityHeadersPolicy
 
         $style_src   = "style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com www.gstatic.com 'nonce-$nonce' $style_hashes";
         $script_src  = "script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-$nonce'";
-        $font_src    = "font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com unpkg.com fonts.gstatic.com data:";
+        $font_src    = "font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com fonts.gstatic.com data:";
         $connect_src = "connect-src 'self' www.gstatic.com www.apicountries.com api.emailjs.com unpkg.com";
         $img_src     = "img-src 'self' data: cdn.jsdelivr.net flagcdn.com upload.wikimedia.org";
 

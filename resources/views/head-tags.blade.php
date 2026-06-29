@@ -28,10 +28,12 @@
 {{--    <link rel="stylesheet" type="text/css" href="{{asset('css/admin-style.css')}}">--}}
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/yewess97/Grace@main/public/css/admin-style.min.css">
     @if (isset($error_status) && $error_status === 403)
-        <link rel="stylesheet" type="text/css" href="{{asset('css/styles/responsive/user-responsive.css')}}">
+{{--        <link rel="stylesheet" type="text/css" href="{{asset('css/styles/responsive/user-responsive.css')}}">--}}
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/yewess97/Grace@main/public/css/user-responsive.min.css">
     @endif
 @else
-    <link rel="stylesheet" type="text/css" href="{{asset('css/user-style.css')}}">
+{{--    <link rel="stylesheet" type="text/css" href="{{asset('css/user-style.css')}}">--}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/yewess97/Grace@main/public/css/user-style.min.css">
 @endif
 <link rel="icon" type="image/x-icon" sizes="32x32" href="{{imageSource('favicon.png')}}">
 <link rel="icon" type="image/x-icon" sizes="16x16" href="{{imageSource('favicon.png')}}">
