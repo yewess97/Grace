@@ -26,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/aksfileupload@1.0.0/dist/aksFileUpload.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@40,400,1,0" />
 {{--    <link rel="stylesheet" type="text/css" href="{{asset('css/admin-style.css')}}">--}}
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/yewess97/Grace@main/public/css/admin-style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/yewess97/Grace@main/public/css/admin-style.min.css">
     @if (isset($error_status) && $error_status === 403)
         <link rel="stylesheet" type="text/css" href="{{asset('css/styles/responsive/user-responsive.css')}}">
     @endif
