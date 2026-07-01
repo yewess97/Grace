@@ -117,25 +117,30 @@
             <article class="customers-reviews-carousel owl-carousel owl-theme owl-loaded owl-drag">
                 <div class="owl-stage-outer">
                     <div class="owl-stage">
-                        @foreach ($common_left_side[CUSTOMERS_REVIEWS] as $customer_review)
-                        <div class="owl-item">
-                            <div class="row gap-2 text-center">
-                                <div class="customer-review border overflow-hidden">
-                                    <i class="fa-solid fa-quote-left d-block fs-9"></i>
-                                    <p>{{ $customer_review->{BODY_TEXT} }}</p>
-                                </div>
-                                <div class="customer-name">
-                                    <h2 class="mt-2 fw-500 lh-base text-main">{{ $customer_review->{USER_MODEL}->{FULL_NAME} }}</h2>
-                                    <p class="mt-2">
-                                        @include(REVIEW_RATING_PARTIAL, [RATING => $customer_review->{RATING}])
-                                    </p>
-                                    <p class="mt-2 fs-7 lh-base">
-                                        Reviewed on the "<b>{{ $customer_review->{PRODUCT_MODEL}->{NAME} }}</b>" {{ucfirst(PRODUCT_MODEL)}}
-                                    </p>
+                        @forelse ($common_left_side[CUSTOMERS_REVIEWS] as $customer_review)
+                            <div class="owl-item">
+                                <div class="row gap-2 text-center">
+                                    <div class="customer-review border overflow-hidden">
+                                        <i class="fa-solid fa-quote-left d-block fs-9"></i>
+                                        <p>{{ $customer_review->{BODY_TEXT} }}</p>
+                                    </div>
+                                    <div class="customer-name">
+                                        <h2 class="mt-2 fw-500 lh-base text-main">{{ $customer_review->{USER_MODEL}->{FULL_NAME} }}</h2>
+                                        <p class="mt-2">
+                                            @include(REVIEW_RATING_PARTIAL, [RATING => $customer_review->{RATING}])
+                                        </p>
+                                        <p class="mt-2 fs-7 lh-base">
+                                            Reviewed on the "<b>{{ $customer_review->{PRODUCT_MODEL}->{NAME} }}</b>" {{ucfirst(PRODUCT_MODEL)}}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        @endforeach
+                        @empty
+                            <div class="customer-review border overflow-hidden">
+                                <i class="fa-solid fa-quote-left d-block fs-9"></i>
+                                <p>No {{pluralize(REVIEWS_TABLE)}} yet!</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </article>

@@ -946,6 +946,7 @@ if (!function_exists('commonAsideMenus')) {
             Review::query()
                 ->latest()
                 ->take(5)
+                ->withoutTrashed()
                 ->get([ID, ...array_diff(REVIEW_FILLABLE_ATTRIBUTES, [TITLE])])
         );
 
