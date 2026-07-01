@@ -1,1 +1,0 @@
-.pagination .page-item .page-link{border:var(--one-pixel) solid var(--second-color);background-color:var(--white-color);color:var(--main-color)}.pagination .page-item.disabled .page-link{background-color:#f83d79;color:var(--white-color)}.pagination .page-item.active .page-link{background-color:var(--second-color);color:var(--white-color)}
