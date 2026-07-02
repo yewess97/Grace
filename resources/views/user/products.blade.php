@@ -72,7 +72,7 @@
                                     <li role="listitem" class="filter-item d-flex justify-content-between align-items-center">
                                         <label for="filter_products_categories_{{$category->id}}" class="filter-check position-relative d-flex align-items-center user-select-none cursor-pointer">
                                             <input type="checkbox" role="checkbox" name="filter_products_categories[]" id="filter_products_categories_{{$category->id}}" class="filter-checkbox" multiple="multiple" value="{{$category->id}}" aria-labelledby="filter_categories_{{$category_name}}">
-                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_categories_{{$category_name}}"></span>
+                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_categories_{{$category_name}}" aria-checked="mixed"></span>
                                             <span id="filter_categories_{{$category_name}}" class="filter-name text-capitalize">
                                                 {{ucfirst($category->{NAME})}}
                                             </span>
@@ -96,7 +96,7 @@
                                     <li role="listitem" class="filter-item d-flex justify-content-between align-items-center">
                                         <label for="filter_products_subcategories_{{$subcategory->id}}" class="filter-check position-relative d-flex justify-content-center align-items-center user-select-none cursor-pointer">
                                             <input type="checkbox" role="checkbox" name="filter_products_subcategories[]" id="filter_products_subcategories_{{$subcategory->id}}" class="filter-checkbox" multiple="multiple" value="{{$subcategory->id}}" aria-labelledby="filter_subcategories_{{$collection_name}}">
-                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_subcategories_{{$collection_name}}"></span>
+                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_subcategories_{{$collection_name}}" aria-checked="mixed"></span>
                                             <span id="filter_subcategories_{{$collection_name}}" class="filter-name text-capitalize">
                                                 {{ucfirst($subcategory->{NAME})}}
                                             </span>
@@ -118,7 +118,7 @@
                                     <li role="listitem" class="filter-item d-flex justify-content-between align-items-center">
                                         <label for="filter_products_sizes_{{$product_size->size_value}}" class="filter-check position-relative d-flex justify-content-center align-items-center user-select-none cursor-pointer">
                                             <input type="checkbox" role="checkbox" name="filter_products_sizes[]" id="filter_products_sizes_{{$product_size->size_value}}" class="filter-checkbox" multiple="multiple" value="{{$product_size->size_value}}" aria-labelledby="filter_sizes_{{ $product_size->{SIZE} }}">
-                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_sizes_{{ $product_size->{SIZE} }}"></span>
+                                            <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="filter_sizes_{{ $product_size->{SIZE} }}" aria-checked="mixed"></span>
                                             <span id="filter_sizes_{{ $product_size->{SIZE} }}" class="filter-name text-capitalize">
                                                 {{ $product_size->{SIZE} }}
                                             </span>
@@ -168,9 +168,6 @@
                             </div>
                         </article>
 
-                        {{-- Filter By Sort --}}
-                        <input type="hidden" name="filter_products_sort" id="filter_products_sort">
-
                         {{-- Filter Button --}}
                         <article class="box-filter">
                             <button type="submit" role="button" title="{{ucfirst(FILTER)}}" class="btn btn-block">{{ucfirst(FILTER)}}</button>
@@ -201,6 +198,7 @@
                                             <option value="{{$sort_value}}">{{$sort_type}}</option>
                                         @endforeach
                                     </select>
+                                    <input type="hidden" name="filter_products_sort">
                                 </div>
                             </div>
                         </div>

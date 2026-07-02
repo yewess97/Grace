@@ -11,7 +11,7 @@
 
 @if ($container === 'info')
     {{-- Product Name --}}
-    <h3 class="product-info-name text-capitalize @isset($is_single_view) mt-0 @endisset">{{ $product->{NAME} }}</h3>
+    <h2 class="product-info-name text-capitalize @isset($is_single_view) mt-0 @endisset">{{ $product->{NAME} }}</h2>
 
     {{-- Product Price --}}
     <div class="product-info-price d-flex flex-wrap align-items-center w-100 overflow-hidden lh-1 @isset($is_single_view) mt-0 @endisset">

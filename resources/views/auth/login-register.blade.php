@@ -80,7 +80,7 @@
                                             <div class="form-group">
                                                 <label for="remember" class="remember-check position-relative d-flex align-items-center user-select-none cursor-pointer">
                                                     <input type="checkbox" role="checkbox" name="remember" id="remember" aria-labelledby="remember_me" @checked(old('remember'))>
-                                                    <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="remember_me"></span>
+                                                    <span role="checkbox" class="custom-check position-absolute start-0" aria-labelledby="remember_me" aria-checked="mixed"></span>
                                                     <span id="remember_me" class="remember-title text-capitalize">Remember me</span>
                                                 </label>
                                             </div>
