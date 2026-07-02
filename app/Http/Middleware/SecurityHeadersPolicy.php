@@ -31,8 +31,10 @@ class SecurityHeadersPolicy
         $style_src   = "style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com www.gstatic.com 'nonce-$nonce' $style_hashes";
         $script_src  = "script-src 'self' cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-$nonce'";
         $font_src    = "font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com fonts.gstatic.com data:";
-        $connect_src = "connect-src 'self' www.gstatic.com www.apicountries.com api.emailjs.com unpkg.com";
+        $connect_src = "connect-src 'self' www.gstatic.com www.apicountries.com api.emailjs.com cdnjs.cloudflare.com unpkg.com";
         $img_src     = "img-src 'self' data: cdn.jsdelivr.net flagcdn.com upload.wikimedia.org";
+
+        $bfcache_public_routes = [HOME, PRODUCTS_LIST, PAYMENT, ABOUT_US, CONTACT_US];
 
         $response->headers->set('Content-Security-Policy', "default-src 'self'; frame-ancestors 'self'; $style_src; $script_src; $font_src; $connect_src; $img_src;");
 
@@ -63,8 +65,12 @@ class SecurityHeadersPolicy
         // X-XSS-Protection - Adds XSS protection for older browsers (though modern browsers ignore it)
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
-        // Cache-Control - Prevents storing sensitive data in browser cache
-        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        // Cache-Control
+        $request->routeIs($bfcache_public_routes) || $request->is('/')
+            // Safe headers for public pages (Allows instant back/forward cache)
+            ? $response->headers->set('Cache-Control', 'no-cache, private, must-revalidate')
+            // Strict headers for private/sensitive pages (Prevents storing sensitive data in browser cache)
+            : $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 
         return $response;
     }

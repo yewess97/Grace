@@ -7,7 +7,7 @@
                 <li role="listitem" class="footer-item row gap-3">
                     <div class="footer-logo row align-items-center">
                         <a href="{{route(HOME)}}" role="link" class="d-block">
-                            <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo">
+                            <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo" fetchpriority="high">
                         </a>
                     </div>
                     <p>The best shop for selling all kinds of different clothes and accessories with the finest materials according to the highest quality standards.</p>

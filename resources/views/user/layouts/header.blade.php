@@ -188,7 +188,7 @@
             {{-- Header Logo --}}
             <article class="header-logo col-2 d-flex justify-content-center">
                 <a href="{{route(HOME)}}" role="link" class="d-block me-lg-5">
-                    <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo">
+                    <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo" fetchpriority="high">
                 </a>
             </article>
 

@@ -23,7 +23,7 @@
                                     <img src="{{imageSource($product, MAIN_IMAGE)}}" alt="{{ $product->{NAME} }}">
                                 </article>
                                 {{-- Product Thumb Images --}}
-                                @if ($product->{THUMB_IMAGES}->count())
+                                @if ($product->{THUMB_IMAGES}->isNotEmpty())
                                     <article
                                         class="product-thumb-images-carousel position-relative owl-carousel owl-theme owl-loaded owl-drag">
                                         <div class="owl-stage-outer">
@@ -125,7 +125,7 @@
                         </div>
                     </section>
                     {{-- Related Products --}}
-                    @if ($product->{RELATED_PRODUCTS}->count())
+                    @if ($product->{RELATED_PRODUCTS}->isNotEmpty())
                         <section class="related-products box-content">
                             {{-- Related Products Title --}}
                             <article class="box-title mb-3 border-bottom">
