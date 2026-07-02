@@ -1413,7 +1413,7 @@ if (!function_exists('breadcrumb')) {
 
         foreach ($items as $key => $item) {
             if ($key === $last_item) {
-                $html .= '<li role="listitem" class="breadcrumb-item fw-500 active" aria-current="page">'.($item['title'] ?? '').'</li>';
+                $html .= '<li role="listitem" class="breadcrumb-item fw-600 active" aria-current="page">'.($item['title'] ?? '').'</li>';
             }
             else {
                 $html .= '<li role="listitem" class="breadcrumb-item fw-500"><a href="'.($item['url'] ?? '').'" role="link">'.$item['title'].'</a></li>';
