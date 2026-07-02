@@ -315,7 +315,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                     echo \"
                         <th scope='col' class='position-relative'>
                             <input type='checkbox' role='checkbox' id='check_all'>
-                            <span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all'></span>
+                            <span role='checkbox' id='custom_check_all' class='custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_all' aria-checked='mixed'></span>
                         </th> \$__table_headers
                         <th scope='col'>Action</th>
                     \";
@@ -334,7 +334,7 @@ class CommonBladeServiceProvider extends ServiceProvider
                 echo \"
                     <td class='position-relative'>
                         <input type='checkbox' role='checkbox' id='check_row_$id' class='check-row' value='$id'>
-                        <span role='checkbox' class='custom-check-row custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_row_$id'></span>
+                        <span role='checkbox' class='custom-check-row custom-check position-absolute top-50 start-50 translate-middle' aria-labelledBy='check_row_$id' aria-checked='mixed'></span>
                     </td>
                 \"
             ?>"

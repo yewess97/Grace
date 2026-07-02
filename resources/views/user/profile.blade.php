@@ -15,7 +15,7 @@
                         {{-- My Account --}}
                         <li role="listitem" class="my-account col-6">
                             <article class="my-account-title mb-3">
-                                <h6 class="fs-8 fw-600">My Account</h6>
+                                <h3 class="fs-8 fw-600">My Account</h3>
                             </article>
                             <article class="my-account-addresses">
                                 <a href="{{route(USER_ADDRESSES, [ID => encrypt($user->{ID})])}}" role="link" class="text-main">
@@ -37,31 +37,31 @@
                         {{-- Account Details --}}
                         <li role="listitem" class="account-details col-6">
                             <article class="account-details-title mb-3">
-                                <h6 class="fs-8 fw-600">Account Details</h6>
+                                <h3 class="fs-8 fw-600">Account Details</h3>
                             </article>
                             <article class="account-details-table table-responsive">
                                 <table role="table" class="align-middle mb-0 bg-white">
                                     <tr>
                                         <td>{{ucfirst(NAME)}}:</td>
                                         <td>
-                                            <h6 class="ms-2 fw-500">{{ $user->{FULL_NAME} }}</h6>
+                                            <h4 class="ms-2 fw-500">{{ $user->{FULL_NAME} }}</h4>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>{{ucfirst(EMAIL)}}:</td>
                                         <td>
-                                            <h6 class="ms-2 fw-500">{{ $user->{EMAIL} }}</h6>
+                                            <h4 class="ms-2 fw-500">{{ $user->{EMAIL} }}</h4>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>{{ucfirst(COUNTRY)}}:</td>
                                         <td class="d-flex align-items-center">
                                             @forelse ($user->{ADDRESSES_TABLE} as $address)
-                                                <h6 class="fw-500 many-user-countries position-relative ms-2">
+                                                <h4 class="fw-500 many-user-countries position-relative ms-2">
                                                     {{ $address->{COUNTRY} }}
-                                                </h6>
+                                                </h4>
                                             @empty
-                                                <h6 class="fw-500 ms-2">No {{ucfirst(ADDRESS_MODEL)}} yet</h6>
+                                                <h4 class="fw-500 ms-2">No {{ucfirst(ADDRESS_MODEL)}} yet</h4>
                                             @endforelse
                                         </td>
                                     </tr>
@@ -74,7 +74,7 @@
                 <!----======= Bottom Side =======---->
                 <section class="bottom-side row col-12 gap-3">
                     {{-- Profile Order History Title --}}
-                    <h6 class="profile-order-history-title fs-8 fw-600">{{ucfirst(ORDERS_TABLE)}} History</h6>
+                    <h3 class="profile-order-history-title fs-8 fw-600">{{ucfirst(ORDERS_TABLE)}} History</h3>
                     {{-- Profile Order History Table --}}
                     <div class="pagination-container search-table">
                         @include(PROFILE_ORDERS_PAGINATION, [USER_ORDERS => $user_orders])
