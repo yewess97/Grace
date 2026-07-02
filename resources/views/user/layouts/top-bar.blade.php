@@ -4,13 +4,13 @@
             <ul role="list" class="top-bar-content col-12 d-flex align-items-center p-0">
                 <li role="listitem" class="top-info col d-flex justify-content-start align-items-center gap-4">
                     <article class="mail">
-                        <a href="mailto:yewess97@gmail.com" target="_blank" role="link" class="top-contact d-flex align-items-center gap-2" aria-label="{{ucfirst(EMAIL)}}">
+                        <a href="mailto:yewess97@gmail.com" target="_blank" role="link" title="{{ucfirst(EMAIL)}} me" class="top-contact d-flex align-items-center gap-2" aria-label="{{ucfirst(EMAIL)}} me">
                             <i class="fa-solid fa-envelope"></i>
                             <span>yewess97@gmail.com</span>
                         </a>
                     </article>
                     <article class="mobile">
-                        <a href="tel:+201011836243" role="link" class="top-contact d-flex align-items-center gap-2" aria-label="Whatsapp">
+                        <a href="tel:+201011836243" role="link" title="Call me" class="top-contact d-flex align-items-center gap-2" aria-label="Call me">
                             <i class="fa-solid fa-phone"></i>
                             <span>+201011836243</span>
                         </a>

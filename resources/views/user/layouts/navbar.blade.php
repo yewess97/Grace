@@ -39,8 +39,8 @@
                     {{-- Nav Items --}}
                     @foreach ($common_collections['navbar_items'] as $navbar_item)
                         <li class="nav-item">
-                            <a href="{{route($navbar_item->route_name)}}" role="link" class="position-relative d-block py-3 fs-6 text-white">
-                                <span class="text-capitalize">{{capitalizeAll($navbar_item->route_name)}}</span>
+                            <a href="{{$navbar_item->route}}" role="link" title="{{ $navbar_item->{TITLE} }}" class="position-relative d-block py-3 fs-6 text-white">
+                                <span class="text-capitalize">{{ $navbar_item->{TITLE} }}</span>
                             </a>
                         </li>
                     @endforeach

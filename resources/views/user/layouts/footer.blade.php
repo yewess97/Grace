@@ -50,7 +50,7 @@
                         <ul role="list" class="footer-menu row gap-3 d-lg-flex mt-4 collapse" id="footer_menu_{{str($menu_title)->snake()->value()}}_list">
                             @foreach ($menu_items as $item)
                                 <li role="listitem">
-                                    <a href="javascript:;" role="link" class="position-relative d-flex align-items-center overflow-hidden">{{$item}}</a>
+                                    <a href="{{$item->route}}" role="link" title="{{ $item->{TITLE} }}" class="position-relative d-flex align-items-center overflow-hidden">{{ $item->{TITLE} }}</a>
                                 </li>
                             @endforeach
                         </ul>
@@ -78,11 +78,11 @@
                             </div>
                         </li>
                         <li role="listitem" class="d-flex align-items-center gap-2">
-                            <div role="img" class="contact-icon fs-9" aria-label="Whatsapp">
+                            <div role="img" class="contact-icon fs-9" aria-label="Send me Whatsapp">
                                 <i class="fa-brands fa-whatsapp"></i>
                             </div>
                             <div class="contact-info">
-                                <a href="https://wa.me/+201011836243" aria-label="Whatsapp">+201011836243</a>
+                                <a href="https://wa.me/+201011836243" target="_blank" title="Send me Whatsapp" aria-label="Send me Whatsapp">+201011836243</a>
                             </div>
                         </li>
                         <li role="listitem" class="d-flex align-items-center gap-2">
@@ -90,7 +90,7 @@
                                 <i class="fa-regular fa-envelope"></i>
                             </div>
                             <div class="contact-info">
-                                <a href="mailto:yewess97@gmail.com" aria-label="{{ucfirst(EMAIL)}}">yewess97@gmail.com</a>
+                                <a href="mailto:yewess97@gmail.com" target="_blank" title="{{ucfirst(EMAIL)}} me" aria-label="{{ucfirst(EMAIL)}} me">yewess97@gmail.com</a>
                             </div>
                         </li>
                         <li role="listitem">

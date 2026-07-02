@@ -14,12 +14,12 @@ class SettingsService {
     {
         return object_from_array([
             [
-                'title'      => CATEGORIES_TABLE,
+                TITLE        => CATEGORIES_TABLE,
                 'collection' => $vars[CATEGORIES_TABLE],
                 'route_name' => CATEGORY_MODEL,
             ],
             [
-                'title'      => 'collections',
+                TITLE        => 'collections',
                 'collection' => $vars[SUBCATEGORIES_TABLE],
                 'route_name' => SUBCATEGORY_MODEL,
             ],
@@ -35,13 +35,16 @@ class SettingsService {
     {
         return object_from_array([
             [
-                'route_name' => PAYMENT,
+                TITLE   => capitalizeAll(PAYMENT),
+                'route' => route(PAYMENT),
             ],
             [
-                'route_name' => ABOUT_US,
+                TITLE   => capitalizeAll(ABOUT_US),
+                'route' => route(ABOUT_US),
             ],
             [
-                'route_name' => CONTACT_US,
+                TITLE   => capitalizeAll(CONTACT_US),
+                'route' => route(CONTACT_US),
             ],
         ]);
     }
@@ -67,29 +70,74 @@ class SettingsService {
      */
     final public static function getFooterMenus(): array
     {
-        return object_from_array([
-            'information' => [
-                ucfirst(pluralize(PRICE)).' Drop',
-                capitalizeAll(NEW_PRODUCTS),
-                'Best Sales',
-                'Sitemap',
-                'Store',
-            ],
-            'our company' => [
-                'Delivery',
-                'Legal Notice',
-                capitalizeAll(ABOUT_US),
-                'Secure Payment',
-                capitalizeAll(CONTACT_US),
-            ],
-            'your account' => [
-                'Personal Info',
-                ucfirst(ORDERS_TABLE),
-                'Credit Slips',
-                ucfirst(ADDRESSES_TABLE),
-                ucfirst(CART_MODEL),
-            ],
-        ]);
+        return [
+            'information' => object_from_array([
+                [
+                    TITLE   => ucfirst(pluralize(PRICE)).' Drop',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => capitalizeAll(NEW_PRODUCTS),
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => 'Best Sales',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => 'Sitemap',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => 'Store',
+                    'route' => route(PRODUCTS_LIST),
+                ],
+            ]),
+            'our company' => object_from_array([
+                [
+                    TITLE   => 'Delivery',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => 'Legal Notice',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => capitalizeAll(ABOUT_US),
+                    'route' => route(ABOUT_US),
+                ],
+                [
+                    TITLE   => 'Secure Payment',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => capitalizeAll(CONTACT_US),
+                    'route' => route(CONTACT_US),
+                ],
+            ]),
+            'your account' => object_from_array([
+                [
+                    TITLE   => 'Personal Info',
+                    'route' => route(PROFILE),
+                ],
+                [
+                    TITLE   => ucfirst(ORDERS_TABLE),
+                    'route' => route(PROFILE),
+                ],
+                [
+                    TITLE   => 'Credit Slips',
+                    'route' => 'javascript:;',
+                ],
+                [
+                    TITLE   => ucfirst(ADDRESSES_TABLE),
+                    'route' => route(USER_ADDRESSES, [ID => encrypt(auth()->user()?->{ID})]),
+                ],
+                [
+                    TITLE   => ucfirst(CART_MODEL),
+                    'route' => route(CART_MODEL),
+                ],
+            ]),
+        ];
     }
     /*========================================== End Layout ==========================================*/
 

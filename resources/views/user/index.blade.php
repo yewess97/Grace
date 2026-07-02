@@ -50,8 +50,8 @@
                     <article class="home-banners">
                         <div class="box-content row row-cols-1 row-cols-md-3 m-0 rounded-start">
                             @foreach ($common_collections[CATEGORIES_TABLE] as $category)
-                                <a href="{{route(CATEGORY_MODEL, $category->slug)}}" role="link" class="col position-relative img-hover-effect">
-                                    <img src="{{imageSource($category, BANNER_IMAGE)}}" alt="Category Banner" class="rounded-2">
+                                <a href="{{route(CATEGORY_MODEL, $category->{SLUG})}}" role="link" title="{{ $category->{NAME} }}" class="col position-relative img-hover-effect">
+                                    <img src="{{imageSource($category, BANNER_IMAGE)}}" alt="{{capitalizeAll(CATEGORY_MODEL.' '.BANNER_IMAGE)}}" class="rounded-2">
                                 </a>
                             @endforeach
                         </div>

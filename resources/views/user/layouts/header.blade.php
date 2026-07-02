@@ -67,9 +67,9 @@
                                             <ul role="list" id="nav_submenu_more_list" class="nav-submenu-list-content row collapse justify-content-center align-items-center">
                                                 @foreach ($common_collections['navbar_items'] as $navbar_item)
                                                     <li role="listitem" class="nav-submenu-list-item col-12 box-content rounded-3">
-                                                        <a href="{{route($navbar_item->route_name)}}" role="link" class="d-grid place-items-center gap-2">
+                                                        <a href="{{$navbar_item->route}}" role="link" class="d-grid place-items-center gap-2">
                                                             <h3 class="dropdown-name fw-500 text-capitalize lh-1">
-                                                                {{capitalizeAll($navbar_item->route_name)}}
+                                                                {{ $navbar_item->{TITLE} }}
                                                             </h3>
                                                         </a>
                                                     </li>
