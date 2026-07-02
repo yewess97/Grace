@@ -25,7 +25,7 @@
                                     @csrf
                                     {{-- Form Header --}}
                                     <article class="grace-form-header contact-us-content-header mb-4">
-                                        <h5 class="fw-600">Drop us a message</h5>
+                                        <h3 class="fs-6 fw-600">Drop us a message</h3>
                                     </article>
                                     {{-- Form Body --}}
                                     <article class="grace-form-body row col-12">
@@ -81,7 +81,7 @@
                             <div class="col d-grid gap-4 pt-5 pt-lg-0 ps-lg-5">
                                 {{-- Contact Us Info Header --}}
                                 <article class="contact-us-content-header">
-                                    <h5 class="fs-8 fw-600">Get in Touch</h5>
+                                    <h3 class="fs-8 fw-600">Get in Touch</h3>
                                     <p class="mt-2">Feel free to contact us by phone or email, or visit our office.</p>
                                 </article>
                                 {{-- Contact Us Info Content --}}
@@ -94,7 +94,7 @@
                                         </div>
                                         {{-- Details --}}
                                         <div class="info-details">
-                                            <h6 class="fw-600">{{ucfirst(ADDRESS_MODEL)}}</h6>
+                                            <h4 class="fw-600">{{ucfirst(ADDRESS_MODEL)}}</h4>
                                             <p class="mt-1">Al-Mohandiseen 71511 Street, Asyut, Egypt</p>
                                         </div>
                                     </article>
@@ -106,7 +106,7 @@
                                         </div>
                                         {{-- Details --}}
                                         <div class="info-details">
-                                            <h6 class="fw-600">Phone</h6>
+                                            <h4 class="fw-600">Phone</h4>
                                             <p class="mt-1">+20 101 183 6243</p>
                                         </div>
                                     </article>
@@ -118,7 +118,7 @@
                                         </div>
                                         {{-- Details --}}
                                         <div class="info-details">
-                                            <h6 class="fw-600">{{ucfirst(EMAIL)}}</h6>
+                                            <h4 class="fw-600">{{ucfirst(EMAIL)}}</h4>
                                             <p class="mt-1">yewess97@gmail.com</p>
                                         </div>
                                     </article>

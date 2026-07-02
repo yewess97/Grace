@@ -10,7 +10,7 @@
                     @csrf
                     @method('PUT')
                     <div class="grace-form-body review-body row col-12 pt-2 pb-4">
-                        <input type="hidden" id="update_review_id" name="update_review_id">
+                        <input type="hidden" name="update_review_id" id="update_review_id">
                         {{-- Review Rating --}}
                         <div class="update-review-rating">
                             <div class="form-group">

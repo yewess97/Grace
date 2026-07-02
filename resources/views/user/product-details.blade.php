@@ -24,8 +24,7 @@
                                 </article>
                                 {{-- Product Thumb Images --}}
                                 @if ($product->{THUMB_IMAGES}->isNotEmpty())
-                                    <article
-                                        class="product-thumb-images-carousel position-relative owl-carousel owl-theme owl-loaded owl-drag">
+                                    <article class="product-thumb-images-carousel position-relative h-fit-content owl-carousel owl-theme owl-loaded owl-drag">
                                         <div class="owl-stage-outer">
                                             <ul role="list" class="owl-stage">
                                                 @foreach ($product->{THUMB_IMAGES} as $thumb_image)

@@ -17,7 +17,7 @@
                             <ul role="list" class="payment-questions-list">
                                 @foreach ($payment_inquiries as $payment_inquiry)
                                     <li role="listitem">
-                                        <h6 class="payment-question fs-6 text-white rounded">{{$payment_inquiry->question}}</h6>
+                                        <h3 class="payment-question fs-6 text-white rounded">{{$payment_inquiry->question}}</h3>
                                         {!! $payment_inquiry->answer !!}
                                     </li>
                                 @endforeach

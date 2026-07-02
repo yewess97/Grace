@@ -4,7 +4,7 @@
             <div class="card justify-content-center h-100 py-2 border">
                 <label for="add_order_address_id{{ $user_address->{ID} }}" class="h-0">
                     <input type="radio" role="radio" name="add_order_address_id" id="add_order_address_id{{ $user_address->{ID} }}" value="{{ $user_address->{ID} }}" aria-required="true">
-                    <span role="radio" class="custom-check position-absolute top-50 cursor-pointer" aria-labelledby="add_order_address_id{{ $user_address->{ID} }}"></span>
+                    <span role="radio" class="custom-check position-absolute top-50 cursor-pointer" aria-labelledby="add_order_address_id{{ $user_address->{ID} }}" aria-checked="false" tabindex="-1"></span>
                 </label>
                 <ul role="list" class="list-group list-group-light list-group-small ms-5 border-0">
                     <li role="listitem" class="list-group-item px-3">{{ $user_address->{ADDRESS1} }}</li>

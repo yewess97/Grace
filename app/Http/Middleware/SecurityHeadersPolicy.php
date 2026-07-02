@@ -50,6 +50,9 @@ class SecurityHeadersPolicy
         // Cross-Origin-Resource-Policy - Restricts which origins can load resources from this site
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
 
+        // Cross-Origin-Opener-Policy - Isolates the browsing context to prevent cross-origin popups from interacting with this window
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+
         // Cross-Origin-Embedder-Policy (require-corp) - Prevents embedding the website in foreign origins
         // $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
 

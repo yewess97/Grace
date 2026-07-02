@@ -131,7 +131,7 @@
                     <!----======= Right Side =======---->
                     <section class="log-reg-right row col">
                         <div class="log-reg-title row w-100 text-center text-main">
-                            <h6 class="fs-6 fw-600">{{$auth_action === REGISTER ? "Already" : "Don't"}} have an account?</h6>
+                            <h2 class="fs-6 fw-600">{{$auth_action === REGISTER ? "Already" : "Don't"}} have an account?</h2>
                             <a href="{{route($auth_action === REGISTER ? LOGIN_USER : REGISTER_USER)}}" type="button" role="link" title="{{$auth_action === REGISTER ? ucfirst(LOGIN) : "Create Account"}}" class="position-relative w-100 fw-500 lh-sm rounded overflow-hidden">
                                 {{$auth_action === REGISTER ? ucfirst(LOGIN) : "Create Account"}}
                             </a>
