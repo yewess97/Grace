@@ -6,7 +6,7 @@
                 <p class="copyright m-0 text-white text-center text-md-start">Copyrights &copy; {{ date('Y') }}. Made with &hearts; By <a href="https://www.linkedin.com/in/yewess97/" role="link" target="_blank">Yousif Ayman</a><sup>TM</sup></p>
                 {{-- Payment Methods --}}
                 <div class="payment-methods">
-                    <img src="{{imageSource('credit-cards.png')}}" alt="Credit Cards Logo">
+                    <img src="{{imageSource('credit-cards.webp')}}" alt="Credit Cards Logo">
                 </div>
             </article>
             {{-- Scroll To Top Button --}}

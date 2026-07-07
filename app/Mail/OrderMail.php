@@ -46,7 +46,7 @@ class OrderMail extends Mailable
             with: [
                 ...getOrderDetails($this->{ORDER_MODEL}),
                 ORDER_USER_NAME => $this->{ORDER_MODEL}->{USER_MODEL}->{FULL_NAME},
-                'logo' => storage_path('app/public/images/favicon.png'),
+                'logo' => storage_path('app/public/images/favicon.webp'),
             ],
         );
     }

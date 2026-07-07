@@ -17,7 +17,7 @@
                             <form action="{{route(SEARCH_ORDERS, [STATUS => $order_status, 'type' => FILTER])}}"
                                   method="post" role="form" id="filter_orders_form"
                                   class="grace-form filter-form col-12 col-md-6"
-                                  data-no_results="{{imageSource('no-results.png')}}">
+                                  data-no_results="{{imageSource('no-results.webp')}}">
                                 @csrf
                                 <div class="grace-form-body row">
                                     <div class="filter-orders-dates row col-12">

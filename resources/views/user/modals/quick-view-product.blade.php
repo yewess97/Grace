@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </article>
             <article class="modal-body">
-                <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
+                <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.webp')}}">
                     @csrf
                     <div class="grace-form-body row row-cols-1 row-cols-md-2 justify-content-evenly px-lg-0 py-3">
                         <input type="hidden" name="add_cart_product_id" id="add_cart_product_id">

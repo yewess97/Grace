@@ -5,7 +5,7 @@
     ])>
     @if (session()->has('no_results'))
         <li role="listitem" class="col">
-            <img src="{{imageSource('no-results.png')}}" alt="No Results Found">
+            <img src="{{imageSource('no-results.webp')}}" alt="No Results Found">
         </li>
     @else
         @foreach ($products as $product)

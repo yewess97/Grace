@@ -70,7 +70,7 @@
                                 @foreach ($services as $service)
                                     <div class="service d-flex align-items-center w-25">
                                         <article class="service-icon">
-                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.png")}}" alt="{{config('app.name')}} Service">
+                                            <img src="{{imageSource("services/service-icon{$service->{MAIN_IMAGE} }.webp")}}" alt="{{config('app.name')}} Service">
                                         </article>
                                         <article class="service-info overflow-hidden">
                                             <h2 class="fs-6 fw-600 lh-base text-capitalize">{{ $service->{TITLE} }}</h2>

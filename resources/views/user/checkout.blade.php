@@ -5,7 +5,7 @@
     {{-- Checkout Main --}}
     <section role="main" class="checkout-main">
         <div class="main-sides">
-            <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12" data-loading_spinner="{{imageSource('loading2.png')}}">
+            <form action="{{route(CREATE_ORDER)}}" method="post" role="form" id="add_order_form" class="grace-form row col-12" data-loading_spinner="{{imageSource('loading2.webp')}}">
                 @csrf
                 <input type="hidden" name="add_order_status" value="{{ORDER_STATUS_ENUM['Processing']}}">
                 <input type="hidden" name="add_order_payment_method" id="order_payment_method">
@@ -79,7 +79,7 @@
                                                 <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_stripe" class="position-absolute" value="1" aria-required="true">
                                                 <span role="radio" class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_stripe" aria-checked="false" tabindex="-1"></span>
                                             </label>
-                                            <img src="{{imageSource('credit-cards.png')}}" alt="Credit Cards Logo" width="65">
+                                            <img src="{{imageSource('credit-cards.webp')}}" alt="Credit Cards Logo" width="65">
                                         </div>
                                         {{-- Cash On Delivery --}}
                                         <div class="cod d-flex justify-content-between align-items-center">
@@ -88,7 +88,7 @@
                                                 <input type="radio" role="radio" name="add_order_payment_method" id="add_order_payment_method_cod" class="position-absolute" value="2" aria-required="true">
                                                 <span role="radio" class="custom-check position-absolute top-0 start-0 cursor-pointer" aria-labelledby="add_order_payment_method_cod" aria-checked="false" tabindex="-1"></span>
                                             </label>
-                                            <img src="{{imageSource('cash-on-delivery.png')}}" alt="Cash on Delivery Logo" width="70">
+                                            <img src="{{imageSource('cash-on-delivery.webp')}}" alt="Cash on Delivery Logo" width="70">
                                         </div>
                                     </div>
                                 </article>

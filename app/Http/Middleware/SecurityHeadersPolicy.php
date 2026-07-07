@@ -32,7 +32,7 @@ class SecurityHeadersPolicy
         $script_src  = "script-src 'self' cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-$nonce'";
         $font_src    = "font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com fonts.gstatic.com data:";
         $connect_src = "connect-src 'self' www.gstatic.com www.apicountries.com api.emailjs.com cdnjs.cloudflare.com unpkg.com";
-        $img_src     = "img-src 'self' data: cdn.jsdelivr.net flagcdn.com upload.wikimedia.org";
+        $img_src     = "img-src 'self' data: cdn.jsdelivr.net unpkg.com flagcdn.com upload.wikimedia.org";
 
         $bfcache_public_routes = [HOME, PRODUCTS_LIST, PAYMENT, ABOUT_US, CONTACT_US];
 

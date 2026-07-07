@@ -2,7 +2,7 @@
     {{-- Header --}}
     @slot('header')
         @component('mail::header', ['url' => route(HOME)])
-            <img src="{{storage_path('app/public/images/favicon.png')}}" alt="{{config('app.name')}} Logo" class="logo">
+            <img src="{{storage_path('app/public/images/favicon.webp')}}" alt="{{config('app.name')}} Logo" class="logo">
         @endcomponent
     @endslot
 

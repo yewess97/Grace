@@ -112,7 +112,7 @@
                                                 @endforeach
                                                 <li role="listitem" class="dropdown-item">
                                                     <div class="top-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
-                                                        <img src="{{imageSource('site_banners/banner1.png')}}" alt="Banner 1">
+                                                        <img src="{{imageSource('site_banners/banner1.webp')}}" alt="Banner 1">
                                                     </div>
                                                 </li>
                                             </ul>
@@ -150,12 +150,12 @@
                                                 <li role="listitem" class="row align-items-center">
                                                     <div class="dropdown-item dropdown-item-image">
                                                         <div class="bottom-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
-                                                            <img src="{{imageSource('site_banners/banner2.png')}}" alt="Banner 2">
+                                                            <img src="{{imageSource('site_banners/banner2.webp')}}" alt="Banner 2">
                                                         </div>
                                                     </div>
                                                     <div class="dropdown-item dropdown-item-image">
                                                         <div class="bottom-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
-                                                            <img src="{{imageSource('site_banners/banner3.png')}}" alt="Banner 3">
+                                                            <img src="{{imageSource('site_banners/banner3.webp')}}" alt="Banner 3">
                                                         </div>
                                                     </div>
                                                 </li>
@@ -188,13 +188,13 @@
             {{-- Header Logo --}}
             <article class="header-logo col-2 d-flex justify-content-center">
                 <a href="{{route(HOME)}}" role="link" class="d-block me-lg-5">
-                    <img src="{{imageSource('logo.png')}}" alt="{{config('app.name')}} Logo" fetchpriority="high">
+                    <img src="{{imageSource('logo.webp')}}" alt="{{config('app.name')}} Logo" fetchpriority="high">
                 </a>
             </article>
 
             {{-- Header Products search --}}
             <article class="header-search products-search row col-5">
-                <form action="{{route(SEARCH_PRODUCTS)}}" method="post" role="form" class="search-form position-relative" data-no_results="{{imageSource('no-results.png')}}">
+                <form action="{{route(SEARCH_PRODUCTS)}}" method="post" role="form" class="search-form position-relative" data-no_results="{{imageSource('no-results.webp')}}">
                     @csrf
                     {{-- Search Input --}}
                     <label for="user_search_products" class="w-100">

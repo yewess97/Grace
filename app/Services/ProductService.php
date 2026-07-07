@@ -269,7 +269,7 @@ class ProductService implements ServiceData
         $thumb_images = request()?->file($inputName);
         $thumb_images_data = array_map(static function (UploadedFile $thumb_image) use ($productAttributes) {
             $thumb_image_path = "public/images/".PRODUCTS_TABLE.DIRECTORY_SEPARATOR.THUMB_IMAGES_TABLE;
-            $thumb_image_name = time().random_int(10, 100).'.png';
+            $thumb_image_name = time().random_int(10, 100).'.webp';
 
             checkImageBackgroundRequest() === 'on'
                 ? storeImageWithoutBackground($thumb_image, $thumb_image_path, $thumb_image_name)

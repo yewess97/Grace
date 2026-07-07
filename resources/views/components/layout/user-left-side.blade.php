@@ -11,7 +11,7 @@
 
                 <li role="menuitem" class="dropdown-item">
                     <div class="top-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
-                        <img src="{{imageSource('site_banners/banner1.png')}}" alt="Banner 1">
+                        <img src="{{imageSource('site_banners/banner1.webp')}}" alt="Banner 1">
                     </div>
                 </li>
             </ul>
@@ -34,12 +34,12 @@
                     <ul role="list" class="d-flex align-items-center">
                         <li role="listitem" class="dropdown-item dropdown-item-image pe-2">
                             <div class="bottom-wear-dropdown-image position-relative img-hover-effect cursor-pointer">
-                                <img src="{{imageSource('site_banners/banner2.png')}}" alt="Banner 2">
+                                <img src="{{imageSource('site_banners/banner2.webp')}}" alt="Banner 2">
                             </div>
                         </li>
                         <li role="listitem" class="dropdown-item dropdown-item-image ps-2">
                             <div class="bottom-wear-dropdown-image position-relative img-hover-effect">
-                                <img src="{{imageSource('site_banners/banner3.png')}}" alt="Banner 3">
+                                <img src="{{imageSource('site_banners/banner3.webp')}}" alt="Banner 3">
                             </div>
                         </li>
                     </ul>
@@ -65,7 +65,7 @@
     <article class="banner">
         <div class="box-content rounded-start">
             <a href="{{route(FILTER_PRODUCTS, [CATEGORIES_TABLE => 'women', SUBCATEGORIES_TABLE => 'sweaters-shirts'])}}" role="link" class="position-relative d-block img-hover-effect">
-                <img src="{{imageSource('site_banners/banner4.png')}}" alt="Banner 4">
+                <img src="{{imageSource('site_banners/banner4.webp')}}" alt="Banner 4">
             </a>
         </div>
     </article>
@@ -154,14 +154,14 @@
     <article class="banner">
         <div class="box-content rounded-start">
             <a href="{{route(FILTER_PRODUCTS, [SUBCATEGORIES_TABLE => 'shoes'])}}" role="link" class="position-relative d-block img-hover-effect">
-                <img src="{{imageSource('site_banners/banner5.png')}}" alt="Banner 5">
+                <img src="{{imageSource('site_banners/banner5.webp')}}" alt="Banner 5">
             </a>
         </div>
     </article>
     {{-- NewsLetter --}}
     <article class="newsletter">
         <div class="newsletter-container d-grid place-items-center text-center gap-3 bg-white rounded-start">
-            <img src="{{imageSource('email-icon.png')}}" alt="Newsletter">
+            <img src="{{imageSource('email-icon.webp')}}" alt="Newsletter">
             <h2 class="fs-6 fw-600 text-capitalize lh-1">Our newsletter</h2>
             <p>Subscribe with us to receive the latest offers and updates</p>
             <form method="post" role="form" id="subscribe-form">

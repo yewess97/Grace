@@ -50,7 +50,7 @@
 
                 <!----======= Left Side =======---->
                 <aside class="left-side products-filter-form d-none d-lg-block col-lg-3 pe-lg-3">
-                    <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_form" enctype="multipart/form-data" data-no_results="{{imageSource('no-results.png')}}">
+                    <form action="{{route(FILTER_PRODUCTS)}}" method="post" role="form" id="filter_products_form" enctype="multipart/form-data" data-no_results="{{imageSource('no-results.webp')}}">
                         @csrf
                         {{-- Filters Titles --}}
                         <article class="box-filter d-flex justify-content-between align-items-center border bg-white rounded-start">

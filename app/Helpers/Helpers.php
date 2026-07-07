@@ -341,7 +341,7 @@ if (!function_exists('storeImageWithoutBackground')) {
         $removed_image_bg = $response->body();
 
         $image_name = is_null($imageName)
-            ? time().random_int(10, 100).'.png' // PNG is the default format returned by remove.bg
+            ? time().random_int(10, 100).'.webp'
             : $imageName;
 
         Storage::put($imagePath.DIRECTORY_SEPARATOR.$image_name, $removed_image_bg);
@@ -382,7 +382,7 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
             return storeImageWithoutBackground($image, $image_path);
         }
 
-        $image_name = time().random_int(10, 100).'.png';
+        $image_name = time().random_int(10, 100).'.webp';
         $image->storeAs($image_path, $image_name);
 
         return $image_name;

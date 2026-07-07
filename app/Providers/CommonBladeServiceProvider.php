@@ -185,7 +185,7 @@ class CommonBladeServiceProvider extends ServiceProvider
 
                 echo
                 \"
-                    <form action=\".route(\$__table, \$__query_params).\" method='get' role='form' id='search_form' class='\".\$__form_class.\"' data-no_results=\".imageSource('no-results.png').\">
+                    <form action=\".route(\$__table, \$__query_params).\" method='get' role='form' id='search_form' class='\".\$__form_class.\"' data-no_results=\".imageSource('no-results.webp').\">
                         <div class='grace-form-body row col-12'>
                             <div class='form-outline d-flex justify-content-lg-start justify-content-md-start justify-content-sm-center'>
                                 <input type='search' inputmode='search' name='search' id='search' class='form-control bg-white rounded-2'>

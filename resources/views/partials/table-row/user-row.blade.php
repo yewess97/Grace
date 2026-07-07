@@ -13,7 +13,7 @@
     <td>
         <div class="user-activity mx-auto">
             <img
-                src="{{imageSource('user-'.(cache()->has('is_online_'.$user->{ID}) ? 'on' : 'off').'line-status.png')}}"
+                src="{{imageSource('user-'.(cache()->has('is_online_'.$user->{ID}) ? 'on' : 'off').'line-status.webp')}}"
                 alt="{{ucfirst(USER_MODEL)}} Activity">
         </div>
     </td>

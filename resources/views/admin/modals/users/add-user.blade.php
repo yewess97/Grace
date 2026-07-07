@@ -6,7 +6,7 @@
                 @modalCloseBtn()
             </article>
             <article class="modal-body pb-0">
-                <form action="{{route(CREATE_UPDATE_USER, ADD)}}" method="post" role="form" id="add_user_form" class="grace-form" data-main="{{route(ADMIN_USERS_ROUTE)}}" data-loading_spinner="{{imageSource('loading2.png')}}">
+                <form action="{{route(CREATE_UPDATE_USER, ADD)}}" method="post" role="form" id="add_user_form" class="grace-form" data-main="{{route(ADMIN_USERS_ROUTE)}}" data-loading_spinner="{{imageSource('loading2.webp')}}">
                     @csrf
                     <div class="grace-form-body row col-12 pt-2 pb-4">
                         {{-- User First name & Last name --}}

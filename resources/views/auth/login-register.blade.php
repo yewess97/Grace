@@ -13,7 +13,7 @@
                     <!----======= Left Side =======---->
                     <section class="left-side col">
                         <div class="box-content border rounded">
-                            <form action="{{route($auth_action === REGISTER ? REGISTER_USER : LOGIN_USER)}}" method="post" role="form" id="{{$auth_action}}_form" class="grace-form auth-form row" data-loading_spinner="{{imageSource('loading2.png')}}">
+                            <form action="{{route($auth_action === REGISTER ? REGISTER_USER : LOGIN_USER)}}" method="post" role="form" id="{{$auth_action}}_form" class="grace-form auth-form row" data-loading_spinner="{{imageSource('loading2.webp')}}">
                                 @csrf
                                 {{-- Form Header --}}
                                 <article class="grace-form-header row col-12 text-center">
@@ -116,7 +116,7 @@
                                                         'pe-0 ps-2' => $loop->iteration % 2 === 0,
                                                     ])>
                                                     <a href="{{route('social_login', $provider)}}" title="{{ucfirst(LOGIN)}} using {{ucfirst($provider)}} Account" class="social-login-provider {{(count(LOGIN_SOCIAL_PROVIDERS) % 2 === 1 && $loop->last) ? 'col-12' : 'col'}} position-relative d-flex justify-content-center align-items-center gap-2 rounded-1">
-                                                        <img src="{{imageSource("socialite/$provider-login.png")}}" alt="{{ucfirst($provider)}} Logo" class="social-login-icon" width="18">
+                                                        <img src="{{imageSource("socialite/$provider-login.webp")}}" alt="{{ucfirst($provider)}} Logo" class="social-login-icon" width="18">
                                                         <span class="fw-500">{{ucfirst($provider)}}</span>
                                                     </a>
                                                 </div>

@@ -10,7 +10,7 @@
                 <section class="left-side col-9">
                     {{-- Filter By Date Form --}}
                     <article class="row col-12">
-                        <form action="{{route(FILTER_DASHBOARD)}}" method="post" role="form" id="filter_dashboard_form" class="grace-form filter-form" data-no_results="{{imageSource('no-results.png')}}">
+                        <form action="{{route(FILTER_DASHBOARD)}}" method="post" role="form" id="filter_dashboard_form" class="grace-form filter-form" data-no_results="{{imageSource('no-results.webp')}}">
                             @csrf
                             <div class="grace-form-body row col-12 justify-content-lg-between justify-content-md-center align-items-lg-end align-items-md-center">
                                 {{-- Start Date --}}

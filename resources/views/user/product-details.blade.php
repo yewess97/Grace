@@ -12,7 +12,7 @@
                 <!----======= Home Right Side =======---->
                 <section class="right-side product-right-side col-lg-9 d-flex flex-column gap-4 ps-lg-3">
                     {{-- Product Images and Info --}}
-                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.png')}}">
+                    <form action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" role="form" class="add-cart-form grace-form" data-loading_spinner="{{imageSource('loading.webp')}}">
                         @csrf
                         <div class="grace-form-body box-content product-imgs-info row row-cols-1 row-cols-lg-2 gap-0 px-0 rounded-start">
                             <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
