@@ -14,8 +14,11 @@ A full-featured online fashion store built with Laravel 9, designed using modern
 ![Laravel](https://img.shields.io/badge/Laravel-9.x-red?style=for-the-badge&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.2-blue?style=for-the-badge&logo=php)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-orange?style=for-the-badge&logo=mysql)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?style=for-the-badge&logo=bootstrap)
+![HTML](https://img.shields.io/badge/HTML-5-orange?style=for-the-badge&logo=html5)
+![CSS](https://img.shields.io/badge/CSS-3-blue?style=for-the-badge&logo=css3)
+![MDB](https://img.shields.io/badge/MDB-4-purple?style=for-the-badge&logo=mdb)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?style=for-the-badge&logo=javascript)
+![JQ](https://img.shields.io/badge/jQuery-3.7-blue?style=for-the-badge&logo=jquery)
 ![Stripe](https://img.shields.io/badge/Stripe-Payment-blueviolet?style=for-the-badge&logo=stripe)
 ![License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)
 
