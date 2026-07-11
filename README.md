@@ -1,6 +1,6 @@
 <div align="center">
 
-# Grace
+# ![Logo](public/storage/images/favicon.webp) Grace
 ### A Modern, Secure, and Scalable Fashion E-Commerce Platform
 
 <p align="center">
