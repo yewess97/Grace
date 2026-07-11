@@ -1,6 +1,6 @@
 <div align="center">
 
-# <img src="public/storage/images/favicon.webp" width="40" align="top">race
+# <img src="public/storage/images/favicon.webp" width="50" align="center">race
 ### A Modern, Secure, and Scalable Fashion E-Commerce Platform
 
 <p align="center">
