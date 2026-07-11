@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Cookie;
 trait RememberMeExpiration
 {
     /**
-     * Set default minutes expiration
+     * Set default minutes expiration.
      *
      * @var int
      */
     protected int $minutes_expiration = 14400; //equivalent of 10 days
 
     /**
-     * Customize the user logged remember me expiration
+     * Customize the user logged remember me expiration.
      *
      * @return void
      */
@@ -25,7 +25,7 @@ trait RememberMeExpiration
     }
 
     /**
-     * Generate remember me value
+     * Generate remember me value.
      *
      * @return string
      */
@@ -35,7 +35,7 @@ trait RememberMeExpiration
     }
 
     /**
-     * Get remember me session name
+     * Get remember me session name.
      *
      * @return string
      */

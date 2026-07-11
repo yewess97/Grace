@@ -6,7 +6,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Validator as ValidatorClass;
 use Symfony\Component\HttpFoundation\Response;
 
-
 if (!function_exists('responseSuccess')) {
     /**
      * Success Response.

@@ -40,7 +40,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
-
 if (!function_exists('canonicalUrl')) {
     /**
      * Get the canonical url.

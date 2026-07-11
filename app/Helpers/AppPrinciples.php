@@ -1,6 +1,5 @@
 <?php
 
-
 if (!function_exists('object_from_array')) {
     /**
      * Convert an array of associative arrays to an array of objects.
