@@ -177,7 +177,7 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 ## Frontend
 
 - Blade Templates
-- Bootstrap 5
+- MDBootstrap 4
 - JavaScript
 - jQuery
 - AJAX
@@ -282,27 +282,23 @@ app/
 ├── Models/
 ├── Notifications/
 ├── Providers/
-├── Traits/
-└── Standards/
+└── Traits/
 
 bootstrap/
 
 config/
 
 database/
-├── migrations/
-├── factories/
-└── seeders/
+└── migrations/
 
 lang/
 
 public/
 
 resources/
-├── views/
 ├── css/
 ├── js/
-└── images/
+└── views/
 
 routes/
 
