@@ -171,17 +171,17 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 
 # Screenshots
 
-| Home | Products |
-|------|----------|
-| ![](assets/screenshots/home.png) | ![](assets/screenshots/products.png) |
+| Home                                    | Products                                    |
+|-----------------------------------------|---------------------------------------------|
+| ![](public/assets/screenshots/home.png) | ![](public/assets/screenshots/products.png) |
 
-| Product | Cart |
-|------|----------|
-| ![](assets/screenshots/product-details.png) | ![](assets/screenshots/cart.png) |
+| Product                                            | Cart                                    |
+|----------------------------------------------------|-----------------------------------------|
+| ![](public/assets/screenshots/product-details.png) | ![](public/assets/screenshots/cart.png) |
 
-| Checkout | Dashboard |
-|------|----------|
-| ![](assets/screenshots/checkout.png) | ![](assets/screenshots/dashboard.png) |
+| Checkout                                    | Dashboard                                    |
+|---------------------------------------------|----------------------------------------------|
+| ![](public/assets/screenshots/checkout.png) | ![](public/assets/screenshots/dashboard.png) |
 
 ---
 
