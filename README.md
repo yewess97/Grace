@@ -245,38 +245,17 @@ flowchart TD
     I[Database]
     J[Blade Views]
     K[HTTP Response]
-    
-      A
-      │
-      ▼
-      B
-      │
-      ▼
-      C
-      │
-      ▼
-      D
-      │
-      ▼
-      E
-      │
-      ▼
-      F
-      │
-      ▼
-      G
-      │
-      ▼
-      H
-      │
-      ▼
-      I
-      │
-      ▼
-      J
-      │
-      ▼
-      K
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
 ```
 
 ### Architectural Highlights
