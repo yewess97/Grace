@@ -234,37 +234,49 @@ The application separates responsibilities into well-defined modules, ensuring t
 ```mermaid
 flowchart TD
 
-Client&nbsp;Browser
+    A[Client Browser]
+    B[HTTP Request]
+    C[Routes]
+    D[Middleware]
+    E[Controllers]
+    F[Validation Layer]
+    G[Business Logic]
+    H[Eloquent Models]
+    I[Database]
+    J[Blade Views]
+    K[HTTP Response]
+    
+      A
       │
       ▼
- HTTP&nbsp;Request
+      B
       │
       ▼
-    Routes
+      C
       │
       ▼
- Middleware
+      D
       │
       ▼
- Controllers
+      E
       │
       ▼
-Validation&nbsp;Layer
+      F
       │
       ▼
-Business&nbsp;Logic
+      G
       │
       ▼
- Eloquent&nbsp;Models
+      H
       │
       ▼
-   Database
+      I
       │
       ▼
- Blade&nbsp;Views
+      J
       │
       ▼
- HTTP&nbsp;Response
+      K
 ```
 
 ### Architectural Highlights
@@ -749,7 +761,7 @@ docs/
 
 11-project-workflow.md
 
-12-api-and-routes.md
+12-routing-and-application-flow.md
 
 13-future-enhancements.md
 ```
@@ -867,16 +879,10 @@ Special thanks to the Laravel community and all open-source contributors whose t
 
 <div align="center">
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 Grace
 
 Built with Laravel ❤️ © 2026
 
-![Copyright](https://shields.io/)
-
 ⭐ If you found this project useful, consider giving it a star on GitHub!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 </div>

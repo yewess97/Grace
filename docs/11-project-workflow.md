@@ -37,38 +37,28 @@ Every HTTP request follows the same high-level lifecycle.
 ```mermaid
 flowchart TD
 
-A[Browser]
-
-B[Routes]
-
-C[Middleware]
-
-D[Controller]
-
-E[Validation]
-
-F[Business Logic]
-
-G[Helpers]
-
-H[Models]
-
-I[Database]
-
-J[Blade View]
-
-K[Browser]
-
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-F --> G
-G --> H
-H --> I
-I --> J
-J --> K
+    A[Browser]
+    B[Routes]
+    C[Middleware]
+    D[Controller]
+    E[Validation]
+    F[Business Logic]
+    G[Helpers]
+    H[Models]
+    I[Database]
+    J[Blade View]
+    K[Browser]
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
 ```
 
 This workflow demonstrates the separation between presentation, business logic, and persistence.
