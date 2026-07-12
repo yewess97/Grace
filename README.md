@@ -7,6 +7,8 @@
 
 A full-featured online fashion store built with Laravel 9, designed using modern software engineering principles to deliver a secure, scalable, high-performance, and maintainable shopping experience.
 
+Secure • Scalable • Modular • High Performance
+
 </p>
 
 ---
@@ -33,8 +35,10 @@ A full-featured online fashion store built with Laravel 9, designed using modern
 - [Project Vision](#project-vision)
 - [Objectives](#objectives)
 - [Key Features](#key-features)
+- [Screenshots](#screenshots)
 - [Technology Stack](#technology-stack)
 - [System Architecture](#system-architecture)
+- [Database ERD](#database-erd)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -43,7 +47,7 @@ A full-featured online fashion store built with Laravel 9, designed using modern
 - [Security Highlights](#security-highlights)
 - [Performance Optimizations](#performance-optimizations)
 - [Future Improvements](#future-improvements)
-- [License](#license)
+- [Visit the Store](#visit-the-store)
 
 ---
 
@@ -165,6 +169,22 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 
 ---
 
+# Screenshots
+
+| Home | Products |
+|------|----------|
+| ![](assets/screenshots/home.png) | ![](assets/screenshots/products.png) |
+
+| Product | Cart |
+|------|----------|
+| ![](assets/screenshots/product-details.png) | ![](assets/screenshots/cart.png) |
+
+| Checkout | Dashboard |
+|------|----------|
+| ![](assets/screenshots/checkout.png) | ![](assets/screenshots/dashboard.png) |
+
+---
+
 # Technology Stack
 
 ## Backend
@@ -211,11 +231,13 @@ Grace follows Laravel's MVC architecture while extending it with additional abst
 
 The application separates responsibilities into well-defined modules, ensuring that each layer focuses on a single responsibility while remaining loosely coupled with the rest of the system.
 
-```text
-Client Browser
+```mermaid
+flowchart TD
+
+Client&nbsp;Browser
       │
       ▼
- HTTP Request
+ HTTP&nbsp;Request
       │
       ▼
     Routes
@@ -227,22 +249,22 @@ Client Browser
  Controllers
       │
       ▼
-Validation Layer
+Validation&nbsp;Layer
       │
       ▼
-Business Logic
+Business&nbsp;Logic
       │
       ▼
- Eloquent Models
+ Eloquent&nbsp;Models
       │
       ▼
    Database
       │
       ▼
- Blade Views
+ Blade&nbsp;Views
       │
       ▼
- HTTP Response
+ HTTP&nbsp;Response
 ```
 
 ### Architectural Highlights
@@ -264,47 +286,286 @@ The architecture has been designed to simplify future expansion while minimizing
 
 ---
 
+# Database ERD
+
+```mermaid
+erDiagram
+
+    USERS ||--o{ ADDRESSES : "located in"
+
+    USERS ||--o{ ORDERS : "places"
+
+    USERS ||--o{ REVIEWS : "writes"
+
+    USERS ||--o{ WISHLISTS : "owns"
+
+    USERS ||--o{ CARTS : "owns"
+
+    USERS ||--o{ NOTIFICATIONS : "receives"
+
+    CATEGORIES ||--o{ CATEGORY_SUBCATEGORY : "has"
+
+    SUBCATEGORIES ||--o{ CATEGORY_SUBCATEGORY : "belongs to"
+
+    CATEGORIES ||--o{ CATEGORY_PRODUCT : "has"
+
+    PRODUCTS ||--o{ CATEGORY_PRODUCT : "belongs to"
+
+    SUBCATEGORIES ||--o{ PRODUCT_SUBCATEGORY : "has"
+
+    PRODUCTS ||--o{ PRODUCT_SUBCATEGORY : "belongs to"
+
+    WISHLISTS ||--o{ PRODUCTS : "contains"
+
+    CARTS ||--o{ PRODUCTS : "contains"
+
+    PRODUCTS ||--o{ REVIEWS : "reviewed by"
+
+    PRODUCTS ||--|{ PRODUCT_SIZES : "contains"
+
+    PRODUCTS ||--o{ THUMB_IMAGES : "contains"
+
+    PRODUCTS ||--|{ ORDER_ITEMS : "ordered in"
+
+    ORDERS ||--|{ ORDER_ITEMS : "has"
+
+    ORDERS ||--|{ ADDRESSES : "delivered to"
+
+
+    ADDRESSES {
+        unsignedBigInteger id PK
+        mediumText address_1
+        mediumText address_2 "NULL"
+        string country
+        string(50) city
+        string(50) state "NULL"
+        string(16) phone
+        unsignedInteger postal_code
+        unsignedBigInteger user_id FK
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    CARTS {
+        unsignedBigInteger id PK
+        unsignedBigInteger user_id FK
+        unsignedBigInteger product_id FK
+        unsignedTinyInteger product_size "DEFAULT (3)"
+        unsignedInteger product_quantity "DEFAULT (1)"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORIES {
+        unsignedBigInteger id PK
+        string name "INDEX"
+        string slug UK
+        string main_image
+        string banner_image
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    CATEGORY_PRODUCT {
+        unsignedBigInteger category_id FK
+        unsignedBigInteger product_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORY_SUBCATEGORY {
+        unsignedBigInteger category_id FK
+        unsignedBigInteger subcategory_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    NOTIFICATIONS {
+        uuid id PK
+        string type
+        string notifiable_type "INDEX"
+        uuid notifiable_id "INDEX"
+        text data
+        timestamp read_at "NULL"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ORDERS {
+        unsignedBigInteger id PK
+        string tracking_num UK "INDEX"
+        unsignedInteger num_items
+        unsignedDouble total_cost
+        unsignedTinyInteger status "DEFAULT (1)"
+        unsignedTinyInteger payment_method
+        string payment_id "NULL"
+        unsignedBigInteger user_id FK "NULL"
+        unsignedBigInteger address_id FK "NULL"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    ORDER_ITEMS {
+        unsignedBigInteger id PK
+        unsignedBigInteger product_id
+        string(300) product_name
+        string product_main_image
+        unsignedTinyInteger product_size "DEFAULT (3)"
+        unsignedInteger product_quantity "DEFAULT (1)"
+        unsignedDouble product_total_price
+        unsignedBigInteger order_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PRODUCTS {
+        unsignedBigInteger id PK
+        string(300) name "INDEX"
+        string slug UK
+        text short_description
+        longText long_description
+        string main_image
+        unsignedFloat(6) old_price "NULL"
+        unsignedFloat(6) new_price
+        unsignedInteger quantity "DEFAULT (1)"
+        boolean status "DEFAULT (1)"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    PRODUCT_SIZES {
+        unsignedBigInteger id PK
+        unsignedTinyInteger size "DEFAULT (3)"
+        unsignedBigInteger product_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PRODUCT_SUBCATEGORY {
+        unsignedBigInteger subcategory_id FK
+        unsignedBigInteger product_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REVIEWS {
+        unsignedBigInteger id PK
+        unsignedTinyInteger rating "DEFAULT (3)"
+        string(70) title
+        text body_text
+        unsignedBigInteger product_id FK
+        unsignedBigInteger user_id FK
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    SUBCATEGORIES {
+        unsignedBigInteger id PK
+        string name "INDEX"
+        string slug UK
+        string main_image
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    THUMB_IMAGES {
+        unsignedBigInteger id PK
+        string thumb_image
+        unsignedBigInteger product_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USERS {
+        unsignedBigInteger id PK
+        string(50) first_name "INDEX"
+        string(50) last_name "INDEX"
+        string email UK "INDEX"
+        timestamp email_verified_at
+        string password
+        boolean role "DEFAULT (0)"
+        string google_id "NULL"
+        string facebook_id "NULL"
+        string github_id "NULL"
+        timestamp last_seen "NULL"
+        string(100) remember_token "NULL"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "NULL"
+    }
+
+    WISHLISTS {
+        unsignedBigInteger id PK
+        unsignedBigInteger user_id FK
+        unsignedBigInteger product_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+---
+
 # Project Structure
 
 The project is organized into clearly separated modules, allowing developers to quickly understand and navigate the codebase.
 
 ```text
-app/
+📂 app/
 │
-├── Console/
-├── Exceptions/
-├── Helpers/
-├── Http/
-│   ├── Controllers/
-│   ├── Middleware/
-│   └── Requests/
+├── 📂 Console/
+│   └── 📂 Commands/
+├── 📂 Contracts/
+├── 📂 Exceptions/
+├── 📂 Helpers/
+├── 📂 Http/
+│   ├── 📂 Controllers/
+│   ├── 📂 Middleware/
+│   └── 📂 Requests/
+├── 📂 Mail/
+├── 📂 Models/
+├── 📂 Notifications/
+├── 📂 Providers/
+├── 📂 Services/
+└── 📂 Traits/
+
+📂 bootstrap/
+
+📂 config/
+
+📂 database/
+└── 📂 migrations/
+
+📂 lang/
+
+📂 public/
 │
-├── Models/
-├── Notifications/
-├── Providers/
-└── Traits/
+├── 📂 assets/
+├── 📂 css/
+├── 📂 icons/
+├── 📂 js/
+├── 📂 sounds/
+└── 📂 storage/
 
-bootstrap/
+📂 resources/
+│
+├── 📂 css/
+├── 📂 js/
+└── 📂 views/
 
-config/
+📂 routes/
+│
+├── 📂 admin/
+├── 📂 auth/
+└── 📂 guest/
 
-database/
-└── migrations/
+📂 storage/
 
-lang/
-
-public/
-
-resources/
-├── css/
-├── js/
-└── views/
-
-routes/
-
-storage/
-
-tests/
+📂 tests/
 ```
 
 Each directory has a dedicated responsibility, promoting a clean separation of concerns and simplifying long-term maintenance.
@@ -577,6 +838,11 @@ Potential future enhancements include:
 
 ---
 
+# Visit the Store
+
+
+---
+
 # License
 
 This project is licensed under the MIT License.
@@ -601,6 +867,16 @@ Special thanks to the Laravel community and all open-source contributors whose t
 
 <div align="center">
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Grace
+
+Built with Laravel ❤️ © 2026
+
+![Copyright](https://shields.io/)
+
 ⭐ If you found this project useful, consider giving it a star on GitHub!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 </div>

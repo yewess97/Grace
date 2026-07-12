@@ -42,7 +42,7 @@ class User extends Authenticatable implements IGrace
      *
      * @var array<string, string>
      */
-    protected $casts = ['email_verified_at' => 'datetime'];
+    protected $casts = [EMAIL.'_verified_at' => 'datetime'];
 
     /**
      * Accessor to get the full name.

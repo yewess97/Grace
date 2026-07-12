@@ -26,7 +26,7 @@ class SecurityHeadersPolicy
         // Generate a unique nonce for inline scripts and styles to enhance security
         $nonce = app()->make('csp_nonce');
 
-        $style_hashes = "'sha256-3ITP0qhJJYBulKb1omgiT3qOK6k0iB3rMDhGfpM8b7c=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-ORYTfWgGeaDP2b2S7MVkXsd+c7Cui4ZVcoC+HzzP/nM=' 'sha256-rRl7CHm+5M/6W322VSJ6spPUB/xQLLTchIPOFgti90E=' 'sha256-ucCfCRKeUNEuZJWr2Xeo7Jf7mdikyR4eZ280hmS9Yk0=' 'sha256-0R/LX01gwFNdds3kDBfH0kPtAnQmJw3/a8ABXs9E1Lc=' 'sha256-DgScPVb2NUID/mdJI+9ya5jZBHp+wZTUP02zAHkqfX4=' 'sha256-DqcpTn66pq93Nnly0Vdus1d84FxtJJURyLvD0Yb0JJM=' 'sha256-2+dS+n9Pah47gYjmchfaYD5g/iEbiyoAg7SGmiJtn0Y=' 'unsafe-hashes'";
+        $style_hashes = "'sha256-3ITP0qhJJYBulKb1omgiT3qOK6k0iB3rMDhGfpM8b7c=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-ORYTfWgGeaDP2b2S7MVkXsd+c7Cui4ZVcoC+HzzP/nM=' 'sha256-rRl7CHm+5M/6W322VSJ6spPUB/xQLLTchIPOFgti90E=' 'sha256-ucCfCRKeUNEuZJWr2Xeo7Jf7mdikyR4eZ280hmS9Yk0=' 'sha256-0R/LX01gwFNdds3kDBfH0kPtAnQmJw3/a8ABXs9E1Lc=' 'sha256-DgScPVb2NUID/mdJI+9ya5jZBHp+wZTUP02zAHkqfX4=' 'sha256-DqcpTn66pq93Nnly0Vdus1d84FxtJJURyLvD0Yb0JJM=' 'sha256-2+dS+n9Pah47gYjmchfaYD5g/iEbiyoAg7SGmiJtn0Y=' 'sha256-T5IiuDcHyyJ5qwa5zR0q0qdxVWb4RbpyptQk3VB9yFs=' 'unsafe-hashes'";
 
         $style_src   = "style-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com www.gstatic.com 'nonce-$nonce' $style_hashes";
         $script_src  = "script-src 'self' cdnjs.cloudflare.com unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-$nonce'";

@@ -27,14 +27,14 @@
     <section class="grid-view-single-item border d-none">
         {{-- Product Image & Discount --}}
         <div class="product-img position-relative col-12 col-md-3 rounded-2 overflow-hidden">
-            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link">
+            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link" class="d-grid place-items-center h-100">
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => MAIN_IMAGE])
             </a>
         </div>
 
         {{-- Product Info --}}
-        <div class="product-info d-flex flex-column justify-content-center gap-2 px-3 px-md-0 py-3">
-            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link">
+        <div class="product-info d-flex flex-column justify-content-center gap-2 px-3 px-md-0 py-4">
+            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link" class="d-grid gap-2">
                 {{-- Product Name & Price --}}
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'info', 'is_single_view' => true])
 

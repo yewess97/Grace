@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string(FIRST_NAME, 50);
             $table->string(LAST_NAME, 50);
-            $table->string(EMAIL)->unique()->index();
+            $table->string(EMAIL)->unique();
             $table->timestamp(EMAIL.'_verified_at');
             $table->string(PASSWORD);
             $table->boolean(ROLE)->default(0); // 0 --> user (customer), 1 --> admin
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
-            $table->index([FIRST_NAME, LAST_NAME]);
+            $table->index([FIRST_NAME, LAST_NAME, EMAIL]);
         });
     }
 

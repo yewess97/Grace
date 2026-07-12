@@ -6,20 +6,21 @@
 
 # Table of Contents
 
-- Introduction
-- Business Background
-- Business Problem
-- Solution
-- Project Vision
-- Project Mission
-- Project Objectives
-- Target Audience
-- Core Business Features
-- Business Workflow
-- Why Grace?
-- Project Scope
-- System Modules
-- Design Philosophy
+- [Introduction](#introduction)
+- [Business Background](#business-background)
+- [Business Problem](#business-problem)
+- [Solution](#solution)
+- [Project Vision](#project-vision)
+- [Project Mission](#project-mission)
+- [Project Objectives](#project-objectives)
+- [Target Audience](#target-audience)
+- [Core Business Features](#core-business-features)
+- [Business Workflow](#business-workflow)
+- [Why Grace?](#why-grace)
+- [Screenshots](#screenshots)
+- [Project Scope](#project-scope)
+- [System Modules](#system-modules)
+- [Design Philosophy](#design-philosophy)
 
 ---
 
@@ -189,24 +190,26 @@ The platform provides several business capabilities, including:
 
 The overall shopping process follows a straightforward workflow.
 
-```text
+```mermaid
+flowchart TD
+    
 Customer
 
 ↓
 
-Browse Products
+Browse&nbsp;Products
 
 ↓
 
-Search & Filter
+Search&nbsp;/&nbsp;Filter
 
 ↓
 
-Product Details
+Product&nbsp;Details
 
 ↓
 
-Wishlist / Cart
+Wishlist&nbsp;/&nbsp;Cart
 
 ↓
 
@@ -218,7 +221,7 @@ Payment
 
 ↓
 
-Order Processing
+Order&nbsp;Processing
 
 ↓
 
@@ -256,6 +259,22 @@ These include:
 - Performance-Oriented Development
 
 These engineering decisions make the project easier to extend and maintain compared to conventional Laravel applications.
+
+---
+
+# Screenshots
+
+| Home                                       | Products                                       |
+|--------------------------------------------|------------------------------------------------|
+| ![](../public/assets/screenshots/home.png) | ![](../public/assets/screenshots/products.png) |
+
+| Product                                               | Cart                                        |
+|-------------------------------------------------------|---------------------------------------------|
+| ![](../public/assets/screenshots/product-details.png) | ![](../public/assets/screenshots/cart.png)  |
+
+| Checkout                                       | Dashboard                                       |
+|------------------------------------------------|-------------------------------------------------|
+| ![](../public/assets/screenshots/checkout.png) | ![](../public/assets/screenshots/dashboard.png) |
 
 ---
 

@@ -11,10 +11,10 @@
 
 @if ($container === 'info')
     {{-- Product Name --}}
-    <h2 class="product-info-name text-capitalize @isset($is_single_view) mt-0 @endisset">{{ $product->{NAME} }}</h2>
+    <h2 class="product-info-name text-capitalize">{{ $product->{NAME} }}</h2>
 
     {{-- Product Price --}}
-    <div class="product-info-price d-flex flex-wrap align-items-center w-100 overflow-hidden lh-1 @isset($is_single_view) mt-0 @endisset">
+    <div class="product-info-price d-flex flex-wrap align-items-center w-100 overflow-hidden lh-1">
         <span class="new-price fs-6 fw-600">@priceFormat($product->new_price)</span>
         @oldprice ($product->old_price, $product->new_price)
             <s class="old-price fs-7">@priceFormat($product->old_price)</s>
