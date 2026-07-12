@@ -71,38 +71,40 @@
     </article>
     {{-- New Products --}}
     <article class="new-products">
-        {{-- New Products Title --}}
-        <article class="box-title mb-3 border-bottom">
-            <h2 class="fs-6 fw-500">
-                <span class="position-relative">{{capitalizeAll(NEW_PRODUCTS)}}</span>
-            </h2>
-        </article>
-        {{-- New Products Content --}}
-        <ul role="list" class="new-products-content box-content rounded-start">
-            @foreach ($common_collections[NEW_PRODUCTS] as $new_product)
-                <li role="listitem" class="new-product-item">
-                    <a href="{{route(PRODUCT_DETAILS, $new_product->{SLUG})}}" role="link" class="new-product row align-items-center">
-                        <div class="new-product-img col-2 rounded-2">
-                            <img src="{{imageSource($new_product, MAIN_IMAGE)}}" alt="{{ $new_product->{NAME} }}" class="w-100">
-                        </div>
-                        <div class="new-product-info row col gap-2">
-                            <h3>{{capitalizeFirst($new_product->{NAME})}}</h3>
-                            <div class="price-info row gap-1">
-                                <div class="new-price-discount d-flex align-items-center">
-                                    <span class="new-price">@priceFormat($new_product->new_price)</span>
+        <div class="new-products-content box-content rounded-start">
+            {{-- New Products Title --}}
+            <article class="box-title mb-3 border-bottom">
+                <h2 class="fs-6 fw-500">
+                    <span class="position-relative">{{capitalizeAll(NEW_PRODUCTS)}}</span>
+                </h2>
+            </article>
+            {{-- New Products Content --}}
+            <ul role="list">
+                @foreach ($common_collections[NEW_PRODUCTS] as $new_product)
+                    <li role="listitem" class="new-product-item">
+                        <a href="{{route(PRODUCT_DETAILS, $new_product->{SLUG})}}" role="link" class="new-product row align-items-center">
+                            <div class="new-product-img col-2 rounded-2">
+                                <img src="{{imageSource($new_product, MAIN_IMAGE)}}" alt="{{ $new_product->{NAME} }}" class="w-100">
+                            </div>
+                            <div class="new-product-info row col gap-2">
+                                <h3>{{capitalizeFirst($new_product->{NAME})}}</h3>
+                                <div class="price-info row gap-1">
+                                    <div class="new-price-discount d-flex align-items-center">
+                                        <span class="new-price">@priceFormat($new_product->new_price)</span>
+                                        @oldprice ($new_product->old_price, $new_product->new_price)
+                                            <span class="discount-percent fw-bold text-white">@discount($new_product->new_price, $new_product->old_price)</span>
+                                        @endoldprice
+                                    </div>
                                     @oldprice ($new_product->old_price, $new_product->new_price)
-                                        <span class="discount-percent fw-bold text-white">@discount($new_product->new_price, $new_product->old_price)</span>
+                                        <s class="old-price fs-7">@priceFormat($new_product->old_price)</s>
                                     @endoldprice
                                 </div>
-                                @oldprice ($new_product->old_price, $new_product->new_price)
-                                    <s class="old-price fs-7">@priceFormat($new_product->old_price)</s>
-                                @endoldprice
                             </div>
-                        </div>
-                    </a>
-                </li>
-            @endforeach
-        </ul>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
     </article>
     {{-- Customers Reviews --}}
     <article class="customers-reviews">
