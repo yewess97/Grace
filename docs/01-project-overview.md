@@ -194,36 +194,36 @@ The overall shopping process follows a straightforward workflow.
 flowchart TD
     
     %% Nodes
-    A[Customer]
-    B[Browse Products]
-    C[Search / Filter]
-    D[Product Details]
-    E[Wishlist / Cart]
-    F[Checkout Process]
-    G[Payment Gateway]
-    H[Order Processing]
-    I[Shipping & Logistics]
-    J[Out for Delivery]
-    K[Order Completion]
+    Cust[Customer]
+    Browse[Browse Products]
+    Search[Search / Filter]
+    Details[Product Details]
+    Cart[Wishlist / Cart]
+    Check[Checkout Process]
+    Pay[Payment Gateway]
+    Proc[Order Processing]
+    Ship[Shipping & Logistics]
+    Deliv[Out for Delivery]
+    Comp[Order Completion]
 
-    %% Shopping Journey Flow
-    A --> B
-    B --> C
-    C --> D
-    D --> E
+    %% Discovery Stage
+    Cust -->|Enters Storefront| Browse
+    Browse -->|Refines Intent| Search
+    Search -->|Views Specific SKU| Details
 
-    %% Transaction Flow
-    E --> F
-    F --> G
-    G --> H
+    %% Intent to Purchase Stage
+    Details -->|Saves or Accumulates Items| Cart
+    Cart -->|Initiates Order Funnel| Check
+    Check -->|Submits Secure Credentials| Pay
 
-    %% Fulfillment Flow
-    H --> I
-    I --> J
-    J --> K
+    %% Order Fulfillment Stage
+    Pay -->|Payment Authorized| Proc
+    Proc -->|Dispatched from Warehouse| Ship
+    Ship -->|Transferred to Local Courier| Deliv
+    Deliv -->|Handed to Recipient| Comp
 
-    %% Return Loop to Customer
-    K -->|Delivered Package| A
+    %% Re-engagement Cycle
+    Comp -.->|Post-Purchase Satisfaction| Cust
 ```
 
 Each stage has been designed to minimize friction while ensuring a secure and reliable purchasing experience.

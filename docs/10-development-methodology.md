@@ -336,44 +336,38 @@ The overall development process follows a structured workflow.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Req[Requirements Gathering]
+    Anal[System Analysis]
+    Arch[System Architecture]
+    DB[Database Design & Schema]
+    Back[Backend Development]
+    Front[Frontend Development]
+    Test[Testing & QA]
+    Opt[Optimization & Profiling]
+    Deploy[Deployment & Release]
+    Maint[Maintenance & Monitoring]
 
-Requirements
+    %% Discovery & Design Phases
+    Req -->|Define Scope & User Stories| Anal
+    Anal -->|Map Specifications & Data Flow| Arch
+    Arch -->|Establish Infrastructure & Patterns| DB
 
-↓
+    %% Execution & Implementation Implementation
+    DB -->|Generate Migrations & Core Models| Back
+    Back -->|Expose APIs & Business Logic Layers| Front
 
-Analysis
+    %% Quality Assurance & Refinement Pipeline
+    Front -->|UI/UX Code Integration| Test
+    Test -->|Passes Functional & Integration Tests| Opt
+    Opt -->|Cache, Query & Asset Tuning Complete| Deploy
 
-↓
+    %% Lifecycle Operations
+    Deploy -->|Go-Live Pipeline Execution| Maint
 
-Architecture
-
-↓
-
-Database&nbsp;Design
-
-↓
-
-Backend&nbsp;Development
-
-↓
-
-Frontend&nbsp;Development
-
-↓
-
-Testing
-
-↓
-
-Optimization
-
-↓
-
-Deployment
-
-↓
-
-Maintenance
+    %% Feedback Loop for Iterative Development
+    Maint -.->|User Feedback & System Scaling Requests| Req
 ```
 
 Each phase builds upon the previous one while maintaining clear engineering boundaries.

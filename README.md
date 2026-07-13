@@ -235,36 +235,37 @@ The application separates responsibilities into well-defined modules, ensuring t
 flowchart TD
     
     %% Nodes
-    A[Client Browser]
-    B[HTTP Request]
-    C[Route Layer]
-    D[Middleware Layer]
-    E[Controller Layer]
-    F[Validation Layer]
-    G[Business Logic]
-    H[Eloquent Models]
-    I[Database Layer]
-    J[Blade Views]
-    K[HTTP Response]
+    Browser[Client Browser]
+    Request[HTTP Request]
+    Route[Route Layer]
+    Middleware[Middleware Layer]
+    Controller[Controller Layer]
+    Validation[Validation Layer]
+    Logic[Business Logic Core]
+    Models[Eloquent Models]
+    DB[Database Layer]
+    Views[Blade Views]
+    Response[HTTP Response]
 
-    %% Flow/Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
+    %% Ingress & Routing Pipeline
+    Browser -->|User Interaction| Request
+    Request -->|URL Pattern Matching| Route
+    Route -->|Global & Route Group Filters| Middleware
 
-    %% Internal Processing Split
-    E --> F
-    F --> G
-    G --> H
+    %% Application Controller Entry
+    Middleware -->|Dispatches Validated Traffic| Controller
 
-    %% Data & Rendering
-    H --> I
-    I --> J
-    J --> K
+    %% Architectural Abstraction Separation
+    Controller -->|Delegates to Form Request| Validation
+    Validation -->|Sanitized & Typed Array Input| Logic
+    Logic -->|Executes Domain Operations| Models
 
-    %% Return Loop
-    K -->|Rendered Page| A
+    %% Data Persistence & Response Reconstitution
+    Models -->|Performs Parameterized Queries| DB
+    DB -->|Returns Result Set / Hydrated Collections| Models
+    Models -->|Injects Collections & Structural Context| Views
+    Views -->|Compiles Server-Side HTML| Response
+    Response -->|Delivers Network Payload| Browser
 ```
 
 ### Architectural Highlights

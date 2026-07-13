@@ -159,24 +159,25 @@ Each middleware performs a specific task before passing the request to the next 
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Req[Incoming HTTP Request]
+    AuthN[Authenticate Middleware]
+    AuthZ[Authorize Middleware]
+    Sess[Validate Session & CSRF]
+    Ctrl[Target Controller Action]
+    Refuse[HTTP 401/403/419 Termination]
 
-Request
+    %% Main Ingress Request Flow
+    Req -->|Enters Middleware Pipeline| AuthN
+    AuthN -->|User Identity Confirmed| AuthZ
+    AuthZ -->|Permissions Verified| Sess
+    Sess -->|Session Active & CSRF Token Matches| Ctrl
 
-↓
-
-Authenticate
-
-↓
-
-Authorize
-
-↓
-
-Validate&nbsp;Session
-
-↓
-
-Controller
+    %% Guardrail Interceptions (Short-Circuits)
+    AuthN -.->|Unauthenticated Token/Session| Refuse
+    AuthZ -.->|Missing Roles/Abilities| Refuse
+    Sess -.->|Session Expired or Token Mismatch| Refuse
 ```
 
 ---
