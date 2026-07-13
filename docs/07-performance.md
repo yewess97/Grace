@@ -60,31 +60,34 @@ The application optimizes performance at multiple layers.
 ```mermaid
 flowchart TD
 
-Browser
-    │
-    ▼
-Optimized&nbsp;Assets
-    │
-    ▼
-AJAX&nbsp;Requests
-    │
-    ▼
-Routes
-    │
-    ▼
-Middleware
-    │
-    ▼
-Controllers
-    │
-    ▼
-Helpers
-    │
-    ▼
-Cache&nbsp;Layer
-    │
-    ▼
-Database
+    %% Nodes
+    Browser[Client Browser]
+    Assets[Optimized Assets]
+    AJAX[AJAX Requests]
+    Routes[Cached Route Layer]
+    MW[Lightweight Middleware Layer]
+    Ctrl[Controller Layer]
+    Help[Helper Utilities]
+    Cache[Cache Layer]
+    DB[Optimized Database Layer]
+
+    %% Client-Side Rendering & Ingress
+    Browser -->|Loads / Executes| Assets
+    Assets -->|Triggers Dynamic| AJAX
+    AJAX -->|Dispatches Fast Requests To| Routes
+
+    %% Routing & Filtering Pipeline
+    Routes -->|Route Cache Evaluation| MW
+    MW -->|Early Termination / Rate Limiting| Ctrl
+
+    %% Application Logic & Data Retrieval
+    Ctrl -->|Delegates Context Tasks| Help
+    Help -->|Check First / Redis / Memcached| Cache
+
+    %% Cache Hit/Miss Scenarios
+    Cache -->|Cache Hit: Return Cached Data| Ctrl
+    Cache -->|Cache Miss: Read/Write Fallback| DB
+    DB -.->|Hydrate Results Back To| Cache
 ```
 
 Each layer contributes to reducing latency and unnecessary resource consumption.
