@@ -81,7 +81,6 @@ Orders
 └── Payment Information
 
 Categories & Subcategories
-│
 └── Products
 ```
 
@@ -170,28 +169,27 @@ It consists of several interconnected entities.
 
 ```mermaid
 flowchart TD
-    
-Category
 
-↓
+    %% Nodes
+    Cat[Category]
+    Sub[Subcategory]
+    Prod[Product Core]
+    Img[Product Images]
+    Size[Size Inventory]
+    Rev[Customer Reviews]
 
-Subcategory
+    %% Hierarchical Classification
+    Cat -->|Contains| Sub
+    Sub -->|Groups| Prod
 
-↓
+    %% Product Attributes & Relations
+    Prod -->|Showcases| Img
+    Prod -->|Offers Variances| Size
+    Prod -->|Accumulates| Rev
 
-Product
-
-↓
-
-Images
-
-↓
-
-Sizes
-
-↓
-
-Reviews
+    %% Cross-Relations for Deep Scannability
+    Rev -.->|Influences Decisions On| Prod
+    Size -.->|Tracks Stock For| Prod
 ```
 
 This modular structure allows products to evolve independently without modifying unrelated tables.
