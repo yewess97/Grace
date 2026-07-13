@@ -61,31 +61,30 @@ The application's security architecture consists of multiple independent layers.
 ```mermaid
 flowchart TD
 
-Internet
-    │
-    ▼
-Laravel&nbsp;Application
-    │
-    ▼
-Route&nbsp;Protection
-    │
-    ▼
-Middleware
-    │
-    ▼
-Authentication
-    │
-    ▼
-Authorization
-    │
-    ▼
-Validation
-    │
-    ▼
-Business&nbsp;Logic
-    │
-    ▼
-Database
+    %% Nodes
+    Net[Public Internet]
+    App[Laravel Application Boundary]
+    Route[Route Protection]
+    MW[Middleware Layer]
+    AuthN[Authentication Layer]
+    AuthZ[Authorization Layer]
+    Val[Validation Layer]
+    Biz[Business Logic Core]
+    DB[Secure Database]
+
+    %% Ingress & Edge Defense
+    Net -->|Untrusted Traffic| App
+    App -->|URL & Method Filtering| Route
+    Route -->|Global & Rate Limiting HTTP Filters| MW
+
+    %% Identity & Access Control
+    MW -->|Verify Identity / Who Are You?| AuthN
+    AuthN -->|Verify Permissions / What Can You Do?| AuthZ
+
+    %% Request Sanitization & Execution
+    AuthZ -->|Input Sanitization & Type Safety| Val
+    Val -->|Safe Application Execution| Biz
+    Biz -->|Parameterized Queries / ORM Storage| DB
 ```
 
 Each layer contributes additional protection without depending solely on any single mechanism.
