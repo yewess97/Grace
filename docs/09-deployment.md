@@ -47,35 +47,31 @@ A typical deployment consists of the following stages:
 ```mermaid
 flowchart TD
 
-Development
+    %% Nodes
+    Dev[Development Environment]
+    Test[Automated Testing Stage]
+    Build[Build & Asset Compilation]
+    Deploy[Deployment Pipeline]
+    Migrate[Database Migration]
+    Cache[Cache Optimization]
+    Verify[Smoke Testing & Verification]
+    Prod[Live Production Environment]
 
-↓
+    %% Code Promotion Pipeline
+    Dev -->|Push Code / Pull Request| Test
+    Test -->|Passes Unit & Feature Tests| Build
+    Build -->|Compile Assets & Production Vendor Dependencies| Deploy
 
-Testing
+    %% Target Server Execution Steps
+    Deploy -->|Atomic Symlink Switch| Migrate
+    Migrate -->|Run Schema Updates & Seeders Safely| Cache
+    Cache -->|Optimize Route, Config, View & Event Caches| Verify
 
-↓
+    %% Final Release Gate
+    Verify -->|Passes Health Checks & Status Monitoring| Prod
 
-Build
-
-↓
-
-Deployment
-
-↓
-
-Database&nbsp;Migration
-
-↓
-
-Cache&nbsp;Optimization
-
-↓
-
-Verification
-
-↓
-
-Production
+    %% Rollback Safeguard Trigger
+    Verify -.->|Failure Detected: Automated Rollback| Deploy
 ```
 
 Each stage should be completed successfully before moving to the next.
