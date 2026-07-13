@@ -204,28 +204,17 @@ flowchart TD
     I[Shipping]
     J[Delivery]
     K[Completion]
-    
-    A
-    ↓
-    B
-    ↓
-    C
-    ↓
-    D
-    ↓
-    E
-    ↓
-    F
-    ↓
-    G
-    ↓
-    H
-    ↓
-    I
-    ↓
-    J
-    ↓
-    K
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
 ```
 
 Each stage has been designed to minimize friction while ensuring a secure and reliable purchasing experience.
