@@ -227,19 +227,22 @@ Shopping operations are intentionally separated into dedicated entities.
 ```mermaid
 flowchart TD
     
-User
+    %% Nodes
+    User[User / Customer]
+    Wish[Wishlist]
+    Cart[Active Shopping Cart]
+    Check[Checkout Pipeline]
 
-↓
+    %% Intent & Accumulation Flow
+    User -->|Saves for Later| Wish
+    User -->|Intends to Buy| Cart
 
-Wishlist
+    %% Transition States
+    Wish -->|Move to Cart| Cart
+    Cart -->|Proceed to| Check
 
-↓
-
-Cart
-
-↓
-
-Checkout
+    %% Feedback loop if checkout is abandoned
+    Check -.->|Abandonment Recovery| Cart
 ```
 
 Each stage of the shopping journey has a dedicated responsibility.
@@ -265,20 +268,23 @@ The order lifecycle follows a predefined workflow.
 
 ```mermaid
 flowchart TD
-    
-Processing
 
-↓
+    %% Nodes
+    Proc[Order Processing]
+    Ship[Shipped / In Transit]
+    Deliv[Delivered to Destination]
+    Comp[Order Completed]
+    Can[Order Cancelled]
 
-Shipped
+    %% Main Fulfillment Lifecycle Flow
+    Proc -->|Package Handled & Labeled| Ship
+    Ship -->|Carrier Logistics & Last-Mile| Deliv
+    Deliv -->|Customer Confirmation / Return Window Expires| Comp
 
-↓
-
-Delivered
-
-↓
-
-Completed
+    %% Cancellation Escape Routes
+    Proc ---->|Cancel Order| Can
+    Ship ---->|Cancel / Return in Transit| Can
+    Deliv --->|Return / Reject Delivery| Can
 ```
 
 Orders may also transition to:
