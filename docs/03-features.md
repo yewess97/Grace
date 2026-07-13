@@ -198,19 +198,22 @@ The order module manages the complete lifecycle of every purchase.
 ```mermaid
 flowchart TD
     
-Processing
+    %% Nodes
+    Proc[Order Processing]
+    Ship[Shipped / In Transit]
+    Deliv[Delivered to Destination]
+    Comp[Order Completed]
+    Can[Order Cancelled]
 
-↓
+    %% Main Fulfillment Lifecycle Flow
+    Proc -->|Package Handled & Labeled| Ship
+    Ship -->|Carrier Logistics & Last-Mile| Deliv
+    Deliv -->|Customer Confirmation / Return Window Expires| Comp
 
-Shipped
-
-↓
-
-Delivered
-
-↓
-
-Completed
+    %% Cancellation Escape Routes
+    Proc ---->|Cancel Order| Can
+    Ship ---->|Cancel / Return in Transit| Can
+    Deliv --->|Return / Reject Delivery| Can
 ```
 
 Orders may also be cancelled before completion when applicable.
