@@ -445,39 +445,30 @@ These dependencies are compiled into optimized frontend assets during deployment
 ```mermaid
 flowchart TD
 
-Browser
+    %% Nodes
+    Browser[Client Browser]
+    Routes[Route Layer]
+    Middleware[Middleware Layer]
+    Controllers[Controller Layer]
+    Helpers[Helper Functions]
+    Models[Eloquent Models]
+    Database[Database Layer]
+    Views[Blade Views]
 
-↓
+    %% Request Ingress Flow
+    Browser -->|HTTP Request| Routes
+    Routes -->|Filter & Authenticate| Middleware
+    Middleware -->|Dispatch to Action| Controllers
 
-Routes
+    %% Application Logic Core
+    Controllers -->|Format / Sanitize| Helpers
+    Helpers -->|Query Data| Models
+    Models -->|Read / Write| Database
 
-↓
-
-Middleware
-
-↓
-
-Controllers
-
-↓
-
-Helpers
-
-↓
-
-Models
-
-↓
-
-Database
-
-↓
-
-Blade&nbsp;Views
-
-↓
-
-Browser
+    %% Response Egress Flow
+    Database -->|Return Dataset| Models
+    Models -->|Inject Data| Views
+    Views -->|HTTP Response / HTML| Browser
 ```
 
 Every directory contributes to one stage of the application's request lifecycle.
