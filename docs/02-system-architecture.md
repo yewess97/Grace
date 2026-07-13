@@ -292,23 +292,25 @@ For example:
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Prod[Product Module]
+    Cat[Category Module]
+    Ord[Order Module]
+    Notif[Notification Module]
+    User[User Module]
 
-Product&nbsp;Module
-        │
-        ▼
-Category&nbsp;Module
+    %% Module Interdependency Flow
+    Prod -->|Belongs To| Cat
+    Cat -->|Filters| Prod
 
-        │
-        ▼
-Order&nbsp;Module
+    Prod -->|Feeds Data To| Ord
+    User -->|Places| Ord
 
-        │
-        ▼
-Notification&nbsp;Module
+    Ord -->|Triggers| Notif
+    Notif -->|Alerts| User
 
-        │
-        ▼
-User&nbsp;Module
+    User -->|Manages Accounts & Roles| User
 ```
 
 Each module focuses on its own responsibility while interacting with others only when necessary.
