@@ -55,40 +55,58 @@ This approach significantly reduces maintenance effort while improving code read
 
 ```mermaid
 flowchart TD
+
+    Browser[Client Browser] --> Request[HTTP Request]
+    Request --> Route[Route Layer]
+    Route --> GlobalMW[Global Middleware]
+    GlobalMW --> RouteMW[Route Middleware]
+    RouteMW --> Controller[Controller Layer]
+
+    Controller --> Validation[Validation]
+    Controller --> BizLogic[Business Logic]
+    Controller --> Helpers[Helpers]
+
+    Validation --> Models[Eloquent Models]
+    BizLogic --> Models
+    Helpers --> Models
+
+    Models --> DB[(Database)]
+    DB --> Blade[Blade Templates]
+    Blade --> Response[HTTP Response]
     
-    Client&nbsp;Browser
-    │
-    ▼
-    HTTP&nbsp;Request
-    │
-    ▼
-    Route&nbsp;Layer
-    │
-    ▼
-    Global&nbsp;Middleware
-    │
-    ▼
-    Route&nbsp;Middleware
-    │
-    ▼
-    Controller&nbsp;Layer
-    │
-    ┌──────────────┼──────────────┐
-    ▼&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp▼&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp▼
-    Validation&nbsp&nbsp&nbsp&nbsp&nbsp&nbspBusiness&nbspLogic&nbsp&nbsp&nbspHelpers
-    │&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp│&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp│
-    └──────────────┼──────────────┘
-    ▼
-    Eloquent&nbsp;Models
-    │
-    ▼
-    Database
-    │
-    ▼
-    Blade&nbsp;Templates
-    │
-    ▼
-    HTTP&nbsp;Response
+%%    Client Browser
+%%    │
+%%    ▼
+%%    HTTP Request
+%%    │
+%%    ▼
+%%    Route Layer
+%%    │
+%%    ▼
+%%    Global Middleware
+%%    │
+%%    ▼
+%%    Route Middleware
+%%    │
+%%    ▼
+%%    Controller Layer
+%%    │
+%%    ┌──────────────┼──────────────┐
+%%    ▼              ▼              ▼
+%%    Validation Business Logic  Helpers
+%%    │              │              │
+%%    └──────────────┼──────────────┘
+%%    ▼
+%%    Eloquent Models
+%%    │
+%%    ▼
+%%    Database
+%%    │
+%%    ▼
+%%    Blade Templates
+%%    │
+%%    ▼
+%%    HTTP Response
 ```
 
 Each layer has a single responsibility and communicates with neighboring layers through well-defined interfaces.
