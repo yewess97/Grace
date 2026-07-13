@@ -233,29 +233,38 @@ The application separates responsibilities into well-defined modules, ensuring t
 
 ```mermaid
 flowchart TD
-
+    
+    %% Nodes
     A[Client Browser]
     B[HTTP Request]
-    C[Routes]
-    D[Middleware]
-    E[Controllers]
+    C[Route Layer]
+    D[Middleware Layer]
+    E[Controller Layer]
     F[Validation Layer]
     G[Business Logic]
     H[Eloquent Models]
-    I[Database]
+    I[Database Layer]
     J[Blade Views]
     K[HTTP Response]
 
+    %% Flow/Connections
     A --> B
     B --> C
     C --> D
     D --> E
+
+    %% Internal Processing Split
     E --> F
     F --> G
     G --> H
+
+    %% Data & Rendering
     H --> I
     I --> J
     J --> K
+
+    %% Return Loop
+    K -->|Rendered Page| A
 ```
 
 ### Architectural Highlights

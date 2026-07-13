@@ -73,40 +73,6 @@ flowchart TD
     Models --> DB[(Database)]
     DB --> Blade[Blade Templates]
     Blade --> Response[HTTP Response]
-    
-%%    Client Browser
-%%    │
-%%    ▼
-%%    HTTP Request
-%%    │
-%%    ▼
-%%    Route Layer
-%%    │
-%%    ▼
-%%    Global Middleware
-%%    │
-%%    ▼
-%%    Route Middleware
-%%    │
-%%    ▼
-%%    Controller Layer
-%%    │
-%%    ┌──────────────┼──────────────┐
-%%    ▼              ▼              ▼
-%%    Validation Business Logic  Helpers
-%%    │              │              │
-%%    └──────────────┼──────────────┘
-%%    ▼
-%%    Eloquent Models
-%%    │
-%%    ▼
-%%    Database
-%%    │
-%%    ▼
-%%    Blade Templates
-%%    │
-%%    ▼
-%%    HTTP Response
 ```
 
 Each layer has a single responsibility and communicates with neighboring layers through well-defined interfaces.
