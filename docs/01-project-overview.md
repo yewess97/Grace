@@ -192,29 +192,38 @@ The overall shopping process follows a straightforward workflow.
 
 ```mermaid
 flowchart TD
-
+    
+    %% Nodes
     A[Customer]
     B[Browse Products]
     C[Search / Filter]
     D[Product Details]
     E[Wishlist / Cart]
-    F[Checkout]
-    G[Payment]
+    F[Checkout Process]
+    G[Payment Gateway]
     H[Order Processing]
-    I[Shipping]
-    J[Delivery]
-    K[Completion]
+    I[Shipping & Logistics]
+    J[Out for Delivery]
+    K[Order Completion]
 
+    %% Shopping Journey Flow
     A --> B
     B --> C
     C --> D
     D --> E
+
+    %% Transaction Flow
     E --> F
     F --> G
     G --> H
+
+    %% Fulfillment Flow
     H --> I
     I --> J
     J --> K
+
+    %% Return Loop to Customer
+    K -->|Delivered Package| A
 ```
 
 Each stage has been designed to minimize friction while ensuring a secure and reliable purchasing experience.
