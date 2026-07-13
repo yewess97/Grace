@@ -73,7 +73,7 @@
     <article class="new-products">
         <div class="new-products-content box-content rounded-start">
             {{-- New Products Title --}}
-            <article class="box-title mb-3 border-bottom">
+            <article class="box-title mb-1 border-bottom">
                 <h2 class="fs-6 fw-500">
                     <span class="position-relative">{{capitalizeAll(NEW_PRODUCTS)}}</span>
                 </h2>
