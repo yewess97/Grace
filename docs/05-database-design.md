@@ -287,14 +287,6 @@ flowchart TD
     Deliv --->|Return / Reject Delivery| Can
 ```
 
-Orders may also transition to:
-
-```
-Cancelled
-```
-
-when business rules allow.
-
 ---
 
 # Review Domain
