@@ -79,21 +79,27 @@ This workflow demonstrates the separation between presentation, business logic, 
 Grace follows Laravel's Model-View-Controller architecture.
 
 ```mermaid
-flowchart LR
+flowchart TD
+    
+    %% Nodes
+    Browser[Client Browser]
+    Controller[Controller Layer]
+    Model[Eloquent Models]
+    DB[Database Layer]
+    View[Blade Views]
 
-Browser --> Controller
+    %% Inbound Request Flow
+    Browser -->|1. Dispatches HTTP Request| Controller
+    Controller -->|2. Delegates Business Logic| Model
 
-Controller --> Model
+    %% Data Persistence Cycle
+    Model -->|3. Reads / Writes Records| DB
+    DB -->|4. Hydrates Collections & Data Sets| Model
 
-Model --> Database
-
-Database --> Model
-
-Model --> Controller
-
-Controller --> View
-
-View --> Browser
+    %% Outbound Response Flow
+    Model -->|5. Returns State & Domain Entities| Controller
+    Controller -->|6. Injects Structural Context| View
+    View -->|7. Compiles & Delivers HTTP Response| Browser
 ```
 
 Each layer has a dedicated responsibility.
