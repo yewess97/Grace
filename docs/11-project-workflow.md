@@ -36,29 +36,38 @@ Every HTTP request follows the same high-level lifecycle.
 
 ```mermaid
 flowchart TD
-
-    A[Browser]
-    B[Routes]
-    C[Middleware]
-    D[Controller]
-    E[Validation]
-    F[Business Logic]
-    G[Helpers]
-    H[Models]
-    I[Database]
-    J[Blade View]
-    K[Browser]
     
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
+    %% Nodes
+    Browser[Client Browser]
+    Routes[Route Layer]
+    Middleware[Middleware Layer]
+    Controller[Controller Layer]
+    Validation[Validation Layer]
+    Logic[Business Logic Core]
+    Helpers[Helper Utilities]
+    Models[Eloquent Models]
+    DB[Database Layer]
+    View[Blade View]
+
+    %% 1. Inbound Request Pipeline
+    Browser -->|Initiates HTTP Request| Routes
+    Routes -->|Directs to Group / URI| Middleware
+    Middleware -->|Applies Guards & CSRF Filters| Controller
+
+    %% 2. Core Processing Abstractions
+    Controller -->|Delegates Input Sanitization| Validation
+    Validation -->|Passes Cleaned Data Payload| Logic
+    Logic -->|Utilizes Common Tooling| Helpers
+    Helpers -->|Initiates Query / State Change| Models
+
+    %% 3. Persistence & Egress Response
+    Models -->|Performs Parameterized Transactions| DB
+    DB -->|Returns Dataset / Hydrated Records| Models
+    Models -->|Supplies Context Data| View
+    View -->|Renders & Delivers HTTP Response| Browser
+
+    %% Style Linkage for Non-Linear Exception Handling
+    Validation -.->|Fails: Returns Validation Redirect| Browser
 ```
 
 This workflow demonstrates the separation between presentation, business logic, and persistence.
