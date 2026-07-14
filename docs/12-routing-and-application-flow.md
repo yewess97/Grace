@@ -79,34 +79,40 @@ Each route file focuses on a single business domain, reducing complexity and mak
 Every request follows a consistent execution path.
 
 ```mermaid
-flowchart LR
+flowchart TD
 
-A[Browser]
+    %% Nodes
+    Browser[Client Browser]
+    Request[HTTP Request]
+    Route[Route Layer]
+    Middleware[Middleware Layer]
+    Controller[Controller Layer]
+    Validation[Validation Layer]
+    Logic[Business Logic Core]
+    Models[Eloquent Models]
+    DB[Database Layer]
+    Views[Blade Views]
+    Response[HTTP Response]
 
-B[Route]
+    %% Ingress & Routing Pipeline
+    Browser -->|User Interaction| Request
+    Request -->|URL Pattern Matching| Route
+    Route -->|Global & Route Group Filters| Middleware
 
-C[Middleware]
+    %% Application Controller Entry
+    Middleware -->|Dispatches Validated Traffic| Controller
 
-D[Controller]
+    %% Architectural Abstraction Separation
+    Controller -->|Delegates to Form Request| Validation
+    Validation -->|Sanitized & Typed Array Input| Logic
+    Logic -->|Executes Domain Operations| Models
 
-E[Validation]
-
-F[Business Logic]
-
-G[Eloquent Models]
-
-H[Database]
-
-I[Blade View / JSON Response]
-
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
-F --> G
-G --> H
-H --> I
+    %% Data Persistence & Response Reconstitution
+    Models -->|Performs Parameterized Queries| DB
+    DB -->|Returns Result Set / Hydrated Collections| Models
+    Models -->|Injects Collections & Structural Context| Views
+    Views -->|Compiles Server-Side HTML| Response
+    Response -->|Delivers Network Payload| Browser
 ```
 
 This layered flow ensures that responsibilities remain separated throughout the request lifecycle.
