@@ -224,8 +224,10 @@ flowchart TD
 
     %% Terminal States Styling Context
     classDef terminal fill:#635a02,stroke:#a2a000,stroke-width:2px;
-    class Comp terminal;
-    class Cancel terminal;
+    classDef success fill:#0d6300,stroke:#149500,stroke-width:2px;
+    classDef danger fill:#9d0000,stroke:#e80000,stroke-width:2px;
+    class Comp success;
+    class Cancel danger;
 ```
 
 Each status represents a real business milestone during order fulfillment.
