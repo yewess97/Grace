@@ -118,36 +118,37 @@ The authentication process verifies user identity before granting access to prot
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    User[User / Visitor]
+    Form[Login Form]
+    Val[Validation Layer]
+    Auth[Authentication Engine]
+    Sess[Session Creation]
+    Dash[Dashboard / Home]
+    Logout[Logout Action]
+    Destroy[Session Destroyed]
 
-User
+    %% Authentication Pathways
+    User -->|Attempts to Access| Form
 
-↓
+    %% Multi-Method Authentication Input
+    Form -->|1. Traditional: Email & Password| Val
+    Form -->|2. OAuth: Google / Facebook / GitHub| Auth
 
-Login&nbsp;Form
+    %% Core Verification Pipeline
+    Val -->|Passes Security Checks| Auth
+    Auth -->|Credentials Verified| Sess
+    Sess -->|Establishes User Context| Dash
 
-↓
+    %% Session Lifespan & Termination
+    Dash -->|Triggers Sign-Out| Logout
+    Logout -->|Clears Tokens & Cookies| Destroy
+    Destroy -->|Redirects back to Login| Form
 
-Validation
-
-↓
-
-Authentication
-
-↓
-
-Session&nbsp;Creation
-
-↓
-
-Dashboard&nbsp;/&nbsp;Home
-
-↓
-
-Logout
-
-↓
-
-Session&nbsp;Destroyed
+    %% Error Fallback Loop
+    Val -.->|Fails: Invalid Input Format| Form
+    Auth -.->|Fails: Wrong Credentials| Form
 ```
 
 Supported authentication methods include:
@@ -165,36 +166,31 @@ The shopping experience represents the primary business workflow.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Browse[Browse Products]
+    Details[Product Details]
+    Select[Select Size & Quantity]
+    AddToCart[Add To Cart]
+    Cart[Shopping Cart]
+    Checkout[Checkout Pipeline]
+    Payment[Payment Gateway]
+    Order[Order Created]
 
-Browse&nbsp;Products
+    %% Main Purchase Funnel
+    Browse -->|Selects Item| Details
+    Details -->|Configures Options| Select
+    Select -->|Confirms Variation| AddToCart
+    AddToCart -->|Persists Items| Cart
 
-↓
+    %% Transaction Execution
+    Cart -->|Initiates Purchase| Checkout
+    Checkout -->|Submits Secure Payment| Payment
+    Payment -->|Authorization Success| Order
 
-Product&nbsp;Details
-
-↓
-
-Select&nbsp;Size
-
-↓
-
-Add&nbsp;To&nbsp;Cart
-
-↓
-
-Shopping&nbsp;Cart
-
-↓
-
-Checkout
-
-↓
-
-Payment
-
-↓
-
-Order&nbsp;Created
+    %% Optimization & Fallback Loops
+    Order -.->|Provides Order Tracking| Browse
+    Payment -.->|Failed Transaction / Retry| Checkout
 ```
 
 This flow minimizes unnecessary steps while providing a familiar purchasing experience.
@@ -206,17 +202,30 @@ This flow minimizes unnecessary steps while providing a familiar purchasing expe
 Orders progress through several business states.
 
 ```mermaid
-stateDiagram-v2
+flowchart TD
+    %% Nodes
+    Start([Order Created])
+    Proc[Processing State]
+    Ship[Shipped State]
+    Deliv[Delivered State]
+    Comp[Completed State]
+    Cancel[Cancelled State]
 
-[*] --> Processing
+    %% Main Success Path (Happy Path)
+    Start -->|Initialize Order Lifecycle| Proc
+    Proc -->|1. Dispatched from Warehouse| Ship
+    Ship -->|2. Arrived at Destination| Deliv
+    Deliv -->|3. Confirmed & Closed| Comp
 
-Processing --> Shipped
+    %% Exception Handling (Cancellation Paths)
+    Proc --->|User Cancel / Stock Failure| Cancel
+    Ship -.->|Refused / Lost in Transit| Cancel
+    Deliv -.->|Return Initiated / Rejected| Cancel
 
-Shipped --> Delivered
-
-Delivered --> Completed
-
-Processing --> Cancelled
+    %% Terminal States Styling Context
+    classDef terminal fill:#f9f,stroke:#333,stroke-width:2px;
+    class Comp terminal;
+    class Cancel terminal;
 ```
 
 Each status represents a real business milestone during order fulfillment.
@@ -229,32 +238,33 @@ Grace currently supports two payment methods.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Check[Checkout Pipeline]
+    Choose[Choose Payment Method]
+    Stripe[Stripe Gateway]
+    COD[Cash On Delivery]
+    Confirm[Payment & Billing Confirmation]
+    Order[Create Order Record]
+    Notify[Notification Engine]
 
-Checkout
+    %% Payment Pathway Selection
+    Check -->|Initiates Payment Flow| Choose
 
-↓
+    %% Dual Payment Methods (Online vs Offline)
+    Choose -->|Online: Process Card securely| Stripe
+    Choose -->|Offline: Pay at Doorstep| COD
 
-Choose&nbsp;Payment
+    %% Transaction Reconciliation & State Update
+    Stripe -->|Capture Success Token| Confirm
+    COD -->|Acknowledge COD Terms| Confirm
 
-↓
+    %% Order Creation and Alerts
+    Confirm -->|Persist Order & Reduce Inventory| Order
+    Order -->|Send Confirmation Email| Notify
 
-Stripe
-
-OR
-
-Cash&nbsp;On&nbsp;Delivery
-
-↓
-
-Payment&nbsp;Confirmation
-
-↓
-
-Create&nbsp;Order
-
-↓
-
-Notification
+    %% Error Handling Loop
+    Stripe -.->|Declined Card / Retry| Choose
 ```
 
 Stripe securely processes online transactions, while Cash on Delivery supports customers who prefer offline payment.
@@ -267,28 +277,28 @@ Product reviews help improve customer confidence.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Product[Delivered Product]
+    Cust[Customer]
+    Write[Write Review Form]
+    Val[Validation Layer]
+    Store[Store Review in DB]
+    Update[Product Rating Recalculated]
+    Display[Public Product Details]
 
-Delivered&nbsp;Product
+    %% Review Writing & Submission Process
+    Product -->|Delivered & Verified Purchase| Cust
+    Cust -->|Opens Feedback Option| Write
+    Write -->|Submits Rating & Text Review| Val
 
-↓
+    %% Validation & State Update Pipeline
+    Val -->|Passes Safety & Integrity Checks| Store
+    Store -->|Triggers Average Rating Update| Update
+    Update -->|Pushes Refreshed Score To| Display
 
-Customer
-
-↓
-
-Write&nbsp;Review
-
-↓
-
-Validation
-
-↓
-
-Store&nbsp;Review
-
-↓
-
-Product&nbsp;Rating&nbsp;Updated
+    %% Guardrail Interceptions (Sanitization / Spam)
+    Val -.->|Fails: Profanity, Spam, or Bad Rating Format| Write
 ```
 
 Only validated review data is persisted.
@@ -301,20 +311,26 @@ Notifications keep customers informed throughout their shopping journey.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Event[Business Event Trigger]
+    Create[Notification Created]
+    Store[Store Notification in DB]
+    Dispatch[Notification Dispatcher]
+    Display[Display To User]
 
-Business&nbsp;Event
+    %% Event Classification Examples
+    Event -->|Order Updates / Admin Messages / Account Alerts| Create
 
-↓
+    %% Storage & Queue Pipeline
+    Create -->|Build Context & Payload| Store
+    Store -->|Queue Event Workers| Dispatch
 
-Notification&nbsp;Created
+    %% Delivery Real-time Channel
+    Dispatch -->|Push SSE| Display
 
-↓
-
-Store&nbsp;Notification
-
-↓
-
-Display&nbsp;To&nbsp;User
+    %% Read Receipt Interaction Loop
+    Display -.->|User Interacts / Marks as Read| Store
 ```
 
 Typical events include:
@@ -331,24 +347,26 @@ Grace reduces unnecessary database operations through caching.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Req[Incoming Request]
+    Check{Does Cache Exist?}
+    Hit[Retrieve Cached Data]
+    Miss[Query Database]
+    Store[Hydrate & Store in Cache]
+    Resp[Deliver Response to Client]
 
-Request
+    %% Main Pipeline Flow
+    Req -->|Inbound Cache Evaluation| Check
 
-↓
+    %% Cache Hit Path (Fast Path)
+    Check -->|Yes: Cache Hit| Hit
+    Hit -->|Bypass Database & Return Context| Resp
 
-Cache&nbsp;Exists?
-
-Yes --> Return&nbsp;Cached&nbsp;Data
-
-No --> Query&nbsp;Database
-
-↓
-
-Store&nbsp;Cache
-
-↓
-
-Return&nbsp;Response
+    %% Cache Miss Path (Database Fallback)
+    Check -->|No: Cache Miss| Miss
+    Miss -->|Fetch Fresh Records from Storage| Store
+    Store -->|Populate Cache & Build Payload| Resp
 ```
 
 This approach significantly improves application responsiveness.
@@ -361,24 +379,24 @@ Unexpected errors are handled gracefully.
 
 ```mermaid
 flowchart TD
+    
+    %% Nodes
+    Error[Unexpected Exception]
+    Handler[Laravel Exception Handler]
+    Log[Log Error & Stack Trace]
+    Sanitize[Generate User-Friendly Response]
+    Client[Return Response to Client]
 
-Exception
+    %% Main Inbound Exception Flow
+    Error -->|Caught at Global Level| Handler
 
-↓
+    %% Concurrent Logging and Sanitization Operations
+    Handler -->|1. Record Error Context| Log
+    Handler -->|2. Suppress Verbose Debug Details| Sanitize
 
-Laravel&nbsp;Exception&nbsp;Handler
-
-↓
-
-Log&nbsp;Error
-
-↓
-
-Generate&nbsp;User-Friendly&nbsp;Response
-
-↓
-
-Return&nbsp;Response
+    %% Output Delivery Pipeline
+    Log -.->|Write to laravel.log / Sentry| Sanitize
+    Sanitize -->|Deliver Generic Safe Payload| Client
 ```
 
 Internal implementation details remain hidden from end users.
@@ -390,25 +408,51 @@ Internal implementation details remain hidden from end users.
 The following diagram summarizes the interaction between the major application modules.
 
 ```mermaid
-flowchart LR
+flowchart TD
+    
+    %% Central Actor
+    Cust[Customer / User Agent]
 
-Customer --> Authentication
+    %% Core Application Subsystems / Modules
+    subgraph Identity [Identity & Session Management]
+        Auth[Authentication Module]
+    end
 
-Customer --> Product-Catalog
+    subgraph Discovery [Product Discovery Pipeline]
+        Catalog[Product Catalog]
+        Reviews[Reviews & Ratings]
+    end
 
-Customer --> Wishlist
+    subgraph Commerce [Transactional Funnel]
+        Wishlist[Wishlist Manager]
+        Cart[Shopping Cart Engine]
+        Checkout[Checkout Pipeline]
+        Payment[Payment Gateway]
+    end
 
-Customer --> Shopping-Cart
+    subgraph Operations [Fulfillment & Alerts]
+        Orders[Order Management]
+        Notify[Notification Engine]
+    end
 
-Customer --> Checkout
+    %% Customer Interactions (Modular Boundaries)
+    Cust -->|Verifies Identity & Session| Auth
+    Cust -->|Explores SKUs & Categories| Catalog
+    Cust -->|Saves Items for Later| Wishlist
+    Cust -->|Manages Selected Items| Cart
+    Cust -->|Initiates Order Funnel| Checkout
+    Cust -->|Submits Secure Payment| Payment
+    Cust -->|Tracks Purchase Progress| Orders
+    Cust -->|Receives Real-time Updates| Notify
+    Cust -->|Submits Verified Feedback| Reviews
 
-Customer --> Payment
-
-Customer --> Orders
-
-Customer --> Notifications
-
-Customer --> Reviews
+    %% Inter-Module Relationships & Event Triggers
+    Catalog -.->|Provides Rating Summaries| Reviews
+    Wishlist -.->|Promotes Saved Items| Cart
+    Cart -.->|Passes Line Items| Checkout
+    Checkout -.->|Submits Payable Charge| Payment
+    Payment -.->|Authorization Success| Orders
+    Orders -.->|Triggers Status Notifications| Notify
 ```
 
 Although each module operates independently, together they form a complete e-commerce workflow.
