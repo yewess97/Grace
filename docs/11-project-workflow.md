@@ -223,7 +223,7 @@ flowchart TD
     Deliv -.->|Return Initiated / Rejected| Cancel
 
     %% Terminal States Styling Context
-    classDef terminal fill:#f5ea84,stroke:#333,stroke-width:2px;
+    classDef terminal fill:#f5ea84,stroke:#000000,stroke-width:2px;
     class Comp terminal;
     class Cancel terminal;
 ```
