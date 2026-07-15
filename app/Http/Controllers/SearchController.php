@@ -218,7 +218,7 @@ class SearchController extends Controller
         $query_params = array_diff(request()?->query(), ['page']);
 
         if (!empty($query_params)) {
-            collect($query_params)->each(static function ($collectionValue, $relatedCollection) {
+            collect($query_params)->each(static function ($collectionValue, $relatedCollection) use ($products) {
                 return $products->whereHas($relatedCollection, static fn(Builder $product) => is_array($collectionValue)
                     ? $product->whereIn(SLUG, $collectionValue)
                     : $product->where(SLUG, $collectionValue)

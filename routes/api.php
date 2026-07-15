@@ -11,4 +11,4 @@
 |
 */
 
-Route::get('/fetch-countries', static fn() => Http::get('https://www.apicountries.com/countries')->json());
+Route::get('/fetch-countries', static fn() => Http::get('https://countries.dev/countries')->json());
