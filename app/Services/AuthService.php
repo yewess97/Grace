@@ -214,6 +214,7 @@ class AuthService {
 
         try {
             Mail::to($email_value)->send(new ResetPasswordMail($reset_password_data));
+
             return true;
         }
         catch (RuntimeException) {

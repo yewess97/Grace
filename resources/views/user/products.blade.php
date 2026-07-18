@@ -168,6 +168,9 @@
                             </div>
                         </article>
 
+                        {{-- Filter Sort --}}
+                        <input type="hidden" name="filter_products_sort">
+
                         {{-- Filter Button --}}
                         <article class="box-filter">
                             <button type="submit" role="button" title="{{ucfirst(FILTER)}}" class="btn btn-block">{{ucfirst(FILTER)}}</button>
@@ -198,7 +201,6 @@
                                             <option value="{{$sort_value}}">{{$sort_type}}</option>
                                         @endforeach
                                     </select>
-                                    <input type="hidden" name="filter_products_sort">
                                 </div>
                             </div>
                         </div>

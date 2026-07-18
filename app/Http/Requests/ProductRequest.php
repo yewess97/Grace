@@ -23,8 +23,8 @@ class ProductRequest extends FormRequest
      */
     final public function rules(?string $id = null): array
     {
-        $this->max_categories    = Category::query()->count();
-        $this->max_subcategories = Subcategory::query()->count();
+        $this->max_categories    = Category::query()->count([ID]);
+        $this->max_subcategories = Subcategory::query()->count([ID]);
         $this->max_sizes         = count(PRODUCT_SIZE_ENUM);
 
         if ($this->operation === FILTER) {

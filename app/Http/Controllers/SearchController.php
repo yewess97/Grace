@@ -214,8 +214,15 @@ class SearchController extends Controller
      */
     final public function filterProducts(): Application|Factory|View|JsonResponse
     {
-        $products     = Product::query();
-        $query_params = array_diff(request()?->query(), ['page']);
+        $products                 = Product::query();
+        $related_collection_param = basename(url()->previous());
+        $string_url_path          = parse_url(url()->previous(), PHP_URL_PATH);
+        $related_collection       = explode('/', trim($string_url_path, '/'))[0] ?? null;
+        $query_params             = array_diff(request()?->query(), ['page']);
+
+        if ($related_collection && !in_array($related_collection, [PRODUCTS_TABLE, kebabAll(FILTER_PRODUCTS)], true)) {
+            $query_params[pluralize($related_collection)] = $related_collection_param;
+        }
 
         if (!empty($query_params)) {
             collect($query_params)->each(static function ($collectionValue, $relatedCollection) use ($products) {
