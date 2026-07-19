@@ -1,4 +1,4 @@
-<aside class="left-side row col-12 col-lg-3 gap-4 pe-lg-3">
+<aside class="left-side d-flex flex-column col-12 col-lg-3 gap-4 pe-lg-3">
     {{-- Categories Menu --}}
     <ul role="list" class="categories-menu position-relative bg-white rounded-start">
         <li role="listitem" class="category-item main-dropdown">

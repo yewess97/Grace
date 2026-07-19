@@ -1,4 +1,4 @@
-<form role="form" action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" class="add-cart-form product-form">
+<form role="form" action="{{route(CREATE_UPDATE_CART, ADD)}}" method="post" class="add-cart-form product-form h-100">
     @csrf
     <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
     {{-- Multiple Items Grid View --}}
