@@ -64,7 +64,7 @@
 
                         {{-- Product Related Categories & Related Subcategories & Sizes --}}
                         <div class="row col-12 align-items-center gap-2 gap-lg-0">
-                            <!-- Product Related Categories -->
+                            {{-- Product Related Categories --}}
                             <div class="add-product-related-categories col-12 col-lg-4 pe-lg-2">
                                 <div class="form-group position-relative mb-2">
                                     <label for="add_product_related_categories" class="label-select position-absolute user-select-none pe-none">

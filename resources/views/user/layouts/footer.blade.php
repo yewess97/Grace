@@ -74,7 +74,7 @@
                                 <i class="ti ti-location-pin"></i>
                             </div>
                             <div class="contact-info">
-                                <p class="m-0">Al-Mohandiseen 71511 Street, Asyut, Egypt</p>
+                                <p class="m-0">Al-Mohafzah ST, Asyut, Egypt, 71111</p>
                             </div>
                         </li>
                         <li role="listitem" class="d-flex align-items-center gap-2">

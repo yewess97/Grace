@@ -68,7 +68,7 @@
 
                         {{-- Product Related Categories & Related Subcategories & Sizes --}}
                         <div class="row col-12 align-items-center gap-2 gap-lg-0">
-                            <!-- Product Related Categories -->
+                            {{-- Product Related Categories --}}
                             <div class="update-product-related-categories col-12 col-lg-4 pe-lg-2" data-related_categories="{{json_encode($categories, JSON_THROW_ON_ERROR)}}">
                                 <div class="form-group position-relative mb-2">
                                     <label for="update_product_related_categories" class="label-select position-absolute user-select-none pe-none">

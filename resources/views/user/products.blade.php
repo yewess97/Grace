@@ -207,7 +207,7 @@
                     </div>
 
                     {{-- Products --}}
-                    <div class="products pagination-container row gap-4">
+                    <div class="products pagination-container row gap-2">
                         @include(USER_PRODUCTS_PAGINATION, [PRODUCTS_TABLE => $products])
                     </div>
                 </section>
