@@ -187,6 +187,10 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 |------------------------------------------|----------------------------------------------|
 | ![](public/assets/screenshots/cart.webp) | ![](public/assets/screenshots/checkout.webp) |
 
+| Stripe Payment                                     | Profile                                     |
+|----------------------------------------------------|---------------------------------------------|
+| ![](public/assets/screenshots/stripe-payment.webp) | ![](public/assets/screenshots/profile.webp) |
+
 | Dashboard                                     | Products Dashboard                                     |
 |-----------------------------------------------|--------------------------------------------------------|
 | ![](public/assets/screenshots/dashboard.webp) | ![](public/assets/screenshots/products-dashboard.webp) |
