@@ -244,7 +244,7 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - aksFileUpload
 - Filter Multiselect
 - libphonenumber
-- Tiny MCE
+- TinyMCE
 
 ### ** Frontend Google Charts
 
