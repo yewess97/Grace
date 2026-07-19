@@ -179,9 +179,9 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 |----------------------------------------------------|-----------------------------------------|
 | ![](public/assets/screenshots/product-details.png) | ![](public/assets/screenshots/cart.png) |
 
-| Checkout                                    | Dashboard                                    |
-|---------------------------------------------|----------------------------------------------|
-| ![](public/assets/screenshots/checkout.png) | ![](public/assets/screenshots/dashboard.png) |
+| Checkout                                     | Dashboard                                    |
+|----------------------------------------------|----------------------------------------------|
+| ![](public/assets/screenshots/checkout.webp) | ![](public/assets/screenshots/dashboard.png) |
 
 ---
 

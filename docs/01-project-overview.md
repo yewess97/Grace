@@ -262,9 +262,9 @@ These engineering decisions make the project easier to extend and maintain compa
 |-------------------------------------------------------|---------------------------------------------|
 | ![](../public/assets/screenshots/product-details.png) | ![](../public/assets/screenshots/cart.png)  |
 
-| Checkout                                       | Dashboard                                       |
-|------------------------------------------------|-------------------------------------------------|
-| ![](../public/assets/screenshots/checkout.png) | ![](../public/assets/screenshots/dashboard.png) |
+| Checkout                                        | Dashboard                                       |
+|-------------------------------------------------|-------------------------------------------------|
+| ![](../public/assets/screenshots/checkout.webp) | ![](../public/assets/screenshots/dashboard.png) |
 
 ---
 
