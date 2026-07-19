@@ -26,7 +26,7 @@
     {{-- Single Item Grid View --}}
     <section class="grid-view-single-item border d-none">
         {{-- Product Image & Discount --}}
-        <div class="product-img position-relative col-12 col-md-3 rounded-2 overflow-hidden">
+        <div class="product-img position-relative col-12 col-md-3 h-auto rounded-2 overflow-hidden">
             <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link" class="d-grid place-items-center h-100">
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => MAIN_IMAGE])
             </a>
