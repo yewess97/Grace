@@ -254,11 +254,15 @@ These engineering decisions make the project easier to extend and maintain compa
 
 # Screenshots
 
-| Home                                        | Products                                        |
+| Home                                        | Wishlist                                        |
 |---------------------------------------------|-------------------------------------------------|
-| ![](../public/assets/screenshots/home.webp) | ![](../public/assets/screenshots/products.webp) |
+| ![](../public/assets/screenshots/home.webp) | ![](../public/assets/screenshots/wishlist.webp) |
 
-| Product                                                | Product Quick View                                        |
+| Products (Multi View)                                      | Products (Single View)                                      |
+|------------------------------------------------------------|-------------------------------------------------------------|
+| ![](../public/assets/screenshots/products-multi-view.webp) | ![](../public/assets/screenshots/products-single-view.webp) |
+
+| Product Details                                        | Product Quick View                                        |
 |--------------------------------------------------------|-----------------------------------------------------------|
 | ![](../public/assets/screenshots/product-details.webp) | ![](../public/assets/screenshots/product-quick-view.webp) |
 
