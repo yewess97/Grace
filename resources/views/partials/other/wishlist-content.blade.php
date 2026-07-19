@@ -17,7 +17,7 @@
                 {{-- Wishlist Product Image & Info--}}
                 <article class="product-img-info row col-12">
                     {{-- Wishlist Product Image --}}
-                    <a href="{{route(PRODUCT_DETAILS, $wishlist_item->{PRODUCT_MODEL}->{SLUG})}}" role="link" class="product-img col-4">
+                    <a href="{{route(PRODUCT_DETAILS, $wishlist_item->{PRODUCT_MODEL}->{SLUG})}}" role="link" class="product-img d-flex justify-content-center align-items-center col-4">
                         <img src="{{imageSource($wishlist_item->{PRODUCT_MODEL}, MAIN_IMAGE)}}" alt="{{ $wishlist_item->{PRODUCT_MODEL}->{NAME} }}">
                     </a>
 
