@@ -194,6 +194,14 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - MySQL
 - Eloquent ORM
 
+### Backend Third-Party Services
+
+- Stripe
+- Laravel Socialite
+- Google OAuth
+- Facebook OAuth
+- GitHub OAuth
+
 ## Frontend
 
 - Blade Templates
@@ -202,13 +210,16 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - jQuery
 - AJAX
 
-## Third-Party Services
+### Frontend Third-Party Services
 
-- Stripe
-- Laravel Socialite
-- Google OAuth
-- Facebook OAuth
-- GitHub OAuth
+- Font Awesome
+- Themify Icons
+- Owl Carousel 2
+- Sweet Alert 2
+- aksFileUpload
+- Filter Multiselect
+- libphonenumber
+- Tiny MCE
 
 ## Development Tools
 
