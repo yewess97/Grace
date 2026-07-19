@@ -20,7 +20,7 @@ class ReviewRequest extends FormRequest
     {
         return [
             $this->dataKeyOf(RATING)    => ['required', 'in:'.implode(',', array_values(REVIEW_RATING_ENUM))],
-            $this->dataKeyOf(TITLE)     => ['required', 'regex:/^[A-Za-z&\'\s]+$/', 'min:2', 'max:50'],
+            $this->dataKeyOf(TITLE)     => ['required', 'regex:/^[A-Za-z\s!@#$%^&*()_+\-=\[\]{}\'\"\\|:,.\/]+$/', 'min:2', 'max:50'],
             $this->dataKeyOf(BODY_TEXT) => ['required', 'regex:/^[\w\W]+$/', 'min:2', 'max:1500'],
             ...$this->collectionIdValidation($this->product_id_validation),
         ];

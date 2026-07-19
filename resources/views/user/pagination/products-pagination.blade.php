@@ -17,7 +17,7 @@
 </ul>
 
 {{-- User Products Pagination --}}
-<div class="table-pagination col-12">@pagination($products, $products_pagination_route)</div>
+<div class="table-pagination col-12 mt-3">@pagination($products, $products_pagination_route)</div>
 
 
 {{-- Quick View Product Modal --}}

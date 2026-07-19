@@ -123,7 +123,7 @@
                             @foreach ($common_left_side[CUSTOMERS_REVIEWS] as $customer_review)
                                 <div class="owl-item">
                                     <div class="row gap-2 text-center">
-                                        <div class="customer-review border overflow-hidden">
+                                        <div class="customer-review border overflow-auto">
                                             <i class="fa-solid fa-quote-left d-block fs-9"></i>
                                             <p>{{ $customer_review->{BODY_TEXT} }}</p>
                                         </div>

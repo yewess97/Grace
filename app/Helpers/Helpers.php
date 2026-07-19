@@ -37,7 +37,6 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 
 if (!function_exists('canonicalUrl')) {
@@ -323,18 +322,42 @@ if (!function_exists('storeImageWithoutBackground')) {
      * @param string $imagePath
      * @param string|null $imageName
      * @return string
-     * @throws ServiceUnavailableHttpException|RandomException
+     * @throws RuntimeException|RandomException
      */
     function storeImageWithoutBackground(mixed $image, string $imagePath, ?string $imageName = null): string
     {
+//        $response = Http::withHeaders([
+//            'X-Api-Key' => 'MR67ZZUETQhJbFibkicgrpbQ',
+//        ])
+//            ->attach(
+//                'image_file',
+//                file_get_contents($image->getRealPath()),
+//                $image->getClientOriginalName()
+//            )
+//            ->attach('size', 'auto')
+//            ->post('https://api.remove.bg/v1.0/removebg');
+//
+//        if (!$response->successful()) {
+//            $error_data    = $response->json();
+//            $error_message = $error_data['errors'][0][TITLE] ?? 'Unknown API Error';
+//
+//            throw new RuntimeException("Remove.bg Error: ".$error_message);
+//        }
+
         $response = Http::withHeaders([
-            'X-Api-Key' => 'TGtoLSB6D6d98KEse4PRYkBE',
+            'x-api-key' => '3522d6fd-337f-4f00-a7ba-7730c93202ef',
         ])
-            ->attach('image_file', file_get_contents($image->getRealPath()), $image->getClientOriginalName())
-            ->post('https://api.remove.bg/v1.0/removebg', ['size' => 'auto']);
+            ->attach(
+                'image',
+                file_get_contents($image->getRealPath()),
+                $image->getClientOriginalName()
+            )
+            ->post('https://api.rembg.com/rmbg');
 
         if (!$response->successful()) {
-            throw new ServiceUnavailableHttpException(null, 'The remove.bg service is currently unavailable. Please try again later!');
+            $error_message = $response->body() ?: 'Rembg Gateway error';
+
+            throw new RuntimeException("Rembg API Failure ({$response->status()}): ".$error_message);
         }
 
         $removed_image_bg = $response->body();
@@ -360,7 +383,7 @@ if (!function_exists(STORE_OR_UPDATE.'Image')) {
      * @param mixed|null $image
      * @param string|null $checkBackground
      * @return string
-     * @throws NotFoundHttpException|ServiceUnavailableHttpException|RandomException
+     * @throws NotFoundHttpException|RuntimeException|RandomException
      */
     function storeOrUpdateImage(string $imageType, Model|stdClass $model, ?string $modelId = null, mixed $image = null, ?string $checkBackground = null): string
     {

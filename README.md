@@ -171,17 +171,25 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 
 # Screenshots
 
-| Home                                    | Products                                    |
-|-----------------------------------------|---------------------------------------------|
-| ![](public/assets/screenshots/home.png) | ![](public/assets/screenshots/products.png) |
+| Home                                     | Products                                     |
+|------------------------------------------|----------------------------------------------|
+| ![](public/assets/screenshots/home.webp) | ![](public/assets/screenshots/products.webp) |
 
-| Product                                            | Cart                                    |
-|----------------------------------------------------|-----------------------------------------|
-| ![](public/assets/screenshots/product-details.png) | ![](public/assets/screenshots/cart.png) |
+| Product                                             | Product Quick View                                     |
+|-----------------------------------------------------|--------------------------------------------------------|
+| ![](public/assets/screenshots/product-details.webp) | ![](public/assets/screenshots/product-quick-view.webp) |
 
-| Checkout                                     | Dashboard                                    |
-|----------------------------------------------|----------------------------------------------|
-| ![](public/assets/screenshots/checkout.webp) | ![](public/assets/screenshots/dashboard.png) |
+| Login                                     | Register                                     |
+|-------------------------------------------|----------------------------------------------|
+| ![](public/assets/screenshots/login.webp) | ![](public/assets/screenshots/register.webp) |
+
+| Cart                                     | Checkout                                     |
+|------------------------------------------|----------------------------------------------|
+| ![](public/assets/screenshots/cart.webp) | ![](public/assets/screenshots/checkout.webp) |
+
+| Dashboard                                     | Products Dashboard                                     |
+|-----------------------------------------------|--------------------------------------------------------|
+| ![](public/assets/screenshots/dashboard.webp) | ![](public/assets/screenshots/products-dashboard.webp) |
 
 ---
 

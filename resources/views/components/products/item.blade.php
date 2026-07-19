@@ -2,11 +2,11 @@
     @csrf
     <input type="hidden" name="add_cart_product_id" value="{{$product->id}}">
     {{-- Multiple Items Grid View --}}
-    <section class="grid-view-multiple-items">
+    <section class="grid-view-multiple-items d-flex flex-column h-100">
         {{-- Product Image & Discount & Actions --}}
         <div class="product-img position-relative d-flex align-items-center rounded-2 overflow-hidden">
             {{-- Product Image & Discount --}}
-            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link">
+            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link" class="d-grid place-items-center">
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => MAIN_IMAGE])
             </a>
             {{-- Product Actions --}}
@@ -17,7 +17,7 @@
 
         {{-- Product Info (Name & Price) --}}
         <div class="product-info">
-            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link">
+            <a href="{{route(PRODUCT_DETAILS, $product->{SLUG})}}" role="link" class="d-flex flex-column justify-content-between h-100">
                 @include(PRODUCT_ITEM_COMMON_PARTIAL, [PRODUCT_MODEL => $product, 'container' => 'info'])
             </a>
         </div>
