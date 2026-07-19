@@ -274,9 +274,13 @@ These engineering decisions make the project easier to extend and maintain compa
 |---------------------------------------------|-------------------------------------------------|
 | ![](../public/assets/screenshots/cart.webp) | ![](../public/assets/screenshots/checkout.webp) |
 
-| Stripe Payment                                        | Profile                                        |
-|-------------------------------------------------------|------------------------------------------------|
-| ![](../public/assets/screenshots/stripe-payment.webp) | ![](../public/assets/screenshots/profile.webp) |
+| Stripe Payment                                        | Order Details                                        |
+|-------------------------------------------------------|------------------------------------------------------|
+| ![](../public/assets/screenshots/stripe-payment.webp) | ![](../public/assets/screenshots/order-details.webp) |
+
+| Profile                                        | User Addresses                                        |
+|------------------------------------------------|-------------------------------------------------------|
+| ![](../public/assets/screenshots/profile.webp) | ![](../public/assets/screenshots/user-addresses.webp) |
 
 | Dashboard                                        | Products Dashboard                                        |
 |--------------------------------------------------|-----------------------------------------------------------|

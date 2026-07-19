@@ -191,9 +191,13 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 |------------------------------------------|----------------------------------------------|
 | ![](public/assets/screenshots/cart.webp) | ![](public/assets/screenshots/checkout.webp) |
 
-| Stripe Payment                                     | Profile                                     |
-|----------------------------------------------------|---------------------------------------------|
-| ![](public/assets/screenshots/stripe-payment.webp) | ![](public/assets/screenshots/profile.webp) |
+| Stripe Payment                                     | Order Details                                     |
+|----------------------------------------------------|---------------------------------------------------|
+| ![](public/assets/screenshots/stripe-payment.webp) | ![](public/assets/screenshots/order-details.webp) |
+
+| Profile                                     | User Addresses                                     |
+|---------------------------------------------|----------------------------------------------------|
+| ![](public/assets/screenshots/profile.webp) | ![](public/assets/screenshots/user-addresses.webp) |
 
 | Dashboard                                     | Products Dashboard                                     |
 |-----------------------------------------------|--------------------------------------------------------|
@@ -212,11 +216,16 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 
 ### ** Backend Third-Party Services
 
-- Stripe
+- Stripe Payment
 - Laravel Socialite
 - Google OAuth
 - Facebook OAuth
 - GitHub OAuth
+
+### Backend APIs
+
+- countries.dev
+- rembg.com
 
 ## Frontend
 
@@ -236,6 +245,11 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - Filter Multiselect
 - libphonenumber
 - Tiny MCE
+
+### ** Frontend Google Charts
+
+- Geochart
+- Piechart
 
 ## Development Tools
 
