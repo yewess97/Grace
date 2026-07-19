@@ -194,7 +194,7 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - MySQL
 - Eloquent ORM
 
-### Backend Third-Party Services
+### *Backend Third-Party Services
 
 - Stripe
 - Laravel Socialite
@@ -210,7 +210,7 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 - jQuery
 - AJAX
 
-### Frontend Third-Party Services
+### *Frontend Third-Party Services
 
 - Font Awesome
 - Themify Icons
