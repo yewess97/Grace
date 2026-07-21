@@ -48,7 +48,10 @@
                     data-route="{{route(DELETE_ADDRESS, $address->id)}}"
                     data-name="{{ $address->{USER_MODEL}->{FULL_NAME} }}"
                     data-main="{{route(isAdminRoute() ? ADMIN_USER_ADDRESSES_ROUTE : USER_ADDRESSES, [ID => request()?->input(ID), CONDITION => conditionRequest()])}}"
-                    class="delete-address-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                    @class([
+                        'delete-address-btn' => (isAdminRoute() && !auth()->user()?->isMonitor) || (!isAdminRoute() && (auth()->user()?->isMonitor || !auth()->user()?->isMonitor)),
+                        'h-fit-content fs-5 text-danger bg-transparent border-0'
+                    ])>
                 <x-actions.icon action="{{$address->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>

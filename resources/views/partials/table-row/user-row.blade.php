@@ -48,13 +48,15 @@
                     <x-actions.icon action="{{EDIT}}"/>
                 </button>
             @endif
-
             <button type="button" role="button" title="{{capitalizeAll($user->trashed() ? DELETE_USER : REMOVE_USER)}}"
                     data-tooltip="tooltip" data-mdb-placement="top"
                     data-route="{{route(DELETE_USER, $user->id)}}"
                     data-name="{{ $user->{FULL_NAME} }}"
                     data-main="{{route(ADMIN_USERS_ROUTE, [CONDITION => conditionRequest()])}}"
-                    class="delete-user-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                    @class([
+                        'delete-category-btn' => !auth()->user()?->isMonitor,
+                        'h-fit-content fs-5 text-danger bg-transparent border-0'
+                    ])>
                 <x-actions.icon action="{{$user->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>

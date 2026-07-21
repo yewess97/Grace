@@ -49,7 +49,7 @@ class ProductRequest extends FormRequest
             ...$this->numberValidation(OLD_PRICE, 'numeric'),
             ...$this->numberValidation(NEW_PRICE, 'numeric'),
             ...$this->numberValidation(QUANTITY, 'integer'),
-            ...$this->booleanValidation(STATUS),
+            $this->dataKeyOf(STATUS) => ['required', 'in:0,1'],
         ];
 
         if (Arr::has($this->modelAttributes, THUMB_IMAGE)) {
@@ -69,6 +69,7 @@ class ProductRequest extends FormRequest
         $cap_categories    = ucfirst(CATEGORIES_TABLE);
         $cap_subcategories = ucfirst(SUBCATEGORIES_TABLE);
         $cap_sizes         = ucfirst(pluralize(SIZE));
+        $cap_status        = ucfirst(pluralize(STATUS));
         $cap_sort          = ucfirst(PRODUCTS_TABLE.' '.SORT);
 
         if ($this->operation === FILTER) {
@@ -94,7 +95,8 @@ class ProductRequest extends FormRequest
             ...$this->numberValidation(OLD_PRICE, 'numeric', true),
             ...$this->numberValidation(NEW_PRICE, 'numeric', true),
             ...$this->numberValidation(QUANTITY, 'integer', true),
-            ...$this->booleanValidation(STATUS, true, "Available or Not Available"),
+            ...$this->requiredMessage($this->dataKeyOf(STATUS), $cap_status),
+            "{$this->dataKeyOf(STATUS)}.in"  => "$cap_status must be Available or Not Available",
         ];
     }
 

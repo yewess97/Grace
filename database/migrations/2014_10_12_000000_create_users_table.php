@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string(EMAIL)->unique();
             $table->timestamp(EMAIL.'_verified_at');
             $table->string(PASSWORD);
-            $table->boolean(ROLE)->default(0); // 0 --> user (customer), 1 --> admin
+            $table->boolean(ROLE)->default(0); // 0 --> user (customer), 1 --> admin, 2 --> monitor
             $login_social_providers = LOGIN_SOCIAL_PROVIDERS;
             array_walk($login_social_providers, static fn($provider) => $table->string(collectionId($provider))->nullable());
             $table->timestamp(LAST_SEEN)->nullable();

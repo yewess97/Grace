@@ -29,7 +29,7 @@ class UserRequest extends FormRequest
         $this->is_subset = empty(array_diff($this->filter_users_attribute, $this->modelAttributes));
 
         if ($this->is_single_attribute && $this->is_subset) {
-            return $this->booleanValidation(ROLE);
+            return $this->userRoleValidation(ROLE);
         }
 
         return $this->userValidation(USER_MODEL, false, $id);
@@ -43,7 +43,7 @@ class UserRequest extends FormRequest
     final public function messages(): array
     {
         return $this->is_single_attribute && $this->is_subset
-            ? $this->booleanValidation(ROLE, true, "Customer or ".ucfirst(ADMIN))
+            ? $this->userRoleValidation(ROLE, true, "Customer, ".ucfirst(ADMIN).", or Monitor")
             : $this->userValidation(USER_MODEL, true);
     }
 }

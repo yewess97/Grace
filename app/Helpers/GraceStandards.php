@@ -968,8 +968,9 @@ define("SORT_PRODUCTS_ENUM", [
  * User Role Enum.
  */
 define("USER_ROLE_ENUM", [
-    'Customer'     => 0,
-    ucfirst(ADMIN) => 1
+    'Customer' => 0,
+    ucfirst(ADMIN) => 1,
+    'Monitor' => 2,
 ]);
 
 /**

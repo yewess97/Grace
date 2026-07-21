@@ -65,6 +65,16 @@ class User extends Authenticatable implements IGrace
     }
 
     /**
+     * Accessor to get the monitor role.
+     *
+     * @return Attribute
+     */
+    final public function isMonitor(): Attribute
+    {
+        return Attribute::get(fn() => $this->{ROLE} === 2);
+    }
+
+    /**
      * Get the data of the specified user.
      *
      * @return Attribute

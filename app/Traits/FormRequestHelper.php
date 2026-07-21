@@ -333,8 +333,8 @@ trait FormRequestHelper
 
         if ($requestType === USER_MODEL) {
             return $isMessage
-                ? [...$register_user_messages, ...$this->booleanValidation(ROLE, true, "Customer or Admin")]
-                : [...$register_user_rules, ...$this->booleanValidation(ROLE)];
+                ? [...$register_user_messages, ...$this->userRoleValidation(ROLE, true, "Customer, ".ucfirst(ADMIN).", or Monitor")]
+                : [...$register_user_rules, ...$this->userRoleValidation(ROLE)];
         }
 
         return $requestType === REGISTER && $isMessage
@@ -429,7 +429,7 @@ trait FormRequestHelper
      * @param string|null $inRules
      * @return array<string, string>
      */
-    final protected function booleanValidation(string $attribute, bool $isMessage = false, ?string $inRules = null): array
+    final protected function userRoleValidation(string $attribute, bool $isMessage = false, ?string $inRules = null): array
     {
         $cap_attribute = ucfirst($attribute);
 
@@ -441,7 +441,7 @@ trait FormRequestHelper
         }
 
         return [
-            $this->dataKeyOf($attribute) => ['required', 'in:0,1'],
+            $this->dataKeyOf($attribute) => ['required', 'in:0,1,2'],
         ];
     }
 

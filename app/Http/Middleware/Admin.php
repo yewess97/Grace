@@ -21,7 +21,7 @@ class Admin
     final public function handle(Request $request, Closure $next): JsonResponse|Response|RedirectResponse
     {
         if (auth()->check()) {
-            if (auth()->user()?->isAdmin) {
+            if (auth()->user()?->isAdmin || auth()->user()?->isMonitor) {
                 return $next($request);
             }
 

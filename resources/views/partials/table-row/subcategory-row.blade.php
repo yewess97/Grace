@@ -48,7 +48,10 @@
                     data-route="{{route(DELETE_SUBCATEGORY, $subcategory->id)}}"
                     data-name="{{ $subcategory->{NAME} }}"
                     data-main="{{route(ADMIN_SUBCATEGORIES_ROUTE, [CONDITION => conditionRequest()])}}"
-                    class="delete-subcategory-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                    @class([
+                        'delete-category-btn' => !auth()->user()?->isMonitor,
+                        'h-fit-content fs-5 text-danger bg-transparent border-0'
+                    ])>
                 <x-actions.icon action="{{$subcategory->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>

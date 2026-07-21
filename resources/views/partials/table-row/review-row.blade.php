@@ -51,7 +51,10 @@
                     data-route="{{route(DELETE_REVIEW, $review->id)}}"
                     data-name="{{ $review->{TITLE} }}"
                     data-main="{{route(ADMIN_REVIEWS_ROUTE, [RATING => $review->{RATING}, CONDITION => conditionRequest()])}}"
-                    class="delete-review-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                    @class([
+                        'delete-category-btn' => !auth()->user()?->isMonitor,
+                        'h-fit-content fs-5 text-danger bg-transparent border-0'
+                    ])>
                 <x-actions.icon action="{{$review->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>

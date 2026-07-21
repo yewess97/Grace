@@ -49,7 +49,10 @@
                     data-route="{{route(DELETE_ORDER, $order->id)}}"
                     data-name="{{ $order->{TRACKING_NUM} }}"
                     data-main="{{route(ADMIN_ORDERS_ROUTE, [STATUS => $order->{STATUS}, CONDITION => conditionRequest()])}}"
-                    class="delete-order-btn h-fit-content fs-5 text-danger bg-transparent border-0">
+                    @class([
+                        'delete-category-btn' => !auth()->user()?->isMonitor,
+                        'h-fit-content fs-5 text-danger bg-transparent border-0'
+                    ])>
                 <x-actions.icon action="{{$order->trashed() ? DELETE : REMOVE}}"/>
             </button>
         </div>
