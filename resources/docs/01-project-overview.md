@@ -17,7 +17,6 @@
 - [Core Business Features](#core-business-features)
 - [Business Workflow](#business-workflow)
 - [Why Grace?](#why-grace)
-- [Screenshots](#screenshots)
 - [Project Scope](#project-scope)
 - [System Modules](#system-modules)
 - [Design Philosophy](#design-philosophy)
@@ -249,42 +248,6 @@ These include:
 - Performance-Oriented Development
 
 These engineering decisions make the project easier to extend and maintain compared to conventional Laravel applications.
-
----
-
-# Screenshots
-
-| Home                                        | Wishlist                                        |
-|---------------------------------------------|-------------------------------------------------|
-| ![](../public/assets/screenshots/home.webp) | ![](../public/assets/screenshots/wishlist.webp) |
-
-| Products (Multi View)                                      | Products (Single View)                                      |
-|------------------------------------------------------------|-------------------------------------------------------------|
-| ![](../public/assets/screenshots/products-multi-view.webp) | ![](../public/assets/screenshots/products-single-view.webp) |
-
-| Product Details                                        | Product Quick View                                        |
-|--------------------------------------------------------|-----------------------------------------------------------|
-| ![](../public/assets/screenshots/product-details.webp) | ![](../public/assets/screenshots/product-quick-view.webp) |
-
-| Login                                        | Register                                        |
-|----------------------------------------------|-------------------------------------------------|
-| ![](../public/assets/screenshots/login.webp) | ![](../public/assets/screenshots/register.webp) |
-
-| Cart                                        | Checkout                                        |
-|---------------------------------------------|-------------------------------------------------|
-| ![](../public/assets/screenshots/cart.webp) | ![](../public/assets/screenshots/checkout.webp) |
-
-| Stripe Payment                                        | Order Details                                        |
-|-------------------------------------------------------|------------------------------------------------------|
-| ![](../public/assets/screenshots/stripe-payment.webp) | ![](../public/assets/screenshots/order-details.webp) |
-
-| Profile                                        | User Addresses                                        |
-|------------------------------------------------|-------------------------------------------------------|
-| ![](../public/assets/screenshots/profile.webp) | ![](../public/assets/screenshots/user-addresses.webp) |
-
-| Dashboard                                        | Products Dashboard                                        |
-|--------------------------------------------------|-----------------------------------------------------------|
-| ![](../public/assets/screenshots/dashboard.webp) | ![](../public/assets/screenshots/products-dashboard.webp) |
 
 ---
 

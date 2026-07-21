@@ -203,6 +203,10 @@ Each module follows a unified CRUD architecture that significantly reduces repet
 |-----------------------------------------------|--------------------------------------------------------|
 | ![](public/assets/screenshots/dashboard.webp) | ![](public/assets/screenshots/products-dashboard.webp) |
 
+| Error Page                                |
+|-------------------------------------------|
+| ![](public/assets/screenshots/error.webp) |
+
 ---
 
 # Technology Stack
@@ -767,7 +771,7 @@ Administrators can access the dashboard to manage every aspect of the platform.
 The project documentation is divided into specialized documents for easier navigation.
 
 ```text
-docs/
+resources/docs/
 
 01-project-overview.md
 
