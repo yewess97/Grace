@@ -202,6 +202,7 @@ define("ROW",                'row');
 define("LAST_PAGE",          'last_page');
 define("TRASHED_RELATIONS",  TRASHED.'_relations');
 define("REDIRECT_TO",        'redirect_to');
+define("DOCUMENTATION",      'documentation');
 
 /**
  * Password Management Standards.
@@ -768,6 +769,7 @@ define("USER_PROFILE_VIEW",         userView(PROFILE));
 define("USER_PAYMENT_VIEW",         userView(PAYMENT));
 define("USER_ABOUT_US_VIEW",        userView(kebabAll(ABOUT_US)));
 define("USER_CONTACT_US_VIEW",      userView(kebabAll(CONTACT_US)));
+define("USER_DOCUMENTATION_VIEW",   userView(DOCUMENTATION));
 
 #################################### End Views ####################################
 

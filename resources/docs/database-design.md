@@ -431,4 +431,4 @@ Rather than focusing solely on storing data, the schema has been designed to acc
 
 # Continue Reading
 
-➡ **06-security.md**
+➡ **[Security](./security)**

@@ -85,8 +85,8 @@ class SettingsService {
                     'route' => 'javascript:;',
                 ],
                 [
-                    TITLE   => 'Sitemap',
-                    'route' => 'javascript:;',
+                    TITLE   => 'Documentation',
+                    'route' => route(DOCUMENTATION, 'main'),
                 ],
                 [
                     TITLE   => 'Store',
@@ -103,12 +103,12 @@ class SettingsService {
                     'route' => 'javascript:;',
                 ],
                 [
-                    TITLE   => capitalizeAll(ABOUT_US),
-                    'route' => route(ABOUT_US),
+                    TITLE   => 'Secure '.ucfirst(PAYMENT),
+                    'route' => route(PAYMENT),
                 ],
                 [
-                    TITLE   => 'Secure Payment',
-                    'route' => 'javascript:;',
+                    TITLE   => capitalizeAll(ABOUT_US),
+                    'route' => route(ABOUT_US),
                 ],
                 [
                     TITLE   => capitalizeAll(CONTACT_US),
@@ -125,12 +125,12 @@ class SettingsService {
                     'route' => route(PROFILE),
                 ],
                 [
-                    TITLE   => 'Credit Slips',
-                    'route' => 'javascript:;',
-                ],
-                [
                     TITLE   => ucfirst(ADDRESSES_TABLE),
                     'route' => route(USER_ADDRESSES, [ID => encrypt(auth()->user()?->{ID})]),
+                ],
+                [
+                    TITLE   => ucfirst(WISHLIST_MODEL),
+                    'route' => route(WISHLIST_MODEL),
                 ],
                 [
                     TITLE   => ucfirst(CART_MODEL),

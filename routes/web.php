@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentationController;
 use Illuminate\Support\Facades\Route,
     App\Http\Controllers\CategoryController,
     App\Http\Controllers\SubcategoryController,
@@ -78,3 +79,9 @@ Route::controller(SearchController::class)->group(function () {
  * Notification Route
  */
 Route::get('/notification', [NotificationController::class, 'index']);
+
+
+/**
+ * Documentation Route
+ */
+Route::get('/docs/{fileName}', [DocumentationController::class, 'show'])->name(DOCUMENTATION);

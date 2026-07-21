@@ -1,13 +1,14 @@
 @extends(key(viewLayoutTitle(USER_MODEL)), current(viewLayoutTitle(USER_MODEL)))
 
-@section('content')
-
-    {{-- About Us Main Style --}}
+@section('user-css')
     <style nonce="{{$nonce}}">
         .about-us-main .about-new {
             background: url('{{ imageSource('about/about-new.webp') }}'), fixed no-repeat center center / cover;
         }
     </style>
+@endsection
+
+@section('content')
 
     {{-- About Us Main --}}
     <main role="main" class="about-us-main py-6">

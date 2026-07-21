@@ -9,6 +9,13 @@
                 @if (session()->has('checkoutError'))
                     @customSession("checkoutError", "danger", "times")
                 @endif
+
+                <!----======= Grace Documentation =======---->
+                <a href="{{route(DOCUMENTATION, 'main')}}" type="button" role="link" title="{{config('app.name')}} {{ucfirst(DOCUMENTATION)}}" class="btn d-flex justify-content-center align-items-center gap-2" aria-label="{{config('app.name')}} {{ucfirst(DOCUMENTATION)}}">
+                    <i class="fa-brands fa-readme"></i>
+                    <span>{{ucfirst(DOCUMENTATION)}}</span>
+                </a>
+
                 <!----======= Left Side =======---->
                 @include(USER_LEFT_SIDE_COMPONENT)
 

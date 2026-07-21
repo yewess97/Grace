@@ -137,6 +137,7 @@
 
 @section('user-js-links')
     <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="module" src="{{asset('js/contact-us.js')}}"></script>
 @endsection
 
 @section('user-js')
@@ -145,6 +146,4 @@
             emailjs.init("Tw1jJXLceJmoL24nI");
         })();
     </script>
-
-    <script type="module" src="{{asset('js/contact-us.js')}}"></script>
 @endsection

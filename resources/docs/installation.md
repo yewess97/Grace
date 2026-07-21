@@ -96,7 +96,7 @@ The following PHP extensions should be enabled:
 Clone the project using Git.
 
 ```bash
-git clone https://github.com/your-username/grace.git
+git clone https://github.com/yewess97/Grace
 ```
 
 Move into the project directory.
@@ -455,6 +455,6 @@ php artisan storage:link
 
 After completing the installation, continue with:
 
-➡ **09-deployment.md**
+➡ **[Deployment](./deployment)**
 
 The next guide explains how to deploy Grace to a production environment, optimize performance, configure web servers, and prepare the application for real-world usage.

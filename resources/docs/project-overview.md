@@ -315,4 +315,4 @@ These principles collectively contribute to a codebase that remains organized, e
 
 Continue reading:
 
-➡ **02-system-architecture.md**
+➡ **[System Architecture](./system-architecture)**

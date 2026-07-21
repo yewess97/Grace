@@ -495,4 +495,4 @@ The overall structure reflects a long-term architectural vision rather than a co
 
 # Continue Reading
 
-➡ **05-database-design.md**
+➡ **[Database Design](./database-design)**

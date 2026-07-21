@@ -26,7 +26,7 @@
                                 @foreach ($navbar_dropdown->collection as $collection)
                                     <li role="listitem" class="col">
                                         <a href="{{route($navbar_dropdown->route_name, $collection->{SLUG})}}" role="link" class="d-grid place-items-center gap-2">
-                                            <div class="dropdown-img img-hover-effect position-relative overflow-hidden">
+                                            <div class="dropdown-img img-hover-effect position-relative p-1 rounded-5 overflow-hidden">
                                                 <img src="{{imageSource($collection, MAIN_IMAGE)}}" alt="{{ $collection->{NAME} }}" class="w-100">
                                             </div>
                                             <h3 class="dropdown-name fs-6 fw-500 text-capitalize lh-1">{{ $collection->{NAME} }}</h3>

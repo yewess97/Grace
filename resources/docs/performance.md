@@ -325,4 +325,4 @@ The result is a platform that performs efficiently under normal workloads and pr
 
 # Continue Reading
 
-➡ **08-installation.md**
+➡ **[Installation](./installation)**

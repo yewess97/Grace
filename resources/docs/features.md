@@ -383,4 +383,4 @@ These optimizations collectively contribute to a fast and responsive user experi
 
 # Continue Reading
 
-➡ **04-folder-structure.md**
+➡ **[Folder Structure](./folder-structure)**
