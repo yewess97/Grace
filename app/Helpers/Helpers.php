@@ -127,7 +127,7 @@ if (!function_exists('generalControllerRoutes')) {
         $singular_urls          = [WISHLIST_MODEL, CART_MODEL];
 
         $routes = collect()
-            ->when(($modelName !== REVIEW_MODEL || $modelName !== WISHLIST_MODEL) && !isAdminRoute(), static fn(Collection $routesCollection) =>
+            ->when($modelName !== REVIEW_MODEL && !isAdminRoute(), static fn(Collection $routesCollection) =>
                 $routesCollection->push(static fn() =>
                     Route::get('/'.kebabAll($modelName).($urlParam ? "/{{$urlParam}}" : ''), 'index')
                         ->name(
