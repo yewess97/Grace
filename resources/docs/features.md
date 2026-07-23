@@ -36,12 +36,12 @@ Its functionality is divided into logical modules, each responsible for a specif
 
 # Authentication & Authorization
 
-The authentication system provides secure access for both customers and administrators.
+The authentication system provides secure access for customers, monitors, and administrators.
 
 ## Features
 
 - User Registration
-- Secure Login
+- Secure Login (with Rate Limitting)
 - Logout
 - Remember Me
 - Password Reset
@@ -74,6 +74,7 @@ Customers can maintain their personal information directly from their account.
 - View order history
 - Track current orders
 - Manage wishlist
+- Manage cart
 - Update password
 - Receive notifications
 
@@ -86,7 +87,7 @@ The catalog is organized to provide a clean and intuitive browsing experience.
 ## Features
 
 - Main Categories
-- Subcategories
+- Main Subcategories
 - Product Collections
 - Product Variants
 - Multiple Images
@@ -270,10 +271,10 @@ Products can be filtered using multiple criteria, including:
 
 - Category
 - Subcategory
-- Collection
-- Price
 - Size
-- Color (if available)
+- Price (Range, Low to High, High to Low)
+- Best Selling
+- Alphabetically (A-Z, Z-A)
 
 These capabilities significantly improve product discoverability.
 
@@ -288,9 +289,7 @@ The administration panel centralizes all business operations into one interface.
 - Categories
 - Subcategories
 - Products
-- Product Images
-- Product Sizes
-- Customers
+- Users
 - Orders
 - Reviews
 - Notifications
@@ -351,14 +350,32 @@ Security is integrated throughout the application.
 
 Examples include:
 
-- Authentication
-- Authorization
-- Route Protection
-- Request Validation
+- Authentication & Authorization
+- Route Protection & Rate Limiting
+- Middleware-Based Access Control
+- HTTP Response Security Headers
+    - **Content Security Policy (CSP)** with dynamic nonces and style hashes
+    - **Clickjacking Protection** (`X-Frame-Options: DENY`, `frame-ancestors`)
+    - **HTTP Strict Transport Security (HSTS)** with preload and subdomains
+    - **Cross-Origin Isolation** (`COOP`, `CORP`, `COEP credentialless`)
+    - **MIME-Type Sniffing Protection** (`nosniff`)
+    - **Permissions Policy** (restricts camera, microphone, geolocation)
+    - **Strict Referrer Policy**
+- Dynamic Route-Based Cache Control (prevents caching sensitive pages while preserving bfcache for public routes)
 - CSRF Protection
+- SQL Injection Protection
+- XSS Protection
+- Request Validation
 - Password Hashing
-- Middleware-Based Security
-- Secure Payment Integration
+- Secure Sessions
+- Remember Me Authentication
+- Social Login Authentication
+- Secure Stripe Payment Integration
+- Environment-Based Secrets Management
+- Input Sanitization
+- Secure File Upload Handling
+- Soft Delete Strategy
+- Error Handling
 
 ---
 

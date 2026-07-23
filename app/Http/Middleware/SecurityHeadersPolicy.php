@@ -32,21 +32,18 @@ class SecurityHeadersPolicy
         $style_src_attr = "style-src-attr 'unsafe-inline'";
         $script_src  = "script-src 'self' cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com www.gstatic.com cdn.tiny.cloud 'nonce-$nonce'";
         $font_src    = "font-src 'self' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net unpkg.com fonts.gstatic.com data:";
-        $connect_src = "connect-src 'self' www.gstatic.com www.apicountries.com api.emailjs.com cdnjs.cloudflare.com unpkg.com";
+        $connect_src = "connect-src 'self' www.gstatic.com countries.dev api.emailjs.com cdnjs.cloudflare.com unpkg.com";
         $img_src     = "img-src 'self' blob: data: cdn.jsdelivr.net unpkg.com flagcdn.com upload.wikimedia.org img.shields.io";
 
-        $bfcache_public_routes = [HOME, PRODUCTS_LIST, PAYMENT, ABOUT_US, CONTACT_US];
+        $bfcache_public_routes = [HOME, PRODUCTS_LIST, PAYMENT, ABOUT_US, CONTACT_US, DOCUMENTATION];
 
         $response->headers->set('Content-Security-Policy', "default-src 'self'; frame-ancestors 'self'; $style_src_elem; $style_src_attr; $script_src; $font_src; $connect_src; $img_src;");
 
-        // X-Content-Type-Options - Prevents browsers from MIME-type sniffing
-        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        // X-Frame-Options - Prevents Clickjacking attacks by blocking iframes
+        $response->headers->set('X-Frame-Options', 'DENY');
 
-        // Referrer-Policy - Controls how much referrer information is sent with requests
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-        // Permissions-Policy - Restricts access to browser features (e.g., camera, microphone, geolocation)
-        $response->headers->set('Permissions-Policy', "geolocation=(), microphone=(), camera=(), payment=()");
+        // Strict-Transport-Security (HSTS) - Forces the use of HTTPS for security
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 
         // Cross-Origin-Resource-Policy - Restricts which origins can load resources from this site
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
@@ -60,11 +57,14 @@ class SecurityHeadersPolicy
         // Cross-Origin-Embedder-Policy (credentialless) - Protects against cross-origin attacks without breaking third-party resources (CDNs, iframes, widgets)
         $response->headers->set('Cross-Origin-Embedder-Policy', 'credentialless');
 
-        // Strict-Transport-Security (HSTS) - Forces the use of HTTPS for security
-        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+        // X-Content-Type-Options - Prevents browsers from MIME-type sniffing
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
 
-        // X-Frame-Options - Prevents Clickjacking attacks by blocking iframes
-        $response->headers->set('X-Frame-Options', 'DENY');
+        // Permissions-Policy - Restricts access to browser features (e.g., camera, microphone, geolocation)
+        $response->headers->set('Permissions-Policy', "geolocation=(), microphone=(), camera=(), payment=()");
+
+        // Referrer-Policy - Controls how much referrer information is sent with requests
+        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // X-XSS-Protection - Adds XSS protection for older browsers (though modern browsers ignore it)
         $response->headers->set('X-XSS-Protection', '1; mode=block');

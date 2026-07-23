@@ -51,12 +51,11 @@ The following enhancements can be implemented with relatively small development 
 
 ## User Experience
 
-- Product Quick View
 - Recently Viewed Products
 - Product Comparison
 - Improved Search Suggestions
 - Infinite Scrolling
-- Advanced Product Filters
+- More Advanced Product Filters
 
 ---
 
@@ -147,7 +146,6 @@ The current architecture has been intentionally designed to accommodate these en
 
 Potential backend improvements include:
 
-- Service Layer
 - Repository Pattern
 - API Versioning
 - Event-Driven Architecture
@@ -196,12 +194,8 @@ As the platform grows, additional optimizations may be introduced.
 Examples include:
 
 - Full Redis Integration
-- CDN Support
 - Image Optimization Pipeline
-- Lazy Loading
 - Queue-Based Image Processing
-- Background Cache Warming
-- Search Indexing
 - Horizontal Scaling
 
 ---
@@ -263,9 +257,7 @@ Future documentation may include:
 - Architecture Decision Records (ADRs)
 - UML Diagrams
 - Sequence Diagrams
-- Entity Relationship Diagram (ERD)
 - Developer Contribution Guide
-- Coding Style Guide
 
 These additions will improve onboarding for future contributors.
 

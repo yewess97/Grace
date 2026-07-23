@@ -112,7 +112,7 @@ Before deploying, verify that:
 Clone the repository directly on the server.
 
 ```bash
-git clone https://github.com/your-username/grace.git
+git clone https://github.com/yewess97/Grace
 ```
 
 or upload the project using your preferred deployment workflow.

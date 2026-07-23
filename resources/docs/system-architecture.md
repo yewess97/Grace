@@ -115,7 +115,7 @@ Includes:
 - Partials
 - JavaScript
 - CSS
-- Bootstrap
+- MDBootstrap
 - AJAX
 
 This layer focuses exclusively on presentation without embedding business logic.
@@ -188,9 +188,10 @@ The data layer consists of:
 - Relationships
 - Query Scopes
 - Soft Deletes
+- Traits
+- Services
+- Contracts
 - Migrations
-- Factories
-- Seeders
 
 It represents the persistent state of the application while abstracting database interactions.
 
@@ -210,14 +211,20 @@ Examples include:
 
 - Route names
 - View names
+- Component names
+- Partial names
+- Modal names
 - Table names
 - Model names
+- Titles
+- Errors constants
 - Cache keys
+- Search & Filter constants
 - Validation constants
 - CRUD identifiers
 - Database attributes
 - Foreign keys
-- Component names
+- Enums
 
 This promotes consistency while reducing maintenance costs.
 
@@ -233,6 +240,7 @@ These helpers simplify repetitive tasks such as:
 - Cache invalidation
 - File management
 - Route generation
+- Request & Response handling
 - Image handling
 - Collection processing
 - Utility operations
@@ -331,7 +339,6 @@ Examples include:
 - Social authentication providers
 - Session drivers
 - Cache drivers
-- Queue configuration
 
 ---
 

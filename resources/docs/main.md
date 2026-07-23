@@ -137,7 +137,6 @@ Grace has been developed with several primary objectives:
 - Multiple Product Sizes
 - Product Variants
 - Inventory Management
-- Soft Delete Support
 - Image Optimization
 - Product Search
 - Dynamic Filtering
@@ -161,6 +160,7 @@ Main modules include:
 - Notifications
 - Search
 - Filtering
+- Soft Delete Support
 
 Each module follows a unified CRUD architecture that significantly reduces repetitive code and improves maintainability.
 
@@ -535,6 +535,8 @@ The project is organized into clearly separated modules, allowing developers to 
 ├── 📂 Providers/
 ├── 📂 Services/
 └── 📂 Traits/
+    ├── 📂 Login/
+    └── 📂 Relations/
 
 📂 bootstrap/
 
@@ -567,8 +569,6 @@ The project is organized into clearly separated modules, allowing developers to 
 └── 📂 guest/
 
 📂 storage/
-
-📂 tests/
 ```
 
 Each directory has a dedicated responsibility, promoting a clean separation of concerns and simplifying long-term maintenance.
@@ -609,7 +609,9 @@ From there, users can:
 - Browse products
 - Create accounts
 - Place orders
-- Manage wishlists
+- Manage wishlist
+- Manage cart
+- Manage addresses
 - Write reviews
 - Complete payments
 - Track orders
@@ -658,10 +660,18 @@ Security has been considered throughout the development lifecycle.
 
 Implemented security measures include:
 
-- Authentication
-- Authorization
-- Route Protection
+- Authentication & Authorization
+- Route Protection & Rate Limiting
 - Middleware-Based Access Control
+- HTTP Response Security Headers
+    - **Content Security Policy (CSP)** with dynamic nonces and style hashes
+    - **Clickjacking Protection** (`X-Frame-Options: DENY`, `frame-ancestors`)
+    - **HTTP Strict Transport Security (HSTS)** with preload and subdomains
+    - **Cross-Origin Isolation** (`COOP`, `CORP`, `COEP credentialless`)
+    - **MIME-Type Sniffing Protection** (`nosniff`)
+    - **Permissions Policy** (restricts camera, microphone, geolocation)
+    - **Strict Referrer Policy**
+- Dynamic Route-Based Cache Control (prevents caching sensitive pages while preserving bfcache for public routes)
 - CSRF Protection
 - SQL Injection Protection
 - XSS Protection
@@ -670,14 +680,14 @@ Implemented security measures include:
 - Secure Sessions
 - Remember Me Authentication
 - Social Login Authentication
-- Secure Stripe Integration
+- Secure Stripe Payment Integration
 - Environment-Based Secrets Management
 - Input Sanitization
 - Secure File Upload Handling
 - Soft Delete Strategy
 - Error Handling
 
-These mechanisms work together to provide a secure shopping experience for both customers and administrators.
+These mechanisms work together to provide a secure shopping experience for both customers, monitors, and administrators.
 
 ---
 

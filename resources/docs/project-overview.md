@@ -25,7 +25,7 @@
 
 # Introduction
 
-Grace is a full-featured online fashion e-commerce platform developed using **Laravel 9** and modern web technologies. The platform provides customers with a seamless shopping experience while equipping administrators with a comprehensive dashboard to efficiently manage products, users, orders, reviews, notifications, and other core business operations.
+Grace is a full-featured online fashion e-commerce platform developed using **Laravel 9** and modern web technologies. The platform provides customers with a seamless shopping experience while equipping administrators with a comprehensive dashboard to efficiently manage categories & subcategories, products, users, orders, reviews, notifications, and other core business operations.
 
 The application has been engineered with a strong focus on **clean architecture**, **security**, **performance**, **maintainability**, and **scalability**, making it suitable as a production-ready foundation for modern e-commerce solutions.
 
@@ -65,7 +65,7 @@ Store owners face different challenges:
 - Monitoring customer activity.
 - Maintaining a scalable codebase.
 
-Grace addresses both perspectives through a unified platform designed for customers and administrators alike.
+Grace addresses both perspectives through a unified platform designed for customers, monitors, and administrators alike.
 
 ---
 
@@ -93,7 +93,7 @@ To build a modern, secure, scalable, and maintainable fashion e-commerce platfor
 
 # Project Mission
 
-The mission of Grace is to simplify online fashion shopping by combining elegant user interfaces with reliable backend services, allowing both customers and administrators to interact with the platform efficiently and securely.
+The mission of Grace is to simplify online fashion shopping by combining elegant user interfaces with reliable backend services, allowing both customers, monitors, and administrators to interact with the platform efficiently and securely.
 
 ---
 
@@ -115,51 +115,50 @@ The primary objectives of the project include:
 
 # Target Audience
 
-Grace serves three primary user groups.
+Grace serves four primary user groups.
 
 ## Customers
 
 Customers can:
 
-- Browse products.
-- Search products.
-- Filter products.
-- Create wishlists.
-- Manage shopping carts.
-- Place online orders.
-- Track order status.
-- Review purchased products.
-- Manage delivery addresses.
+- Browse, search, and filter products.
+- Create wishlists and manage shopping carts.
+- Place online orders and track their delivery status.
+- Write reviews and rate purchased products.
+- Manage delivery addresses and profile settings.
+
+---
+
+## Store Monitors (Read-Only Administrators)
+
+Monitors are non-administrative users granted **read-only access** to the administration panel. They can:
+
+- Access and navigate the complete administrative dashboard.
+- View system analytics, reports, orders, inventory, customers, and reviews.
+- Audit platform activities and monitor store operations.
+- **Enforced Restriction:** Restricted from performing any write, update, or delete (CRUD) operations across the entire administrative domain.
 
 ---
 
 ## Store Administrators
 
-Administrators can manage:
+Administrators have **full operational control** over the platform through the administration dashboard, including:
 
-- Categories
-- Subcategories
-- Products
-- Product Images
-- Product Sizes
-- Orders
-- Customers
-- Reviews
-- Notifications
-
-They also have full control over the shopping platform through an administrative dashboard.
+- Full CRUD management over Categories, Subcategories, Products, Product Sizes/Variants, and Images.
+- Processing and updating Customer Orders and delivery states.
+- Moderating Customer Reviews and Managing System Notifications.
+- Managing Customer accounts and platform configurations.
 
 ---
 
 ## Developers
 
-Grace also serves as an educational and professional reference project for Laravel developers interested in:
+Grace serves as an educational and enterprise-level reference project for Laravel developers interested in:
 
-- Clean Architecture
-- Software Design Principles
-- Laravel Best Practices
-- Scalable Project Organization
-- Reusable Components
+- Clean Architecture & Abstraction Layers
+- Custom Middleware & Dynamic Policy Enforcement
+- Role-Based Access Control (RBAC) & Read-Only Permissions
+- Scalable Project Organization & Reusable Components
 
 ---
 
@@ -279,6 +278,7 @@ The application consists of multiple interconnected modules.
 - User Management Module
 - Product Management Module
 - Category Management Module
+- Subcategory Management Module
 - Wishlist Module
 - Shopping Cart Module
 - Checkout Module

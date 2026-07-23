@@ -193,6 +193,7 @@ Grace uses asynchronous requests to update portions of the interface without req
 
 Examples include:
 
+- Authentication operations
 - Wishlist operations
 - Shopping cart updates
 - Dynamic filtering

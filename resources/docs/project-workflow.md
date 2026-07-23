@@ -209,7 +209,7 @@ flowchart TD
     Ship[Shipped State]
     Deliv[Delivered State]
     Comp[Completed State]
-    Cancel[Cancelled State]
+    Can[Cancelled State]
 
     %% Main Success Path (Happy Path)
     Start -->|Initialize Order Lifecycle| Proc
@@ -218,15 +218,21 @@ flowchart TD
     Deliv -->|3. Confirmed & Closed| Comp
 
     %% Exception Handling (Cancellation Paths)
-    Proc --->|User Cancel / Stock Failure| Cancel
-    Ship -.->|Refused / Lost in Transit| Cancel
-    Deliv -.->|Return Initiated / Rejected| Cancel
+    Proc --->|User Cancel / Stock Failure| Can
+    Ship -.->|Refused / Lost in Transit| Can
+    Deliv -.->|Return Initiated / Rejected| Can
 
     %% Terminal States Styling Context
-    classDef success fill:#0d6300,stroke:#149500,stroke-width:2px;
-    classDef danger fill:#9d0000,stroke:#e80000,stroke-width:2px;
-    class Comp success;
-    class Cancel danger;
+    classDef processing fill:#ffd06f,stroke:#ffbe39,stroke-width:2px,color:#000000,font-weight:500;
+    classDef shipped fill:#ebcdfe,stroke:#be56ff,stroke-width:2px,color:#000000,font-weight:500;
+    classDef delivered fill:#98bdfb,stroke:#4e8ffb,stroke-width:2px,color:#000000,font-weight:500;
+    classDef completed fill:#3fe480,stroke:#1eb258,stroke-width:2px,color:#000000,font-weight:500;
+    classDef cancelled fill:#ff657e,stroke:#99051d,stroke-width:2px,color:#000000,font-weight:500;
+    class Proc processing;
+    class Ship shipped;
+    class Deliv delivered;
+    class Comp completed;
+    class Can cancelled;
 ```
 
 Each status represents a real business milestone during order fulfillment.

@@ -84,6 +84,8 @@ The `app` directory contains the application's core business logic.
 ├── 📂 Providers/
 ├── 📂 Services/
 └── 📂 Traits/
+    ├── 📂 Login/
+    └── 📂 Relations/
 ```
 
 This is the heart of the system.
@@ -116,9 +118,11 @@ Examples include:
 - Users
 - Products
 - Categories
+- Subcategories
 - Orders
 - Reviews
 - Wishlists
+- Carts
 - Addresses
 - Notifications
 
@@ -137,6 +141,7 @@ Examples include:
 - Guest Restrictions
 - Session Handling
 - Request Filtering
+- Security Headers
 
 This ensures security concerns remain separated from business logic.
 
@@ -182,14 +187,21 @@ The Services layer provides centralized definitions for values reused throughout
 Examples include:
 
 - Route names
-- Table names
 - View names
-- Model identifiers
-- Cache keys
-- CRUD operation names
-- Foreign keys
 - Component names
+- Partial names
+- Modal names
+- Table names
+- Model names
+- Titles
+- Errors constants
+- Cache keys
+- Search & Filter constants
 - Validation constants
+- CRUD identifiers
+- Database attributes
+- Foreign keys
+- Enums
 
 Centralizing these values eliminates scattered literal strings and improves consistency across the codebase.
 
@@ -330,6 +342,7 @@ The resources directory contains the application's presentation layer.
 resources
 │
 ├── css
+├── docs
 ├── js
 └── views
 ```
@@ -338,13 +351,23 @@ resources
 
 ## CSS
 
-Contains application-specific styling.
+Contains application-specific styling and custom theme configurations.
+
+---
+
+## Documentation
+
+Contains the project's static, system-level Markdown documentation files.
+
+These files serve a dual purpose:
+- **Project Reference:** Provide offline, structured documentation covering architecture, database schema, security highlights, routing flow, and setup guides.
+- **Dynamic In-App Rendering:** Parsed directly by the application's documentation engine (`CommonMark` / `DocumentationController`) to render formatted technical docs directly within the web interface without relying on third-party hosting.
 
 ---
 
 ## JavaScript
 
-Contains interactive client-side functionality, including AJAX operations and dynamic user interactions.
+Contains interactive client-side functionality, including AJAX operations, dynamic form validations, chart initializations, and asynchronous UI updates.
 
 ---
 
@@ -352,14 +375,13 @@ Contains interactive client-side functionality, including AJAX operations and dy
 
 Blade templates define the application's user interface.
 
-The project extensively uses:
+The view layer extensively utilizes:
 
-- Layouts
-- Components
-- Partials
-- Reusable UI elements
+- **Master Layouts:** Base wrappers for consistent structure across customer and admin views.
+- **Blade Components:** Reusable, encapsulated UI elements (e.g., forms, buttons, moduals).
+- **Partials:** Modular template snippets for headers, footers, and sidebars.
 
-This organization minimizes duplication while maintaining visual consistency.
+This organization minimizes code duplication while maintaining visual consistency across the entire platform.
 
 ---
 
@@ -432,7 +454,7 @@ Composer provides dependency management while supporting automatic package regis
 
 Examples include:
 
-- Bootstrap
+- MDBootstrap
 - JavaScript packages
 - Build scripts
 

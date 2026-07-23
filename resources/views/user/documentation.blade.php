@@ -2,6 +2,7 @@
 
 @section('user-css-links')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.9.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
 @endsection
 
 @section('user-css')
@@ -41,7 +42,6 @@
 
         .mermaid p {
             margin-bottom: 0;
-            color: var(--white-color);
             line-height: inherit;
         }
 
@@ -57,7 +57,7 @@
             fill: none;
         }
 
-        .mermaid :is(.erDiagram .marker, .edgePaths :where(.flowchart-link, .relationshipLine), .nodes .node rect) {
+        .mermaid :is(.erDiagram .marker, .edgePaths :where(.flowchart-link, .relationshipLine), .nodes .node :where(rect, polygon, path)) {
             stroke: var(--light-gray-color);
             stroke-width: 1px;
         }
@@ -71,8 +71,12 @@
             text-align: center;
         }
 
-        .mermaid .nodes .node :is(rect, polygon) {
+        .mermaid .nodes .node :is(rect, polygon, path) {
             fill: #1f2020;
+        }
+
+        .mermaid :is(.nodes .node, .edgeLabels .edgeLabel) .label {
+            color: var(--white-color);
         }
     </style>
 @endsection
@@ -92,11 +96,13 @@
 
 @section('user-js-links')
     <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/mermaid@11.16.0/dist/mermaid.min.js"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 @endsection
 
 @section('user-js')
     <script nonce="{{$nonce}}" type="application/javascript">
         $(document).on("DOMContentLoaded", () => {
+            /**----- Mermaid -----**/
             mermaid.initialize({
                 startOnLoad: true,
                 theme: 'dark',
@@ -108,6 +114,35 @@
 
                 pre_element.replaceWith(mermaid_div);
             });
+            /**----- End Mermaid -----**/
+
+            /**----- Environment Variables -----**/
+            hljs.registerLanguage('env', (hljs) => {
+                return {
+                    contains: [
+                        {
+                            className: 'variable',
+                            begin: /^[A-Za-z_][A-Za-z0-9_]*/,
+                            end: /[=\s]/,
+                            relevance: 10
+                        },
+                        {
+                            className: 'string',
+                            begin: /".*?"|'.*?'/,
+                            relevance: 0
+                        },
+                        {
+                            className: 'comment',
+                            begin: /#.*$/,
+                            relevance: 0
+                        }
+                    ]
+                };
+            });
+
+            // Highlight all code blocks
+            hljs.highlightAll();
+            /**----- End Environment Variables -----**/
         });
     </script>
 @endsection

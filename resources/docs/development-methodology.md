@@ -62,8 +62,10 @@ Each module evolved independently while sharing common infrastructure provided b
 Examples include:
 
 - Authentication Module
+- User Module
 - Product Module
 - Category Module
+- Subcategory Module
 - Order Module
 - Review Module
 - Notification Module
@@ -100,6 +102,7 @@ Grace minimizes duplication by centralizing shared functionality into:
 - Helper Functions
 - Traits
 - Blade Components
+- Blade Partials
 - Standards
 - Configuration Files
 
@@ -121,15 +124,11 @@ This balance keeps the application familiar to Laravel developers while still su
 
 Each class focuses on one primary purpose.
 
-Controllers coordinate requests.
-
-Models represent data.
-
-Helpers encapsulate reusable utilities.
-
-Traits provide shared behavior.
-
-Providers register framework extensions.
+- Controllers coordinate requests.
+- Models represent data.
+- Helpers encapsulate reusable utilities.
+- Traits provide shared behavior.
+- Providers register framework extensions.
 
 Keeping responsibilities focused reduces coupling and improves readability.
 
@@ -163,6 +162,8 @@ Examples include:
 
 - Standards
 - Helpers
+- Contracts
+- Services
 - Traits
 - Providers
 - Notifications
@@ -196,13 +197,10 @@ Consistency improves readability and lowers the learning curve for new contribut
 
 Business logic is intentionally separated from presentation logic.
 
-Blade templates remain focused on rendering user interfaces.
-
-Controllers coordinate application flow.
-
-Reusable utilities handle common operations.
-
-Database models represent persistent business entities.
+- Blade templates remain focused on rendering user interfaces.
+- Controllers coordinate application flow.
+- Reusable utilities handle common operations.
+- Database models represent persistent business entities.
 
 This separation improves maintainability while reducing accidental coupling.
 

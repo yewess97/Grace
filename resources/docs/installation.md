@@ -42,7 +42,7 @@ By the end of this guide, you will have a fully functional development environme
 
 # System Requirements
 
-Before installing the project, ensure your development environment satisfies the following requirements.
+Before installing the project, ensure your development environment satisfies the following requirements:-
 
 ## PHP
 
@@ -102,7 +102,7 @@ git clone https://github.com/yewess97/Grace
 Move into the project directory.
 
 ```bash
-cd grace
+cd Grace
 ```
 
 ---
@@ -165,7 +165,7 @@ Open `.env` and update the database credentials.
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=grace
+DB_DATABASE=grace_db
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -182,13 +182,13 @@ Example:
 
 ```env
 MAIL_MAILER=smtp
-MAIL_HOST=
-MAIL_PORT=
-MAIL_USERNAME=
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=graceglossyfashion@gmail.com
 MAIL_PASSWORD=
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=
-MAIL_FROM_NAME="Grace"
+MAIL_FROM_ADDRESS="graceglossyfashion@gmail.com"
+MAIL_FROM_NAME="${APP_NAME}"
 ```
 
 ---
@@ -218,16 +218,15 @@ Examples include:
 - GitHub
 
 ```env
-GOOGLE_CLIENT_ID=
+LOGIN_SOCIAL_PROVIDERS=google,facebook,github
 
+GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
 FACEBOOK_CLIENT_ID=
-
 FACEBOOK_CLIENT_SECRET=
 
 GITHUB_CLIENT_ID=
-
 GITHUB_CLIENT_SECRET=
 ```
 
@@ -441,7 +440,7 @@ Ensure the following directories are writable.
 
 ---
 
-## Storage Images Not Appearing
+## Storage Images Not Appearing?
 
 Run:
 

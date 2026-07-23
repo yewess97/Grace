@@ -73,7 +73,8 @@ Products
 ├── Images
 ├── Sizes
 ├── Reviews
-└── Categories
+├── Categories
+└── Subcategories
 
 Orders
 │
@@ -94,11 +95,11 @@ The application revolves around several primary entities.
 
 ## User
 
-Represents every registered customer or administrator.
+Represents every registered customer, monitor, or administrator.
 
 Responsibilities include:
 
-- Authentication
+- Authentication & Authorization
 - Profile Information
 - Address Management
 - Orders
@@ -117,13 +118,13 @@ Represents an item available for purchase.
 A product stores:
 
 - Name
-- Description
-- Collection
-- Price
-- Stock
+- Description (Short & Long)
 - Images
-- Sizes
 - Category
+- Subcategory
+- Sizes
+- Price (Old & New)
+- Stock Status
 - Reviews
 
 Products are intentionally separated from their images and sizes to maintain a flexible structure.
@@ -209,6 +210,8 @@ User
 
 ├── Cart
 
+├── Checkout
+
 ├── Orders
 
 ├── Reviews
@@ -285,6 +288,18 @@ flowchart TD
     Proc ---->|Cancel Order| Can
     Ship ---->|Cancel / Return in Transit| Can
     Deliv --->|Return / Reject Delivery| Can
+
+    %% Terminal States Styling Context
+    classDef processing fill:#ffd06f,stroke:#ffbe39,stroke-width:2px,color:#000000,font-weight:500;
+    classDef shipped fill:#ebcdfe,stroke:#be56ff,stroke-width:2px,color:#000000,font-weight:500;
+    classDef delivered fill:#98bdfb,stroke:#4e8ffb,stroke-width:2px,color:#000000,font-weight:500;
+    classDef completed fill:#3fe480,stroke:#1eb258,stroke-width:2px,color:#000000,font-weight:500;
+    classDef cancelled fill:#ff657e,stroke:#99051d,stroke-width:2px,color:#000000,font-weight:500;
+    class Proc processing;
+    class Ship shipped;
+    class Deliv delivered;
+    class Comp completed;
+    class Can cancelled;
 ```
 
 ---
@@ -326,18 +341,25 @@ Grace uses several relationship types.
 
 Examples include:
 
-- Category → Products
-- Product → Images
+- Product → Thumb Images
 - Product → Sizes
 - User → Orders
 - User → Reviews
 - User → Addresses
+- User → Wishlists
+- User → Carts
 
 ---
 
 ## Many-to-Many
 
 Many-to-many relationships are implemented through pivot tables where appropriate.
+
+Examples include:
+
+- Categories → Subcategories
+- Categories → Products
+- Subcategories → Products
 
 This design allows entities to remain independent while supporting flexible associations.
 
