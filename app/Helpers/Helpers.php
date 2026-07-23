@@ -601,7 +601,7 @@ if (!function_exists(DELETE.'Images')) {
 
                 $missing_images = $images->reject(static fn(string $path) => Storage::exists($path));
 
-                if ($missing_images->isNotEmpty() && !$force_delete) {
+                if (!$force_delete && $missing_images->isNotEmpty()) {
                     throw new NotFoundHttpException('One or more images were not found in storage.');
                 }
 
